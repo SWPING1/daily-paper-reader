@@ -1,0 +1,458 @@
+Title: Linking Modality Isolation in Heterogeneous Collaborative Perception
+
+URL Source: https://arxiv.org/pdf/2603.00609v1
+
+Published Time: Tue, 03 Mar 2026 01:53:27 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# Linking Modality Isolation in Heterogeneous Collaborative Perception 
+
+## Changxing Liu 1* Zichen Chao 2* Siheng Chen 1† 1Shanghai Jiao Tong University 2Nanjing University of Science and Technology 
+
+cx-liu@sjtu.edu.cn zichen.chao@njust.edu.cn sihengc@sjtu.edu.cn 
+
+## Abstract 
+
+Collaborative perception leverages data exchange among multiple agents to enhance overall perception capabilities. However, heterogeneity across agents introduces domain gaps that hinder collaboration, and this is further exac-erbated by an underexplored issue: modality isolation . It arises when multiple agents with different modalities never co-occur in any training data frame, enlarging cross-modal domain gaps. Existing alignment methods rely on super-vision from spatially overlapping observations, thus fail to handle modality isolation. To address this challenge, we propose CodeAlign, the first efficient, co-occurrence-free alignment framework that smoothly aligns modalities via cross-modal feature-code-feature(FCF) translation. The key idea is to explicitly identify the representation consis-tency through codebook, and directly learn mappings be-tween modality-specific feature spaces, thereby eliminating the need for spatial correspondence. Codebooks regular-ize feature spaces into code spaces, providing compact yet expressive representations. With a prepared code space for each modality, CodeAlign learns FCF translations that map features to the corresponding codes of other modali-ties, which are then decoded back into features in the tar-get code space, enabling effective alignment. Experiments show that, when integrating three modalities, CodeAlign re-quires only 8% of the training parameters of prior align-ment methods, reduces communication load by 1024x, and achieves state-of-the-art perception performance on both OPV2V and DAIR-V2X dataset. Code will be released on https://github.com/cxliu0314/CodeAlign. 
+
+## 1. Introduction 
+
+Collaborative perception plays a pivotal role in intelligent systems such as connected autonomous vehicles and multi-robot collaboration. It enables agents to build a more com-prehensive understanding of the environment by sharing perceptual information. In real-world applications, how-
+
+> *Equal contribution
+> †Corresponding author
+
+Figure 1. Illusion of modality isolation in heterogeneous collabo-rative perception. 
+
+ever, vehicles from different manufacturers often exhibit heterogeneity, leading to significant domain gaps during feature-level collaboration. Heterogeneity includes differ-ent sensor types, sensor parameters, and perception models. Late fusion bypasses heterogeneity by integrating detection outputs, but suffers from suboptimal performance, localiza-tion noise [10], and communication latency [15]. Tradi-tional approaches [8, 19, 24] use shared fusion networks for collective training, learning the consistency of heteroge-neous features corresponding to spatial positions. Further developments [13] promote alignment supervised on feature contrastive loss under same scene. To enable extensible het-erogeneous collaboration, some approaches [1, 4] generate standardized features to represent the environment, using contrastive learning to align modalities toward this common feature. These methods all rely on spatial-correspondence alignment. They require co-occurring training data, that is, data from different modalities must have shared observation within the same scene. A critical yet understudied issue in multi-agent hetero-geneous collaborative perception is modality isolation, as illustrated in Figure 1. In real-world deployments, percep-tion data of agents are typically collected by different in-stitutions across diverse locations and time periods. Con-sequently, each dataset often covers only a limited subset of modalities. As a result, many modality pairs never co-occur in any recorded scene, meaning they lack shared ob-1
+
+> arXiv:2603.00609v1 [cs.CV] 28 Feb 2026
+
+servations, have never collaborated in the training data, and thus provide no shared spatially correspondence supervi-sion. We refer to this situation as modality isolation. Modality isolation significantly increasing the difficulty of achieving robust and generalizable alignment. When aligning two modality-isolated agents, the absence of shared observation in any frame makes it impossible to es-tablish mutual supervision through correspondence of BEV features [4, 19], nor can shared ground truth labels be uti-lized as reference to facilitate alignment [1]. For collec-tively trained fusion networks, it is feasible to alternately in-put single-modality data from isolated modalities; however, this significantly impairs perception performance for using modality-isolated features to train a shared backend. Al-though [12] adapts to modality-isolated scenarios through a extension strategy trained on local data of each modalities, it is limited by the high training cost and inconvenience of retraining encoders. Modality isolation post the following challenges: i) Het-erogeneity arises from diverse factors, resulting in a wide spectrum of heterogeneous types. ii) Continuous technolog-ical advancements lead to the emergence of new modalities, which inevitably suffer from modality isolation with exist-ing ones. iii) Datasets collected by different institutions are often subject to data privacy requirements, further restrict-ing data accessibility. Under such conditions, the system must be capable of aligning numerous modalities efficiently, while maintaining extensibility and protecting data privacy. To address these challenges, our core idea is to explic-itly identify the representation consistency with codebook and directly learn mappings between modality-specific fea-ture spaces. The feature spaces consist of spatial-irrelative, pixel-level representations, and the mappings between these spaces can be learned through representation consistency, thereby eliminating the reliance on spatial correspondence. To achieve reliable alignment, it is required that the fea-ture space should be representative and condensed. Intu-itively, codebook can construct compact yet expressive fea-ture space, facilitating explicit and robust transformation. Following this idea, we propose CodeAlign, the first efficient, co-occurrence-free alignment framework for heterogeneous collaborative perception. CodeAlign smoothly aligns modalities via cross-modal fea-ture–code–feature(FCF) translation under modality isolation. The framework operates in two stages: i) Code space construction. To extract representative intermediate features, a inserted codebook is learned for each modality between their encoder and fusion network. In addition to providing condensed code-feature pairs, the codebook enables efficient communication by transmitting codebook indices instead of raw features. To further improve training efficiency, we introduce a group code space construction strategy that establishes a shared code space for non-isolated modalities, enhancing alignment accuracy while reducing alignment training effort. ii) FCF translation. To align modalities, CodeAlign learns cross-modal FCF translation: features of the ego modality are translated into the target modality’s corresponding codes, which are then decoded back into features in the target code space, achiev-ing indirect yet effective alignment. To ensure efficiency in both training and inference, we design a lightweight one-to-many Code Translator that supports translation to multiple code spaces. Compared with existing methods, CodeAlign overcomes the challenge of modality isolation by learning representation consistency instead of spatial correspondence, while simultaneously reducing training costs and communication overhead. We evaluate CodeAlign on the OPV2V [25] and DAIR-V2X [26] datasets and demonstrate significant improve-ments in efficiency. When integrating three modalities, CodeAlign uses only 8% of the training parameters required by HEAL [11] and reduces communication load by a factor of 1024. Despite its discretization nature, CodeAlign also boosts perception performance on AP30 by up to 4.61% on OPV2V and 12.08% on DAIR-V2X compared to state-of-the-art alignment methods, highlighting its strong general-ization ability. Our contributions are as follows: • We propose CodeAlign, the first efficient, co-occurrence-free alignment framework to resolve the modality isola-tion challenge in heterogeneous collaborative perception. • CodeAlign introduces FCF translation to linking isolated modalities, enabling effective alignment while lowering training cost and reducing communication overhead. • Extensive experiments on OPV2X and DAIR-V2X datasets demonstrate the effectiveness of CodeAlign in improving perception performance while enhancing both training and communication efficiency. 
+
+## 2. Related Works 
+
+2.1. Collaborative Perception 
+
+Collaborative perception improves detection accuracy by leveraging shared sensory information across multiple agents and is commonly classified into early, intermediate, and late fusion strategies. Early fusion transmits raw sen-sor data, incurring high communication cost, while late fu-sion shares only bounding boxes, limiting performance and robustness due to feature loss [10, 15]. Intermediate fu-sion [3, 14, 20] has gained popularity for achieving a fa-vorable balance between performance and communication efficiency. To advance research in multi-agent collabora-tive perception, OPV2V [25] provides simulated vehicle-to-vehicle collaboration, DAIR-V2X [26] offers real-world vehicle-infrastructure data, and RCooper [5] introduces adverse weather conditions for robustness evaluation. To mitigate communication bottlenecks, prior works [6, 7] re-2duce redundancy in transmitted features. Other approaches [9, 16, 27] address communication disruptions or latency by exploiting historical interaction data or temporal context. Despite these advances, most existing methods assume homogeneous sensor modalities and identical models across agents. In this work, we study heterogeneous collaborative perception, where agents may possess different sensor and model configurations. We further identify and investigate the underexplored challenge of modality isolation, arising when heterogeneous agents struggle to effectively align and fuse features due to no co-occurring data. 
+
+2.2. Heterogeneous Collaborative Perception 
+
+Heterogeneity in collaborative perception arises from dif-ferences in sensor modalities, sensor configurations, and perception model architectures. Early works focus on LiDAR-based heterogeneity: V2XViT [24] addresses spatial misalignment between vehicle and infrastructure; MPDA [23] and Calibrator [22] study heterogeneous Li-DAR models; PnPDA [13] further considers varying voxel sizes; and PolyInter [18] explores scalability. However, the domain gap between LiDAR and camera data consti-tutes a more significant challenge. HMViT [19] proposes collective training of cross-modal models to bridge this gap. CodeFilling [8] leverages a shared codebook in col-lective training, but is inconvenient for modality extension. STAMP [4] trains a protocol network from a certain modal-ity to provide contrastive learning references, but requires that modality to be present in every data. GT-Space [1] uses ground-truth-derived features as alignment anchors, yet as-sumes modalities share a common field of view. However, the challenge of modality isolation arises from the fact that different modalities are rarely co-collected in the same scenes, leading to a lack of shared obser-vation in training data. This limitation hinders spatial-correspondence alignment infeasible. HEAL [11] adapts to this situation by retraining encoders on local data, but suffers from high computational cost and inconvenience of an extra encoder. In this work, we propose CodeAlign, an efficient, co-occurrence-free alignment framework under modality isolation that leverages FCF translation to system-atically address this challenge. 
+
+## 3. Methodology 
+
+3.1. Problem Formulation 
+
+Consider a heterogeneous collaborative perception system with a set of agents A, where each agent i ∈ A is equipped with modality mi and produces an observation xmi 
+
+> i
+
+for scene s it participates in. Training data are collected across diverse scenes with diverse location and timestamp. Each recorded scene involves a subset Gs ⊆ A of agents that si-multaneously observe the environment. The total training dataset can be denoted as a collection of scene-observation pairs: S 
+
+> s
+
+{(s, {xmi 
+
+> i
+
+}i∈G s )}.During conventional training, the system processes the co-occurring observations {xmi 
+
+> i
+
+}i∈G s through a three-stage pipeline to produce detection outputs {ˆyi}i∈G s :
+
+F mi 
+
+> i
+
+= Emi (xmi 
+
+> i
+
+), i ∈ G s (1) 
+
+Fj→i = Γ j→i(Mj→i(F mj 
+
+> j
+
+)) , j ∈ G s (2) 
+
+ˆyi = Bmi
+
+ {Fj→i}j∈G s
+
+ (3) where a modality-specific encoder Emi extracts the inter-mediate feature F mi 
+
+> i
+
+, and after message passing Mj→i,the spatial transformation Γj→i aligns agent j’s feature into agent i’s coordinate frame, finally the backend module Bmi
+
+fuses all transformed messages {Fj→i}j∈G s to generate de-tection result ˆyi.Existing methods either use common ground-truth la-bels ygt  
+
+> s
+
+or spatially overlapped intermediate features 
+
+{F mi 
+
+> i
+
+, F mj
+
+> j→i
+
+} to supervise alignment (listed in Section. 8 in appendix). However, when two modalities never co-appear in any training scene, such supervision is absent, and exist-ing approaches fail to establish meaningful alignment. We refer to this situation as modality isolation . For any agent i, let Smi = {s | i ∈ G s} denote the set of scenes cov-ered by its modality mi. Agents i and j experience modality isolation if 
+
+Smi ∩ S mj = ∅. (4) Intuitively, because the two agents never appear in the same scene, none of their observations overlap in space, thus pro-vide no supervision on spatial correspondence. Our goal is to enable effective and efficient alignment un-der modality isolation without spatial-correspondence su-pervision. To this end, CodeAlign learns modality-specific code spaces from local data and constructs cross-modal FCF translation without requiring overlapping scene. 
+
+3.2. CodeAlign Framework 
+
+To address modality isolation, CodeAlign leverages the rep-resentative consistency wihtin each modality as the basis for alignment with the help of codebooks. By explicitly con-structing feature spaces through codebooks and exposing their discrete representations, cross-modal alignment can be directly supervised via representation consistency, remov-ing the reliance on co-occurring observational data. To explicitly build feature spaces and ease cross-modal mapping, CodeAlign employs learnable codebooks to ex-tract feature spaces as code spaces for each modality. This yields compact, semantic representations and reduces com-munication overhead in collaborative perception, as agents exchange code indices instead of dense features. To integrate this design into the collaborative percep-tion pipeline, we replace the conventional message passing step in Eq. 2 with a cross-modal feature-code-feature(FCF) 3Figure 2. Overview of the CodeAlign framework. The two training stages are: (1) code space construction for each modality and (2) feature–code–feature (FCF) translation between modalities, both trained using single-modality data. Step (3) illustrates the inference process, in which modality A has never encountered modality B during offline training, yet can still collaborate with it seamlessly. 
+
+translation mechanism. Specifically, given an intermediate feature F mi 
+
+> i
+
+from agent i, the translation performs: 
+
+cmi 
+
+> i
+
+= Pmi
+
+ F mi
+
+> i
+
+, Bmi cmi
+
+> i
+
+ ∈ Z mi , (5) 
+
+cmj 
+
+> i
+
+= Tmi→mj
+
+ F mi
+
+> i
+
+, Bmj cmj
+
+> i
+
+ ∈ Z mj , (6) 
+
+˜F mi 
+
+> j
+
+= Rmi
+
+ Mj→i(cmi 
+
+> j
+
+), ˜F mi 
+
+> j
+
+∈ B mj cmj
+
+> i
+
+, (7) 
+
+F mi 
+
+> j→i
+
+= Γ j→i
+
+  ˜F mi
+
+> j
+
+. (8) where Pmi denotes a projector that quantizes the interme-diate feature F mi 
+
+> i
+
+into a discrete index map cmi 
+
+> i
+
+, whose corresponding embeddings Bmi [cmi 
+
+> i
+
+] resides in the feature space Zmi defined by the codebook Bmi . Tmi→mj is a cross-modal translator that predicts an code map cmj 
+
+> i
+
+for target modality mj from ego feature, achieving cross-modal feature-code translation. The reconstructor Rmi then de-codes the transmitted codes into a dense feature ˜F mi 
+
+> j
+
+, which is mapped into Zmj with Bmi as intermediary. The code-feature translation is achieved. The feature is transformed by Γj→i to yield the warped feature F mi 
+
+> j→i
+
+for fusion. The core insight of FCF translation lies in the direct cor-respondence between discrete indices and modality-specific embeddings: each index cmj 
+
+> i
+
+uniquely specifies an embed-ding Bmj [cmj 
+
+> i
+
+] within the target modality’s native feature space Zmj . The translator Tmi→mj predicts an index map directly, enabling the reconstructor Rmj to effectively de-code a feature map composed of features just from the tar-get modality’s feature space. Consequently, the decoded features inherently align with the target modality’s features, enabling seamless cross-modal correspondence. The overall pipeline of CodeAlign is illustrated in Fig-ure 2. Step (1) performs code space construction , where each modality learns its own codebook to represent per-ceptual features without modifying the original backbone. Within this stage, we introduce a group code space con-struction strategy that constructs a shared codebook for non-isolated modalities using their co-occurring data, thereby improving alignment quality while minimizing the number of required pairwise transformations. Step (2) carries out 
+
+FCF translation : cross-modal translators map ego features into the discrete codes of a target modality and decode them back into target features. To further improve efficiency and extensibility, a lightweight one-to-many Translator is de-signed to enable translation to multiple modalities. Step (3) shows the inference phase, in which a modality that has never co-occurred offline with another can still collaborate seamlessly through the learned code spaces and translators. 
+
+3.2.1. Code Space construction 
+
+The purpose of code space construction is to explicitly con-struct representative feature space of the modality-specific intermediate encoded features, and prepare the feature 4space for later cross-modality alignment. In CodeAlign, a learnable codebook is employed to extract representative feature space as code space of a modality, which yields compact and communication-efficient representations. The ego vehicle’s collaborative perception pipeline operates as follows: raw sensor data is first encoded into bird’s-eye-view (BEV) features; these features are then quantized into the code space by assigning each spatial location to its near-est codebook embedding, resulting in a compact code map composed of discrete indices. During communication, only this code map is transmitted, significantly reducing band-width requirements. Upon receiving code maps from neigh-boring agents, the ego vehicle decodes them back into re-constructed BEV features, which are subsequently fused by the backend module to produce final detection outputs. Based on the codebook C, agent can replace the encoded feature map Fk with a series of code indices Ik, forming a compact code map. For each BEV location (h, w ), the code index is computed by calculator Φ as, 
+
+Φ : I[h,w ] = arg min  
+
+> ℓ
+
+(P(F )) [h,w ] − C[ℓ] 22 (9) The code map is used for message passing and is de-coded by R to reconstruct the aligned feature map, as the aligned features maps are composed of deterministic dis-crete features in the code space. The transmitted interme-diate feature is compressed from H ∗ W ∗ C to H ∗ W ∗
+
+log 2( D), where D denotes the codebook size, significantly reducing communication bandwidth. During training, code space construction is performed in an incremental, plug-in manner. The original percep-tion pipeline remains unchanged: we insert a lightweight adapter and a learnable codebook between the encoder and the backend, and we update only these inserted modules while freezing both the encoder and the backend. This de-sign allows the code space to be built without interfering with the normal operation of the non-collaborative pipeline, and by preserving the original encoder, it avoids the loss of feature extraction accuracy that may arise in codebook-based end-to-end retraining. Furthermore, fixing both the encoder and the backend drastically reduces training param-eters compared with end-to-end methods and HEAL [11]. 
+
+Group Code Space Construction. For non-isolated modalities, group code space construction enables them to jointly learn a shared code space, which is essential for im-proving training efficiency. Without grouping, each modal-ity would need to be aligned pairwise with every other modality, resulting in quadratic growth in training cost. By contrast, grouping reduces this complexity, decreas-ing the total number of required cross-modal alignments. Moreover, it fully leverages collaborative data to strengthen alignment quality. Since the encoded BEV features from different modal-ities are quantized into the same shared code space, effec-tive alignment is naturally achieved. For example, features corresponding to a vehicle observed by different modalities may be mapped to the same codebook embedding, yielding identical decoded representations, which facilitates seam-less fusion. For group code space construction, each modal-ity is assigned its own adapter to facilitate alignment. The backend network is shared across modalities and remains trainable, as it must adapt to the new representation domain, and is well trained by collaborative data. 
+
+Loss Function. To accelerate alignment and ensure con-sistent feature representations across agents, we supervise three objectives: object detection, fusion learning, and inter-agent feature similarity. The overall loss is defined as: 
+
+L = Ldet 
+
+ bOi, O0
+
+> i
+
+
+
++ Lpyramid 
+
++ λ X 
+
+> k,j ∈G s, m k̸=mj
+
+Lsim 
+
+ Fk→i, F j→i
+
+, (10) where Ldet (·) denotes the detection loss, O0 
+
+> i
+
+and bOi
+
+represent the ground-truth and predicted object states for agent i, respectively. Lpyramid is the pyramid loss from HEAL [11], as we employ pyramid fusion as fusion net. 
+
+Lsim (·) is similarity loss, which enforces feature consistency among collaborating agents. The similarity loss is applied over all pairs of agents k, j ∈ G s that use different modali-ties ( mk̸ = mj ), encouraging their features to be consistent from the perspective of the ego receiver i. We adopt the Smooth L1 loss between pairwise aligned features, which is less sensitive to outliers than the L2 loss. During the op-timization, the network parameters and the codebook are updated simultaneously. Note that for single modality code space construction, no similarity loss is calculated. 
+
+3.2.2. Feature-code-feature(FCF) Translation 
+
+Since each modality has established its own code space to represent modality-specific features, it requires a mecha-nism to translate between these heterogeneous code spaces. Within the CodeAlign framework, translation can occur be-tween dense features or code maps. Among the feasible strategies, dense-to-dense translation offers lossless trans-formation but incurs high computational cost and forfeits the bandwidth efficiency advantage. Conversely, code-to-code translation suffers from excessive quantization error due to its highly discrete nature, causing significant in-formation loss and degraded alignment performance. The dense-to-code approach achieves the optimal balance: it preserves the low-bandwidth communication benefits while maintaining reconstruction fidelity within acceptable limits, making it the practical solution for FCF translation. Given an encoded dense feature from a source group, the translator maps it into a code map defined by the tar-get group’s codebook. This compact representation is then transmitted and decoded using the target group’s codebook decoder, allowing the feature to be reconstructed in the tar-5Table 1. Modality settings in the experiment. The network after LSS is its backbone.                         
+
+> Modality m1 m2 m3 m4 m5 m6 m7
+> Sensor Type LiDAR(64-beam) LiDAR(64-beam) LiDAR(64-beam) LiDAR(32-beam) LiDAR(64-beam) Camera Camera Encoder Point-Pillar (voxel: 0.4m) Second (voxel: 0.1m) VoxelNet (voxel: 0.4m) Point-Pillar (voxel: 0.4m) Point-Pillar (voxel: 0.3m) LSS (ResNet-101) LSS (EfficientNet)
+> Table 2. When m1 and m6 are isolated in their modalities, Pyramid Fusion [11] exhibits degraded perception performance.
+> Modality Type AP30 AP50 AP70 Non-Isolated 89.96 88.52 80.88
+> Isolated 82.36 80.51 65.67
+
+get group’s code space and seamlessly integrated into its collaborative perception pipeline. The direct implementation of a code translator is a sim-ple one-to-one translator, where each pair of groups trains a translator for each other. However, in scenarios involving collaboration among multiple modalities, which are usual, the conventional one-to-one translation paradigm suffers from significant drawbacks: a complex training process and high inference memory usage. The training complex-ity arises because a dedicated translator must be trained for every possible pair of groups, and often in both directions. During inference, the system must load all trained trans-lators into memory to be prepared for potential collabora-tion with any modality, leading to substantial memory over-head. To address this issue, we propose a lightweight one-to-many Code Translator, which equipped with modality-specific multi-heads. We train a shared backbone with mul-tiple output heads, each dedicated to a specific target modal-ity. The model backbone is implemented with stacked Con-vNeXt blocks, and before and after the backbone, two chan-nel converters are placed to transform different input chan-nels. During training, only the translator is trainable, with encoder, adapter, codebook and backend frozen. In addi-tion, we design a data balancing strategy to dynamically adjust the proportion of training data according to the loss changes of different targets, which promotes balanced spa-tial learning. Notably, when translation is required between only two groups, the model can degenerate into a standard one-to-one translator without relying on multi-heads. 
+
+Local Data Training. To avoid the defects of modality isolation, we design a training protocol that relies exclu-sively on local data: the source modality processes its own data through its encoder and the code translator, with the generated code map fed directly into the target group’s re-constructor and backend. The detection loss computed on the target backend’s output serves as the supervision, ex-plicitly encouraging the translator to produce features that align with the target group’s code space representation. This approach requires no external data transmission, achieves effective alignment by local training with the ego modal-ity’s data, and fully complies with data privacy regulations while enabling cross-institutional collaboration. 
+
+## 4. Experiments 
+
+4.1. Experimental Settings 
+
+Dataset. CodeAlign is evaluated on the simulated OPV2V [25] dataset and the real world dataset DAIR-V2X [26]. OPV2V is a large-scale multi-modal coopera-tive V2V perception dataset collected in CARLA [2] and OpenCDA [21], where each scenario contains multiple con-nected AVs and each AV is equipped with 1 LiDAR and 4 monocular cameras. DAIR-V2X is a large-scale, real-world vehicle-infrastructure cooperative perception dataset featur-ing synchronized camera and LiDAR sensor data from both ego vehicles and roadside units across diverse urban and highway scenarios. 
+
+Modality Settings. Following HEAL’s design for modality variation, seven modalities are used in the experiments, as summarized in Tab. 1. The selected modalities include Li-DAR and camera—two distinct sensor types with a signif-icant domain gap—each equipped with dedicated encoders to ensure diversity in representation. We present results for a subset of modalities in the main text; additional results and more experiments are provided in the appendix Section. 7. 
+
+Implementation Details. We employ the pyramid fusion network as the fusion net in backend. The adapter is im-plemented as a stack of four ResNet blocks with 3×3 con-volutions. A codebook size of 16 is used across all exper-iments. Experiments are conducted on NVIDIA GeForce RTX 3090 GPUs. All models are trained using the Adam optimizer with an initial learning rate of 0.002. Code space construction is trained for up to 50 epochs, and FCF translation is trained for up to 30 epochs. The weight of the smooth L1 loss is set to 0.1. Training is conducted within the spatial range x ∈ [−102 .4m, +102 .4m], y ∈
+
+[−102 .4m, +102 .4m].
+
+Validation Settings. For the main experiments on OPV2V and DAIR-V2X, we follow the settings of HEAL [11], tak-ing the first agent as the ego and incrementally adding new modalities; the agent order follows a fixed mapping to the car IDs in the validation dataset. For other experiments in-volving two collaborating modalities, we alternately treat each modality as the ego vehicle and the other as the neigh-bors, and report the average result to more comprehensively reflect their alignment between each other. When report-ing training parameters, we assume that the single-modality pipeline is pretrained and count only the parameters in-volved in alignment training. More details in Section. 6. 6Table 3. Perception performance on OPV2V. The first row explains the tested collaboration scenarios of different isolated modalities, from a total of 2 to 3 cars. TP: training parameters for alignment. At last column, we show the average one-shot communication load. 
+
+m1 + m2 m1 + m7 m1 + m7 + m2 Method AP30 AP50 AP70 TP/M AP30 AP50 AP70 TP/M AP30 AP50 AP70 TP/M Comm Load No Collaboration 81.18 79.44 68.26 0 81.18 79.44 68.26 0 81.18 79.44 68.26 0 0No Alignment 78.33 76.35 61.62 0 77.59 76.42 66.01 0 72.91 71.58 59.66 0 32MB Late Fusion 92.73 91.46 79.34 0 84.47 80.12 62.40 0 88.24 85.02 68.45 0 0.5KB Pyramid Fusion [11] 91.98 91.36 85.92 6.5 82.58 81.13 69.26 20.5 83.95 82.93 68.91 21.4 32MB HMViT [19] 70.31 69.74 60.86 33.8 84.22 79.55 54.97 41.3 86.96 83.98 64.39 62.7 32MB CodeFilling [8] 91.98 91.11 80.68 5.3 78.37 74.27 44.03 5.3 81.37 80.54 60.81 5.3 0.03MB 
+
+HEAL [11] 93.02 92.10 86.18 1.0 82.45 81.03 71.70 15.0 87.8 86.98 79.89 16.0 32MB CodeAlign 93.39 92.67 85.56 0.8 87.19 85.3 72.1 0.8 89.77 88.59 77.73 1.3 0.03MB 
+
+Table 4. Performance on DAIR-V2X dataset. We assign modality m1 to the ego vehicle and evaluate collaboration with different infrastructure modalities.                                                
+
+> Method m1 + m2 m1 + m6 m1 + m7 AP30 AP50 AP70 AP30 AP50 AP70 AP30 AP50 AP70 No Collaboration 24.68 17.20 4.70 24.68 17.20 4.70 24.68 17.20 4.70 Late Fusion 53.33 33.15 1.45 25.99 17.13 0.95 27.13 13.2 0.6 HEAL [11] 73.7 67.21 44.76 63.68 57.08 41.05 64.37 57.87 42.4 CodeAlign 82.03 77.37 57.84 72.12 64.86 45.45 74.09 65.25 45.84
+
+Table 5. Ablation in group code space con-struction with m1+m6. CB: codebook(16); Fix: frozen encoder; Ada.: with adapter.                       
+
+> CB Fix Ada. Lsim AP30 AP50 AP70 89.30 88.03 80.44
+> ✓89.54 87.74 77.87
+> ✓✓✓88.37 86.83 78.09
+> ✓✓✓✓89.04 87.54 79.63
+
+Table 6. Performance of different align method for modalities that have collaborative data (consider m1 and m6). Results show the benefit of group code space construction.          
+
+> Align Method AP30 AP50 AP70 Group Code Space Construction 89.04 87.54 79.63
+> FCF Translation 87.96 86.00 72.92
+
+Table 7. Ablation on model structures of cross-modal alignment with 4 isolated modalities. * means using data balance strategy.                             
+
+> Alignment Method AP30 AP50 AP70 TP/M TP(n modalities) Backward Alignment [11] 82.28 81.28 74.66 17.7 P
+> nEnc
+> One-to-one Code Translator 90.30 88.61 79.01 1.9 (0 .2M)n2
+> Multi-head Code Translator 90.17 88.51 78.33 1.5 (0 .5M)n
+> Multi-head Code Translator* 90.25 88.58 78.42 1.5 (0 .5M)n
+
+Figure 3. Robustness under pose error under scene m1+m7. 
+
+4.2. Quantitative Results 
+
+Impact of Modality Isolation. Modality isolation largely degrades end-to-end training performance. Table 2 shows the performance of pyramid fusion on dataset include m1 and m6. When the two modalities are not isolated and have shared observations, training yields high performance. In contrast, under modality isolation, m1 and m6 have not col-laborated in training data, and the model is trained by alter-nately feeding data from each modality. The lack of shared supervision hinders effective feature alignment, resulting in a 15.21% drop in AP70. 
+
+Performance on OPV2V. Table 3 illustrates the perfor-mance of CodeAlign compared to other baseline methods on the OPV2V dataset. We evaluate three modality-isolated collaboration scenarios, with varying modalities and agent numbers. Three end-to-end fusion methods, Pyramid Fu-sion, HM-ViT and CodeFilling, were trained using alterna-tive data for each modality. Pyramid Fusion only works for similar LiDAR modalities (m1+m2) through shared back-end, but is ineffective across LiDAR–camera pairs. HM-ViT, lacking cross-modal co-occurring data for attention module training, yields negative gains. For CodeFilling, all modalities share a codebook of size 16, but the performance degrades due to the strong heterogeneity between LiDAR and camera. Late Fusion, which directly merges bounding boxes, adapts to modality isolation but falls short in accu-racy, lagging behind CodeAlign by an average of 8.4% in AP70. Comparing CodeAlign with HEAL, CodeAlign’s ex-traction of representative discrete features leads to an aver-age improvement of 2.36% and 2.15% over HEAL in AP30 and AP50. Furthermore, CodeAlign significantly reduces training overhead with a 8% training parameter of HEAL’s in the three-vehicle scenario, leading to easier extension. Moreover, CodeAlign drastically cuts communication load to 1/1024th of intermediate fusion methods, enhancing the applicability of collaborative perception. Despite its dis-crete feature representation causing slightly lower AP70 scores than HEAL in some cases, CodeAlign maintains comparable overall performance. Other heterogeneous co-operative perception methods that do not support modality isolation are not included in this comparison and are dis-cussed in Section 8 of the appendix. 
+
+Robustness under pose error. To evaluate the robust-ness of different methods in chaotic environments, we 7conduct experiments with pose error in the m1+m7 sce-nario. As shown in Figure 3, the accuracy of late fu-sion drops rapidly as pose error increases, even falling below the no-collaboration baseline. In contrast, both CodeAlign and HEAL maintain effective collaboration, with CodeAlign consistently outperforming HEAL, demon-strating the strongest robustness to spatial noise. 
+
+Performance on DAIR-V2X. On the more challenging real-world DAIR-V2X dataset shown in Table 4, CodeAlign significantly outperforms other baselines when collaborat-ing with different isolated modalities. Both Late Fusion and HEAL suffer from ambiguous and poor feature representa-tions, whereas CodeAlign enhances semantic representation by explicitly extracting compact discrete features. 
+
+Benefit of Group Code Space construction. Table 6 shows the performance on non-isolated modality pairs m1 and m6, and illustrates the benefits of group code space con-struction. When modalities share a collaborative dataset, group code space construction leverages actual collabora-tive data for feature fusion and achieves 6.71% higher AP70 than FCF translation approach. 
+
+Group Code Space Construction Strategy. The first strat-egy in Table 5 is the end-to-end baseline without code-book, serving as an approximate upper bound. Adding a codebook preserves AP30/50 but drops AP70 by 2.57% to 77.87%, indicating quantization harms fine-grained accu-racy. CodeAlign mitigates this by freezing the encoder and inserting an adapter, recovering AP70 to 78.09%. With the supervision of the similarity loss, AP70 further improves to 79.63% while maintaining high AP30/50. Our strategy closely approach lossless performance with significantly re-duced communication cost. 
+
+Cross-modal Alignment Strategy. In Table 7, we evaluate alignment from modality m2 to m1/m6/m7 for code trans-lators, reporting average performance across scenes where m1/m6/m7 serve as the ego and m2 as the neighbor. Back-ward alignment underperforms in this setting and incurs high training cost proportional to the encoder size. One-to-one code translator achieve the best AP scores but require training parameters that grows quadratically with the num-ber of modalities, limiting scalability. In contrast, the multi-head translator matches their performance and suffers only a 0.10% drop in AP50, while scaling linearly in parameters, drastically reducing training complexity and is practical for large-scale deployment. 
+
+4.3. Qualitative Results 
+
+Figure 4 presents visualization results for the m1+m7+m2 scenario, illustrating the effectiveness of FCF translation in cross-modal alignment. Although feature of the camera-based modality m7 has inherently weaker representational capacity, after feature–code translation and mapping into the code space of m1, its spatial cues are explicitly captured. 
+
+> Figure 4. Visualization of BEV features under scene m1+m7+m2, illustrating the strong alignment ability of FCF translation.
+
+Through subsequent code–feature translation, the code map is translated to feature map that is well aligned with the fea-ture space of m1, thereby smoothly achieves collaboration with m1. Similarly, the initially encoded feature of m2 ex-hibit a clear domain gap with respect to m1, but via FCF translation, the final feature become well aligned with fea-ture of m1, enabling more advanced collaborative percep-tion. The red boxes highlight objects that are missed by the ego vehicle but successfully recovered through collab-oration with surrounding agents, demonstrating improved perception performance. 
+
+## 5. Conclusion 
+
+In this work, we address modality isolation — a criti-cal yet underexplored challenge in heterogeneous collab-orative perception, where the lack of co-occurring data across certain modalities exacerbates domain gaps and un-dermines conventional alignment strategies based on spa-tial correspondence. To tackle this, we propose CodeAlign, the first efficient, co-occurrence-free alignment framework that rely on establish explicit representation consistency to avoid lack of shared observation. By leveraging feature-code-feature translation, CodeAlign enables scalable, and communication-friendly collaboration across diverse agents with isolated modalities. 
+
+Limitations. Our evaluation is limited by the modality di-versity in datasets, preventing large-scale testing of group-wise alignment. 8References 
+
+[1] Anonymous. GT-space: Enhancing heterogeneous collabo-rative perception with ground truth feature space. In Submit-ted to The Fourteenth International Conference on Learning Representations , 2025. under review. 1, 2, 3 [2] Alexey Dosovitskiy, German Ros, Felipe Codevilla, Antonio Lopez, and Vladlen Koltun. CARLA: An open urban driving simulator. In Proceedings of the 1st Annual Conference on Robot Learning , pages 1–16, 2017. 6 [3] Jiahui Fu, Yue Gong, Luting Wang, Shifeng Zhang, Xu Zhou, and Si Liu. Generative map priors for collaborative bev semantic segmentation. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 11919– 11928, 2025. 2 [4] Xiangbo Gao, Runsheng Xu, Jiachen Li, Ziran Wang, Zhi-wen Fan, and Zhengzhong Tu. Stamp: Scalable task and model-agnostic collaborative perception. arXiv preprint arXiv:2501.18616 , 2025. 1, 2, 3, 4 [5] Ruiyang Hao, Siqi Fan, Yingru Dai, Zhenlin Zhang, Chenxi Li, Yuntian Wang, Haibao Yu, Wenxian Yang, Jirui Yuan, and Zaiqing Nie. Rcooper: A real-world large-scale dataset for roadside cooperative perception. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 22347–22357, 2024. 2 [6] Yue Hu, Shaoheng Fang, Zixing Lei, Yiqi Zhong, and Si-heng Chen. Where2comm: Communication-efficient collab-orative perception via spatial confidence maps. Advances in neural information processing systems , 35:4874–4886, 2022. 2 [7] Yue Hu, Xianghe Pang, Xiaoqi Qin, Yonina C Eldar, Siheng Chen, Ping Zhang, and Wenjun Zhang. Pragmatic com-munication in multi-agent collaborative perception. arXiv preprint arXiv:2401.12694 , 2024. 2 [8] Yue Hu, Juntong Peng, Sifei Liu, Junhao Ge, Si Liu, and Si-heng Chen. Communication-efficient collaborative percep-tion via information filling with codebook. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pat-tern Recognition , pages 15481–15490, 2024. 1, 3, 7, 4 [9] Zixing Lei, Shunli Ren, Yue Hu, Wenjun Zhang, and Siheng Chen. Latency-aware collaborative perception. In European Conference on Computer Vision , pages 316–332. Springer, 2022. 3 [10] Yifan Lu, Quanhao Li, Baoan Liu, Mehrdad Dianati, Chen Feng, Siheng Chen, and Yanfeng Wang. Robust collaborative 3d object detection in presence of pose errors. arXiv preprint arXiv:2211.07214 , 2022. 1, 2 [11] Yifan Lu, Yue Hu, Yiqi Zhong, Dequan Wang, Yanfeng Wang, and Siheng Chen. An extensible framework for open heterogeneous collaborative perception. arXiv preprint arXiv:2401.13964 , 2024. 2, 3, 5, 6, 7, 4 [12] Yifan Lu, Yue Hu, Yiqi Zhong, Dequan Wang, Yanfeng Wang, and Siheng Chen. An extensible framework for open heterogeneous collaborative perception. arXiv preprint arXiv:2401.13964 , 2024. 2 [13] Tianyou Luo, Quan Yuan, Guiyang Luo, Yuchen Xia, Yu-jia Yang, and Jinglin Li. Plug and play: A representation enhanced domain adapter for collaborative perception. In 
+
+European Conference on Computer Vision , pages 287–303. Springer, 2024. 1, 3, 4 [14] Zongheng Tang, Yi Liu, Yifan Sun, Yulu Gao, Jinyu Chen, Runsheng Xu, and Si Liu. Cost: Efficient collaborative per-ception from unified spatiotemporal perspective. In Proceed-ings of the IEEE/CVF International Conference on Com-puter Vision , pages 1120–1129, 2025. 2 [15] Tsun-Hsuan Wang, Sivabalan Manivasagam, Ming Liang, Bin Yang, Wenyuan Zeng, and Raquel Urtasun. V2vnet: Vehicle-to-vehicle communication for joint perception and prediction. In European conference on computer vision ,pages 605–621. Springer, 2020. 1, 2 [16] Sizhe Wei, Yuxi Wei, Yue Hu, Yifan Lu, Yiqi Zhong, Si-heng Chen, and Ya Zhang. Asynchrony-robust collaborative perception via bird’s eye view flow. Advances in Neural In-formation Processing Systems , 36:28462–28477, 2023. 3 [17] Yuchen Xia, Quan Yuan, Guiyang Luo, Xiaoyuan Fu, Yang Li, Xuanhan Zhu, Tianyou Luo, Siheng Chen, and Jinglin Li. One is plenty: A polymorphic feature interpreter for im-mutable heterogeneous collaborative perception. In Proceed-ings of the Computer Vision and Pattern Recognition Confer-ence , pages 1592–1601, 2025. 4 [18] Yuchen Xia, Quan Yuan, Guiyang Luo, Xiaoyuan Fu, Yang Li, Xuanhan Zhu, Tianyou Luo, Siheng Chen, and Jinglin Li. One is plenty: A polymorphic feature interpreter for im-mutable heterogeneous collaborative perception. In Proceed-ings of the Computer Vision and Pattern Recognition Confer-ence , pages 1592–1601, 2025. 3 [19] Hao Xiang, Runsheng Xu, and Jiaqi Ma. Hm-vit: Hetero-modal vehicle-to-vehicle cooperative perception with vision transformer. In Proceedings of the IEEE/CVF international conference on computer vision , pages 284–295, 2023. 1, 2, 3, 7, 4 [20] Junhao Xu, Yanan Zhang, Zhi Cai, and Di Huang. Cosdh: Communication-efficient collaborative perception via supply-demand awareness and intermediate-late hy-bridization. In Proceedings of the Computer Vision and Pat-tern Recognition Conference , pages 6834–6843, 2025. 2 [21] Runsheng Xu, Yi Guo, Xu Han, Xin Xia, Hao Xiang, and Jiaqi Ma. Opencda: an open cooperative driving automa-tion framework integrated with co-simulation. In 2021 IEEE International Intelligent Transportation Systems Conference (ITSC) , pages 1155–1162. IEEE, 2021. 6 [22] Runsheng Xu, Weizhe Chen, Hao Xiang, Lantao Liu, and Ji-aqi Ma. Model-agnostic multi-agent perception framework. 
+
+arXiv preprint arXiv:2203.13168 , 2022. 3, 4 [23] Runsheng Xu, Jinlong Li, Xiaoyu Dong, Hongkai Yu, and Ji-aqi Ma. Bridging the domain gap for multi-agent perception. 
+
+arXiv preprint arXiv:2210.08451 , 2022. 3 [24] Runsheng Xu, Hao Xiang, Zhengzhong Tu, Xin Xia, Ming-Hsuan Yang, and Jiaqi Ma. V2x-vit: Vehicle-to-everything cooperative perception with vision transformer. In European conference on computer vision , pages 107–124. Springer, 2022. 1, 3, 4 [25] Runsheng Xu, Hao Xiang, Xin Xia, Xu Han, Jinlong Li, and Jiaqi Ma. Opv2v: An open benchmark dataset and fusion pipeline for perception with vehicle-to-vehicle communica-
+
+9tion. In 2022 International Conference on Robotics and Au-tomation (ICRA) , pages 2583–2589. IEEE, 2022. 2, 6 [26] Haibao Yu, Yizhen Luo, Mao Shu, Yiyi Huo, Zebang Yang, Yifeng Shi, Zhenglong Guo, Hanyu Li, Xing Hu, Jirui Yuan, et al. Dair-v2x: A large-scale dataset for vehicle-infrastructure cooperative 3d object detection. In Proceed-ings of the IEEE/CVF conference on computer vision and pattern recognition , pages 21361–21370, 2022. 2, 6 [27] Xinyu Zhang, Zewei Zhou, Zhaoyi Wang, Yangjie Ji, Yan-jun Huang, and Hong Chen. Co-mtp: A cooperative trajec-tory prediction framework with multi-temporal fusion for au-tonomous driving. arXiv preprint arXiv:2502.16589 , 2025. 3
+
+10 Linking Modality Isolation in Heterogeneous Collaborative Perception 
+
+# Supplementary Material 
+
+## 6. Implementation Details 
+
+6.1. Validation 
+
+We adopt two evaluation types in our experiments, detailed as follows: Type 1 (Tables 3, 4, 17, 18, following HEAL): For each scene in the validation set, vehicles are first assigned se-quential IDs (1-4). The modalities to be evaluated are then mapped onto these vehicles in order, with the first modality always assigned to the ego vehicle (ID = 1). For example, in a scenario labeled ’m1 + m2’, modality m1 is assigned to vehicle 1 (ego), and m2 to vehicle 2 (neighbor); higher-numbered vehicles remain unmapped, so there are up to 2 cars in this scenario. Note that this fixed ordering affects data distribution, that modalities appearing later in the se-quence occur less frequently across scenes. In scenes with fewer than four vehicles, unmapped IDs are simply omitted. Type 2 (all other tables): To more comprehensively eval-uate performance in multi-agent collaborative settings, we adopt: for a two-modality collaboration scenario mi + mj, we assign mi to the ego vehicle (ID = 1) and set all other collaboratable vehicles to modality mj. For multi-modality scenarios (as in Table 7), we fix the ego modality (m2) and iteratively assign each remaining modality as mj to all non-ego vehicles, performing inference multiple times and aver-aging the results to assess pairwise cross-modal alignment. For single-modality evaluation, all collaboratable vehicles are assigned the same modality and participate jointly in the collaboration. For OPV2V, both training and evaluation are conducted within the spatial range: x ∈ [−102 .4m, +102 .4m], y ∈
+
+[−102 .4m, +102 .4m]. And for DAIR-V2X, both ranges are: x ∈ [−102 .4m, +102 .4m], y ∈ [−51 .2m, +51 .2m]
+
+6.2. Module Structure and Parameter Statistics 
+
+Table 8. Parameter for modality-specific encoders and modality-agnostic modules.                                 
+
+> Modality Encoder Type #Param Module #Param m1 PointPillar 0.23M Adapter 0.30M m2 Second 0.97M Codebook 0.02M m3 VoxelNet 0.56M Translator 0.12M m4 PointPillar 0.23M Backend 5.27M m5 PointPillar 0.23M - Pyramid Fusion 3.79M m6 LSS(ResNet-101) 1.77M - Shrink Net 1.48M m7 LSS(EfficientNet) 14.95M - Heads 5k
+
+Our setting accommodates a wide spectrum of hetero-geneous modalities, including different sensor types (which is the most influential), diverse encoder networks, and Li-DARs with different beam counts and varying voxel size. These differences lead to substantially divergent interme-diate feature representations, making direct fusion chal-lenging. Notably, encoder sizes vary dramatically, espe-cially for vision-based modalities like m7, rendering full retraining of all encoders impractical in terms of compu-tation requirements. In contrast, our alignment components (Adapter: 0.30M, Codebook: 0.02M, Translator: 0.12M) are extremely lightweight, easy to expand on a large scale. Moreover, the backend is frozen during code space con-struction, which drastically reduces training overhead while preserving strong detection capability. This modular and parameter-efficient strategy enables scalable, plug-and-play collaboration across highly heterogeneous sensing setups. 
+
+## 7. Detailed Experiments on CodeAlign 
+
+7.1. Code Space Construction 
+
+Table 9. Performance of different strategy in forming code space. Training methods include e2e training(E2E) and fix encoder and backbone training(Fix E&B). TP is training parameter.                                    
+
+> Training Adapter m1 m6 AP30 AP50 AP70 TP/M AP30 AP50 AP70 TP/M E2E ✗95.07 94.64 91.05 5.50 55.08 45.51 25.19 7.04 Fix E&B ✗93.69 93.05 85.54 0.02 58.71 49.89 29.51 0.02 Fix E&B ✓95.2 94.65 89.37 0.30 58.85 50.30 31.10 0.30
+
+Table 9 shows the effect of different code space setups. Freezing the encoder and backend (instead of end-to-end training) reduces trainable parameters and even improves performance. For LiDAR ( m1), CodeAlign boosts AP30 and AP50 but slightly drops AP70 by 1.68%, likely be-cause the fixed codebook doesn’t align perfectly with the fusion module, hurting spatial accuracy. For camera ( m6), it largely improves AP70 by 5.91%, as the codebook cap-tures cleaner and more compact visual features. 
+
+Table 10. More ablation studies on code space construction of a single modality.                                                                 
+
+> Method m1 m6 Strategy Adapter AP30 AP50 AP70 AP30 AP50 AP70 E2E ✗95.07 94.64 91.05 55.08 45.51 25.19 Fix Encoder
+> ✗95.36 94.57 85.34 59.39 50.85 31.34 4×ResBlock 94.78 94.52 91.17 59.13 51.09 33.04
+> 1×ConvNeXt block 95.62 95.14 90.4 59.37 51.25 31.48 2-layer MLP 95.45 94.91 89.67 59.4 51.29 32.23 Fix Encoder &Backend
+> ✗93.69 93.05 85.54 58.71 49.89 29.51 4×ResBlock 95.2 94.65 89.37 58.85 50.3 31.1
+> 1×ConvNeXt block 95.13 94.63 88.59 59.4 50.46 30.94 2-layer MLP 94.40 93.65 86.03 59.11 50.2 29.71
+
+Table 10 presents a more detailed ablation study, includ-ing variants that only fix the encoder and comparisons of 1Table 11. Ablation on input source and output type of translator.                                                  
+
+> Source Type m1 + m2 m1 + m6 Comm Load AP30 AP50 AP70 AP30 AP50 AP70 Encoded Feature D2D 95.65 95.06 90.72 88.93 86.96 75.04 32MB Encoded Feature D2C 95.44 94.88 89.83 88.13 86.41 73.47 0.03MB Adapted Feature D2C 95.49 94.9 90.11 88.28 86.42 73.56 0.03MB Reconstructed Feature D2C 93.96 93.23 85.87 76.13 73.42 53.89 0.03MB Code Map C2C 94.58 93.87 87.4 76.93 74.26 55.16 0.03MB
+
+different adapter designs. The experiments show that fixing only the encoder while allowing the backend to be trained yields slightly better performance, as the backend can adapt to the relatively discrete features produced by the codebook; notably, AP70 even surpasses that of full end-to-end train-ing in some cases, likely because the discretized represen-tations suppress certain noise. In contrast, fixing the back-end incurs a modest drop of nearly 2% in AP70 but dra-matically reduces training cost, making the approach more scalable. Regarding adapter architectures—ResBlock, Con-vNeXt, and MLP—their parameter counts decrease pro-gressively. As shown in the table, lightweight adapters al-ready achieve satisfactory AP30 and AP50 scores, but for fine-grained localization (AP70), a larger ResBlock-based adapter remains necessary to properly align cross-modal representations.                                                  
+
+> Table 12. Single-modality performance comparison between end-to-end Pyramid Fusion and code space construction.
+> Modality E2E Pyramid Fusion Code Space Construction AP30 AP50 AP70 AP30 AP50 AP70 m1 94.69 94.14 90.29 95.2 94.65 89.37 m2 94.93 94.54 91.72 94.74 94.31 90.23 m3 95.86 95.46 91.51 95.00 94.47 88.89 m4 89.26 88.66 83.68 86.79 85.82 77.47 m5 95.02 94.60 89.94 94.71 93.57 87.96 m6 58.11 50.79 33.72 58.85 50.30 31.10 m7 61.93 54.27 37.17 61.93 54.22 35.57
+
+To comprehensively evaluate the code space construc-tion across all modalities, we conduct the experiments shown in Table 12. As demonstrated, for every modal-ity, our proposed plug-in manner code space construction method achieves comparable perception performance to the end-to-end trained Pyramid Fusion, while explicitly extract-ing a codebook-based feature representation. This approach introduces only minimal additional training overhead and reduces communication cost by orders of magnitude. 
+
+7.2. Feature-Code-Feature Translation 
+
+Table 13 shows the performance of various modalities aligned to m1 via feature-code-feature translation. Despite significant heterogeneity in sensor types and encoder ar-chitectures, all agents consistently enhance perception per-
+
+> Table 13. Performance of more modalities aligned to m1 when m1 is ego with feature-code-feature translation.
+
+Scenario AP30 AP50 AP70 m1 single 81.18 79.44 68.26 m1 + m2 95.49 94.90 90.11 m1 + m3 95.22 94.67 89.48 m1 + m4 94.63 93.93 87.61 m1 + m5 95.06 94.53 89.23 m1 + m6 88.13 86.41 73.47 m1 + m7 88.11 86.59 74.47 
+
+formance over the m1-single baseline. Notably, collabo-rations with LiDAR-based neighbors (m2–m5) yield sub-stantial gains (e.g., +14.31 AP30 with m2), while even camera-based modalities (m6, m7) provide meaningful im-provements (+7.0 AP30). These results demonstrate that feature-code-feature translation enables diverse agents to participate effectively in cooperative perception with min-imal communication overhead, significantly boosting accu-racy without requiring retraining of existing components.           
+
+> Table 14. Feature-code-feature translation can be trained under single-agent data. We show an example of scene m1+m2.
+> Data Type AP30 AP50 AP70 Collaborative Data 95.44 94.88 89.83 Single Data 94.83 94.24 88.09
+
+A key advantage of our framework is that the code translator can be trained using only single-agent (non-collaborative) data, eliminating the need for synchronized multi-vehicle scenes during training. This greatly enhances practicality in real-world settings where collaborative data is scarce or unavailable. Table 14 validates this capabil-ity. When trained solely on single-agent data, the trans-lator achieves 94.83 AP30 and 94.24 AP50. Compared to training with collaborative data, it leads to a perfor-mance drop of less than 1 in AP50. This minor degrada-tion demonstrates that high-quality cross-modal alignment can be learned from local perception data alone, making our method highly adaptable to diverse deployment scenarios. Table 11 analyzes the impact of input source and out-put type on translation performance. The D2D (dense-to-2Table 15. Ablation on different codebook sizes.                                                         
+
+> Codebook Size m1 m6 m1 + m6 AP30 AP50 AP70 AP30 AP50 AP70 AP30 AP50 AP70 494.01 93.37 84.80 56.88 47.90 26.84 84.49 82.48 66.30 894.85 94.24 87.94 58.07 49.36 30.07 86.86 84.59 69.49 16 95.20 94.65 89.37 58.85 50.30 31.10 88.13 86.41 73.47 32 95.02 94.42 89.09 58.56 49.84 29.20 88.23 86.08 73.82 64 95.18 94.72 89.75 59.02 50.55 31.93 87.75 85.98 74.56
+
+dense) variant achieves the highest accuracy by preserving full feature fidelity, but incurs a prohibitive communication cost of 32MB, failing to address the core bottleneck. In con-trast, D2C (dense-to-code) and C2C (code-to-code) transla-tion drastically reduce communication to just 0.03MB by transmitting compact code maps. However, C2C suffers se-vere performance degradation (AP70 drop by nearly 20 for m1+m6) due to excessive information loss in direct code-to-code mapping. Among D2C variants, using raw encoded features yields strong results, while reconstructed features suffer significant drops like C2C with similar reason. No-tably, adapted features achieve better performance, slightly outperforming raw encoded features and confirming that adapter enhances cross-modal alignment. Table 15 shows the effect of codebook size on percep-tion performance. As the codebook size grows from 4 to 16, AP metrics consistently improve for all settings, indi-cating that a larger codebook captures richer and more dis-criminative semantic information. Beyond size 16, how-ever, performance plateaus, suggesting that 16 entries are sufficient to represent the essential environmental semantics in this setting. Moreover, the mapping difficulty increases with codebook size growing, where bigger codebook even leads to lower translation performance. Thus, a codebook size of 16 achieves the optimal trade-off between represen-tation capacity and communication efficiency. 
+
+7.3. Group Code Space Construction                                        
+
+> Table 16. More ablation studies on group code space construction, especially on similarity losses, in group (m1,m6).
+> Strategy Lsim AP30 AP50 AP70 E2E \89.3 88.03 80.44
+> + Codebook(16) \89.54 87.74 77.87 ++ Fix Enc ++ Add Adapter
+> \88.37 86.83 78.09 L2 88.82 87.31 78.88 Instance 88.99 87.01 76.08 Reconstruction 88.89 87.36 79.06 Cosine 88.66 87.29 79.54 Smooth L1 89.04 87.54 79.63 MMD 88.76 87.28 79.75
+> Coral 88.73 87.23 79.03 JS 89.01 87.50 79.14
+
+Table 16 presents ablation studies on group code space construction. The end-to-end Pyramid Fusion baseline achieves the highest performance, as it incurs no informa-tion loss. Introducing a codebook alone preserves coarse-level accuracy but degrades fine-grained localization (AP50 drops by 0.29, AP70 by 2.57), indicating quantization harms spatial detail. By freezing the encoder, adding an adapter, and incorporating a similarity loss Lsim , perfor-mance across all metrics improves significantly, nearly re-covering the baseline while enabling compact feature repre-sentation. We evaluate multiple similarity losses; all consis-tently enhance alignment over the no-loss variant. Smooth L1 Loss yields the best overall results, facilitating stable and precise alignment of heterogeneous feature distributions. 
+
+7.4. Group Feature-Code-Feature Translation                 
+
+> Table 17. Alignment performance between group (m1,m6) and group (m2,m7) in order [m1,m7,m2,m6].
+> AP30 AP50 AP70 Comm Load Late Fusion 89.61 86.47 69.97 0.5KB HEAL 92.50 91.74 85.64 32MB CodeAlign 92.27 91.48 85.42 0.03MB
+
+Table 17 demonstrates CodeAlign’s effectiveness in cross-group alignment. Here, modalities m1 and m6 share a common codebook, and the translator aligns m2, m7 into this common code space. Despite the heterogeneity across groups, CodeAlign achieves performance on par with HEAL, while reducing communication overhead. This val-idates that inter-group alignment via a shared discrete code space is both feasible and efficient.             
+
+> Table 18. HEAL degrades the alignment between the original group after being aligned to other groups. In order [m2,m7]
+> AP30 AP50 AP70 Late Fusion 75.25 69.00 50.20 HEAL(pyramid fusion) 85.73 84.21 76.41
+> HEAL(backward alignment) 83.76 82.55 73.59
+
+Table 18 highlights a critical limitation of HEAL. Specif-ically, HEAL requires retraining encoders of non-base groups to align them with a single base group, disrupting the 3Table 19. Comparison of heterogeneous collaborative perception methods in terms of encoder/sensor diversity, extensibility, and adapt-ability to Modality Isolation. Remarks detail limitations regarding isolation handling and key drawbacks.                              
+
+> Method Dif Enc Dif Sensor Extensible M.I. Adapt Remarks V2X-ViT [24] ✓E2E attention fusion; needs same-scene features for spatial attention. HM-ViT [19] ✓E2E attention fusion; needs same-scene features for spatial attention. MPDA [22] ✓E2E attention fusion; needs same-scene features for spatial attention. PnPDA [13] ✓Contrastive loss for hetero features requires co-occurring modalities. PolyInter [17] ✓✓Channel selection and spatial attention module need co-occurring modalities. STAMP [4] ✓✓✓Aligns to protocol net; protocol modality must be present in every scene. CodeFilling [8] ✓✓All modalities needed to train shared codebook; degrades with isolated modalities. HEAL [11] ✓✓✓✓Supports modality isolation; but needs encoder retraining with high training cost. CodeAlign ✓✓✓✓Supports modality isolation; plug-in design; training-efficient, communication-efficient.
+
+original intra-group alignment. This process degrades the internal consistency and performance within those groups. For instance, when m2 and m7 are realigned to the base group (m1, m6), their mutual alignment drop in AP70 by 2.82, compared to the original pyramid fusion performance. 
+
+## 8. Comparison to Other Methods 
+
+The comparison in Table 19 highlights fundamental limi-tations of existing heterogeneous collaborative perception methods in handling modality isolation and practical de-ployment. V2X-ViT, HM-ViT, and MPDA all rely on end-to-end attention-based fusion, which fundamentally as-sumes that input features from different agents are spatially aligned, which is a condition only satisfied when modalities co-occur in the same scene during training. Similarly, Pn-PDA employs contrastive loss to align heterogeneous fea-tures, but this alignment also requires paired, spatially cor-responding data from multiple modalities in identical sce-narios. PolyInter leverages channel selection and spatial at-tention modules, yet these components still depend on co-occurring modalities to learn meaningful cross-agent inter-actions. STAMP introduces a protocol network to unify represen-tations, but it mandates that the protocol modality be present in every scene so that other modalities can align through feature similarity, making it inapplicable when the proto-col agent is absent. CodeFilling attempts to learn a shared codebook across all modalities, but this requires simultane-ous access to all modalities during training; consequently, its performance degrades significantly under modality iso-lation, and it lacks extensibility to new sensors without re-training the entire system. HEAL addresses modality isolation via backward align-ment, retraining each encoder locally to map into a common space. While effective, this approach incurs high computa-tional cost and operational inconvenience where every new modality or update necessitates full encoder retraining. In contrast, our method, CodeAlign, decouples representation learning by constructing modality-specific code spaces and establishing a lightweight feature-code-feature translation pipeline. This design eliminates the need for co-occurring data during training, supports plug-and-play integration of new modalities, and enables both training-efficient adapta-tion and ultra-low communication overhead. These advan-tages make it uniquely suited for real-world heterogeneous multi-agent systems under dynamic and incomplete obser-vation conditions. 4
