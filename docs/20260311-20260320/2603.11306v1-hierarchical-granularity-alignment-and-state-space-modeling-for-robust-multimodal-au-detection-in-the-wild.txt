@@ -1,0 +1,215 @@
+Title: Hierarchical Granularity Alignment and State Space Modeling for Robust Multimodal AU Detection in the Wild
+
+URL Source: https://arxiv.org/pdf/2603.11306v1
+
+Published Time: Fri, 13 Mar 2026 00:18:18 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Hierarchical Granularity Alignment and State Space Modeling for Robust Multimodal AU Detection in the Wild 
+
+# Jun Yu 1 , Yunxiang Zhang 1 , Naixiang Zheng 1 , Lingsi Zhu 1 , Guoyuan Wang 11 University of Science and Technology of China 
+
+> harryjun@ustc.edu.cn
+> {mesa,zhengnx,ls-zhu24,wgy2874849700 }@mail.ustc.edu.cn
+
+# Abstract 
+
+Facial Action Unit (AU) detection in in-the-wild environ-ments remains a formidable challenge due to severe spatial-temporal heterogeneity, unconstrained poses, and complex audio-visual dependencies. While recent multimodal ap-proaches have made progress, they often rely on capacity-limited encoders and shallow fusion mechanisms that fail to capture fine-grained semantic shifts and ultra-long tem-poral contexts. To bridge this gap, we propose a novel multimodal framework driven by Hierarchical Granularity Alignment and State Space Models.Specifically, we leverage powerful foundation models, namely DINOv2 and WavLM, to extract robust and high-fidelity visual and audio repre-sentations, effectively replacing traditional feature extrac-tors. To handle extreme facial variations, our Hierarchical Granularity Alignment module dynamically aligns global facial semantics with fine-grained local active patches. Furthermore, we overcome the receptive field limitations of conventional temporal convolutional networks by introduc-ing a Vision-Mamba architecture. This approach enables temporal modeling with O(N ) linear complexity, effectively capturing ultra-long-range dynamics without performance degradation. A novel asymmetric cross-attention mecha-nism is also introduced to deeply synchronize paralinguistic audio cues with subtle visual movements.Extensive exper-iments on the challenging Aff-Wild2 dataset demonstrate that our approach significantly outperforms existing base-lines, achieving state-of-the-art performance. Notably, this framework secured top rankings in the AU Detection track of the 10th Affective Behavior Analysis in-the-wild Compe-tition. 
+
+# 1. Introduction 
+
+Facial Action Unit (AU)[26] detection serves as the funda-mental building block for understanding human emotional expressions and is critical for advancing affective com-puting and human-computer interaction. While controlled laboratory settings have yielded promising results[3], AU detection in-the-wild remains exceptionally challenging. The varying environmental conditions, unconstrained head poses, and complex occlusions introduce severe spatial-temporal heterogeneity. Furthermore, analyzing affective behavior requires modeling dynamic facial actions across continuous video streams rather than isolated static frames. To advance this field, the 10th Affective Behavior Analysis in-the-wild Competition [7, 8, 17, 19–22] provides a rig-orous testbed using the multimodal Aff-Wild2 dataset[9– 16, 18, 32]. Despite recent progress, existing methodologies are fundamentally constrained by their feature extraction paradigms and temporal modeling architectures. Tradi-tional visual encoders heavily rely on capacity-limited con-volutional networks, which struggle to capture the fine-grained semantic shifts of subtle AU activations under ex-treme lighting or pose variations. Similarly, audio pro-cessing often utilizes automatic speech recognition mod-els that primarily extract linguistic features, thereby dis-carding crucial paralinguistic cues such as sighs, breathing, and pitch variations that are highly correlated with emo-tional states. In addition to feature representation bottle-necks, temporal modeling is frequently handled by tradi-tional Temporal Convolutional Networks. These architec-tures suffer from restricted receptive fields and fail to cap-ture the ultra-long temporal dependencies inherent in spon-taneous facial behavior videos. Finally, the fusion of mul-timodal data is typically executed through shallow linear weighting, which fails to synchronize the deeply entangled audio-visual modalities[30]. To overcome these formidable bottlenecks, we pro-pose a novel multimodal architecture driven by Hierarchi-cal Granularity Alignment (HGA) and State Space Models (SSM). We abandon traditional capacity-limited encoders and leverage the power of foundation models, specifically DINOv2[25] and WavLM[2], to extract robust, high-fidelity visual and audio representations. DINOv2 provides excep-
+
+> arXiv:2603.11306v1 [cs.CV] 11 Mar 2026 Figure 1. Overview of our proposed multimodal framework for robust Action Unit detection. Foundation models (DINOv2, WavLM) extract high-fidelity features. The Hierarchical Granularity Alignment (HGA) bridges local patches with global facial semantics, while the Audio-Guided SSM (AG-SSM) dynamically modulates infinite-receptive-field temporal transitions.
+
+tional sensitivity to local texture and semantic consistency, while WavLM is inherently optimized for noisy, in-the-wild paralinguistic extraction. To address extreme spatial varia-tions, our proposed HGA module dynamically aligns global facial semantics with fine-grained local active patches, en-suring that both broad contexts and subtle muscle move-ments are captured simultaneously. Crucially, we replace conventional temporal networks with a Vision-Mamba[33] architecture. This State Space Model enables ultra-long-range temporal modeling with an O(N) linear complex-ity, allowing the network to retain distant temporal con-text without the vanishing gradient issues of prior methods. To deeply integrate these streams, an asymmetric cross-attention mechanism synchronizes the audio and visual fea-tures, using visual cues to dynamically retrieve the corre-sponding audio context. In summary, this study designs and optimizes solutions from the perspectives of foundational feature extraction, deep multimodal fusion, and long-sequence temporal mod-eling, achieving state-of-the-art results. Our primary contri-butions are summarized as follows: • We propose a cutting-edge multimodal framework for AU detection that transitions from traditional convolutional networks to foundation models, utilizing DINOv2 and WavLM to extract robust, high-fidelity representations in complex in-the-wild environments. • We design a Hierarchical Granularity Alignment module coupled with an asymmetric cross-attention mechanism to achieve deep semantic alignment between global fa-cial contexts, local active patches, and paralinguistic au-dio cues. • We introduce a Vision-Mamba architecture to the AU de-tection pipeline, effectively solving the ultra-long tempo-ral modeling bottleneck with linear complexity, leading to superior performance on the Aff-Wild2 dataset. 
+
+# 2. Related Work 
+
+Due to the complex composition of Facial Action Units (AUs), AU detection faces significant challenges, includ-ing variations in identity, facial structure, and expression intensity across standard datasets [24, 28]. These varia-tions hinder the development of robust models that gen-eralize well across diverse populations. Furthermore, the accurate extraction of relevant local features for individual AUs remains a major obstacle, because different individuals exhibit the same AU with subtle variations. Given the intri-cate and frequently ambiguous nature of AU annotations, traditional approaches [1, 6]—particularly approaches re-lying on manually defined feature specifications—exhibit substantial limitations. Such methods struggle to generalize beyond predefined rules and often fail to capture nuanced expressions effectively. To overcome these challenges, recent studies incorpo-rate additional facial landmark annotations to extract mean-ingful local features and leverage multitask learning frame-works to enhance the performance of AU detection mod-els. For instance, SEV-Net [31] generates local region at-tention maps guided by textual descriptions, which allows the model to selectively focus on salient facial areas. This method enhances network interpretability and improves the identification of subtle AU activations. Additionally, Tang et al. [29] proposed a three-stage training strategy that explicitly integrates facial landmark information within a multitask learning framework. This approach strategically guides the attention of the model toward key facial regions to ensure a more structured learning process. However, al-though these methods improve AU detection performance, they rely heavily on supplementary landmark annotations. Such annotations may not always be available or consis-tently labeled across datasets. Furthermore, these meth-ods do not fully capture the intricate dependencies and co-occurrence patterns among AUs. To address this issue, Luo et al. [23] introduced a two-stage training method based on a graph neural network (GNN) to model the interdependencies among AUs. By treating AUs as nodes in a graph, this approach leverages the inherent relationships between different facial move-ments. However, this method represents AU nodes using simple fully connected layers and omits additional land-mark annotations, which limits the capacity to fully ex-ploit spatial dependencies. Furthermore, this approach re-quires an initial training phase to learn meaningful node representations prior to AU classification, which adds com-plexity to the overall pipeline. Although recent studies achieve significant progress in AU detection, they remain constrained by the reliance on additional annotations, spe-cific training paradigms, or limited model expressiveness. These challenges highlight the need for flexible and gener-alizable frameworks that can effectively capture both local facial features and high-level semantic relationships among AUs without excessive dependence on external annotations. 
+
+# 3. Method 
+
+In this section, we present our proposed multimodal frame-work for robust AU detection. We first introduce the high-fidelity feature extraction based on foundation models, fol-lowed by the Hierarchical Granularity Alignment (HGA) module, and finally detail the State Space Model (SSM) for ultra-long temporal modeling and multimodal fusion. 
+
+3.1. Robust Audio-Visual Feature Extraction via Foundation Models 
+
+To tackle the extreme spatial-temporal heterogeneity in-herent in the Aff-Wild2 dataset, we abandon traditional capacity-limited encoders and paradigm-restricted auto-matic speech recognition models. Instead, we leverage state-of-the-art foundation models to extract robust, high-fidelity representations from both visual and audio modali-ties. Conventional visual encoders, such as ResNet[5] or Con-vNeXt, heavily rely on supervised learning and aggressive spatial downsampling. While effective for global image classification, they inevitably lose the fine spatial resolution required to capture subtle facial muscle movements (e.g., a slight lip corner pull or eyebrow raise). To address this, we employ DINOv2, a self-supervised Vision Transformer[4] trained on massive, uncurated image datasets. Driven by an objective that aligns features at both the image and patch levels, DINOv2 explicitly learns dense, part-level object representations without relying on task-specific fine-tuning. This self-supervised paradigm makes DINOv2 exception-ally sensitive to local high-frequency details and micro-expressions under unconstrained head poses. Formally, given an input video frame I ∈ RH×W ×3, we extract a sequence of rich, patch-level visual tokens Fv ∈ RNv ×Dv ,where Nv denotes the number of patches and Dv is the hid-den dimension, preserving critical spatial semantics for sub-sequent granularity alignment. In the audio domain, previous approaches often uti-lize Automatic Speech Recognition (ASR) models (e.g., Whisper[27]) to extract acoustic features. However, ASR models are fundamentally optimized to transcribe linguis-tic content, actively suppressing non-verbal cues (such as sighs, pitch variations, and breathing) as “noise.” These dis-carded paralinguistic signals are, in fact, highly indicative of affective states. To rectify this, we utilize WavLM, a foundation model pre-trained using a masked speech pre-diction task combined with sophisticated denoising model-ing. Unlike ASR models, WavLM is explicitly designed to solve full-stack downstream speech tasks, capturing not only spoken content but also speaker identity and emotional prosody. Most importantly, its denoising pre-training strat-egy grants it extreme robustness to the severe background noise typical of in-the-wild environments. Given a raw audio waveform A ∈ RT , WavLM processes it to gen-erate deeply contextualized acoustic representations Fa ∈
+
+RNa×Da , ensuring that subtle emotional auditory cues are preserved and synchronized with the visual stream. 
+
+3.2. Hierarchical Granularity Alignment (HGA) 
+
+While the foundation model DINOv2 provides robust se-mantic representations, Action Units are inherently local-ized muscle movements. Relying solely on a global visual token dilutes the fine-grained motion signatures, whereas exclusively using local crops discards essential global con-texts such as head pose and illumination. To effectively in-tegrate these dual perspectives, we propose the Hierarchical Granularity Alignment (HGA) module, which leverages fa-cial landmarks as explicit geometric priors to bridge local active patches with global facial semantics. 
+
+Landmark-guided Local Feature Extraction. Given the patch-level visual tokens Fv ∈ RNv ×Dv extracted by DINOv2, where Nv = H′ × W ′ represents the spatial grid of patches, we first obtain a set of 2D facial landmarks 
+
+L = {(xk, y k)}Kk=1 using a pre-trained face alignment net-work. To capture AU-specific dynamics, we group these K
+
+landmarks into M anatomically defined Regions of Interest (RoIs), denoted as R = {R1, R 2, . . . , R M } (e.g., left eye, right eyebrow, mouth). For each region Rm, we map its corresponding landmark coordinates to the downsampled patch grid of DINOv2. Let 
+
+Pm denote the set of patch indices spatially corresponding to region Rm. The initial local representation for the m-th region, f loc m ∈ RDv , is aggregated via average pooling over the mapped patches: 
+
+f loc m = 1
+
+|P m|
+
+X
+
+> i∈P m
+
+F iv
+
+Simultaneously, we define the global facial context f glob ∈
+
+RDv by applying Global Average Pooling (GAP) across all 
+
+Nv patches: 
+
+f glob = 1
+
+NvNvX
+
+> i=1
+
+F iv
+
+Attention-based Granularity Alignment. In uncon-strained in-the-wild videos, explicitly cropped local regions 
+
+f loc m often suffer from severe occlusions or extreme poses. To enhance their robustness, we design a hierarchical align-ment mechanism that allows each local region to dynami-cally query the global feature map Fv for unoccluded, com-plementary context. Specifically, we formulate this alignment as a Multi-Head Cross-Attention (MHCA) process. The locally pooled feature f loc m serves as the query, while the entire patch se-quence Fv serves as the keys and values: 
+
+ˆfm = MHCA (Q = f loc m WQ, K = Fv WK , V = Fv WV )
+
+where WQ, W K , W V ∈ RDv ×dk are learnable linear pro-jection matrices. This mechanism forces the network to calculate a spatial attention map, effectively aligning the anatomically defined local regions with highly correlated semantic patches across the entire face. Finally, to construct the ultimate aligned representation that encapsulates both specific muscle activations and holis-tic facial states, we fuse the attention-enhanced local feature 
+
+ˆfm, the original local feature f loc m , and the global context 
+
+f glob . This is achieved through a channel-wise concatena-tion followed by a Multi-Layer Perceptron (MLP): 
+
+˜fm = MLP (Concat ( ˆfm, f loc m , f glob )) 
+
+The refined tokens for all M regions are then stacked to form the aligned visual representation FValign ∈ RM ×D ,which is subsequently fed into the State Space Model for temporal modeling. 
+
+3.3. Cross-modal Fusion & Temporal Modeling via Mamba 
+
+Facial action units are dynamic processes that unfold over time, necessitating robust temporal modeling. Previous approaches typically employ Temporal Convolutional Net-works (TCNs) or standard Transformers. However, TCNs suffer from restricted receptive fields, while Transformers scale quadratically with sequence length O(T 2), making them computationally prohibitive for ultra-long videos in the Aff-Wild2 dataset. To break this bottleneck, we in-troduce a State Space Model (SSM), specifically a Vision-Mamba variant, which achieves infinite-receptive-field tem-poral modeling with a linear complexity of O(T ).More importantly, instead of a naive late-fusion con-catenation, we propose an Audio-Guided Selective State Space Model (AG-SSM) . This novel formulation deeply integrates the paralinguistic audio cues Fa to dynamically modulate the temporal state transitions of the visual stream 
+
+FValign .
+
+Preliminary: Selective State Space Models. Acontinuous-time State Space Model maps a 1-D input se-quence x(t) ∈ R to an output y(t) ∈ R through a latent state h(t) ∈ RN using the following linear ordinary differ-ential equations (ODEs): 
+
+h′(t) = Ah(t) + Bx(t)
+
+y(t) = Ch(t)
+
+where A ∈ RN ×N represents the evolution matrix, and 
+
+B ∈ RN ×1, C ∈ R1×N are projection parameters. To be processed by deep learning frameworks, these continuous parameters are discretized using a step size ∆, typically via the zero-order hold (ZOH) rule: 
+
+¯A = exp(∆ A)¯B = (∆ A)−1(exp(∆ A) − I) · ∆B
+
+This yields the discrete-time recurrence: 
+
+ht = ¯Aht−1 + ¯Bxt
+
+yt = Cht
+
+In the standard Selective SSM (Mamba), the parameters 
+
+∆, B, C are made input-dependent (i.e., functions of xt) to enable context-aware reasoning. 
+
+Audio-Guided Selective Scan Mechanism. [Image of Audio-Guided Selective State Space Model architecture] In multimodal AU detection, auditory signals such as a sud-den intake of breath or a change in pitch often precede or co-occur with specific facial muscle movements. Therefore, the decision of what visual information to remember or for-get should be heavily conditioned on the audio stream. Let Xv ∈ RT ×D be the temporally aligned visual fea-tures from the HGA module, and Xa ∈ RT ×D be the cor-responding acoustic features from WavLM. At time step t,instead of solely relying on the visual input xvt to govern the state transitions, our AG-SSM fuses both modalities to gen-erate the selection parameters. First, we compute an audio-visual semantic descriptor st ∈ RD :
+
+st = Linear s(xvt ∥ xat )
+
+where ∥ denotes channel-wise concatenation. We then project this fused descriptor to dynamically synthesize the discrete SSM parameters for the visual stream: 
+
+∆t = Softplus (Parameter ∆ + Linear ∆(st)) 
+
+Bt = Linear B (st)
+
+Ct = Linear C (st)
+
+Here, ∆t acts as an audio-guided temporal gate: when a salient audio cue (e.g., a sigh) is detected in Xa, st induces a larger ∆t, forcing the visual state ht to focus heavily on the current frame’s visual input xvt . Conversely, in the ab-sence of significant changes, a smaller ∆t preserves the his-torical state ht−1.The final hidden state update and output generation are executed as: ¯At = exp(∆ tA)¯Bt = (∆ tA)−1(exp(∆ tA) − I) · ∆tBt
+
+ht = ¯Atht−1 + ¯Bt(xvt ⊙ σ(Wg xat )) 
+
+yt = Ctht
+
+Note that we also introduce an audio-driven gating mech-anism gt = σ(Wg xat ) directly applied to the visual input via element-wise multiplication ⊙, further emphasizing vi-sually active regions triggered by audio events 
+
+# 4. Experiments 
+
+4.1. Implementation Details 
+
+Data Preprocessing. For the visual stream, all video frames are first aligned and cropped using a pre-trained RetinaFace detector, ensuring the face occupies the cen-ter of the image. The cropped faces are then resized to 
+
+224 × 224 pixels. To guide the Hierarchical Granular-ity Alignment (HGA) module, we extract 68 2D facial landmarks for each frame using the MediaPipe framework, grouping them into semantically meaningful Regions of In-terest (RoIs) such as the mouth, eyes, and eyebrows. For the audio stream, the raw waveforms are resampled to 16 , 000 
+
+Hz and normalized to the range [−1, 1] . To synchronize the modalities, the audio signal is chunked using a sliding window that temporally aligns with the corresponding video frame rate. 
+
+Model Configuration. Our visual feature extractor uti-lizes the pre-trained dinov2 vitl14 model. To preserve its generalized representation capability while adapting to the facial AU domain, we freeze the majority of the trans-former blocks and apply Low-Rank Adaptation (LoRA) to the query and value projection matrices. The audio extrac-tor employs the WavLM-Large model, which is similarly fine-tuned using a light-weight adapter. In the AG-SSM temporal module, the hidden state dimension N is set to 16, and the expanded state dimension is set to 64. The multi-head cross-attention mechanism in the HGA module uti-lizes 8 attention heads with a feature dimension Dv = 768 .
+
+Training Setup and Environment. The entire frame-work is implemented using PyTorch and accelerated by CUDA. To handle the ultra-long temporal sequences typ-ical of the Aff-Wild2 dataset without encountering Out-Of-Memory (OOM) errors, we strategically integrate the 
+
+flash-attn library. This exact-attention optimization significantly reduces the memory footprint and speeds up the training of both the Vision-Mamba blocks and the cross-attention modules. The network is trained using the AdamW optimizer with a weight decay of 1 × 10 −4. We employ a cosine annealing learning rate schedule with a linear warmup of 5 epochs. The initial learning rate is set to 2 × 10 −4 for the newly ini-tialized SSM and alignment modules, and a smaller learn-ing rate of 1 × 10 −5 is applied to the LoRA parameters of the foundation models. The batch size is set to 16 video clips per GPU, with each clip containing a continuous se-quence of 256 frames to ensure sufficient temporal context for the AG-SSM. All experiments are conducted on a clus-ter equipped with NVIDIA V800 GPUs. 
+
+4.2. Training Strategy Optimization 
+
+Addressing Class Imbalance via Asymmetric Loss. In the Aff-Wild2 dataset, Facial Action Units exhibit a severe long-tailed distribution. Certain AUs are sparsely activated, resulting in an overwhelming dominance of negative sam-ples (i.e., neutral facial frames). Traditionally, AU detection is formulated as a multi-label binary classification problem optimized via Binary Cross-Entropy (BCE) loss. However, BCE treats positive and negative samples equally. Conse-quently, the accumulated gradients are easily dominated by the sheer volume of ”easy negatives,” driving the network to trivially predict zeros for all AUs. While Focal Loss mitigates this by down-weighting well-classified examples, it utilizes a coupled modulating factor, failing to indepen-dently optimize the heavily imbalanced positive and nega-tive classes. Table 1. Ablation study results evaluating the contribution of each proposed module on the Aff-Wild2 validation set (Average F1 Score %). FM: Foundation Models (DINOv2 + WavLM), HGA: Hierarchical Granularity Alignment, AG-SSM: Audio-Guided State Space Model, ASL: Asymmetric Loss. 
+
+Architecture Setup FM HGA AG-SSM ASL F1 Score (%) 
+
+Baseline 36.50 + Foundation Models ✓ 52.41 + HGA Module ✓ ✓ 55.18 + AG-SSM Temporal Modeling ✓ ✓ ✓ 57.82 
+
+Full Framework (+ ASL) ✓ ✓ ✓ ✓ 59.45 
+
+To overcome this bottleneck, we optimize our multi-modal framework using an Asymmetric Loss (ASL) strat-egy. ASL fundamentally decouples the focusing levels for positive and negative samples, allowing the model to ag-gressively discard redundant easy negatives while preserv-ing crucial gradients from rare, hard-to-detect positive AU activations. Let p ∈ [0 , 1] denote the predicted probability from our AG-SSM classification head, and y ∈ { 0, 1} be the ground-truth label. For positive samples ( y = 1 ), we apply a gentle focusing parameter γ+ to maintain sufficient gradient flow for rare AUs: 
+
+L+ = (1 − p)γ+ log( p)
+
+For negative samples ( y = 0 ), the learning process is hindered by the vast quantity of easily classified neutral expressions. Therefore, we apply a significantly larger fo-cusing parameter γ− (γ− ≫ γ+) to heavily penalize easy negatives. Furthermore, to explicitly eliminate the noise from highly confident negative predictions, we introduce an Asymmetric Probability Shifting mechanism with a margin parameter m ≥ 0:
+
+pm = max( p − m, 0) 
+
+L− = ( pm)γ− log(1 − pm)
+
+This hard-thresholding operation completely zeros out the loss contribution for any negative sample whose predicted probability falls below the margin m, freeing the network’s capacity to focus exclusively on ambiguous and hard-to-classify frames. The final Asymmetric Loss for the multi-label AU pre-diction over all C = 12 classes is aggregated as: 
+
+LASL = − 1
+
+C
+
+> C
+
+X
+
+> i=1
+
+[yiL+,i + (1 − yi)L−,i ]
+
+In our experiments, we empirically set γ+ = 1 , γ− = 4 ,and m = 0 .05 . By decoupling the decay rates, ASL dynam-ically balances the learning process. It prevents our founda-tion models and the temporal AG-SSM from collapsing into majority-class predictions, significantly boosting the recall for rare Action Units without sacrificing overall precision. 
+
+Stabilizing Generalization with SWA. In addition to the tailored loss function, we maintain the Stochastic Weight Averaging (SWA) strategy during the final stages of training. By averaging the weights of the Vision-Mamba and cross-attention modules over the last few epochs, we smooth the loss landscape. This prevents the model from overfitting to the noisy labels inherent in in-the-wild datasets, ensuring robust generalization on the unseen test set. 
+
+4.3. Experimental Results 
+
+Ablation Study. To rigorously validate the effectiveness of our proposed framework, we conduct a comprehensive ablation study on the Aff-Wild2 validation set. The eval-uation metric is the average F1 score across all 12 Action Units. We establish a strong baseline utilizing a standard Vi-sion Transformer (ViT-Base) for visual encoding, Whisper for audio encoding, and a conventional Temporal Convo-lutional Network (TCN) for temporal modeling, optimized with standard Binary Cross-Entropy (BCE) loss. As shown in Table 1, we incrementally integrate our novel compo-nents to quantify their individual contributions. • Impact of Foundation Models (FM): Replacing the capacity-limited baseline encoders with DINOv2 and WavLM yields a substantial absolute improvement of 15.91% in the F1 score. This validates our hypothesis that self-supervised visual features and paralinguistic au-dio cues are fundamentally superior for capturing subtle in-the-wild expressions. • Impact of Hierarchical Granularity Alignment (HGA): The introduction of the landmark-guided HGA module further boosts the performance to 55.18%. By explicitly addressing spatial heterogeneity and extreme poses, HGA successfully bridges the gap between holistic facial contexts and local muscle activations. • Impact of Audio-Guided SSM (AG-SSM): Upgrading the temporal backbone from TCN to our proposed Vision-Mamba variant (AG-SSM) brings a significant 2.64% gain. This confirms that modeling ultra-long temporal de-pendencies with an infinite receptive field, directly guided by audio triggers, is crucial for tracking dynamic affective behaviors. • Impact of Asymmetric Loss (ASL): Finally, optimizing the entire pipeline with ASL addresses the severe class imbalance problem. By dynamically penalizing easy neg-atives and preserving gradients for rare AUs, the full framework achieves a remarkable 59.45% F1 score, com-pletely preventing majority-class collapse. 
+
+# 5. Conclusion 
+
+In this paper, we tackled the challenge of multimodal Fa-cial Action Unit (AU) detection in-the-wild by synergisti-cally integrating foundation models with state space model-ing. Specifically, we introduced the Hierarchical Granular-ity Alignment (HGA) module, leveraging facial landmarks as explicit geometric priors to dynamically bridge holistic facial semantics with localized muscle activations. Fur-thermore, our Audio-Guided Selective State Space Model (AG-SSM) synchronizes paralinguistic auditory cues with visual streams, enabling ultra-long-range temporal model-ing with linear O(T ) complexity to overcome the restricted receptive fields of traditional networks. To explicitly ad-dress the severe long-tailed distribution of AU activations, we employed an Asymmetric Loss (ASL) strategy, prevent-ing majority-class collapse and boosting the recall of rare movements. Extensive evaluations on the Aff-Wild2 dataset validate our framework’s superiority in mitigating spatial-temporal heterogeneity and class imbalance. Establishing a new state-of-the-art benchmark, our approach yielded excellent performance in the AU Detection track of the 10th ABAW Competition. Future work will explore parameter-efficient AG-SSM adaptations for real-time edge deployment and cross-modal generative pre-training. 
+
+# References 
+
+[1] Carlos Fabian Benitez-Quiroz, Yan Wang, Aleix M Mar-tinez, et al. Recognition of action units in the wild with deep nets and a new global-local loss. In ICCV , pages 3990–3999, 2017. 2 [2] Sanyuan Chen, Chengyi Wang, Zhengyang Chen, Yu Wu, Shujie Liu, Zhuo Chen, Jinyu Li, Naoyuki Kanda, Takuya Yoshioka, Xiong Xiao, et al. Wavlm: Large-scale self-supervised pre-training for full stack speech processing. 
+
+IEEE Journal of Selected Topics in Signal Processing , 16 (6):1505–1518, 2022. 1 [3] H. Onan Demirel, Salman Ahmed, and Vincent G. Duffy. Digital human modeling: A review and reappraisal of ori-gins, present, and expected future methods for representing humans computationally. International Journal of Human– Computer Interaction , 38(10):897–937, 2022. 1 [4] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Syl-vain Gelly, et al. An image is worth 16x16 words: Trans-formers for image recognition at scale. arXiv preprint arXiv:2010.11929 , 2020. 3 [5] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceed-ings of the IEEE conference on computer vision and pattern recognition , pages 770–778, 2016. 3 [6] Geethu Miriam Jacob and Bjorn Stenger. Facial ac-tion unit detection with transformers. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 7680–7689, 2021. 2 [7] Dimitrios Kollias. Abaw: Valence-arousal estimation, ex-pression recognition, action unit detection & multi-task learning challenges. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pages 2328–2336, 2022. 1 [8] Dimitrios Kollias. Abaw: learning from synthetic data & multi-task learning challenges. In European Conference on Computer Vision , pages 157–172. Springer, 2023. 1 [9] Dimitrios Kollias and Stefanos Zafeiriou. Expression, affect, action unit recognition: Aff-wild2, multi-task learning and arcface. arXiv preprint arXiv:1910.04855 , 2019. 1 [10] Dimitrios Kollias and Stefanos Zafeiriou. Affect analysis in-the-wild: Valence-arousal, expressions, action units and a unified framework. arXiv preprint arXiv:2103.15792 , 2021. [11] Dimitrios Kollias and Stefanos Zafeiriou. Analysing affec-tive behavior in the second abaw2 competition. In Proceed-ings of the IEEE/CVF International Conference on Com-puter Vision , pages 3652–3660, 2021. [12] D Kollias, A Schulc, E Hajiyev, and S Zafeiriou. Analysing affective behavior in the first abaw 2020 competition. In 
+
+2020 15th IEEE International Conference on Automatic Face and Gesture Recognition (FG 2020)(FG) , pages 794– 800, . [13] Dimitrios Kollias, Panagiotis Tzirakis, Alan Cowen, Irene Kotsia, UK Cogitat, Eric Granger, Marco Pedersoli, Simon Bacon, Alice Baird, Chunchang Shao, et al. Advancements in affective and behavior analysis: The 8th abaw workshop and competition. . [14] Dimitrios Kollias, Viktoriia Sharmanska, and Stefanos Zafeiriou. Face behavior a la carte: Expressions, af-fect and action units in a single network. arXiv preprint arXiv:1910.11111 , 2019. [15] Dimitrios Kollias, Panagiotis Tzirakis, Mihalis A Nicolaou, Athanasios Papaioannou, Guoying Zhao, Bj¨ orn Schuller, Irene Kotsia, and Stefanos Zafeiriou. Deep affect prediction in-the-wild: Aff-wild database and challenge, deep architec-tures, and beyond. International Journal of Computer Vision ,pages 1–23, 2019. [16] Dimitrios Kollias, Viktoriia Sharmanska, and Stefanos Zafeiriou. Distribution matching for heterogeneous multi-task learning: a large-scale face study. arXiv preprint arXiv:2105.03790 , 2021. 1 [17] Dimitrios Kollias, Panagiotis Tzirakis, Alice Baird, Alan Cowen, and Stefanos Zafeiriou. Abaw: Valence-arousal esti-mation, expression recognition, action unit detection & emo-tional reaction intensity estimation challenges. In Proceed-ings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 5888–5897, 2023. 1 [18] Dimitrios Kollias, Viktoriia Sharmanska, and Stefanos Zafeiriou. Distribution matching for multi-task learning of classification tasks: a large-scale study on faces & beyond. In Proceedings of the AAAI Conference on Artificial Intelli-gence , pages 2813–2821, 2024. 1 [19] Dimitrios Kollias, Panagiotis Tzirakis, Alan Cowen, Ste-fanos Zafeiriou, Irene Kotsia, Alice Baird, Chris Gagne, Chunchang Shao, and Guanyu Hu. The 6th affective behav-ior analysis in-the-wild (abaw) competition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pat-tern Recognition , pages 4587–4598, 2024. 1 [20] Dimitrios Kollias, Stefanos Zafeiriou, Irene Kotsia, Abhinav Dhall, Shreya Ghosh, Chunchang Shao, and Guanyu Hu. 7th abaw competition: Multi-task learning and compound expression recognition. arXiv preprint arXiv:2407.03835 ,2024. [21] Dimitrios Kollias, Panagiotis Tzirakis, Alan S. Cowen, Ste-fanos Zafeiriou, Irene Kotsia, Eric Granger, Marco Peder-soli, Simon L. Bacon, Alice Baird, Chris Gagne, Chun-chang Shao, Guanyu Hu, Soufiane Belharbi, and Muham-mad Haseeb Aslam. Advancements in Affective and Behav-ior Analysis: The 8th ABAW Workshop and Competition. 2025. [22] Dimitrios Kollias, Stefanos Zafeiriou, Irene Kotsia, Greg Slabaugh, Damith Chamalke Senadeera, Jianian Zheng, Kaushal Kumar Keshlal Yadav, Chunchang Shao, and Guanyu Hu. From emotions to violence: Multimodal fine-grained behavior analysis at the 9th abaw. In Proceedings of the IEEE/CVF International Conference on Computer Vi-sion , pages 1–12, 2025. 1 [23] Cheng Luo, Siyang Song, Weicheng Xie, Linlin Shen, and Hatice Gunes. Learning multi-dimensional edge feature-based au relation graph for facial action unit recognition. 
+
+arXiv preprint arXiv:2205.01782 , 2022. 3 [24] Xuesong Niu, Hu Han, Songfan Yang, Yan Huang, and Shiguang Shan. Local relationship learning with person-specific shape regularization for facial action unit detection. In Proceedings of the IEEE/CVF Conference on computer vision and pattern recognition , pages 11917–11926, 2019. 2 [25] Maxime Oquab, Timoth´ ee Darcet, Th´ eo Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. Dinov2: Learning robust visual features without supervision. 
+
+arXiv preprint arXiv:2304.07193 , 2023. 1 [26] Emily B Prince, Katherine B Martin, Daniel S Messinger, and M Allen. Facial action coding system. Environmental psychology & nonverbal behavior , 1, 2015. 1 [27] Alec Radford, Jong Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and Ilya Sutskever. Robust speech recognition via large-scale weak supervision. In Interna-tional conference on machine learning , pages 28492–28518. PMLR, 2023. 3 [28] Zhiwen Shao, Zhilei Liu, Jianfei Cai, Yunsheng Wu, and Lizhuang Ma. Facial action unit detection using attention and relation learning. IEEE transactions on affective com-puting , 13(3):1274–1289, 2019. 2 [29] Yang Tang, Wangding Zeng, Dafei Zhao, and Honggang Zhang. Piap-df: Pixel-interested and anti person-specific fa-cial action unit detection net with discrete feedback learning. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 12899–12908, 2021. 3 [30] Robert Walecki, Vladimir Pavlovic, Bj¨ orn Schuller, Maja Pantic, et al. Deep structured learning for facial action unit intensity estimation. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , pages 3405– 3414, 2017. 1 [31] Huiyuan Yang, Lijun Yin, Yi Zhou, and Jiuxiang Gu. Ex-ploiting semantic embedding and visual feature for facial ac-tion unit detection. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , pages 10482–10491, 2021. 3 [32] Stefanos Zafeiriou, Dimitrios Kollias, Mihalis A Nicolaou, Athanasios Papaioannou, Guoying Zhao, and Irene Kot-sia. Aff-wild: Valence and arousal ‘in-the-wild’challenge. In Computer Vision and Pattern Recognition Workshops (CVPRW), 2017 IEEE Conference on , pages 1980–1987. IEEE, 2017. 1 [33] Lianghui Zhu, Bencheng Liao, Qian Zhang, Xinlong Wang, Wenyu Liu, and Xinggang Wang. Vision mamba: Efficient visual representation learning with bidirectional state space model. arXiv preprint arXiv:2401.09417 , 2024. 2
