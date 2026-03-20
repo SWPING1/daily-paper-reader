@@ -25,3 +25,48 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: Missing-Modality
+      description: 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。
+      enabled: true
+      keywords:
+        - keyword: Multimodal Sentiment Analysis
+          keyword_cn: 多模态情感分析
+          query: M
+        - keyword: Multimodal Emotion Recognition
+          keyword_cn: 多模态情感识别
+          query: Multimodal Emotion Recognition
+        - keyword: Robust Multimodal Learning
+          keyword_cn: 鲁棒多模态学习
+          query: Robust Multimodal Learning
+        - keyword: Disentangled Representation
+          keyword_cn: 解耦表示
+          query: Disentangled Representation
+        - keyword: Incomplete Multimodal
+          keyword_cn: 不完整多模态
+          query: Incomplete Multimodal
+        - keyword: Missing Modality
+          keyword_cn: 缺失模态
+          query: Missing Modality
+      intent_queries:
+        - query: Robust multimodal sentiment analysis and emotion recognition under incomplete modalities
+          query_cn: 不完整模态下的鲁棒多模态情感分析与情感识别
+          enabled: true
+          source: manual
+          note: ''
+        - query: Generative approaches and imputation methods for missing modality robustness
+          query_cn: 用于提高缺失模态鲁棒性的生成方法与插补技术
+          enabled: true
+          source: manual
+          note: ''
+        - query: Disentangled representation learning for multimodal emotion recognition with missing data
+          query_cn: 针对缺失数据的多模态情感识别解耦表示学习
+          enabled: true
+          source: manual
+          note: ''
+        - query: Reconstructing missing modalities before feature decoupling in multimodal learning
+          query_cn: 在多模态学习中先重建缺失模态然后再进行特征解耦
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-03-20T06:50:17.666Z'
