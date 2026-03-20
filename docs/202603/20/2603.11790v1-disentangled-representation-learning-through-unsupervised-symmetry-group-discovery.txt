@@ -1,0 +1,1891 @@
+Title: Disentangled Representation Learning through Unsupervised Symmetry Group Discovery
+
+URL Source: https://arxiv.org/pdf/2603.11790v1
+
+Published Time: Fri, 13 Mar 2026 00:47:24 GMT
+
+Number of Pages: 35
+
+Markdown Content:
+Published as a conference paper at ICLR 2026 
+
+# DISENTANGLED REPRESENTATION LEARNING THROUGH UNSUPERVISED SYMMETRY GROUP DIS -
+
+# COVERY 
+
+Barth´ el´ emy Dang-Nhu, Louis Annabi & Sylvain Argentieri 
+
+Sorbonne Universit´ e, CNRS, Institut des Syst` emes Intelligents et de Robotique, ISIR, F-75005 Paris, France 
+
+{dangnhu,annabi,argentieri }@isir.upmc.fr 
+
+## ABSTRACT 
+
+Symmetry-based disentangled representation learning leverages the group struc-ture of environment transformations to uncover the latent factors of variation. Prior approaches to symmetry-based disentanglement have required strong prior knowledge of the symmetry group’s structure, or restrictive assumptions about the subgroup properties. In this work, we remove these constraints by proposing a method whereby an embodied agent autonomously discovers the group structure of its action space through unsupervised interaction with the environment. We prove the identifiability of the true symmetry group decomposition under minimal assumptions, and derive two algorithms: one for discovering the group decom-position from interaction data, and another for learning Linear Symmetry-Based Disentangled (LSBD) representations without assuming specific subgroup prop-erties. Our method is validated on three environments exhibiting different group decompositions, where it outperforms existing LSBD approaches. 
+
+## 1 INTRODUCTION 
+
+An important property of a representation is its disentanglement, as it enables a form of inter-pretability (Higgins et al., 2017), fairness (Locatello et al., 2019a), improved transferability (Lee et al., 2021; Bengio et al., 2020), and the ability to directly manipulate the latent space (Kim & Mnih, 2018; Chen et al., 2016). For this reason, many unsupervised disentangled representation learning methods have been proposed, initially relying on Variational Autoencoders (VAEs) (Kim & Mnih, 2018; Kumar et al., 2018; Higgins et al., 2017) or Generative Adversarial Networks (GANs) (Chen et al., 2016). Locatello et al. (2019b) showed that unsupervised disentanglement requires additional prior knowledge or inductive biases. Thus, several approaches, relying on different additional assumptions, address the question of unsupervised disentangled representation learning. Learning disentangled representations relies on the assumption that there exist true underlying factors of variation in the environment (Bengio et al., 2013), and aims to infer them from available observations. The symmetry-based approach of Higgins et al. (2018) proposes to achieve such disentanglement by exploiting the subgroup decomposition of the group of environment transfor-mations, called symmetries. Each subgroup is associated with a specific part of the representation. When a symmetry from a particular subgroup is applied, only the corresponding part of the repre-sentation varies. Caselles-Dupr´ e et al. (2019) demonstrated that symmetry-based disentanglement is only possible when access is granted to transitions (initial observation, transformation, resulting observation). Several notable works follow this approach (Quessard et al., 2020; Tonnaer et al., 2022; Keurti et al., 2023). However, they rely on restrictive assumptions regarding the nature of the symmetry group or prior knowledge about its structure. This paper aims to overcome these limitations by designing algorithms and providing proofs for the autonomous discovery of the symmetry group structure, and its exploitation for disentangled representation learning. 1
+
+> arXiv:2603.11790v1 [cs.LG] 12 Mar 2026
+
+Published as a conference paper at ICLR 2026 Our contributions are as follows: • We prove, under certain assumptions, the identifiability of the ground-truth group decomposi-tion of the symmetry group from a dataset of transitions. • We derive from this theorem an algorithm for the discovery of the symmetry group decompo-sition. • We introduce a novel method for learning a LSBD representation directly from a group de-composition, without imposing any structural assumptions on the subgroups, and we provide theoretical guarantees of disentanglement under specific assumptions. • We combine these two algorithms and show experimentally that the full method outperforms other LSBD methods on several datasets with different group structures. 
+
+## 2 PRELIMINARIES 
+
+# y´ c`
+
+# GX
+
+# GY
+
+Figure 1: Colored Flatland environment. The group of symme-tries can be decomposed as G “ Gx ˆ Gy ˆ Gc corresponding respectively to the cyclic groups of translations on the horizontal axis/vertical axis, and in a list of predefined colors. The agent has access to several symmetries (or actions) Gx “ t x`, x ´u Ă Gx,
+
+Gy “ t y`, y ´u Ă Gy , and Gc “ t c`, c ´u Ă Gc.       
+
+> GˆZZ
+> WGˆW
+> f
+> ¨W
+> id Gˆf
+> ¨Z
+
+Figure 2: Equivariance prop-erty. We consider the framework of Linear Symmetry-Based Disentanglement (LSBD) (Higgins et al., 2018), which provides a formal definition of disentanglement suitable for deriving identifiability results and guiding the design of representation learning algorithms. Let W denote the set of possible environmental states. We define a generative process b : W Ñ X that maps a state to an observation, and an encoder h : X Ñ Z that maps observations into a latent representation. The overall mapping is then given by f “ h ˝ b : W Ñ Z. We assume that b is an intrinsic (and unknown) property of the environment, while h is agent-specific and can be learned. We further assume the existence of a symmetry group G acting on W. A key assumption is that G
+
+satisfies the standard group axioms: the existence of an identity element, closure under composition, and the existence of inverses. This group structure enables the definition of a group action ¨W :
+
+G ˆ W Ñ W, which maps each pair pg, w q P G ˆ W to a transformed world state w1 P W resulting from the application of g. The agent is endowed with an action set G Ă G that contains only a subset of the full group. Crucially, G is not required to form a group itself, in particular, the agent’s actions may not be reversible, and the identity element of G may not be included in G.We also assume that the group G admits a decomposition into a direct product of subgroups, i.e., 
+
+G “ G1 ˆ ¨ ¨ ¨ ˆ GK . For example, in the Flatland environment illustrated in Figure 1, the symmetry group G can be decomposed into three subgroups corresponding to cyclic groups of horizontal translations, vertical translations, and color shifts. 
+
+Definition 1 (Linear Symmetry Based Disentanglement) . A representation h is said to be symmetry-based disentangled (SBD) with respect to xW, b, ś 
+
+> k
+
+Gky if: 1. There exists a group action ¨Z : G ˆ Z Ñ Z,2. Equivariance holds: @g P G, w P W, we have g ¨Z f pwq “ f pg ¨W wq,3. There exists a decomposition Z “ Z1 ‘ ¨ ¨ ¨ ‘ ZK and group actions ¨k : Gk ˆ Zk Ñ Zk
+
+such that 
+
+pg1, . . . , g K q ¨ Z pz1, . . . , z K q “ p g1 ¨1 z1, . . . , g K ¨K zK q,
+
+2Published as a conference paper at ICLR 2026 
+
+4. The function h is injective Moreover, the representation is said to be linearly disentangled (LSBD) if ¨Z is linear, i.e. there exists a representation ρ : G Ñ GL pZq such that g ¨Z z “ ρpgqz.
+
+The original definition provided by Higgins et al. (2018) does not explicitly state the fourth condition requiring the encoder h to be injective. However, this constraint is implicitly assumed within the LSBD framework; without it, any constant mapping would trivially satisfy the LSBD criteria. Caselles-Dupr´ e et al. (2019, Theorem 1) demonstrated that learning an LSBD represen-tation is impossible from observations alone, they proved that multiple distinct world sets and group actions can produce the same set of observations. However, these environments differ in their transitions. Consequently, they proposed leveraging transitions of the form px, g, x 1q
+
+rather than relying solely on passive observations x. This perspective naturally aligns with the reinforcement learning setting, where agents can actively interact with the environment by perform-ing actions that induce state transitions. Accordingly, in the remainder of this work, we refer to symmetries g as actions. Mathematical background and a symbol table can be found in Appendix A. 
+
+## 3 RELATED WORK 
+
+Several methods have been proposed to learn LSBD representations from transitions, all relying on auto-encoder architectures. Forward-VAE (Caselles-Dupr´ e et al., 2019) augments the evidence lower bound (ELBO) of a VAE with a latent-space action loss. Disentanglement is encouraged by constraining the matrices ρpgq to follow a predefined structure, which requires prior knowledge of the subgroup decomposition of the symmetry group, as well as the minimal number of latent dimen-sions assigned to each subgroup. Another method, proposed by Quessard et al. (2020), referred to as 
+
+SO -Based Disentangled Representation Learning (SOBDRL), aims to learn representations with a prediction loss that aim to infer the next observation x1 from px, g q. The action matrices are parame-terized as elements of the special orthogonal group SO pdq, the disentanglement is encouraged with a regularization term that minimizes the number of latent dimensions involved in each transforma-tion, encouraging transformations constrained to SO p2q. LSBD-VAE , introduced by Tonnaer et al. (2022), relies on the ∆-VAE architecture (Rey et al., 2019), which supports latent spaces defined over arbitrary manifolds. In this framework, both the group decomposition G “ G1 ˆ ¨ ¨ ¨ ˆ GK
+
+and its representation ρ are assumed to be known a priori. This prior knowledge allows the model to align the latent geometry with the group structure and to incorporate an action-aligned loss term, in the spirit of Forward-VAE. Homomorphism AutoEncoder (HAE), proposed by Keurti et al. (2023), assumes that G is a Lie group and that the agent has access to φpgq, where φ is an unknown non-linear mapping. The action representation is learned from this mapping by jointly predicting both current and future states in the observation and latent spaces. Disentanglement is encouraged by enforcing a block-diagonal structure on the action matrices. Some other methods aim to learn LSBD representation solely from the observation based on the metric of the ground-truth Riemannian manifold (Pfau et al., 2020), the cardinality of each cyclic group (Yang et al., 2022) or the commutativity of the whole symmetry group (Zhu et al., 2021). We observe that all state-of-the-art methods based on transitions rely on assumptions regarding the structure of the symmetry group or its subgroups. In contrast, the goal of this work is to relax these assumptions by introducing a symmetry-based disentangled representation learning approach that does not require any prior knowledge of the group decomposition. 
+
+## 4 METHODS 
+
+We suppose that the available actions G are a subset of the whole group action G and that there is a dataset D of transitions px, g, x 1q where g P G are the indices of the actions taken by the agent. We aim to learn an LSBD representation h. Our method consists of three steps: 1. We learn an entangled representation i.e. a representation satisfying only points 1, 2 and 4 of Definition 1 to learn an action representation ρ : G Ñ GL pZq and an encoder h : X Ñ Z.3Published as a conference paper at ICLR 2026 2. From ρ and h we compute a decomposition G “ G1 ˆ ¨ ¨ ¨ ˆ GK by regrouping actions using a custom pseudo-distance based on group theory. 3. From this decomposition we learn a disentangled representation. 4.1 (S TEP 1) L EARN AN ENTANGLED REPRESENTATION 
+
+Our objective is to learn an encoder h : X Ñ Z “ Rd and an action representation 
+
+ρψ : G Ñ Rdˆd satisfying the equivariance property defined in Definition 1. As there is no prior knowledge about th action matrices, each matrix ρψ pgq is directly parameterized by 
+
+d2 learnable scalars, resulting in a total of |G| ˆ d2 parameters. To perform this step, we introduce a method referred to as Action-based VAE (A-VAE), which builds upon the varia-tional autoencoder (VAE) framework (Kingma & Welling, 2014; Rezende et al., 2014). The goal is to map each observation x P X to a latent representation in Z “ Rd. Let τ “px, g, x 1q denote a transition, and let z and z1 be the corresponding latent representations of x
+
+and x1, respectively. The model architecture is illustrated in Figure 3 and defined as follows:         
+
+> Z1
+> X
+> X1
+> pψ,ϕ pz1|x, g q
+> pθpx1|z1qG
+> qϕpz1|x1q
+
+Figure 3: Graphical model • pθ pX1|z1q “ N `μθ pz1q, Diag pσθ pz1q2q˘, (1) • pψ,ϕ pZ1|x, g q “ N `ρψ pgqμϕpxq, Id ˘, (2) • qϕpZ1|x1q “ N `μϕpx1q, Diag pσϕpx1q2q˘. (3) In contrast to the standard VAE, we condition the prior distribution over Z1 on both the past obser-vation x and the action g. To maximize the expected log-likelihood Erlog ppτ qs with respect to the model parameters θ, ϕ, and ψ, we derive the corresponding evidence lower bound (ELBO) for our graphical model. As shown in Appendix B, we obtain (up to an additive constant): 
+
+log ppτ q ě ´ 12
+
+››ρψ pgqμϕpxq ´ μϕpx1q››2 ´ 12 }σϕpx1q} 2 ` ÿ
+
+> i
+
+log σϕpx1qi
+
+)
+
+action part 
+
+´ Ez1„qϕpz1|x1q
+
+«ÿ
+
+> i
+
+log σθ pz1qi `
+
+››››
+
+x1 ´ μθ pz1q
+
+σθ pz1q
+
+››››
+
+> 2
+
+ff )
+
+reconstruction part (4) Analogously to β-VAE (Higgins et al., 2017), we introduce a weighting coefficient to balance the two components of the objective, resulting in the loss function L “ LREC ` λACT LACT . Each of the three conditional distributions in the model is implemented using deep neural networks trained via backpropagation. The model parameters θ, ϕ, and ψ are optimized to maximize the ELBO. As in standard VAEs, we apply the reparameterization trick to enable gradient-based optimization through the reconstruction term. In practice, the standard deviations σθ and σϕ are fixed. Details of the neural network architectures are provided in Appendix I.2. 4.2 (S TEP 2) L EARN THE GROUP STRUCTURE 
+
+Once the action representation ρψ and the encoder h “ μθ have been learned, we aim to leverage them to recover the group decomposition G “ G1 ˆ ¨ ¨ ¨ ˆ GK . By abuse of notation, we will treat the direct factors Gi as subgroups of G.4.2.1 ASSUMPTIONS 
+
+Assumption 1. The environment is fully observable i.e. the observation function b : W Ñ X is injective. 
+
+It is a strong assumption, however it is necessary as we have the following result: 
+
+Theorem 1. For a SBD representation to exist, it is necessary for the observation function b to be injective (up to an interaction equivalence class). 
+
+The definition of the interaction equivalence class and the proof of the theorem are provided in Appendix G. The key idea is that components of the world state that do not influence the agent’s 4Published as a conference paper at ICLR 2026 interaction can be discarded, yielding an equivalent environment from the agent’s perspective. In this reduced environment, the observation function must be injective for a SBD representation to exist. Although this assumption is not always stated explicitly, it is in fact a necessary condition for all SBD representation learning algorithms and is not specific to our method. The next two assumptions are assumptions specific to the proposed algorithm, and are intended to replace the stronger prior assumption commonly made in the SBD literature consisting in providing prior knowledge of the group decomposition. We first assume that each action belongs to a unique subgroup Gi. We refer to this property as disentanglement of the action set with respect to ś 
+
+> k
+
+Gk.It is a strong assumption but we demonstrate empirically in Appendix H.2 that related SBD methods make a similar implicit assumption. 
+
+Assumption 2. G is disentangled with respect to G “ ś 
+
+> k
+
+Gk. That is, G “ G1 Y ¨ ¨ ¨ Y GK with 
+
+@k, Gk Ă Gk.
+
+y`
+
+x`
+
+> (a)
+> –
+
+2x`
+
+3x`
+
+> (b)
+
+Figure 4: Two isomorphic group actions satisfying As-sumption 2. We argue that this assumption alone is not sufficient to recover the correct decomposition. To illustrate this point, consider two distinct environments analogous to Flatland shown Figure 4: (a) a 2 ˆ 3 cyclic grid i.e. Ga “ Z{2Z ˆ Z{3Z with actions 
+
+Ga “ t x`u Y t y`u and (b) a 6 ˆ 1 cyclic grid i.e. Gb “ Z{6Z
+
+with actions Gb “ t 2x`, 3x`u. Both environments satisfy As-sumption 2 and can share the same representation, as there exists an isomorphism from Ga to Gb that maps each element of Ga to a corresponding element in Gb. From the agent’s perspective, these two situations are indistinguishable in the absence of additional assumptions. Ideally, we seek an assumption that both covers awide range of practical scenarios, i.e. action sets G, and enables a computationally tractable procedure for recovering the group decomposition. Among the various options considered, we adopt the following assumption, as it offers a favorable trade-off between situation coverage and computational feasibility: 
+
+Assumption 3. For all g, g 1 P G with g ‰ g1, if they belong to the same subgroup then there exists 
+
+u P G and m P J1, M K such that we have either g “ umg1, g “ g1um, g1 “ gu m or g1 “ umg.
+
+Combined with Assumption 2, it is straightforward to show that the implication of Assumption 3 is in fact an equivalence. As a result, we obtain a simple and practical criterion for determining whether two actions belong to the same subgroup. In terms of situation coverage, as soon as M ě 2,Assumption 3 holds in common cases such as when Gi contains an action and its inverse, when 
+
+Gk “ Gk, or when Gk “ G˚ 
+
+> k
+
+. In practice, the action sets considered in the experimental sections of state-of-the-art SBDRL algorithms typically fall into one of these categories. In the scenario illustrated in Figure 4, Assumption 3 allows us to assume that situation (b) will never occur, our method will thus assume that the environment corresponds to case (a). 4.2.2 ALGORITHM 
+
+We now introduce a method to recover the group decomposition i.e. to cluster the available actions into subgroups. Given an encoding function h : X Ñ Rd and a matrix A P Rdˆd, we define the following semi-norm: 
+
+}A}h “ Ex r} Ah pxq}s . (5) From this and Assumption 3, we define the following pseudo-distance to determine whether two actions belong to the same subgroup. We write Ag instead of ρψ pgq for simplicity and readability: 
+
+dGpg, g 1q “ min  
+
+> uPG
+> mPJ1,M K
+
+min 
+
+!
+
+}Ag ´ Amu Ag1 }h; }Ag ´ Ag1 Amu }h; }Ag1 ´ Amu Ag }h; }Ag1 ´ Ag Amu }h
+
+)
+
+.
+
+(6) 
+
+Theorem 2. If the Assumption 1 to 3 are satisfied, the dataset contains all the possible transitions, 
+
+W is finite and the A-VAE loss converges toward its minimum, then at some point of the training, two available actions will belong to the same subgroup if and only if their distance with respect to 
+
+dG is below a specific threshold η computed from h and ρψ .
+
+5Published as a conference paper at ICLR 2026 Based on Theorem 2, we design a clustering algorithm that groups together actions g and g1 when-ever dGpg, g 1q ď η. The choice of the threshold η, the details of the algorithm, and the proof are provided in Appendix C. Once the group decomposition has been recovered, a suitable disentangled representation learning algorithm can be applied. For example, if G “ t g1, g ´11 u Y t g2, g ´12 u, then G is isomorphic to a subgroup of SO p2q ˆ SO p2q, and Forward-VAE (Caselles-Dupr´ e et al., 2019) can be employed with an appropriate parameterization. However, as discussed in Section 3, existing LSBD methods still rely on some form of prior knowledge about the group structure. In the following section, we address this limitation by introducing a new disentangled representation learning algorithm that does not require such prior information. 4.3 (S TEP 3) L EARN A DISENTANGLED REPRESENTATION 
+
+Now that we have the symmetry group decomposition, we aim to find a linear disentangled repre-sentation i.e. a decomposition Z “ Z1 ‘ ¨ ¨ ¨ ‘ ZK and an action representation ρ “ ρ1 ‘ ¨ ¨ ¨ ‘ ρK
+
+such that for each action g “ p g1, . . . , g K q P G and latent factor z “ p z1, . . . , z K q we have 
+
+ρpg1, . . . , g K qp z1, . . . , z K q “ p ρ1pg1qz1, . . . , ρ K pgK qzK q.This definition allows the Zi to be any sub-vector spaces of Z as long as they form a direct sum, they are not required to be orthogonal. In our method, we additionally choose to search for represen-tations where the disentanglement aligns with Cartesian axes of the latent space Z“Z1 ˆ ¨ ¨ ¨ ˆ ZK .This choice is motivated by the fact that, under most widely accepted definitions of disentangle-ment, each latent dimension is expected to encode information about at most one ground-truth factor of variation (Wang et al., 2024). Consequently ρpg1, . . . , g K qp z1, . . . , z K q “ ρpgqz with 
+
+z “ concat pz1, . . . , z K q and ρpgq “ diag pρ1pg1q, . . . , ρ K pgK qq . 
+
+> πkπkπJ
+> k
+> A
+> rA
+
+Figure 5: Masking used to build disentangled ac-tion matrices Thanks to Assumption 2, each action is known to belong to a unique sub-group. Consequently, for any g P Gk and k1 ‰ k, we have ρk1 pgq equal to the identity transformation. In matrix terms, this implies that each ac-tion is represented by the identity matrix, except for a single block along the diagonal, as illustrated in Figure 5 with the matrix rA (in practice, the indices of the matrix may be permuted, however for the sake of clarity, we illustrate only the case in which the active dimensions are adjacent). Learning the structure of these matrices amounts to assigning each latent dimension i to a unique subgroup Gk. Let πk P t 0, 1ud denote the bi-nary indicator vector encoding the set of dimensions assigned to the k-th subgroup, such that ř 
+
+> k
+
+πk,i “ 1.To enforce the desired block structure in the action matrices, we apply the mask πkπJ 
+
+> k
+
+to unstruc-tured action matrices A as illustrated in Figure 5. Let kpgq denote the index of the subgroup to which the action g belongs, and let d denote the element-wise product. The structured action matrix rAg is then defined as: 
+
+rAg “ πkpgqπJ 
+
+> kpgq
+
+d Ag ` p 1 ´ πkpgqπJ
+
+> kpgq
+
+q d I (7) To learn the vectors πk, we employ a continuous relaxation. Specifically, we use d softmax op-erations to ensure that πk,i P r 0, 1s with ř 
+
+> k
+
+πk,i “ 1. In order to promote disentanglement, we introduce an additional term in the A-VAE loss function that encourages the vectors πk to be close to be binary. A natural approach is to minimize the entropy Hpπq “ ř 
+
+> i
+
+Hpπ:,i q. However, empir-ical observations show that directly minimizing this entropy causes it to collapse to zero before the other loss components begin to decrease, leading to a random dimension assignment. To address this issue, we define the disentanglement loss as LDIS “ ř 
+
+> i
+
+|Hpπ:,i q ´ C|, where C is a target entropy value that is gradually annealed from its maximum to zero during training. We refer to this method as the Group-Masked Action-based VAE (GMA-VAE). The following result, proven in Appendix D, formalizes the disentanglement guarantee: 
+
+Theorem 3. If Assumptions 1 and 2 are satisfied, the dataset contains all the transitions and G is finite, then the encoders minimizing the GMA-VAE loss are LSBD representations with respect to 
+
+xW, b, ś
+
+> k
+
+xGkyy with xGky representing the subgroup generated by Gk.
+
+6Published as a conference paper at ICLR 2026 
+
+## 5 RESULTS 
+
+5.1 EXPERIMENTS 
+
+Metrics : To evaluate the disentanglement, we use the Independence (Inde) metric (Painter et al., 2020) that was specifically designed for the LSBD framework; we will also use classical disentan-glement metrics: β-VAE (Higgins et al., 2017), Mutual Information Gap (MIG) (Chen et al., 2018), DCI disentanglement metric (Eastwood & Williams, 2018), Modularity (Mod) (Ridgeway & Mozer, 2018) and SAP (Kumar et al., 2018). All these metrics take values between 0 and 1 and are meant to be maximized. 
+
+Algorithms : We categorize the baseline methods into three classes: (1) Supervised methods where the action representation ρ is given. The only supervised method is LSBD-VAE (Tonnaer et al., 2022). (2) Self-supervised methods where ρ is learned as in SOBDRL (Quessard et al., 2020). We introduce a modified LSBD-VAE in which the action representation ρ is learned rather than provided, we refer to this variant as method LSBD-VAE ˚. As also reported in Tonnaer et al. (2022), we were unable to obtain satisfactory results with Forward-VAE (Caselles-Dupr´ e et al., 2019) on our datasets, therefore it is not included among the baselines. An other method is HAE (Keurti et al., 2023) that is specifically designed for Lie groups and therefore is only used in Section 5.6. (3) Unsupervised methods which rely solely on observations rather than transitions. This category includes classical disentanglement approaches: β-VAE (Higgins et al., 2017), Factor-VAE (Kim & Mnih, 2018) and DIP-VAE I/II (Kumar et al., 2018). 
+
+Latent dimension : For A-VAE we arbitrarily chose a latent dimension of 13, for the LSBD methods we chose the minimal dimension depending on the method and the symmetry group. Those minimal dimensions are discussed in Appendix E. 
+
+Environments : Similarly to Flatland (Caselles-Dupr´ e et al., 2018), our first environment consists of a disk moving along the x and y axes over a black background as illustrated Figure 1. Additionaly to the groups acting on the position of the disk, a third group acts on the color feature and can be either a cyclic shift of the RGB channels, corresponding to GC “ Z{3Z with GC “ t c´, c `u,or a full permutation group over the RGB channels, i.e., GC “ S3 with GC “ S˚ 
+
+> 3
+
+. The second environment is based on the COIL dataset (Nene et al., 1996), which contains images of objects captured from multiple viewpoints. Each observation consists of n adjacent objects. Each object 
+
+i P J1, n K can be rotated through ki discrete angles, forming a cyclic rotation group GRi “ Z{kiZ,with the action set GRi “ t r´ 
+
+> i
+
+, r ` 
+
+> i
+
+u. In addition, the objects can be permuted via the symmetric group GS “ Sn. The third environment use the 3DShapes dataset (Burgess & Kim, 2018), which consists of rendered images of a 3D object placed in a colored room. The data is generated from six discrete ground-truth factors: wall hue, object hue, background hue, object scale, object shape, and viewing angle. For each factor i, we define a cyclic symmetry group Gi “ Z{kiZ and an action set consisting of two shifts, Gi “ t g´ 
+
+> i
+
+, g ` 
+
+> i
+
+u, corresponding to increments and decrements along the factor axis. The final dataset is MPI3D (Gondal et al., 2019), which consists of realistic images of a robotic arm moving an object. Among the various factors of variation available in the dataset, we retain only the horizontal and vertical rotation angles of the arm. Both are modeled as cyclic groups, 
+
+GH “ Z{40 Z and GV “ Z{40 Z, with corresponding action sets GH “ G˚ 
+
+> H
+
+and GV “ G˚ 
+
+> V
+
+.5.2 ACTION CLUSTERING 
+
+To evaluate the action clustering performance of Step 2, we use the Flatland environment with cyclic color shifts (FLC) and color permutations (FLP), as well as the COIL dataset with two (COIL2) and three (COIL3) objects. Our algorithm successfully recovers the ground-truth group decomposition in 100% of runs. The average group distances across random seeds are reported in Appendix H.5. In these experiments, the datasets include all possible transitions, and the available actions are simple (e.g., an action and its inverse). To assess the robustness of our method, we consider more challeng-ing settings with both complex action sets and limited transition coverage. For this purpose, we use the COIL environment with three or four objects and random action sets G satisfying Assumptions 2 and 3, those environments are given Appendix I.1. In this setting, for each state w P W, we ran-domly sample na ď | G| available actions to be used in the dataset. The results show that, as soon as 
+
+na ě 2, the method consistently recovers the correct group decomposition. Importantly, the same hyperparameters are used across all of these latter experiments. 7Published as a conference paper at ICLR 2026 5.3 DISENTANGLEMENT 
+
+(a) FLC LSBD-VAE  
+
+> LSBD-VAE*
+> SOBDRL
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+(b) FLP LSBD-VAE  
+
+> LSBD-VAE*
+> SOBDRL
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+(c) COIL2 LSBD-VAE  
+
+> LSBD-VAE*
+> SOBDRL
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+(d) COIL3 LSBD-VAE  
+
+> LSBD-VAE*
+> SOBDRL
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+(e) 3DShapes LSBD-VAE 
+
+> LSBD-VAE*
+> SOBDRL
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+β-VAE Inde Mod DCI SAP MIG Figure 6: Median of disentanglement metrics. Vertical lines indicates the 25th to 75th percentile To evaluate the disentanglement we use the same environments as before, the disentangled results are shown Figure 6. For more clarity we do not present the disentanglement of unsupervised methods as they perform significantly worse than LSBD methods. Detailed results including unsupervised methods are available in Appendix H.4. The first observation is that all methods perform poorly in MIG and SAP as these two metrics require each ground truth factor of variation to be encoded in a unique dimension. However, linear disentanglement mostly requires features to be encoded in at least two dimensions as discussed in Appendix E. The only exception is COIL2 as the permutation group S2 can be encoded in only one dimension with our method. The second observation is that our method performs almost perfectly for the other metrics and yields a disentanglement comparable to the supervised method LSBD-VAE. 5.4 LONG -TERM PREDICTION 
+
+(a) COIL2 10 0 10 1 10 2 10 3 10 4    
+
+> Sequence length
+> 10 4
+> 10 3
+> 10 2
+> 10 1
+> Prediction error
+
+(b) COIL3 10 0 10 1 10 2 10 3 10 4      
+
+> Sequence length
+> 10 4
+> 10 3
+> 10 2
+> 10 1
+> Prediction error
+> LSBD-VAE LSBD-VAE ˚
+> SOBDRL (entangled) SOBDRL (disentangled) GMA-VAE (ours) A-VAE (ours)
+
+Figure 7: Median of long-term prediction error, the shaded area indicates the 25th to 75th percentile We aim to investigate the effect of disentanglement on long-term prediction accuracy. To this end, we use the trained models to pre-dict a final observation given an initial observation and a sequence of actions. For the COIL2 dataset, SOBDRL fails to consistently learn a disentangled representation. We therefore separate the seeds into two groups: those where disentanglement is achieved and those where it is not. On the COIL3 dataset, SOBDRL is unable to dis-entangle the representation at all, as the method is not suited to permutation-based symmetries. We also omit the results of LSBD-VAE ˚ on COIL3, as it fails to consistently produce accurate predic-tions even for single-step transitions. Figure 7 shows the prediction error as a function of the sequence length. We observe a drop in the prediction error of SOBDRL on COIL2. This behavior comes from the fact that disentangled ac-tions of SOBDRL are SO p2q rotations. In one of the seeds, the action that swaps the two objects has a larger angular error than the other actions, causing the corresponding latent dimensions to diverge first. However, due to the cyclic nature of SO p2q, the ac-cumulated angular errors eventually cancel out, completing a full rotation and temporarily restoring the correct latent representation. Overall, three types of behavior emerge from the results. First, en-tangled self-supervised methods (A-VAE and SOBDRL) achieve good short-term predictions but quickly diverge as the sequence length increases. In particular, the A-VAE curve ends early because the latent representations even-tually diverge to NaN values. Second, disentangled self-supervised methods (GMA-VAE, SOB-DRL and LSBD-VAE ˚) achieve significantly better long-term predictions. Finally, the supervised method LSBD-VAE achieves perfect prediction performance regardless of sequence length. This is explained by the fact that, with access to ground-truth action matrices, the model satisfies exactly 
+
+Ag Ag1 “ Agg 1 , making multi-step prediction no more difficult than single-step prediction. 8Published as a conference paper at ICLR 2026 5.5 GENERALIZATION 
+
+To assess how disentanglement impacts generalization, we train each model on COIL2 and COIL3 using restricted datasets. We first consider the independant and identicaly distributed (iid) setting, in which the training and test sets follow the same distribution. Specifically, for each state, we uniformly sample na “ | G|{ 2 actions to include in the training data. The second experiment assesses the out-of-distribution (ood) generalization capabilities of the models. In this setting, the training set is restricted to transitions in which only the right-most object is allowed to rotate. We evaluate the prediction error on both seen and unseen transitions, the results are reported in Table 1 using the format seen / unseen prediction error. We highlight in bold the methods for which the error increases by less than 5% between seen and unseen transitions. In both experiments, we observe that all disentangled methods generalize well, while most entangled methods exhibit poor generalization, particularly in the ood setting. Table 1: iid and ood prediction error, the format used is seen / unseen prediction error 
+
+iid ood COIL2 COIL3 COIL2 COIL3 LSBD-VAE 7.8e-5 / 7.9e-5 1.1e-4 / 1.1e-4 7.6e-5 / 7.6e-5 9.9e-5 / 9.9e-5 
+
+LSBD-VAE ˚ 8.7e-5 / 8.8e-5 8.8e-5 / 8.8e-5 
+
+SOBDRL Disentangled 1.7e-4 / 1.7e-4 5.1e-5 / 5.1e-5 
+
+Entangled 1.7e-4 / 3.7e-3 2.5e-4 / 2.5e-4 5.7e-5 / 0.02 2.5e-4 / 0.01 .GMA-VAE 6.1e-5 / 6.2e-5 1.1e-4 / 1.1e-4 6.2e-5 / 6.2e-5 1.1e-4 / 1.1e-4 
+
+A-VAE 7.7e-5 / 7.8e-5 2.9e-4 / 8.7e-4 6.7e-5 / 0.05 2.9e-4 / 0.05 .
+
+5.6 LIE GROUPS 
+
+(a) MPI3D SOBDRL 
+
+> HAE
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+
+(b) Noisy MPI3D SOBDRL 
+
+> HAE
+> GMA-VAE
+> (ours)
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+> β-VAE DCI Inde SAP Mod MIG
+
+Figure 8: Median of disentan-glement metrics on MPI3D Here, we aim to investigate how our proposed method can be ex-tended to continuous groups, such as Lie groups. The action clus-tering procedure of Step 2 cannot be applied to continuous groups since it relies on a finite clustering process. Nevertheless, when the group decomposition is assumed to be known, GMA-VAE can still be used to learn a disentangled representation, as the proof of Theorem 3 can be adapted to continuous symmetry groups: 
+
+Theorem 3’. If Assumptions 1 and 2 hold, the dataset contains all transitions, and the monoid generated by each Gk is Gk, then the encoders that minimize the GMA-VAE loss are LSBD representa-tions with respect to xW, b, ś 
+
+> k
+
+Gky.
+
+To empirically validate this claim, we consider the MPI3D dataset, in which actions correspond to continuous rotations of a robotic arm. The symmetry group is modeled by SO p2qˆ SO p2q, each sub-group corresponding to an axis of rotation of the arm. The action representation ρ : g Þ Ñ ρpgq is implemented as a neural network, while the rest of the GMA-VAE architecture remains unchanged. As reported in Figure 8a, GMA-VAE achieves performance com-parable to SOBDRL and outperforms HAE. To evaluate the robustness of GMA-VAE to noise, we introduce Gaussian noise with a standard deviation of 2π{15 to the actions. The results, presented in Figure 8b, indicates an increase in the SAP metric, which is expected since a low SAP value is required for a well-disentangled LSBD representation. For the remaining metrics, GMA-VAE performs at least as well as the other methods, suggest-ing that it exhibits greater resilience to action noise. 9Published as a conference paper at ICLR 2026 
+
+## 6 ALTERNATIVE REPRESENTATION LEARNING PARADIGMS 
+
+This section shortly reviews three other related but different paradigms for representation learning. First, the causal representation learning approach (Sch¨ olkopf et al., 2021) proposes to ground the latent variables in the causal generative processes of the environment and seeks representations that correspond to underlying causal factors and their relations. Several identifiability results have been derived in this framework, relying on different assumptions, for instance regarding the available actions (or interventions) (Brehmer et al., 2022), the structure of the causal graph (Lippe et al., 2023), prior knowledge of the intervention targets (Lippe et al., 2022), or other inductive biases such as the sparsity of the causal graph (Lachapelle et al., 2022), or the transferability of causal representations (Bengio et al., 2020). Symmetry-based and causality-based disentanglement share some similarities (mathematically grounded, exploit interventions or actions) but have very different assumptions, justifying our choice not to include this framework in our comparisons. Another line of work is object-centric representation learning, where the goal is to learn a factorized representation of objects and optionally their underlying dynamics. While promising, these methods often rely on either explicit structural assumptions or strong inductive biases that are closely tied to the nature of the observations, most notably images. In particular, they frequently exploits the spatial organization of visual scenes, encouraging representations that capture localized and compositional object structure (Zhu et al., 2018; Greff et al., 2019; Locatello et al., 2020; Kipf et al., 2022). More-over, the question of disentangling the different features representing each object is often left aside. This field of research is not as focused on idenfiability proofs, but has shown strong empirical results in more complex and realistic environments. A third line of work leverages group-equivariant neural networks, which exploit underlying sym-metries. Classical approaches impose symmetries explicitly by designing architectures that are equivariant by construction (Cohen & Welling, 2016; Worrall et al., 2017; Weiler & Cesa, 2019; Dehmamy et al., 2021). However, these architectures are typically tailored to geometric transfor-mations in the observation space (e.g., rotations or translations). More recent methods aim to learn equivariant neural networks with respect to more general symmetries, primarily by incorporating an additional equivariant loss term. In most cases, however, at least part of the group structure is assumed to be known (Mondal et al., 2022; Park et al., 2022; Shakerinava et al., 2022; Jin et al., 2024). While such symmetry-based approaches enhance the structure of the latent space and often improve sample efficiency and generalization, they do not explicitly focus on learning disentangled representations. 
+
+## 7 CONCLUSION 
+
+We introduced two independent algorithms: an action clustering method based on A-VAE, which provably recovers the ground-truth symmetry group structure, and a symmetry-based disentangled representation learning method, GMA-VAE, which achieves performance comparable to LSBD-VAE, even though the latter assumes prior knowledge of the action representations. Both of our methods rely on a strong assumption which requires the available actions to be disentangled. How-ever, to the best of our knowledge, related state-of-the-art LSBD approaches also implicitly de-pend on this assumption to consistently learn a disentangled representation. While this restricts the applicability of the method to certain environments, it enables theoretical guarantees for both the action clustering and the disentanglement process. We further evaluate LSBD representations on downstream tasks and show that disentangled representations lead to significantly better long-term prediction performance and generalization, particularly in out-of-distribution scenarios. A limitation of our approach compared to existing methods is that the full pipeline requires train-ing two neural networks from scratch. A future work would be to initialize GMA-VAE with the pretrained encoder from A-VAE, or develop an end-to-end method that unifies the action clustering and representation learning steps into a single optimization process. Another limitation is the lack of more realistic experiments that explicitly challenge the assumptions of the LSBD framework and our own hypotheses. Investigating the behavior of our method under such conditions constitutes an important direction for future work. 10 Published as a conference paper at ICLR 2026 
+
+## REPRODUCIBILITY STATEMENT 
+
+All the previous results are reproducible using the code on GitHub 1. It includes all necessary com-ponents to generate the datasets, run the training procedures with the same hyperparameters and initialization seeds, and reproduce the figures. 
+
+## REFERENCES 
+
+Yoshua Bengio, Aaron Courville, and Pascal Vincent. Representation learning: A review and new perspectives. IEEE transactions on pattern analysis and machine intelligence , 35(8):1798–1828, 2013. Yoshua Bengio, Tristan Deleu, Nasim Rahaman, Nan Rosemary Ke, Sebastien Lachapelle, Olexa Bilaniuk, Anirudh Goyal, and Christopher Pal. A meta-transfer objective for learning to disentan-gle causal mechanisms. In International Conference on Learning Representations , 2020. Johann Brehmer, Pim De Haan, Phillip Lippe, and Taco S Cohen. Weakly supervised causal repre-sentation learning. Advances in Neural Information Processing Systems , 35:38319–38331, 2022. Chris Burgess and Hyunjik Kim. 3d shapes dataset. https://github.com/deepmind/3dshapes-dataset/, 2018. Hugo Caselles-Dupr´ e, Louis Annabi, Oksana Hagen, Michael Garcia-Ortiz, and David Filliat. Flat-land: a lightweight first-person 2-d environment for reinforcement learning. arXiv preprint arXiv:1809.00510 , 2018. Hugo Caselles-Dupr´ e, Michael Garcia Ortiz, and David Filliat. Symmetry-based disentangled rep-resentation learning requires interaction with environments. Advances in Neural Information Processing Systems , 32, 2019. Ricky TQ Chen, Xuechen Li, Roger B Grosse, and David K Duvenaud. Isolating sources of disen-tanglement in variational autoencoders. Advances in neural information processing systems , 31, 2018. Xi Chen, Yan Duan, Rein Houthooft, John Schulman, Ilya Sutskever, and Pieter Abbeel. Infogan: Interpretable representation learning by information maximizing generative adversarial nets. In 
+
+Advances in Neural Information Processing Systems , volume 29, 2016. Taco Cohen and Max Welling. Group equivariant convolutional networks. In International confer-ence on machine learning , pp. 2990–2999. PMLR, 2016. Nima Dehmamy, Robin Walters, Yanchen Liu, Dashun Wang, and Rose Yu. Automatic symmetry discovery with lie algebra convolutional network. Advances in Neural Information Processing Systems , 34:2503–2515, 2021. Sunny Duan, Loic Matthey, Andre Saraiva, Nicholas Watters, Christopher P Burgess, Alexander Lerchner, and Irina Higgins. Unsupervised model selection for variational disentangled represen-tation learning. arXiv preprint arXiv:1905.12614 , 2019. Cian Eastwood and Christopher KI Williams. A framework for the quantitative evaluation of disen-tangled representations. In 6th International Conference on Learning Representations , 2018. Muhammad Waleed Gondal, Manuel Wuthrich, Djordje Miladinovic, Francesco Locatello, Martin Breidt, Valentin Volchkov, Joel Akpo, Olivier Bachem, Bernhard Sch¨ olkopf, and Stefan Bauer. On the transfer of inductive bias from simulation to the real world: a new disentanglement dataset. 
+
+Advances in Neural Information Processing Systems , 32, 2019. Klaus Greff, Rapha¨ el Lopez Kaufman, Rishabh Kabra, Nick Watters, Christopher Burgess, Daniel Zoran, Loic Matthey, Matthew Botvinick, and Alexander Lerchner. Multi-object representation learning with iterative variational inference. In International conference on machine learning , pp. 2424–2433. PMLR, 2019. 
+
+> 1https://github.com/barthdn/gmavae
+
+11 Published as a conference paper at ICLR 2026 Irina Higgins, Loic Matthey, Arka Pal, Christopher Burgess, Xavier Glorot, Matthew Botvinick, Shakir Mohamed, and Alexander Lerchner. beta-vae: Learning basic visual concepts with a constrained variational framework. In International conference on learning representations , 2017. Irina Higgins, David Amos, David Pfau, Sebastien Racaniere, Loic Matthey, Danilo Rezende, and Alexander Lerchner. Towards a definition of disentangled representations. arXiv preprint arXiv:1812.02230 , 2018. Chester Holtz, Gal Mishne, and Alexander Cloninger. Evaluating disentanglement in generative models without knowledge of latent factors. In Topological, Algebraic and Geometric Learning Workshops 2022 , pp. 161–171. PMLR, 2022. Lawrence J. Hubert and Phipps Arabie. Comparing partitions. Journal of Classification , 2:193–218, 1985. Yinzhu Jin, Aman Shrivastava, and P Thomas Fletcher. Learning group actions on latent represen-tations. Advances in Neural Information Processing Systems , 37:127273–127295, 2024. Hamza Keurti, Hsiao-Ru Pan, Michel Besserve, Benjamin F Grewe, and Bernhard Sch¨ olkopf. Ho-momorphism autoencoder–learning group structured representations from observed transitions. In International Conference on Machine Learning , pp. 16190–16215. PMLR, 2023. Hyunjik Kim and Andriy Mnih. Disentangling by factorising. In International conference on ma-chine learning , pp. 2649–2658. PMLR, 2018. Diederik P. Kingma and Jimmy Ba. Adam: A Method for Stochastic Optimization. In 3rd Inter-national Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Conference Track Proceedings , 2015. Diederik P. Kingma and Max Welling. Auto-encoding variational bayes. In 2nd International Conference on Learning Representations, ICLR 2014, Banff, AB, Canada, April 14-16, 2014, Conference Track Proceedings , 2014. Thomas Kipf, Gamaleldin Fathy Elsayed, Aravindh Mahendran, Austin Stone, Sara Sabour, Georg Heigold, Rico Jonschkowski, Alexey Dosovitskiy, and Klaus Greff. Conditional object-centric learning from video. In International Conference on Learning Representations , 2022. Abhishek Kumar, Prasanna Sattigeri, and Avinash Balakrishnan. Variational inference of disen-tangled latent concepts from unlabeled observations. In International Conference on Learning Representations , 2018. S´ ebastien Lachapelle, Pau Rodriguez, Yash Sharma, Katie E Everett, R´ emi Le Priol, Alexandre Lacoste, and Simon Lacoste-Julien. Disentanglement via mechanism sparsity regularization: A new principle for nonlinear ica. In Conference on Causal Learning and Reasoning , pp. 428–484. PMLR, 2022. Seunghun Lee, Sunghyun Cho, and Sunghoon Im. Dranet: Disentangling representation and adap-tation networks for unsupervised cross-domain adaptation. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , pp. 15252–15261, 2021. Phillip Lippe, Sara Magliacane, Sindy L¨ owe, Yuki M Asano, Taco Cohen, and Stratis Gavves. Citris: Causal identifiability from temporal intervened sequences. In International Conference on Machine Learning , pp. 13557–13603. PMLR, 2022. Phillip Lippe, Sara Magliacane, Sindy L¨ owe, Yuki M Asano, Taco Cohen, and Efstratios Gavves. Biscuit: Causal representation learning from binary interactions. In Uncertainty in Artificial Intelligence , pp. 1263–1273. PMLR, 2023. Francesco Locatello, Gabriele Abbati, Thomas Rainforth, Stefan Bauer, Bernhard Sch¨ olkopf, and Olivier Bachem. On the fairness of disentangled representations. Advances in neural information processing systems , 32, 2019a. 12 Published as a conference paper at ICLR 2026 Francesco Locatello, Stefan Bauer, Mario Lucic, Gunnar Raetsch, Sylvain Gelly, Bernhard Sch¨ olkopf, and Olivier Bachem. Challenging common assumptions in the unsupervised learning of disentangled representations. In international conference on machine learning , pp. 4114–4124. PMLR, 2019b. Francesco Locatello, Dirk Weissenborn, Thomas Unterthiner, Aravindh Mahendran, Georg Heigold, Jakob Uszkoreit, Alexey Dosovitskiy, and Thomas Kipf. Object-centric learning with slot atten-tion. Advances in neural information processing systems , 33:11525–11538, 2020. Arnab Kumar Mondal, Vineet Jain, Kaleem Siddiqi, and Siamak Ravanbakhsh. Eqr: Equivariant representations for data-efficient reinforcement learning. In International Conference on Machine Learning , pp. 15908–15926. PMLR, 2022. Sameer A Nene, Shree K Nayar, Hiroshi Murase, et al. Columbia object image library (coil-100). Technical report, Technical report CUCS-006-96, 1996. Matthew Painter, Adam Prugel-Bennett, and Jonathon Hare. Linear disentangled representations and unsupervised action estimation. Advances in Neural Information Processing Systems , 33: 13297–13307, 2020. Jung Yeon Park, Ondrej Biza, Linfeng Zhao, Jan Willem van de Meent, and Robin Walters. Learning symmetric embeddings for equivariant world models. In International Conference on Machine Learning , 2022. David Pfau, Irina Higgins, Alex Botev, and S´ ebastien Racani` ere. Disentangling by subspace diffu-sion. Advances in Neural Information Processing Systems , 33:17403–17415, 2020. Robin Quessard, Thomas Barrett, and William Clements. Learning disentangled representations and group structure of dynamical environments. Advances in Neural Information Processing Systems ,33:19727–19737, 2020. Richard Rasala. On the minimal degrees of characters of sn. Journal of Algebra , 45(1):132–181, 1977. Luis A P´ erez Rey, Vlado Menkovski, and Jacobus W Portegies. Diffusion variational autoencoders. 
+
+arXiv preprint arXiv:1901.08991 , 2019. Danilo Jimenez Rezende, Shakir Mohamed, and Daan Wierstra. Stochastic backpropagation and ap-proximate inference in deep generative models. In International conference on machine learning ,pp. 1278–1286. PMLR, 2014. Karl Ridgeway and Michael C Mozer. Learning deep disentangled embeddings with the f-statistic loss. Advances in neural information processing systems , 31, 2018. Bernhard Sch¨ olkopf, Francesco Locatello, Stefan Bauer, Nan Rosemary Ke, Nal Kalchbrenner, Anirudh Goyal, and Yoshua Bengio. Toward causal representation learning. Proceedings of the IEEE , 109(5):612–634, 2021. Mehran Shakerinava, Arnab Kumar Mondal, and Siamak Ravanbakhsh. Structuring representations using group invariants. Advances in Neural Information Processing Systems , 35:34162–34174, 2022. Loek Tonnaer, Luis Armando Perez Rey, Vlado Menkovski, Mike Holenderski, and Jim Portegies. Quantifying and learning linear symmetry-based disentanglement. In Proceedings of the 39th International Conference on Machine Learning , volume 162, pp. 21584–21608, 2022. Xin Wang, Hong Chen, Si’ao Tang, Zihao Wu, and Wenwu Zhu. Disentangled representation learn-ing. IEEE Transactions on Pattern Analysis and Machine Intelligence , 46(12):9677–9696, 2024. Maurice Weiler and Gabriele Cesa. General e (2)-equivariant steerable cnns. Advances in neural information processing systems , 32, 2019. Daniel E Worrall, Stephan J Garbin, Daniyar Turmukhambetov, and Gabriel J Brostow. Harmonic networks: Deep translation and rotation equivariance. In Proceedings of the IEEE conference on computer vision and pattern recognition , pp. 5028–5037, 2017. 13 Published as a conference paper at ICLR 2026 Tao Yang, Xuanchi Ren, Yuwang Wang, Wenjun Zeng, and Nanning Zheng. Towards building a group-based unsupervised representation disentanglement framework. In International Confer-ence on Learning Representations , 2022. Sharon Zhou, Eric Zelikman, Fred Lu, Andrew Y. Ng, Gunnar E. Carlsson, and Stefano Ermon. Evaluating the disentanglement of deep generative models through manifold topology. In Inter-national Conference on Learning Representations , 2021. Guangxiang Zhu, Zhiao Huang, and Chongjie Zhang. Object-oriented dynamics predictor. Advances in Neural Information Processing Systems , 31, 2018. Xinqi Zhu, Chang Xu, and Dacheng Tao. Commutative lie group vae for disentanglement learning. In International Conference on Machine Learning , pp. 12924–12934. PMLR, 2021. 
+
+## A MATHEMATICAL BACKGROUND 
+
+Vector Subspaces. Let V be a vector space over a field R. A subset W Ď V is called a vector subspace if it is closed under vector addition and scalar multiplication; that is, for all u, v P W and 
+
+λ P R, we have u ` v P W and λu P W .
+
+Direct Sums of Subspaces. Let V be a vector space and let W1, W 2 Ď V be subspaces. We say that V is the direct sum of W1 and W2, denoted V “ W1 ‘ W2, if every v P V can be uniquely written as v “ w1 ` w2 with w1 P W1 and w2 P W2, and W1 X W2 “ t 0u.
+
+Eigenvalues and Eigenspaces. Let T : V Ñ V be a linear operator on a vector space V . A scalar 
+
+λ P R is an eigenvalue of T if there exists a non-zero vector v P V such that T pvq “ λv . The corresponding set of vectors tv P V | T pvq “ λv u is called the eigenspace associated with λ, and is a subspace of V . The set of eignvalues is called the spectrum .
+
+Groups. A group is a set G equipped with a binary operation px, y q Þ Ñ xy satisfying the following axioms: • (Associativity) pxy qz “ xpyz q for all x, y, z P G;• (Identity element) There exists an element e P G such that ex “ xe “ x for all x P G;• (Inverse element) For every x P G, there exists x´1 P G such that xx ´1 “ x´1x “ e.We often denote by G˚ “ Gzt eu the set of non-identity elements of G.
+
+Examples of Groups. 
+
+• The cyclic group Z{nZ of integers modulo n.• The symmetric group Sn of permutations of n elements. • The general linear group GL pVq of invertible linear transformations on a vector space V.• The special orthogonal group SO pnq of n ˆ n orthogonal matrices with determinant 1. 
+
+Direct Product of Groups. Given two groups G1 and G2, their direct product is the group G “
+
+G1 ˆ G2 with the operation defined componentwise: 
+
+pg1, g 2qp h1, h 2q :“ p g1h1, g 2h2q.
+
+Each group Gi is referred to as a direct factor of G. By abuse of notation, G1 is often identified with the subgroup G1 ˆ t e2u Ď G, where e2 is the identity element of G2.14 Published as a conference paper at ICLR 2026 
+
+Subgroup and submonoid generated. For a subset S Ă G, we call the subgroup gen-erated by S noted xSy the smallest subgroup of G that contains S. We have xSy “tsε1 
+
+> 1
+
+sε2 
+
+> 2
+
+¨ ¨ ¨ sεk 
+
+> k
+
+| k P N, s i P S, ε i P t˘ 1uu . We call the submonoid generated by S the set of all finite products of elements of S, and note it xSy` “ t s1s2 ¨ ¨ ¨ sk | k P N, s i P Su. If G is finite, then for all S Ă G we have xSy “ x Sy`.
+
+Group Representations. A representation of a group G on a vector space V is a map 
+
+ρ : G ˆ V Ñ V
+
+such that for all g, h P G and v P V , by denoting g ¨ v for ρpg, v q we have 
+
+e ¨ v “ v and g ¨ p h ¨ vq “ p gh q ¨ v
+
+Equivalently, a representation can be described as a group homomorphism 
+
+ρ : G Ñ GL pV q, where ρpgqp vq :“ ρpg, v q.
+
+The representation ρ : G Ñ GL pV q is injective if and only if its kernel, defined as ker pρq :“ t g P
+
+G | ρpgq “ Id V u, is reduced to the identity element teu. In this case, we write ρ : G ãÑ GL pV q
+
+and refer to it as a faithful representation .
+
+Direct Sum of Representations. Let pρ1, V 1q and pρ2, V 2q be two representations of a group G.Their direct sum is the representation 
+
+ρ1 ‘ ρ2 : G Ñ GL pV1 ‘ V2q
+
+defined by 
+
+pρ1 ‘ ρ2qp gqp v1, v 2q :“ p ρ1pgqv1, ρ 2pgqv2q.
+
+The space V1 ‘ V2 is then said to carry the direct sum representation of G.
+
+Symbol Meaning Symbol Meaning 
+
+W World space Z1 ‘ Z2 Direct sum of vector spaces 
+
+X Observation space A ãÑ B Injective map from A to B
+
+X Observation random variable ~A~ Spectral norm of matrix A
+
+Z Latent space Z{nZ Cyclic group of order nZ Latent random variable Sn Symmetric group on n elements 
+
+G Action Group GL pVq General linear group on VG Ă G Available action set SO pVq Special orthogonal group on V
+
+b : W Ñ X Generative function xSy Group generated by set Sh : X Ñ Z Encoder function xSy` Monoid generated by set Sf “ h ˝ b : W Ñ Z Latent generative function G˚ G without its identity element 
+
+ρ : G Ñ GL pZq Action representation 
+
+¨Z : G ˆ Z Ñ Z Group action on latent space 
+
+¨W : G ˆ W Ñ W Group action on world space Table 2: Table of symbols 
+
+## B ELBO DERIVATION 
+
+We focus on the transition τ “ p x, g, x 1q. We have: • pθ pX1|z1q “ N `μθ pz1q, Diag pσθ pz1q2q˘
+
+• pψ,ϕ pZ1|x, g q “ N `ρψ pgqμϕpxq, Id ˘
+
+• qϕpZ1|x1q “ N `μϕpx1q, Diag pσϕpx1q2q˘
+
+We will use several times the fact that if Y „ N pμ, Diag pσq2q then log ppyq “ ´ ř 
+
+> i
+
+log σi ´
+
+> 12
+
+›› y´μσ
+
+››22 ` cste with the element-wise division in the norm. 15 Published as a conference paper at ICLR 2026 Our initial goal is to optimize the log-likelihood log ppτ q “ log pψ,ϕ px, g, x 1q “ log pψ,ϕ px1|x, g q ` 
+
+cst . Indeed, we consider that the model has no prior (or a constant prior) on px, g q and therefore focus on optimizing the log-likelihood log pψ,ϕ px1|x, g q:
+
+log pψ,ϕ px1 | x, g q “ Ez1„qϕpz1|x1q
+
+„
+
+log 
+
+ˆ
+
+pψ,ϕ px1 | x, g q qϕpz1 | x1q
+
+qϕpz1 | x1q
+
+˙ȷ 
+
+“ Ez1„qϕpz1|x1q
+
+„
+
+log 
+
+ˆ ppx1 | z1, x, g qpψ,ϕ pz1 | x, g q
+
+ppz1 | x1, x, g q ¨ qϕpz1 | x1q
+
+qϕpz1 | x1q
+
+˙ȷ 
+
+According to Bayes formula 
+
+“ Ez1„qϕpz1|x1q
+
+„
+
+log qϕpz1 | x1q
+
+ppz1 | x1, x, g q
+
+ȷ
+
+` Ez1„qϕpz1|x1q
+
+„
+
+log pψ,ϕ pz1 | x, g q
+
+qϕpz1 | x1q
+
+ȷ
+
+` Ez1„qϕpz1|x1q
+
+“log ppx1 | z1, x, g q‰
+
+“ DKL 
+
+`qϕpz1 | x1q} ppz1 | x1, x, g q˘ ( ě 0
+
+´ DKL 
+
+`qϕpz1 | x1q} pψ,ϕ pz1 | x, g q˘
+
+` Ez1„qϕpz1|x1q
+
+“log pθ px1 | z1q‰ According to Figure 3 
+
+ě ´ DKL 
+
+`qϕpz1 | x1q} pψ,ϕ pz1 | x, g q˘
+
+` Ez1„qϕpz1|x1q
+
+“log pθ px1 | z1q‰
+
+The lower bound we have derived is composed of two lines. The first line corresponds to the KL divergence between two multivariate normal distributions and thus has an analytical expression. We have (up to an additive constant): 
+
+´DKL 
+
+`qϕpz1 | x1q} pψ,ϕ pz1 | x, g q˘ “ ´ 12
+
+››ρψ pgqμϕpxq ´ μϕpx1q››2´ 12
+
+››σϕpx1q››2`ÿ
+
+> i
+
+log σϕpx1qi
+
+The second line is equal to (up to an additive constant): 
+
+´Ez1„qϕpz1|x1q
+
+«ÿ
+
+> i
+
+log σθ pz1qi `
+
+››››
+
+x1 ´ μθ pz1q
+
+σθ pz1q
+
+››››
+
+> 2
+
+ff 
+
+Putting everything together, we obtain: 
+
+log ppτ q ě ´ 12
+
+››ρψ pgqμϕpxq ´ μϕpx1q››2 ´ 12 }σϕpx1q} 2 ` ÿ
+
+> i
+
+log σϕpx1qi
+
+)
+
+action part 
+
+´ Ez1„qϕpz1|x1q
+
+«ÿ
+
+> i
+
+log σθ pz1qi `
+
+››››
+
+x1 ´ μθ pz1q
+
+σθ pz1q
+
+››››
+
+> 2
+
+ff )
+
+reconstruction part 
+
+` C
+
+## C ACTION CLUSTERING ALGORITHM AND PROOF OF THEOREM 2
+
+Let G “ G1 Y ¨ ¨ ¨ Y GK Ă G with @k Gk Ă Gk denote the ground-truth decomposition of the available action set. Our objective is to design an algorithm that recovers this decomposition based on dG.16 Published as a conference paper at ICLR 2026 C.1 ALGORITHM 
+
+Let A P Rdˆd, we denote by ~A~ “ max zPRdzt 0u }Az }{} z} the spectral norm. We chose the following algorithm: • Compute the variables 
+
+– r “ max gPG t~ Ag ~u the maximal spectral norm, 
+
+– ε “ max pw,g,w 1qP D }Ag f pwq ´ f pw1q} the action loss upperbound, 
+
+– η “ ε
+
+´
+
+1 ` řMi“0 ri
+
+¯
+
+the threshold • Start with unitary clusters: ˆK “ | G| and ˆGi “ t giu
+
+• Iteratively merge the clusters i and j minimizing their distance 
+
+dp ˆGi, ˆGj q :“ max    
+
+> giPˆGi;gjPˆGj
+
+dGpgi, g j q
+
+• Stop whenever the distance is above the threshold η.What if the identity action e belong the available action set G ? After a succesful convergence of the method, for all g P G we have dGpe, g q « 0 since g “ g1e. As a result, e is merged with another element at the first iteration and it will not influence the following computations of dp ˆGi, ˆGj q. As e
+
+can be assigned to any subgroup, its presence does not impact on the performance or correctness of the overall method. C.2 PROOF OF CONVERGENCE 
+
+We aim to show that if Assumption 1 to 3 are satisfied, the dataset contains all the transitions, W is finite and A-VAE loss converge toward its minimum, then clustering algorithm will necessarily find the ground-truth decomposition at some point of the training. For clarity, we assume that every composition of dG in Assumption 3 is of the form g “ umg1. The proves can easily be adapted for the other forms. 
+
+Proposition 1. Under Assumptions 2 and 3, two different actions g, g 1 P G belong to the same subgroup if and only if there exists m P J1, M K and u P G such that g “ umg1.Proof. The forward implication is given by Assumption 3. For the backward implication we distin-guish two cases: 1. If one of element is the identity action e, then e belong the same subgroup of every action 2. If both elements differ from e, then according to Assumption 2 there exists a, b and c
+
+such that g P G˚ 
+
+> a
+
+, g1 P G˚ 
+
+> b
+
+and um P Gc. Therefore g P Gc ˆ G˚ 
+
+> b
+
+zt eu and then Ga XpGc ˆ Gbq ‰ t eu, if we had a ‰ b, this would contradict the direct decomposition of G.If the standard deviation of noises of A-VAE are fixed, then the loss for a transition px, g, x 1q is equal to 
+
+L “ λACT 
+
+››ρψ pgqμϕpxq ´ μϕpx1q››2 ` Ez1„qϕpx1q
+
+”››x1 ´ μθ pz1q››2ı
+
+Unlike a β-VAE, which requires a trade-off between the regularization and the reconstruction, this loss can have both the action loss and the reconstruction loss converging toward 0.When the action loss converges toward zero, we straightforwardly have ε :“
+
+max pw,g qP WˆG }Ag f pwq ´ f pg ¨ wq} Ñ 0 as it is its upper-bound. Additionally, since the coefficients of the action matrices are bounded in our implementation, r is also bounded. As a result, the term η converges toward zero during training. We also have the following result: 17 Published as a conference paper at ICLR 2026 
+
+Proposition 2. Under Assumption 1, if the reconstruction loss converges toward zero, then 
+
+δ :“ min  
+
+> w‰w1
+
+}f pwq ´ f pw1q} Ñ `8 
+
+Proof. Let h : X Ñ Z be the encoder and d : Z Ñ X be the decoder. Let w1 ‰ w2 P W with 
+
+xi “ bpwiq and zi “ hpxiq, as b is injective we have x1 ‰ x2. As the reconstruction loss converges toward 0 and the dataset contains all the transitions and therefore all the observations, we have 
+
+Ez„N pzi,σ 2Iq
+
+“}xi ´ dpzq} 2‰ Ñ 0
+
+Let denote z˚ “ p z1 ` z2q{ 2, ∆ “ } z1 ´ z2}, B “ Bpz˚, 1q the ball of radius 1 centered at z˚ and 
+
+V pdq its volume. Let us denote ppRq “ 1 
+
+> p?2πσ qd
+
+exp 
+
+´
+
+´ R2
+
+> 2σ2
+
+¯
+
+the minimum value of the Gaussian density over a ball of radius R. We aim to show that if the reconstruction loss is sufficiently low, then ∆ must be sufficiently large for the contribution of the reconstruction over the ball to become negligible. 
+
+# B
+
+# `
+
+# z˚
+
+# z1` z2`∆
+
+Since convergence in L2 in probability implies convergence in L1 in probability, for any ϵ ą 0, at some point of the training there is 
+
+ż
+
+> zPRd
+
+N pz; zi, σ 2Iq} xi ´ dpzq} dz ď ϵ
+
+We have 
+
+ϵ ě
+
+ż
+
+> zPRd
+
+N pz; zi, σ 2Iq} xi ´ dpzq} dz 
+
+ě
+
+ż
+
+> zPB
+
+N pz; zi, σ 2Iq} xi ´ dpzq} dz 
+
+ě p
+
+ˆ ∆2 ` 1
+
+˙ ż 
+
+> zPB
+
+}xi ´ dpzq} dz 
+
+by definition of p, since for any z P B, }zi ´ z} ď } zi ´ z˚} ` } z˚ ´ z} ď ∆{2 ` 1
+
+Therefore, by summing the two equations, we obtain: 
+
+2ϵ ě p
+
+ˆ ∆2 ` 1
+
+˙ ż 
+
+> zPB
+
+p} x1 ´ dpzq} ` } x2 ´ dpzq}q dz 
+
+ě p
+
+ˆ ∆2 ` 1
+
+˙ ż 
+
+> zPB
+
+}x1 ´ x2}dz with triangular inequality 
+
+ě p
+
+ˆ ∆2 ` 1
+
+˙
+
+V pdq} x1 ´ x2}
+
+Using the definition of p and isolating ∆ “ } z1 ´ z2}, we obtain 18 Published as a conference paper at ICLR 2026 
+
+}z1 ´ z2} ě 2σ
+
+d
+
+2 log 
+
+ˆ 1
+
+ϵV pdq} x1 ´ x2}
+
+2p?2πσ qd
+
+˙
+
+´ 2
+
+ÝÝÝÑ 
+
+> ϵÑ0
+
+`8 
+
+Therefore }z1 ´ z2} Ñ `8 as the reconstruction loss converges toward 0. Finally, as W is finite, we have min w‰w1 }f pwq ´ f pw1q} Ñ `8 .Consequently, at some point of the training, the inequality δ ą 2η holds. 
+
+Proposition 3. Under Assumptions 2 and 3, if δ ą 2η then g and g1 belong to the same subgroup if and only if dGpg, g 1q ď η
+
+Proof. Suppose that g, g 1 P G with g ‰ g1 belong to the same subgroup, therefore, according to Proposition 1, there exists u P G and m P J1, M K such that g “ umg1. Let w P W
+
+}Ag f pwq ´ Amu Ag1 f pwq} ď } Ag f pwq ´ f pg ¨ wq} ` } f pumg1 ¨ wq ´ Auf pum´1g1 ¨ wq} ` ¨ ¨ ¨ ` } Am´1 
+
+> u
+
+f pug 1 ¨ wq ´ Amu f pg1 ¨ wq} ` } Amu f pg1 ¨ wq ´ Amu Ag1 f pwq} ď } Ag f pwq ´ f pg ¨ wq} ` } f pumg1 ¨ wq ´ Auf pum´1g1 ¨ wq} ` ¨ ¨ ¨ ` ~ Au~m´1 ¨ } f pug 1 ¨ wq ´ Auf pg1 ¨ wq} ` ~ Au~m ¨ } f pg1 ¨ wq ´ Ag1 f pwq} ď ε `
+
+> m
+
+ÿ
+
+> i“0
+
+riε
+
+ď η
+
+After applying expectation over w we find dGpg, g 1q ď } Ag ´ Amu Ag1 }h ď η
+
+Let us now suppose that g, g 1 P G do not belong to same subgroup, therefore, according to Proposi-tion 1, for all u P G and m P J1, M K we have 
+
+δ ď } f pg ¨ wq ´ f pumg1 ¨ wq} ď } f pg ¨ wq ´ Ag f pwq} ` } Ag f pwq ´ Amu Ag1 f pwq} ` } Amu Ag1 f pwq ´ f pumg1 ¨ wq} ď ε ` } Ag f pwq ´ Amu Ag1 f pwq} ` 
+
+> m
+
+ÿ
+
+> i“0
+
+riε
+
+ď } Ag f pwq ´ Amu Ag1 f pwq} ` η
+
+Therefore }Ag f pwq ´ Amu Ag1 f pwq} ě δ ´ η ą η, after applying expectation over w and min over 
+
+u and m we get dGpg, g 1q ą η
+
+Therefore, at some point of the training, two actions belong to the same subgroup if and only if their distance with repect to dG is below the threshold η. As a consequence, the clustering algorithm de-scribed previously successfully recovers the ground-truth decomposition, hence proving Theorem 2. In practice we found that using η “ σ the fixed latent noise standard deviation as a threshold yielded better empirical results. Consequently, we use this value for η in all our experiments. 19 Published as a conference paper at ICLR 2026 
+
+## D PROOF OF THEOREM 3
+
+If the standard deviation of noises of GMA-VAE are fixed, then the loss for a transition px, g, x 1q
+
+equals: 
+
+Lpx, g, x 1q “ λDIS 
+
+ÿ
+
+> i
+
+Hpπ:,i q ` λACT 
+
+››ρψ pgqμϕpxq ´ μϕpx1q››2 ` Ez1„qϕpx1q
+
+”››x1 ´ μθ pz1q››2ı
+
+Let us suppose that G is finite, that the dataset contains all possible transitions, and that the losses of GMA-VAE have converged to their global minimum of 0. We aim to prove that the encoder is a LSBD representation. We cannot directly prove that it is disentangled with respect to xW, b, ś 
+
+> k
+
+Gky, as we cannot build a representation of an action that is not generated by the available action set. Instead, we aim to prove that the encoder is disentangled with respect to xW, b, ś
+
+> k
+
+xGkyy with xGky being the subgroup generated by Gk. Similarly, we cannot prove that it is disentangled over all Z. Therefore, as done by Keurti et al. (2023), we restrict the latent space to V “ span pf pWqq Ă Z
+
+We proceed by proving that the learned representation satisfies all the criteria listed in Definition 1: 
+
+(1) There exists a group action ¨Z : G ˆ V Ñ V
+
+First, note that ś
+
+> k
+
+xGky “ x Gy. Let g P x Gy, as G is finite, we can write g “ gp1q ¨ ¨ ¨ gpnq with 
+
+@i, g piq P G, the group action is given by: 
+
+g ¨Z z “ ρpgqz with ρpgq “ ź
+
+> i
+
+rAgpiq
+
+Note that the definition of ρpgq depends on the decomposition of g, which is not necessarily unique. Since any decomposition would be satisfying and G is finite, we can arbitrarily chose one decomposition for each g.The fact that ¨Z is a group action is given thanks to the equivariance and is proven below. 
+
+(2) Equivariance holds: @p g, w q P x Gy ˆ W, g ¨Z f pwq “ f pg ¨W wq
+
+As the action loss is equal to zero we have: 
+
+@p g, w q P G ˆ W, g ¨Z f pwq “ f pg ¨W wq
+
+Let g “ ś 
+
+> i
+
+gpiq P x Gy with gpiq P G and w P W. We apply recursively the previous equivariance to get g ¨Z f pwq “ f pg ¨W wq, hence proving the equivariance over all xGy ˆ W.We now prove that ¨Z is indeed a group action thanks to the equivariance property. For all w P W
+
+and g, g 1 P x Gy:• g ¨Z f pwq “ f pg ¨W wq P V
+
+• e ¨Z f pwq “ f pe ¨W wq “ f pwq
+
+• g1 ¨Z pg ¨Z f pwqq “ g1 ¨Z f pg ¨W wq“ f pg1 ¨W pg ¨W wqq “ f pp g1gq ¨ W wq“ p g1gq ¨ Z f pwq
+
+As f pWq generates V, for all z P V and g, g 1 P x Gy we have: • g ¨Z z P V
+
+• e ¨Z z “ z
+
+• g1 ¨Z pg ¨Z zq “ p g1gq ¨ Z z
+
+20 Published as a conference paper at ICLR 2026 
+
+(3) There exists a decomposition V “ V1 ‘ ¨ ¨ ¨ ‘ VK and group actions ¨k : Gk ˆ Vk Ñ Vk such that: 
+
+pg1, . . . , g K q ¨ Z pz1, . . . , z K q “ p g1 ¨1 z1, . . . , g K ¨K zK q
+
+As the disentanglement loss is equal to zero, the masks are binary i.e. πk P t 0, 1ud. Therefore the matrices rAg for g P G satisfy the block structure illustrated in Figure 5. Additionally if gk P x Gky it can be decomposed into gk “ gp1q 
+
+> k
+
+¨ ¨ ¨ gpnk q 
+
+> k
+
+with gpiq 
+
+> k
+
+P Gk and therefore ρpgkq “ ś 
+
+> i
+
+rAgpiq
+
+> k
+
+share the same block structure. Finally, for each g “ p g1, . . . , g K q P x Gy, ρpgq “ ś 
+
+> k
+
+ρpgkq is block diagonal up to a permutation of the indices. Let us first find a decomposition and group actions over Z. We take Zk “ span tei | πk,i “ 1u with 
+
+ei the standard basis vectors, this choice reflects the objective of achieving disentanglement along the Cartesian axes. Hence we have Z “ Z1 ‘ ¨ ¨ ¨ ‘ ZK and zk “ πk d z.Additionally we take gk ¨k zk “ ρpgkqzk, we have ρpgkqzk P Zk as ρpgkq is the identity on the complement subspace of Zk. We therefore have for each g “ p g1, . . . , g K q P x Gy and z P Z:  
+
+> ρpgqz1
+> “
+> ρpg1qz1
+
+P Z1
+
+Figure 9: Matrix representation of ρpgqzk “ ρpgkqzk P Zk,here the two first dimensions corresponds to Z1 and the re-maining two to Z2..
+
+g ¨Z z “ ρpgqz
+
+“ ρpgq
+
+˜ÿ
+
+> k
+
+zk
+
+¸
+
+“ ÿ
+
+> k
+
+ρpgqzk
+
+“ ÿ
+
+> k
+
+ρpgkqzk
+
+“ ÿ
+
+> k
+
+gk ¨k zk
+
+“ p g1 ¨1 z1, . . . , g K ¨K zK q
+
+Let us prove that the decomposition and group actions restricted on V are satisfying. Let’s take 
+
+Vk “ span tf pwqk | w P Wu “ V X Zk with f pwqk the projection of f pwq on Zk, therefore the 
+
+Vk are in direct sum. Moreover we have for all w P W, f pwq “ ř 
+
+> k
+
+f pwqk with f pwqk P Vk and therefore V “ V1 ‘ ¨ ¨ ¨ ‘ VK .Additionally, for all g P x Gy and f pwq P V we have g ¨Z f pwq “ f pg ¨W wq meaning that for all component k we have gk ¨k zk “ f pg ¨W wqk P Vk. Finally, as previously done for ¨Z , it can be shown that ¨k : Gk ˆ Vk Ñ Vk are group actions. 
+
+(4) The representation h is injective: 
+
+As the reconstruction loss is equal to zero and Assumption 1 holds, the distance between the encod-ing of two world states has a lower bound as shown in the proof of Proposition 2. 
+
+(5) The group action ¨Z is linear: 
+
+As highlighted by Keurti et al. (2023), the restriction of ρ on V written ρV : G Ñ GL pVq is a morphism and we have g ¨Z z “ ρV pgqz. This can be proven similarly to the argument used to show that ¨Z is a group action. Hence proving the representation is linear on V.
+
+## E MINIMAL LINEAR REPRESENTATION DIMENSION 
+
+Let G a group, we seek the minimal dimension such that there exists an injective morphism into invertible matrices δpGq “ min td | D ρ : G ãÑ GL pRdqu . We also seek δSO pGq the minimal dimension for special orthogonal matrices δSO pGq “ min td | D ρ : G ãÑ SO pdqu .21 Published as a conference paper at ICLR 2026 We get the following results: 
+
+G δ δSO 
+
+Z 1 2
+
+Z{2Z 1 2
+
+Z{nZ, n ě 3 2 2
+
+S2 1 2
+
+S3 2 3
+
+S4 3 3
+
+Sn, n ě 5 n ´ 1 n ´ 1 or n
+
+E.1 FINITE CYCLIC GROUP IE ROTATION GROUP 
+
+Proof. Let G a finite cyclic group of cardinal n ě 2 i.e. G – Z{nZ. There are two cases to consider: 
+
+n “ 2: Then G “ t e, g u with g2 “ e. Therefore δpGq “ 1 because the isomorphism ρ “ t e Þ Ñp1q; g Þ Ñ p´ 1qu is satisfying. Furthermore δSO pGq ą 1 as SO p1q “ tp 1qu can only express the trivial group. 
+
+n ą 2: Suppose δpGq “ 1, then for each element g P G there exists a scalar λg P R such that 
+
+ρpgq “ p λg q. Therefore for all g and k ě 0 we have gk P G and then λkg P t λg1 | g1 P Gu which is finite set. Therefore λg P t´ 1, 1u, consequently for all g P G, ρpg2q “ p λ2 
+
+> g
+
+q “ p 1q and then g2 “ e.This is contradictory, therefore δpGq ě 2.We show that δpGq “ 2: let h be a generator of G i.e. for all g P G, there exists kg P
+
+J0, n J such that hkg “ g. The following rotation matrix is a satisfying morphism ρpgq “ˆ cos p2πk g {nq ´ sin p2πk g {nq
+
+sin p2πk g {nq cos p2πk g {nq
+
+˙
+
+. Finally δpGq “ 2 and therefore δSO pGq “ 2
+
+E.2 INFINITE CYCLIC GROUP 
+
+Proof. Let G be an infinite cyclic group i.e. G – Z. Let h be a generator G, therefore for all g P G,there exists kg P Z such that g “ hkg . For any x ą 0, x ‰ 1, the representation ρ : g P G Þ Ñ p xkg q
+
+is satisfying. Therefore δpGq “ 1.As previously, we have δSO pGq ą 1 and for any θ R 2πQ, the representation ρpgq “ˆ cos pkg θq ´ sin pkg θq
+
+sin pkg θq cos pkg θq
+
+˙
+
+P SO p2q is satisfying. Finally δSO pGq “ 2.E.3 PERMUTATION GROUP 
+
+Proof. Let G “ Sn with n ě 2 the permutation group. Generalities: We know that there exists an injective morphism ρ : Sn ãÑ Opn ´ 1q thanks to its standard representation, therefore δpSnq ď n ´ 1. Furthermore we can inject Opn ´ 1q into SO pnq
+
+using g Þ Ñ
+
+ˆ ρpgq 00 det ρpgq
+
+˙
+
+. And then δSO pSnq ď n.
+
+n “ 2: We have S2 – Z{2Z, as previously δpS2q “ 1 and δSO pS2q “ 2.
+
+n “ 3: Similarly to previously δpS3q ą 1 and δSO pS3q ą 1. Moreover there is no injection 
+
+S3 ãÑ SO p2q as S3 would be commutative. Therefore δpS3q “ 2 and δSO pS3q “ 3
+
+n “ 4: S4 is isomorphic to a subgroup of SO p3q as it can be seen as the symmetry group of the tetrahedron. Moreover their is no injection S4 ãÑ GL pR2q as S4 would be cyclic or dihedral. Then 
+
+δpS4q “ δSO pS4q “ 3.
+
+n ě 5: The minimal dimension for a linear representation in C of Sn is n ´ 1 (Rasala, 1977). Therefore the minimal dimension in R is at least n ´ 1 i.e. δpGq ě n ´ 1. Consequently δpSnq “ 
+
+n ´ 1 and δSO pSnq P t n ´ 1, n u
+
+22 Published as a conference paper at ICLR 2026 
+
+## F BLOCK -DIAGONAL PARAMETERIZATION IS NOT ENOUGH FOR LINEAR DISENTANGLEMENT 
+
+Here, we aim to show that using a structured action parameterization, as done in SOBDRL (Quessard et al., 2020), LSBD-VAE ˚ and HAE (Keurti et al., 2023) is not sufficient to obtain a disentangled representation, even when applying the regularization used in SOBDRL. Assume that the underlying group action is composed of two cyclic direct factors, i.e., G “ G1 ˆG2, and that G is isomorphic to a subgroup of SO p2q ˆ SO p2q. Our goal is to learn a disentangled representation of this subgroup. Moreover, we require the learned representation to be injective as any constant morphism would be disentangled. A block-diagonal-based method may use this prior knowledge by parameterizing the action matrices with ρ : g P G Þ Ñ Rpθg , θ 1 
+
+> g
+
+q :“
+
+ˆ R2pθg q 00 R2pθ1 
+
+> g
+
+q
+
+˙
+
+with R2pθq being the rotation matrix of angle θ.Suppose that the unknown ground-truth group decomposition consists of two cyclic direct factors with n and m elements, i.e., G “ Z{nZ ˆ Z{mZ. Let g1 and g2 denote generators of each respec-tive factor. For the action representation to be disentangled, we would ideally want something like 
+
+ρpg1q “ p 2π{n, 0q and ρpg2q “ p 0, 2π{mq, so that each generator only affects a single latent sub-space. However, when using this type of parameterization as a disentanglement criterion, even with the regularization term introduced in SOBDRL, it remains impossible to guarantee disentanglement of the action representation. Below, we present examples of entangled representations that satisfy the imposed parameterization but fail to be disentangled. Case n°1: The representation such that ρpg1q “ Rp2π{n, 0q and ρpg2q “ Rp2π{m, 2π{mq is an injective homomorphism, it was encountered during our LSBD-VAE ˚ experiments. This represen-tation is entangled with respect to the LSBD framework. 
+
+Proof. Suppose there exists a decomposition R4 “ Z1 ‘ Z2 satisfying the disentangled definition, then ρpg2q would be the identity function on Z1 i.e. for all z1 P Z1, ρpg2qz1 “ z1. If Z1 ‰ t 0u
+
+then 1 is an eigenvalue of ρpg2q which is impossible as its spectrum is te2iπ {m, e ´2iπ {mu. Therefore 
+
+Z1 “ t 0u, the same reasoning can be applied on Z2, therefore Z1 ‘ Z2 “ t 0u ‰ R4.Case n°2 If n and m are coprime numbers, then the representation such that ρpg1q “ Rp2π{n, 0q
+
+and ρpg2q “ Rp2π{m, 0q is injective as 
+
+G “ Z
+
+nZ ˆ Z
+
+mZ – Z
+
+nm Z
+
+This type of representation was encountered with SOBDRL as it minimizes its disentanglement criterion. However this representation is entangled with respect to the LSBD framework 
+
+Proof. Suppose there exists a decomposition R4 “ Z1 ‘ Z2 respecting the definition, then ρpg1q
+
+would be the identity on Z2 i.e. for all z2 P Z2, ρpg1qz2 “ z2 and then Z2 is a subspace of the eigenspace of ρpg1q associated with the eigenvalue 1. This eigenspace corresponds to the two last dimension: R4 i.e. Z2 Ă t 0u ˆ t 0u ˆ R2. Similarly for ρpg2q, we have Z1 Ă t 0u ˆ t 0u ˆ R2 and therefore R4 ‰ Z1 ‘ Z2.Case n°3: If n “ m “ pq a composite number with p and q coprimes, the representation 
+
+ρpg1q “ Rp2π{p, 2π{qq and ρpg2q “ Rp2π{q, 2π{pq is injective. It is like switching the two Z{qZ
+
+components of each direct factor. 
+
+G –
+
+> G1
+
+hkkkkkkkkikkkkkkkkj ˜
+
+Z
+
+pZ ˆ Z
+
+qZ
+
+¸
+
+ˆ
+
+> G2
+
+hkkkkkkkkikkkkkkkkj ˜
+
+Z
+
+pZ ˆ Z
+
+qZ
+
+¸
+
+As for case n°1, this representation is entangled with respect to the LSBD framework 23 Published as a conference paper at ICLR 2026 
+
+## G PROOF OF THEOREM 1
+
+Reminders :• W the world state set • X the observation set • Z “ Rd latent space • b : W Ñ X the observation function • h : X Ñ Z the encoding function • f “ h ˝ b : W Ñ Z
+
+• h is disentangled with respect to xW, b, ś 
+
+> k
+
+Gky if: 1. There exists ¨Z : G ˆ Z Ñ Z
+
+2. Equivariance holds: @g P G, w P W, g ¨Z f pwq “ f pg ¨W wq
+
+3. There exists Z “ Z1 ‘ ¨ ¨ ¨ ‘ ZK and ¨k : Gk ˆ Zk Ñ Zk such that 
+
+pg1, . . . , g K qp z1, . . . , z K q “ p g1 ¨1 z1, . . . , g K ¨K zK q
+
+4. h is injective Suppose there exists a SBD representation with respect to xW, b, ś 
+
+> k
+
+Gky, we aim to prove that we can build xĂW , rb, ś 
+
+> k
+
+Gky from xW, b, ś 
+
+> k
+
+Gky such that (1) the SBD representations with respect to 
+
+xĂW , rb, ś 
+
+> k
+
+Gky are exactly the SBD representations with respect to xW, b, ś 
+
+> k
+
+Gky, (2) the observa-tion function rb is injective and (3) xW, b, ś 
+
+> k
+
+Gky and xĂW , rb, ś 
+
+> k
+
+Gky yield the same sensorimotor interaction with the agent, and are thus indistinguishable. G.1 INTERACTION EQUIVALENCE 
+
+We would like to reduce W to indistinguishable cases, we therefore define the following equivalence relation: 
+
+Definition 2. Two world states w1 and w2 are called interaction equivalent if and only if: 
+
+@g P G, b pg ¨W w1q “ bpg ¨W w2q
+
+We denote this relation between the two world states as w1 „ w2.
+
+This definition implies that two states w1 and w2 that yield the same observation but can be dis-tinguished by interacting with the environment are not equivalent. Therefore, it does not cover situations such as object occlusions. Based on this interaction equivalence relation, we define a new set composed of the equivalence classes: 
+
+Definition 3. We call interaction equivalent world state set and denote by ĂW the set of interaction equivalence classes. 
+
+ĂW “ tr ws | w P Wu
+
+where rws denotes the equivalence class of w according to Definition 2. 
+
+We now turn to defining appropriate functions using the interaction equivalent world state set. 
+
+Proposition 4. If w1 „ w2, then bpw1q “ bpw2q.Proof. This can be easily derived from Definition 2 and taking g “ e the identity element. This proposition allows us to define a new observation function on the interaction equivalent world state set ĂW:
+
+Definition 4. We call interaction equivalent observation function and denote by rb the function rb :
+
+ĂW Ñ X such that: 
+
+@r ws P ĂW, rbpr wsq “ bpwq
+
+24 Published as a conference paper at ICLR 2026 
+
+Proposition 5. If w1 „ w2, then @g P G, g ¨W w1 „ g ¨W w2.Proof. Let w1 and w2 be two world states from W such that w1 „ w2. Let g P G be a symmetry. We aim to prove that g ¨W w1 „ g ¨W w2.Let g1 P G be a symmetry. Since G is a group, it follows that the composition g1g P G. According to Definition 2: 
+
+bpg1g ¨W w1q “ bpg1g ¨W w2q
+
+And, by definition of a group action: 
+
+bpg1 ¨W pg ¨W w1qq “ bpg1 ¨W pg ¨W w2qq 
+
+According to Definition 2, we thus have g ¨W w1 „ g ¨W w2.This proposition allows us to define a new group action on the interaction equivalent world state set 
+
+ĂW:
+
+Definition 5. We call interaction equivalent group action and denote by ¨ ĂW the function ¨ ĂW : G ˆ
+
+ĂW Ñ ĂW such that: 
+
+@g P G, @r ws P ĂW, g ¨ ĂW rws “ r g ¨W ws
+
+Proposition 6. ¨ ĂW is a group action. Proof. We need to prove two properties: 1. @r ws P ĂW, e ¨ ĂW rws “ r ws
+
+2. @p g, g 1q P G, @r ws P ĂW, g 1 ¨ ĂW pg ¨ ĂW rwsq “ p g1gq ¨ ĂW rws
+
+We start with the first property. Let rws P ĂW be an interaction equivalence class. We have: 
+
+e ¨ ĂW rws “ r e ¨W ws according to Definition 5 
+
+“ r ws since ¨W is a group action itself For the second property, suppose pg, g 1q P G and rws P ĂW. We have: 
+
+g1 ¨ ĂW pg ¨ ĂW rwsq “ g1 ¨ ĂW rg ¨W ws according to Definition 5 
+
+“ r g1 ¨W pg ¨W wqs according to Definition 5 
+
+“ rp g1gq¨ W s since ¨W is a group action 
+
+“ p g1gq ¨ ĂW rws according to Definition 5 In summary, we have proposed an equivalence relation for world states that allows us to define a new world state set regrouping equivalent states, as well as an observation function and a group action for this new world state set. G.2 NECESSITY OF INJECTIVITY OF THE OBSERVATION FUNCTION 
+
+We now address the main point of this appendix, which is to show that if h is an SBD representation with respect to xW, b, ś 
+
+> i
+
+Giy, then rb has to be injective. We start by first showing that SBD-ness is implied in the interaction equivalent world. 
+
+Proposition 7. If h is SBD with respect to xW, b, ś 
+
+> i
+
+Giy, then h is SBD with respect to 
+
+x ĂW, rb, ś 
+
+> i
+
+Giy.Proof. According to Definition 1, SBD-ness with respect to x ĂW, rb, ś 
+
+> k
+
+Gky requires four properties: 1. There exists a group action ¨Z : G ˆ Z Ñ Z,25 Published as a conference paper at ICLR 2026 2. Equivariance holds: @g P G, rws P ĂW, we have g ¨Z h ˝ rbpr wsq “ h ˝ rbpg ¨ ĂW rwsq ,3. There exists a decomposition Z “ Z1 ˆ ¨ ¨ ¨ ˆ ZK and group actions ¨k : Gk ˆ Zk Ñ Zk
+
+such that 
+
+pg1, . . . , g K q ¨ Z pz1, . . . , z K q “ p g1 ¨1 z1, . . . , g K ¨K zK q,
+
+4. h is injective. Properties 1, 3 and 4 are ensured by the fact that h is SBD with respect to xW, b, ś 
+
+> k
+
+Gky. We thus just need to prove the second property. Suppose g P G and rws P ĂW, we have: 
+
+g ¨Z h ˝ rbpr wsq “ g ¨Z h ˝ bpwq according to Definition 4 
+
+“ h ˝ bpg ¨W wq since h is SBD (equivariance property) 
+
+“ h ˝ rbpr g ¨W wsq according to Definition 4 
+
+“ h ˝ rbpg ¨ ĂW rwsq according to Definition 5 
+
+Proposition 8. Reciprocally, if h is SBD with respect to x ĂW, rb, ś 
+
+> i
+
+Giy, then h is SBD with respect to xW, b, ś 
+
+> i
+
+Giy.Proof. As in the previous proof, it suffices to establish equivariance in order to prove disentangle-ment with respect to xW, b, ś 
+
+> i
+
+Giy. Let g P G and w P W :
+
+g ¨Z h ˝ bpwq “ g ¨Z h ˝ rbpr wsq according to Definition 4 
+
+“ h ˝ rbpg ¨ ĂW rwsq since h is SBD (equivariance property) 
+
+“ h ˝ rbpr g ¨W wsq according to Definition 5 
+
+“ h ˝ bpg ¨W wq according to Definition 4 We can now introduce the main result of this appendix: 
+
+Theorem 1. If h is SBD with respect to xW, b, ś 
+
+> k
+
+Gky then rb is injective. Proof. Suppose h is SBD with respect to xW, b, ś 
+
+> k
+
+Gky. According to Proposition 7, h is also SBD with respect to x ĂW, rb, ś 
+
+> k
+
+Gky.Let us assume that rb is not injective and show that it leads to a contradiction. Since rb is not injective, there exist rw1s ‰ r w2s such that rbpr w1sq “ rbpr w2sq . Since rw1s ‰ r w2s
+
+then let g P G be the symmetry such that bpg ¨W w1q ‰ bpg ¨W w2q. On the one hand: 
+
+bpg ¨W w1q ‰ bpg ¨W w2q ùñ rbpr g ¨W w1sq ‰ rbpr g ¨W w2sq according to Definition 2 
+
+ùñ h ˝ rbpr g ¨W w1sq ‰ h ˝ rbpr g ¨W w2sq since h is injective 
+
+ùñ g ¨Z h ˝ rbpr w1sq ‰ g ¨Z h ˝ rbpr w2sq equivariance property On the other hand, since rbpr w1sq “ rbpr w2sq , then g ¨Z h ˝ rbpr w1sq “ g ¨Z h ˝ rbpr w2sq . We have a contradiction and thus rb is injective. 26 Published as a conference paper at ICLR 2026 From a prediction perspective this result is quite intuitive: for an injective encoder to allow accurate prediction of future observations x1 from x and g, it is necessary for the observation to be unam-biguous. From a disentanglement perspective this is a strong limitation, it means that all the features to disentangle have to be constantly observed by the agent. We use this result to justify the introduction of Assumption 1 to derive our algorithm for the group decomposition. Since we have shown that LSB disentanglement is impossible when rb is not injec-tive, it is a necessary assumption to assume. 
+
+## H ADDITIONAL RESULTS 
+
+H.1 PREDICTION BASED MODEL SELECTION 
+
+For unsupervised disentanglement learning, choosing the model with the best disentanglement with-out knowing the ground-truth features is a crucial and often difficult task. Several solutions have been discussed in the state of the art to adress this issue for purely unsupervised methods (Duan et al., 2019; Zhou et al., 2021; Holtz et al., 2022), they mostly rely on learning a batch of models with different hyperparameters or initialisation and selecting the ones sharing some defined proper-ties. This model selection issue arises in our method at two different stages: the action clustering resulting of Step 2 and the representation learned by GMA-VAE. As we are in a self-supervised framework, we investigate whether it is possible to select the model achieving the best disentanglement (measured here with the independence metric (Painter et al., 2020)) solely based on the prediction error. Similarly, we aim to determine whether it is possible to identify which A-VAE model results in the correct action clustering in Step 2. To evaluate clustering quality, we use the Adjusted Rand Index (ARI) (Hubert & Arabie, 1985), a metric to be maximized that equals 1 if and only if the predicted clustering exactly matches the ground-truth partition (up to a permutation). For multiple hyperparameter configurations and random seeds, we plot for the COIL2 experiment the metric of interest as a function of the prediction error in Figure 10. 
+
+(a) ARI of action clustering according to A-VAE pre-diction error 10 4 10 3 10 2 
+
+> Prediction Error
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Adjusted Rand Index
+> A-VAE
+
+(b) Independence according to prediction error 10 4 10 3 10 2
+
+> Prediction Error
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Independance
+> SOBDRL
+> LSBD-VAE*
+> GMA-VAE
+
+Figure 10: Metric of interest as a function of the prediction error For A-VAE (left), we see that for almost all of the models, either the prediction performs well and the action clustering retrieves the correct partition, either the model cannot predict correctly and the action clustering retrieves a clustering only composed of singletons meaning that the ARI is equal to zero. However, few models out still has a good prediction error with a low ARI. It is therefore possible to train a batch of A-VAE models with different hyperparameters and initialisation seeds and take the action clustering that is retrieved by the majority of models achieving the best predictions. 27 Published as a conference paper at ICLR 2026 For the disentangled representation learning algorithms (right), we can then notice that for the LSBD-VAE ˚ and SOBDRL, they are few models that achieve a good prediction without being dis-entangled. However the model with the best prediction is always disentangled with a slight margin. For GMA-VAE, a good prediction always implies a disentanglement almost equal to 1. H.2 ASSUMPTION 2 FOR OTHER ALGORITHMS 
+
+This section aims to demonstrate that, although not explicitly stated, related LSBD algorithms implicitly rely on Assumption 2 (action disentanglement) to some extent. First, Forward-VAE directly requires disentangled actions, as its action matrix parameterization is identical to GMA-VAE, with the vectors πk P t 0, 1ud provided as prior knowledge. To evaluate the extent to which SOBDRL and LSBD-VAE ˚ depend on this assumption, we modify the COIL2 experimental setup by progressively relaxing Assumption 2. In this modified setting, each action corresponds to an element of the product of k ě 1 distinct direct factors. We then measure the degree of disentanglement in the learned representation using the Independence score, as a function of the entanglement level k. The results, shown in Figure 11, indicate that the In-dependence score decreases as k increases, and rapidly approaches the score obtained by A-VAE with fully entangled actions (represented by the green dotted line). These findings support the claim that Assumption 2, i.e., k “ 1, is in fact necessary for these algorithms to consistently learn a disentangled representation. 1 2 3
+
+> Action Entanglement
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> Independence
+> A-VAE
+> SOBDRL
+> LSBD-VAE*
+
+Figure 11: Disentanglement according to action entanglement We also evaluated the disentanglement of those methods on the other metrics in Table 3. As we can see the disentanglement strictly decreases as actions are more entangled except for the MIG metric. Table 3: Disentanglement with respect to action entanglement                                                                                                                   
+
+> kBeta-VAE Inde Mod DCI SAP MIG LSBD-VAE ˚
+> 11.00 ˘.00 .99 ˘.00 1.00 ˘.00 1.00 ˘.00 .27 ˘.04 .06 ˘.03 2.99 ˘.00 .84 ˘.03 .83 ˘.04 .82 ˘.05 .14 ˘.02 .07 ˘.03 3.78 ˘.05 .69 ˘.03 .59 ˘.05 .62 ˘.05 .03 ˘.01 .04 ˘.01 SOBDRL 1.99 ˘.01 .94 ˘.02 .94 ˘.04 .88 ˘.03 .39 ˘.04 .20 ˘.07 2.94 ˘.03 .83 ˘.02 .81 ˘.02 .70 ˘.06 .30 ˘.06 .04 ˘.03 3.74 ˘.09 .74 ˘.05 .68 ˘.05 .48 ˘.05 .23 ˘.06 .19 ˘.05
+
+28 Published as a conference paper at ICLR 2026 H.3 LATENT MANIPULATION 
+
+Here we aim to show that the learned disentangled representation allow for latent manipulation. In the discrete case, we select two images of the 3DShapes dataset that we encode with GMA-VAE, then we construct several latent representations by mixing the different latent factors of the two images. Finally, we decode those new latent representations to obtain new images. The results are shown in Figure 12. We can see that by mixing the different latent factors, we can control the different features of the decoded images. For the continuous case, we select one image of MPI3D that we encode with GMA-VAE. For each feature (vertical angle and horizontal angle), we successively apply a rotation of a fixed angle to the corresponding latent factor while keeping the other latent factor unchanged. The decoded images are shown in Figure 13. We can see that by rotating the latent factors, we can control the rotation of the object in the decoded images. 
+
+> (a) Original images
+> (b) Decoded images from latent mix
+
+Figure 12: Decoding mixed latent representations of 3DShapes images H.4 DISENTANGLEMENT METRICS 
+
+We show all the disentanglement and prediction error results of the different methods on the different datasets in Table 4 to 14, the values reported correspond to the mean over five seeds with the 68% confidence interval. The random method corresponds to a randomly initialized neural network that was not trained. 29 Published as a conference paper at ICLR 2026 
+
+(a) Original image 
+
+(b) Decoded images from horizontal angle rotation 
+
+(c) Decoded images from vertical angle rotation 
+
+Figure 13: Decoding rotated latent representations of MPI3D image Table 4: Disentanglement for FlatLand with rotation colors 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction LSBD-VAE mean 1.00 ˘ .00 .96 ˘ .00 1.00 ˘ .00 .98 ˘ .01 .53 ˘ .05 .10 ˘ .04 1.6e-09 ˘ 4.8e-10 best 1.00 .96 1.00 1.00 .46 .23 4.8e-10 LSBD-VAE ˚ mean 1.00 ˘ .00 .93 ˘ .02 .90 ˘ .06 .87 ˘ .07 .40 ˘ .03 .07 ˘ .03 9.6e-10 ˘ 5.3e-10 best 1.00 .97 1.00 .98 .53 .02 3.3e-9 SOBDRL mean .93 ˘ .03 .78 ˘ .02 .85 ˘ .04 .53 ˘ .09 .28 ˘ .04 .10 ˘ .02 2.7e-5 ˘ 2.4e-5 best .99 .84 .77 .56 .44 .02 1.6e-8 GMA-VAE mean 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .54 ˘ .04 .01 ˘ .00 1.6e-10 ˘ 2.9e-11 best 1.00 1.00 1.00 1.00 .51 .00 1.3e-10 A-VAE mean .89 ˘ .05 .84 ˘ .01 .76 ˘ .01 .44 ˘ .03 .11 ˘ .02 .05 ˘ .01 6.6e-11 ˘ 1.7e-11 
+
+best .95 .82 .77 .48 .03 .05 3.0e-11 
+
+β-VAE .68 ˘ .06 .77 ˘ .01 .88 ˘ .03 .22 ˘ .05 .20 ˘ .04 .13 ˘ .03 Factor-VAE .69 ˘ .07 .69 ˘ .04 .81 ˘ .03 .24 ˘ .06 .29 ˘ .06 .16 ˘ .05 
+
+DIP-VAE I .56 ˘ .03 .67 ˘ .01 .78 ˘ .01 .12 ˘ .02 .11 ˘ .01 .04 ˘ .01 DIP-VAE II .84 ˘ .04 .62 ˘ .02 .74 ˘ .00 .17 ˘ .01 .18 ˘ .04 .05 ˘ .01 Random .41 ˘ .03 .51 ˘ .01 .61 ˘ .04 .05 ˘ .01 .05 ˘ .00 .04 ˘ .01 
+
+Table 5: Disentanglement for FlatLand with permutation colors 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction LSBD-VAE mean 1.00 ˘ .00 .97 ˘ .00 1.00 ˘ .00 .95 ˘ .02 .46 ˘ .04 .04 ˘ .02 4.1e-6 ˘ 7.3e-7 best 1.00 .97 1.00 .98 .59 .02 2.6e-6 LSBD-VAE ˚ mean 1.00 ˘ .00 .98 ˘ .00 1.00 ˘ .00 .99 ˘ .01 .40 ˘ .06 .08 ˘ .02 3.3e-6 ˘ 2.8e-7 best 1.00 .98 1.00 1.00 .46 .00 2.7e-6 SOBDRL mean 1.00 ˘ .00 .74 ˘ .01 .79 ˘ .01 .50 ˘ .02 .25 ˘ .03 .08 ˘ .02 3.6e-3 ˘ 8.3e-7 best 1.00 .76 .80 .43 .16 .12 3.6e-3 GMA-VAE mean 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .99 ˘ .01 .51 ˘ .04 .08 ˘ .01 5.8e-6 ˘ 3.1e-6 best 1.00 1.00 1.00 1.00 .59 .11 1.0e-6 A-VAE mean .87 ˘ .06 .89 ˘ .04 .92 ˘ .04 .47 ˘ .08 .15 ˘ .05 .09 ˘ .01 1.1e-6 ˘ 1.9e-7 
+
+best 1.00 .95 1.00 .47 .28 .07 1.0e-6 
+
+β-VAE .64 ˘ .03 .60 ˘ .03 .80 ˘ .02 .13 ˘ .04 .12 ˘ .02 .03 ˘ .01 Factor-VAE .77 ˘ .05 .61 ˘ .01 .79 ˘ .02 .13 ˘ .02 .17 ˘ .04 .05 ˘ .02 DIP-VAE I .60 ˘ .06 .71 ˘ .02 .87 ˘ .02 .11 ˘ .03 .10 ˘ .04 .06 ˘ .02 DIP-VAE II .70 ˘ .05 .71 ˘ .01 .81 ˘ .01 .11 ˘ .02 .10 ˘ .02 .04 ˘ .01 Random .46 ˘ .01 .59 ˘ .01 .68 ˘ .02 .05 ˘ .01 .09 ˘ .01 .03 ˘ .01 
+
+30 Published as a conference paper at ICLR 2026 Table 6: Disentanglement for COIL2 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction LSBD-VAE mean 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .98 ˘ .01 .31 ˘ .05 .01 ˘ .01 8.2e-5 ˘ 3.0e-6 best 1.00 .99 1.00 .92 .43 .00 7.4e-5 LSBD-VAE ˚ mean 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .97 ˘ .02 .25 ˘ .05 .04 ˘ .03 9.4e-5 ˘ 3.1e-6 best 1.00 .99 .98 .91 .45 .00 8.9e-5 SOBDRL mean .99 ˘ .00 .91 ˘ .05 .90 ˘ .05 .90 ˘ .05 .52 ˘ .05 .31 ˘ .06 7.2e-5 ˘ 5.0e-6 
+
+best 1.00 1.00 .98 1.00 .60 .42 5.4e-5 GMA-VAE mean 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .64 ˘ .04 .46 ˘ .02 7.4e-5 ˘ 5.5e-6 
+
+best 1.00 1.00 1.00 1.00 .71 .48 6.7e-5 A-VAE mean .79 ˘ .03 .79 ˘ .03 .67 ˘ .05 .58 ˘ .03 .08 ˘ .02 .09 ˘ .03 1.0e-4 ˘ 2.5e-5 best .81 .85 .75 .55 .04 .05 7.0e-5 
+
+β-VAE .67 ˘ .03 .75 ˘ .01 .83 ˘ .01 .36 ˘ .01 .30 ˘ .01 .24 ˘ .04 Factor-VAE .81 ˘ .09 .78 ˘ .01 .87 ˘ .01 .50 ˘ .05 .34 ˘ .02 .23 ˘ .02 DIP-VAE I .74 ˘ .01 .71 ˘ .01 .83 ˘ .02 .41 ˘ .02 .32 ˘ .02 .22 ˘ .03 DIP-VAE II .84 ˘ .02 .75 ˘ .01 .83 ˘ .03 .42 ˘ .01 .37 ˘ .04 .16 ˘ .02 Random .58 ˘ .06 .64 ˘ .02 .83 ˘ .02 .27 ˘ .03 .11 ˘ .02 .13 ˘ .02 
+
+Table 7: Disentanglement for COIL3 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction LSBD-VAE mean 1.00 ˘ .00 .98 ˘ .00 1.00 ˘ .00 .97 ˘ .01 .42 ˘ .04 .08 ˘ .02 1.2e-4 ˘ 5.4e-6 
+
+best 1.00 .98 1.00 .94 .40 .12 1.0e-04 LSBD-VAE ˚ mean .86 ˘ .06 .92 ˘ .02 .83 ˘ .03 .75 ˘ .03 .21 ˘ .04 .12 ˘ .02 3.2e-3 ˘ 6.2e-4 best 1.00 .96 .88 .86 .28 .13 2.6e-04 SOBDRL mean .86 ˘ .09 .88 ˘ .03 .82 ˘ .05 .66 ˘ .07 .26 ˘ .08 .10 ˘ .02 4.7e-4 ˘ 1.3e-4 best .96 .91 .87 .80 .42 .12 2.6e-04 GMA-VAE mean 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .35 ˘ .03 .17 ˘ .02 1.1e-4 ˘ 3.7e-6 
+
+best 1.00 1.00 1.00 1.00 .34 .13 9.9e-05 A-VAE mean .49 ˘ .01 .80 ˘ .02 .61 ˘ .01 .15 ˘ .01 .03 ˘ .01 .04 ˘ .01 2.8e-4 ˘ 1.9e-5 best .50 .85 .62 .13 .02 .04 2.0e-04 
+
+β-VAE .44 ˘ .05 .82 ˘ .01 .76 ˘ .02 .10 ˘ .03 .04 ˘ .01 .08 ˘ .01 Factor-VAE .74 ˘ .02 .84 ˘ .01 .80 ˘ .01 .28 ˘ .02 .11 ˘ .02 .13 ˘ .03 DIP-VAE I .41 ˘ .01 .84 ˘ .01 .78 ˘ .01 .04 ˘ .00 .06 ˘ .01 .04 ˘ .00 DIP-VAE II .49 ˘ .05 .82 ˘ .01 .75 ˘ .01 .10 ˘ .01 .08 ˘ .02 .06 ˘ .01 Random .38 ˘ .02 .65 ˘ .01 .77 ˘ .01 .05 ˘ .01 .08 ˘ .02 .05 ˘ .01 
+
+Table 8: Disentanglement for 3DShapes 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction LSBD-VAE mean .98 ˘ .00 .98 ˘ .00 1.00 ˘ .00 .99 ˘ .00 .43 ˘ .03 .07 ˘ .01 7.6e-4 ˘ 2.2e-5 best .98 .99 1.00 1.00 .45 .04 6.8e-4 LSBD-VAE ˚ mean .97 ˘ .00 .97 ˘ .01 1.00 ˘ .00 .95 ˘ .02 .49 ˘ .04 .09 ˘ .02 1.1e-3 ˘ 2.6e-4 best .97 .98 1.00 .98 .59 .03 8.3e-4 SOBDRL mean .91 ˘ .05 .93 ˘ .02 .96 ˘ .03 .85 ˘ .07 .41 ˘ .05 .22 ˘ .05 2.0e-3 ˘ 8.7e-4 best .98 .97 1.00 .97 .31 .26 9.2e-4 GMA-VAE mean .98 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .56 ˘ .04 .26 ˘ .02 6.0e-4 ˘ 3.2e-5 
+
+best .98 1.00 1.00 1.00 .69 .19 5.1e-4 A-VAE mean .35 ˘ .03 .88 ˘ .01 .75 ˘ .00 .15 ˘ .02 .06 ˘ .01 .04 ˘ .01 8.1e-4 ˘ 3.6e-5 best .42 .90 .74 .18 .07 .02 8.2e-4 
+
+β-VAE .52 ˘ .04 .72 ˘ .01 .74 ˘ .00 .22 ˘ .04 .14 ˘ .01 .08 ˘ .01 Factor-VAE .63 ˘ .03 .74 ˘ .01 .76 ˘ .01 .35 ˘ .01 .20 ˘ .05 .11 ˘ .03 DIP-VAE I .62 ˘ .02 .71 ˘ .02 .75 ˘ .01 .28 ˘ .02 .15 ˘ .01 .12 ˘ .02 DIP-VAE II .67 ˘ .03 .69 ˘ .01 .75 ˘ .01 .37 ˘ .01 .14 ˘ .01 .22 ˘ .02 Random .31 ˘ .04 .64 ˘ .01 .70 ˘ .01 .04 ˘ .00 .04 ˘ .00 .04 ˘ .00 
+
+Table 9: Disentanglement for MPI3D 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction SOBDRL mean 1.00 ˘ .00 .93 ˘ .01 .47 ˘ .07 .32 ˘ .02 .28 ˘ .05 .04 ˘ .02 8.5e-4 ˘ 5.9e-5 best 1.00 .93 .40 .29 .14 .02 6.8e-4 HAE mean 1.00 ˘ .00 .71 ˘ .06 .42 ˘ .07 .19 ˘ .05 .29 ˘ .07 .02 ˘ .00 4.6e-4 ˘ 2.4e-5 
+
+best 1.00 .96 .40 .39 .54 2.6e-3 4.7e-4 GMA-VAE mean 1.00 ˘ .00 .97 ˘ .01 .49 ˘ .08 .53 ˘ .04 .21 ˘ .04 .04 ˘ .01 1.6e-3 ˘ 5.8e-4 best 1.00 .99 .40 .58 .15 .06 3.5e-4 
+
+β-VAE .81 ˘ .03 .53 ˘ .01 .41 ˘ .06 .02 ˘ .00 .08 ˘ .01 .03 ˘ .00 Random .63 ˘ .03 .52 ˘ .01 .36 ˘ .05 8.4e-3 ˘ 2.6e-3 .06 ˘ .02 .02 ˘ .00 
+
+31 Published as a conference paper at ICLR 2026 Table 10: Disentanglement for noisy MPI3D 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG Ó Prediction SOBDRL mean .99 ˘ .00 .79 ˘ .05 .48 ˘ .07 .20 ˘ .05 .41 ˘ .07 .04 ˘ .01 2.8e-3 ˘ 2.4e-4 best 1.00 .90 .79 .26 .45 .01 3.3e-3 HAE mean 1.00 ˘ .00 .79 ˘ .06 .47 ˘ .05 .22 ˘ .05 .32 ˘ .09 .03 ˘ .01 1.7e-3 ˘ 3.1e-5 
+
+best 1.00 .90 .40 .27 .45 .01 1.7e-3 GMA-VAE mean 1.00 ˘ .00 .90 ˘ .00 .50 ˘ .08 .31 ˘ .02 .51 ˘ .04 .04 ˘ .01 1.6e-3 ˘ 3.6e-5 
+
+best 1.00 .90 .84 .31 .64 .03 1.6e-3 
+
+β-VAE .81 ˘ .03 .53 ˘ .01 .41 ˘ .06 .02 ˘ .00 .08 ˘ .01 .03 ˘ .00 
+
+Random .63 ˘ .03 .52 ˘ .01 .36 ˘ .05 8.4e-3 ˘ 2.6e-3 .06 ˘ .02 .02 ˘ .00 
+
+Table 11: Disentanglement for COIL2 in iid setting 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG LSBDVAE 1.00 ˘ .00 .99 ˘ .00 .99 ˘ .00 .95 ˘ .02 .31 ˘ .06 .05 ˘ .03 LSBD-VAE ˚ 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .97 ˘ .01 .28 ˘ .05 .09 ˘ .03 SOBDRL .97 ˘ .02 .90 ˘ .05 .94 ˘ .04 .88 ˘ .05 .44 ˘ .05 .27 ˘ .05 GMA-VAE 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .98 ˘ .01 .48 ˘ .04 .47 ˘ .01 
+
+A-VAE .76 ˘ .05 .75 ˘ .02 .71 ˘ .05 .53 ˘ .03 .06 ˘ .02 .11 ˘ .02 
+
+Table 12: Disentanglement for COIL2 in ood setting 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG LSBDVAE 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .98 ˘ .01 .26 ˘ .05 .04 ˘ .03 LSBD-VAE ˚ 1.00 ˘ .00 .94 ˘ .04 .98 ˘ .02 .95 ˘ .04 .34 ˘ .03 .10 ˘ .06 SOBDRL 1.00 ˘ .00 .88 ˘ .03 .97 ˘ .01 .92 ˘ .02 .53 ˘ .05 .18 ˘ .07 GMA-VAE .99 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .98 ˘ .02 .47 ˘ .07 .39 ˘ .09 
+
+A-VAE .67 ˘ .03 .76 ˘ .01 .92 ˘ .02 .53 ˘ .03 .08 ˘ .02 .06 ˘ .02 
+
+Table 13: Disentanglement for COIL3 in iid setting 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG LSBDVAE 1.00 ˘ .00 .98 ˘ .00 1.00 ˘ .00 .97 ˘ .01 .38 ˘ .02 .09 ˘ .01 LSBD-VAE ˚ .66 ˘ .07 .86 ˘ .01 .86 ˘ .01 .28 ˘ .08 .18 ˘ .04 .11 ˘ .02 SOBDRL .98 ˘ .01 .93 ˘ .01 .91 ˘ .02 .76 ˘ .05 .36 ˘ .05 .16 ˘ .04 
+
+GMA-VAE 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 1.00 ˘ .00 .23 ˘ .04 .17 ˘ .03 
+
+A-VAE .48 ˘ .02 .80 ˘ .01 .61 ˘ .01 .15 ˘ .02 .01 ˘ .00 .02 ˘ .00 
+
+Table 14: Disentanglement for COIL3 in ood setting 
+
+Ò Beta-VAE Ò Inde Ò Mod Ò DCI Ò SAP Ò MIG LSBDVAE 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .99 ˘ .00 .43 ˘ .04 .05 ˘ .02 LSBD-VAE ˚ .71 ˘ .09 .85 ˘ .02 .89 ˘ .03 .38 ˘ .12 .20 ˘ .03 .07 ˘ .03 SOBDRL .97 ˘ .02 .89 ˘ .03 .97 ˘ .01 .82 ˘ .06 .33 ˘ .03 .12 ˘ .02 GMA-VAE 1.00 ˘ .00 .99 ˘ .00 1.00 ˘ .00 .99 ˘ .00 .29 ˘ .03 .18 ˘ .03 
+
+A-VAE .55 ˘ .03 .74 ˘ .03 .78 ˘ .02 .18 ˘ .01 .04 ˘ .01 .04 ˘ .01 
+
+H.5 dG MATRICES 
+
+Figure 14 presents the dG matrices for five different environments. Each matrix is normalized such that the clustering threshold corresponds to a distance of 1. Each black square represents available actions Gk associated with specific subgroups Gk. These blocks have pairwise distances strictly below 1, whereas the distances between two actions belonging to different subgroups are strictly greater than 1, resulting in a correct recovering of the ground-truth action partition. 
+
+## I IMPLEMENTATION DETAILS 
+
+I.1 DATASETS 
+
+Here, we describe the datasets used in this paper. A visual representation of the observation and the available actions are illustrated in Figure 15. 32 Published as a conference paper at ICLR 2026 
+
+(a) FLC x + x y + y c + c    
+
+> x+
+> x
+> y+
+> y
+> c+
+> c
+> 0.0
+> 2.5
+> 5.0
+> 7.5
+> 10.0
+> 12.5
+
+(b) FLP x + x y + y 1 2 3 4 5    
+
+> x+
+> x
+> y+
+> y
+> 1
+> 2
+> 3
+> 4
+> 50
+> 5
+> 10
+> 15
+> 20
+
+(c) COIL2 r +1 r1 r +2 r2   
+
+> r+1
+> r1
+> r+2
+> r2
+> 0
+> 5
+> 10
+> 15
+
+(d) COIL3 r +1 r1 r +2 r2 r +3 r3 1 2 3 4 5     
+
+> r+1
+> r1
+> r+2
+> r2
+> r+3
+> r3
+> 1
+> 2
+> 3
+> 4
+> 50
+> 2
+> 4
+> 6
+> 8
+
+(e) 3DShapes g +1 g1 g +2 g2 g +3 g3 g +4 g4 g5g +6 g6      
+
+> g+1
+> g1
+> g+2
+> g2
+> g+3
+> g3
+> g+4
+> g4
+> g5
+> g+6
+> g60
+> 5
+> 10
+> 15
+
+Figure 14: dG matrices averaged over 5 seeds, normalized so that the clustering threshold is 1. Our implementation of Colored Flatland (Caselles-Dupr´ e et al., 2018) consists of RGB images of size 64 ˆ 64 ˆ 3 with a ball of radius 17 pixels. The ball can occupy 5 distinct positions along each axis, corresponding to GX “ GY “ Z{5Z. In the cyclic color experiment (FLC), the base color is r1, 0, 0s, and the two available actions in GC perform cyclic shifts of the active color channel in one direction. In the permutation color experiment (FLP), the base color is r1{3, 2{3, 1s, and each available action corresponds to a permutation of the RGB channels. Our implementation of COIL (Nene et al., 1996) consists of RGB images of size 64 ˆ64 nˆ3, where 
+
+n is the number of objects present in the scene. The group actions, and consequently the number of possible orientations for each object, are specified in Table 15. In this table we denote by σ apermutation that permutes all objects, and by ri the rotation by one unit angle of the i-th object. The first two rows of Table 15 correspond to the datasets COIL2 and COIL3, which are used in the most of the experiments. The remaining rows describe additional environments used for action clustering experiments in Section 5.2. Our implementation of 3DShapes (Burgess & Kim, 2018) consists of RGB images of size 64 ˆ64 ˆ3,showing a 3D object placed at the center of a colored room. Each original generative factor was sub-sampled by a factor of 2, resulting in the following cardinalities: wall hue: 5, object hue; 5, background hue: 5, object scale: 4, object shape: 2, and viewing angle: 7. For each generative factor i, we define a cyclic symmetry group Gi “ Z{kiZ over its possible values, along with two available actions Gi “ t g´ 
+
+> i
+
+, g ` 
+
+> i
+
+u corresponding to unit rotation in each direction. Our implementation of MPI3D (Gondal et al., 2019) consists of RGB images of size 64 ˆ 64 ˆ 3,showing a robotic arm manipulating a colored object. Among the original generative factors, we only kept on two of them: horizontal and vertical object rotation angles, each having 40 different values. In order to approximate continuous symmetry groups, the actions are represented by g “ p j, θ q with 
+
+j P t 0, 1u the axis of rotation and θ Ps 0, 2πr the rotation angle. In the noisy version of MPI3D, we add a Gaussian noise of standard deviation 2π{15 on the rotation angle after applying the action. Table 15: COIL Environments used 
+
+G GS G1 G2 G3 G4 includes e ?
+
+S2 ˆ Z 
+
+> 7Z
+
+ˆ Z 
+
+> 5Z
+
+G˚ 
+
+> S
+
+t´ r1, r 1u t´ r2, r 2u No 
+
+S3 ˆ Z 
+
+> 5Z
+
+ˆ Z 
+
+> 5Z
+
+ˆ Z 
+
+> 3Z
+
+G˚ 
+
+> S
+
+t´ r1, r 1u t´ r2, r 2u t´ r3, r 3u No 
+
+S3 ˆ Z 
+
+> 7Z
+
+ˆ Z 
+
+> 5Z
+
+ˆ Z 
+
+> 3Z
+
+tσu tr1, 3r1u t3r2, 4r2u tr3u Yes 
+
+S3 ˆ Z 
+
+> 3Z
+
+ˆ Z 
+
+> 7Z
+
+ˆ Z 
+
+> 3Z
+
+tσu t2r1, 6r1u t2r2u tr3u Yes 
+
+S4 ˆ Z 
+
+> 7Z
+
+ˆ Z 
+
+> 5Z
+
+ˆ Z 
+
+> 3Z
+
+ˆ Z 
+
+> 3Z
+
+tσ, σ ´1u tr1, 3r1u t3r2, 4r2u tr3u tr4u No 
+
+I.2 NETWORK ARCHITECTURES AND HYPERPARAMETERS 
+
+For all the experiments, dataset and method, we used Adam (Kingma & Ba, 2015) with the default parameters given by pytorch, a batch size of 16 and the auto-encoder architecture given Table 16. 33 Published as a conference paper at ICLR 2026 
+
+(a) COIL 
+
+## r`
+
+1 σ
+
+## GR1 GR2 GR3
+
+## GS
+
+(b) Colored Flatland 
+
+# y´ c`
+
+# GX
+
+# GY
+
+(c) 3DShapes  
+
+> floor hue object hue wall hue orientation object scale object shape
+
+(d) MPI3D 
+
+## r0, θ s r1, θ s
+
+Figure 15: Presentation of the environments Table 16: Auto-encoder architecture used for all methods and all datasets 
+
+ENCODER Input Size px, y, c q
+
+Conv Channels: 32 , Kernel size: 8, Stride: 4, Padding: 2, ReLU Conv Channels: 64 , Kernel size: 8, Stride: 4, Padding: 2, ReLU Reshape Flatten into x{4 ˆ y{4 ˆ 64 
+
+Dense Dimension: 256 , ReLU Dense Dimension: depends on d and the noise parametrisation DECODER Input Size d
+
+Dense Dimension: 256 , ReLU Dense Dimension: x{4 ˆ y{4 ˆ 64 , ReLU Reshape px{4, y {4, 64 q
+
+ConvT Channels: 32 , Kernel size: 8, Stride: 4, Padding: 2, ReLU ConvT Channels: c, Kernel size: 8, Stride: 4, Padding: 2, Sigmoid 
+
+34 Published as a conference paper at ICLR 2026 For discrete action, an action matrix Ag of SOBDRL is parametrized by dpd ´ 1q scalars θgi,j ,one angle for each pair of plane pi, j q, the action matrix is then constructed by multiplying all the rotations matrices Ag “ ś 
+
+> iăj
+
+Ri,j pθgi,j q. For LSBD-VAE, the block-diagonal actions matrices are already given as it is a supervised method. For LSBD-VAE ˚ the only difference is that each block is learned with a SO parametrisation similarly to SOBDRL. For our method, the action matrices are parametrized directly with the matrices coefficient, we used a tanH activation to ensure stability. For continuous action, each action representation are neural networks of two hidden layer of 256 units with ReLU activation functions. SOBDRL action representation has an output of size dpd ´ 1q
+
+and use the same SO parametrisation as for discrete action to construct the action matrix. GMA-VAE action representation has an output of size d ˆ d and directly parametrize the action matrix coefficients. HAE action representation has as output a block-diagonal matrix of size d ˆ d with the block shape given as prior knowledge, a matrix exponential is used on each block. SOBDRL and HAE require multi-steps trajectories pxt, g t, . . . , x t`T ´1, g t`T ´1, x t`T q with T ą 1.To have a fair comparison, every experiment will use sequences with T “ 5, the other methods process independently each transition pxt`k, g t`k, x t`k`1q.For A-VAE and GMA-VAE, we used a fixed latent noise of standard deviation σ “ 0.1. For the action clustering of Step 2 we used the threshold η “ σ and M “ 2. For the GMA-VAE masking, we force each sub-group to have at least one dimension assigned to it. All hyperparameter details for each experiment are provided in the config folder of the GitHub repository. 
+
+## J USE OF LARGE LANGUAGE MODELS 
+
+LLMs were moderately used to help in literature reviewing and English writing. 35
