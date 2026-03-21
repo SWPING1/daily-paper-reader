@@ -6,64 +6,61 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-03-20
-- 运行时间：2026-03-20 19:33:20 UTC
+- 最新运行日期：2026-03-21
+- 运行时间：2026-03-21 19:56:41 UTC
 - 运行状态：成功
-- 本次总论文数：14
-- 精读区：3
+- 本次总论文数：13
+- 精读区：2
 - 速读区：11
 
 ### 今日简报（AI）
-今日深挖 14 篇多模态前沿成果，重点攻克情感回归与犹豫行为识别等复杂交互难题。
-推荐关注 ABAW 竞赛中的多目标优化方案，以及通过异构集成提升行为识别鲁棒性的 BROTHER 框架。
-建议开发者探索多模态对齐中的位置坍缩预防及图文统一生成技术，以提升系统的理解与生成上限。
-- 详情：[/202603/20/README](/202603/20/README)
+今日聚焦多模态融合与联邦学习前沿，深度解析 AlignMamba-2 架构与高效鲁棒的潜空间共识机制。
+重点关注 Mamba 在情感分析中的模态感知增强，以及联邦学习中如何通过潜空间共识提升通信效率与鲁棒性。
+建议深入探索多模态技术在医疗诊断及跨域泛化中的应用，关注轻量化交互模型的发展趋势。
+- 详情：[/202603/21/README](/202603/21/README)
 
 ### 精读区论文标签
-1. [Multimodal Emotion Regression with Multi-Objective Optimization and VAD-Aware Audio Modeling for the 10th ABAW EMI Track](/202603/20/2603.13760v1-multimodal-emotion-regression-with-multi-objective-optimization-and-vad-aware-audio-modeling-for-the-10th-abaw-emi-track)  
+1. [AlignMamba-2: Enhancing Multimodal Fusion and Sentiment Analysis with Modality-Aware Mamba](/202603/21/2603.18462v1-alignmamba-2-enhancing-multimodal-fusion-and-sentiment-analysis-with-modality-aware-mamba)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：多模态情感回归与保留模态特定属性
-2. [BROTHER: Behavioral Recognition Optimized Through Heterogeneous Ensemble Regularization for Ambivalence and Hesitancy](/202603/20/2603.14361v1-brother-behavioral-recognition-optimized-through-heterogeneous-ensemble-regularization-for-ambivalence-and-hesitancy)  
+   evidence：具有模态感知机制的多模态融合与情感分析
+2. [Communication-Efficient and Robust Multi-Modal Federated Learning via Latent-Space Consensus](/202603/21/2603.19067v1-communication-efficient-and-robust-multi-modal-federated-learning-via-latent-space-consensus)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：针对复杂行为和情感状态的多模态融合
-3. [Follow the Clues, Frame the Truth: Hybrid-evidential Deductive Reasoning in Open-Vocabulary Multimodal Emotion Recognition](/202603/20/2603.16463v1-follow-the-clues-frame-the-truth-hybrid-evidential-deductive-reasoning-in-open-vocabulary-multimodal-emotion-recognition)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：在多模态情感识别中重建细微的情感状态
+   evidence：联邦学习中对异构模态和异常值的鲁棒性
 
 ### 速读区论文标签
-1. [Anchored Alignment: Preventing Positional Collapse in Multimodal Recommender Systems](/202603/20/2603.12726v1-anchored-alignment-preventing-positional-collapse-in-multimodal-recommender-systems)  
+1. [Balancing Multimodal Domain Generalization via Gradient Modulation and Projection](/202603/21/2603.14175v1-balancing-multimodal-domain-generalization-via-gradient-modulation-and-projection)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：将对齐与表征学习解耦
-2. [Cheers: Decoupling Patch Details from Semantic Representations Enables Unified Multimodal Comprehension and Generation](/202603/20/2603.12793v1-cheers-decoupling-patch-details-from-semantic-representations-enables-unified-multimodal-comprehension-and-generation)  
+   evidence：平衡多模态学习与梯度调节
+2. [Joint Segmentation and Grading with Iterative Optimization for Multimodal Glaucoma Diagnosis](/202603/21/2603.14188v1-joint-segmentation-and-grading-with-iterative-optimization-for-multimodal-glaucoma-diagnosis)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：将补丁细节与语义表示解耦
-3. [Face-Guided Sentiment Boundary Enhancement for Weakly-Supervised Temporal Sentiment Localization](/202603/20/2603.14750v1-face-guided-sentiment-boundary-enhancement-for-weakly-supervised-temporal-sentiment-localization)  
+   evidence：基于部分病理信息的多模态诊断
+3. [DC-ViT: Modulating Spatial and Channel Interactions for Multi-Channel Images](/202603/21/2603.14281v1-dc-vit-modulating-spatial-and-channel-interactions-for-multi-channel-images)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：利用面部特征进行多模态情感定位
-4. [Conflict-Aware Multimodal Fusion for Ambivalence and Hesitancy Recognition](/202603/20/2603.15818v1-conflict-aware-multimodal-fusion-for-ambivalence-and-hesitancy-recognition)  
+   evidence：灵活的通道输入与解耦视觉 Transformer
+4. [Affectron: Emotional Speech Synthesis with Affective and Contextually Aligned Nonverbal Vocalizations](/202603/21/2603.14432v1-affectron-emotional-speech-synthesis-with-affective-and-contextually-aligned-nonverbal-vocalizations)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：针对冲突信号情感状态的多模态融合
-5. [Aligning Paralinguistic Understanding and Generation in Speech LLMs via Multi-Task Reinforcement Learning](/202603/20/2603.15981v1-aligning-paralinguistic-understanding-and-generation-in-speech-llms-via-multi-task-reinforcement-learning)  
+   evidence：带有情感线索的情感语音合成
+5. [How Attention Shapes Emotion: A Comparative Study of Attention Mechanisms for Speech Emotion Recognition](/202603/21/2603.15120v1-how-attention-shapes-emotion-a-comparative-study-of-attention-mechanisms-for-speech-emotion-recognition)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：用于副语言线索和情感识别的语音大模型
-6. [Continual Multimodal Egocentric Activity Recognition via Modality-Aware Novel Detection](/202603/20/2603.16970v1-continual-multimodal-egocentric-activity-recognition-via-modality-aware-novel-detection)  
+   evidence：语音情感识别的注意力机制基准测试
+6. [On the Emotion Understanding of Synthesized Speech](/202603/21/2603.16483v1-on-the-emotion-understanding-of-synthesized-speech)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：用于鲁棒多模态活动识别的模态感知框架
-7. [A Stable Neural Statistical Dependence Estimator for Autoencoder Feature Analysis](/202603/20/2603.11428v1-a-stable-neural-statistical-dependence-estimator-for-autoencoder-feature-analysis)  
+   evidence：语音情感识别与表示失配
+7. [Text-Phase Synergy Network with Dual Priors for Unsupervised Cross-Domain Image Retrieval](/202603/21/2603.12711v1-text-phase-synergy-network-with-dual-priors-for-unsupervised-cross-domain-image-retrieval)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于特征分析的统计依赖估计器
-8. [FBCIR: Balancing Cross-Modal Focuses in Composed Image Retrieval](/202603/20/2603.11520v1-fbcir-balancing-cross-modal-focuses-in-composed-image-retrieval)  
+   evidence：领域特定信息与语义信息的纠缠
+8. [CognitionCapturerPro: Towards High-Fidelity Visual Decoding from EEG/MEG via Multi-modal Information and Asymmetric Alignment](/202603/21/2603.12722v1-cognitioncapturerpro-towards-high-fidelity-visual-decoding-from-eegmeg-via-multi-modal-information-and-asymmetric-alignment)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：解决多模态推理中的关注度失衡问题
-9. [CFD-HAR: User-controllable Privacy through Conditional Feature Disentanglement](/202603/20/2603.11526v1-cfd-har-user-controllable-privacy-through-conditional-feature-disentanglement)  
+   evidence：通过多模态先验与融合从EEG中进行视觉解码
+9. [Improving Channel Estimation via Multimodal Diffusion Models with Flow Matching](/202603/21/2603.13440v1-improving-channel-estimation-via-multimodal-diffusion-models-with-flow-matching)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于表示学习的条件特征解耦
-10. [Disentangled Representation Learning through Unsupervised Symmetry Group Discovery](/202603/20/2603.11790v1-disentangled-representation-learning-through-unsupervised-symmetry-group-discovery)  
+   evidence：从多模态条件中重建高保真信道
+10. [Sparse-Dense Mixture of Experts Adapter for Multi-Modal Tracking](/202603/21/2603.13719v1-sparse-dense-mixture-of-experts-adapter-for-multi-modal-tracking)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：通过对称性发现进行解耦表示学习
-11. [Disentangled Representation Learning through Unsupervised Symmetry Group Discovery](/202603/20/2603.11790v2-disentangled-representation-learning-through-unsupervised-symmetry-group-discovery)  
+   evidence：建模模态特定与共享信息
+11. [SCoCCA: Multi-modal Sparse Concept Decomposition via Canonical Correlation Analysis](/202603/21/2603.13884v1-scocca-multi-modal-sparse-concept-decomposition-via-canonical-correlation-analysis)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：基于对称性的无监督解耦表示学习
+   evidence：跨模态交互与模态间隙对齐
 
 
 <div class="dpr-home-promo-card">

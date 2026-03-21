@@ -1,0 +1,815 @@
+Title: Text-Phase Synergy Network with Dual Priors for Unsupervised Cross-Domain Image Retrieval
+
+URL Source: https://arxiv.org/pdf/2603.12711v1
+
+Published Time: Mon, 16 Mar 2026 00:35:30 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# Text-Phase Synergy Network with Dual Priors for Unsupervised Cross-Domain Image Retrieval 
+
+## Jing Yang 1,2 Hui Xue 1,2* Shipeng Zhu 1,2 Pengfei Fang 1,2*
+
+> 1
+
+## School of Computer Science and Engineering, Southeast University, China 
+
+> 2
+
+## Key Laboratory of New Generation Artificial Intelligence Technology and Its Interdisciplinary Applications (Southeast University), Ministry of Education, China 
+
+{yangjing.seu, hxue, shipengzhu, fangpengfei }@seu.edu.cn 
+
+## Abstract 
+
+This paper studies unsupervised cross-domain image re-trieval (UCDIR), which aims to retrieve images of the same category across different domains without relying on labeled data. Existing methods typically utilize pseudo-labels, derived from clustering algorithms, as supervi-sory signals for intra-domain representation learning and cross-domain feature alignment. However, these discrete pseudo-labels often fail to provide accurate and com-prehensive semantic guidance. Moreover, the alignment process frequently overlooks the entanglement between domain-specific and semantic information, leading to se-mantic degradation in the learned representations and ul-timately impairing retrieval performance. This paper ad-dresses the limitations by proposing a Text-Phase Synergy Network with Dual Priors (TPSNet). Specifically, we first employ CLIP to generate a set of class-specific prompts per domain, termed as domain prompt, serving as a text prior that offers more precise semantic supervision. In parallel, we further introduce a phase prior, represented by domain-invariant phase features, which is integrated into the origi-nal image representations to bridge the domain distribution gaps while preserving semantic integrity. Leveraging the synergy of these dual priors, TPSNet significantly outper-forms state-of-the-art methods on UCDIR benchmarks. 
+
+## 1. Introduction 
+
+Cross-domain image retrieval aims to bridge the distribu-tion gaps between heterogeneous image domains (e.g., real images and sketches) and enable accurate matching by ex-tracting domain-invariant semantic features. It has broad applicability across various fields, including intelligent se-curity [18], medical image analysis [12], mobile product     
+
+> *Co-corresponding authors Incorrect pseudo -labels
+> (a) Existing methods
+> Intra -domain
+> Cross -domain
+> Phase Prior
+> (b) Ours
+> Text Prior
+> Domain Prompt
+> Image Feature Prototypes Domain B
+> Domain A Push
+> Pull
+> An image of a [𝑋 𝐴
+> 1] [ 𝑋 𝐴
+> 2]…[𝑋 𝐴
+> 𝑀 ]
+> Phase Feature
+
+Figure 1. Comparison between (a) existing methods and (b) our proposed TPSNet. Existing methods rely on inaccurate pseudo-labels for intra-domain and cross-domain learning, often causing semantic loss. In contrast, TPSNet leverages text and phase dual priors to extract domain-invariant semantic features. 
+
+image search [33], to name but a few. Most existing meth-ods address this task by training a retrieval model using ex-tensive annotated data [8, 15, 43]. However, in real-world scenarios, acquiring large-scale, high-quality labeled data is often prohibitively expensive. To mitigate the cost of manual annotation, an emerging solution is to learn directly from unlabeled data, a task known as unsupervised cross-domain image retrieval (UCDIR). In UCDIR, the absence of label information poses a sig-nificant challenge to learn domain-invariant semantic fea-tures for effective cross-domain retrieval. To address this issue, recent approaches commonly adopt a two-stage learn-ing paradigm: intra-domain representation learning fol-lowed by cross-domain feature alignment. This is typically achieved by first applying a clustering algorithm to gen-1
+
+> arXiv:2603.12711v1 [cs.CV] 13 Mar 2026
+
+erate pseudo-labels, and then constructing class prototypes for each cluster to facilitate the learning process. However, it introduces two key issues, as illustrated in Figure 1. In the intra-domain representation learning stage, contrastive learning is reliant on pseudo-labels to pull together images from the same category and push apart those from dif-ferent categories, thereby capturing semantic structure in each domain of data. Nevertheless, the resulting discrete pseudo-labels often fail to provide accurate and comprehen-sive semantic supervision. Such weak supervision leads to improper pairwise constraints and less discriminative class prototypes, which in turn hinder prototype-based alignment and degrade the quality of learned feature representations. In the cross-domain feature alignment stage, techniques such as adversarial domain adaptation [39], statistical distri-bution alignment [13], and cross-domain contrastive learn-ing [20] are commonly used to reduce domain discrepancies from the perspective of the spatial domain. However, these alignment strategies may degrade semantic information due to the entangled nature of domain-specific and semantic fea-tures [10], especially in cases where pseudo-labels and pro-totypes are inaccurate or unreliable. The recent success of vision-language models (VLMs), such as CLIP [30], has demonstrated promising capabilities in learning cross-modal semantic representations through large-scale image-text alignment [17, 19]. These textual representations provide richer semantic priors than discrete pseudo-labels, and can guide visual feature learning via multi-modal interaction [2, 28, 31]. Meanwhile, another line of research seeks to mitigate domain discrepancies by manipulating frequency components in the frequency do-main, rather than relying on explicit alignment in the spa-tial domain. For example, studies such as FDA [44] and FUDA [40] obtain domain-invariant representations by re-placing the low-frequency components of source images with those from target images, reducing inter-domain dis-crepancies while largely preserving semantic content. How-ever, most existing approaches focus on manipulating high-frequency and low-frequency components. In contrast, the spectral decomposition perspective that separates amplitude and phase spectra remains underexplored, even though the phase spectrum is known to encode structural and semantic cues that are more robust to domain shifts [27]. Inspired by recent studies, we propose the Text-Phase Synergy Network with Dual Priors (TPSNet) for UCDIR, with its key components illustrated in Figure 1. We first introduce domain prompts, initialized as learnable embed-dings for each cluster based on pseudo-labels generated via 
+
+K-means clustering. The prompts are further tuned through an improved unsupervised CLIP-based contrastive learn-ing scheme. It incorporates the semantic information en-coded in the prompts to attain refined pseudo-labels. The resulting domain prompts then serve as a text prior , pro-viding stronger semantic supervision for subsequent repre-sentation learning. Recognizing that the phase spectrum in the frequency domain conveys semantic signals invari-ant across data domains [14, 27], we additionally incorpo-rate phase features as a phase prior to bridge domain dis-crepancies while preserving essential semantic content, of-ten degraded by traditional alignment strategies. By jointly leveraging these text-phase dual priors , TPSNet effectively captures domain-invariant semantic features, thereby signif-icantly enhancing performance on the UCDIR task. The contributions of this work can be summarized as follows: • We introduce learnable domain prompts as a text prior to mitigate pseudo-label noise in UCDIR, enhancing seman-tic feature extraction via cross-modal alignment. • We further incorporate a phase prior to alleviate semantic degradation in cross-domain alignment, enabling robust and domain-invariant representations through dual priors. • Extensive experiments on the UCDIR datasets demon-strate the effectiveness of our method, which performs significantly better than the current state-of-the-arts and provides a new solution for the field of UCDIR. 
+
+## 2. Related Work 
+
+Cross-Domain Image Retrieval. Cross-domain image retrieval involves retrieving images where the query and gallery sets originate from different domains. Exist-ing methods [15, 16, 24] predominantly rely on super-vised learning with labeled data, which limits scalabil-ity in real-world applications. To address this limita-tion, recent research has focused on the setting of un-supervised cross-domain image retrieval (UCDIR), which seeks to learn domain-invariant semantic representations from unlabeled data. Representative approaches such as DD [13] and CODA [42] employ K-means clustering to generate pseudo-labels. DD further utilizes these pseudo-labels for intra-domain contrastive learning and minimizes the Distance-of-Distance loss to align distributions, while CODA leverages pseudo-labels to initialize both intra-domain and cross-domain classifiers, enabling the separate learning of intra-domain representations and cross-domain feature alignment. However, these methods decompose the UCDIR task into two independent stages, intra-domain representation learning and cross-domain alignment, over-looking the intrinsic correlation between them. To address this, ProtoOT [20] and ShieldIR [34] unify the two stages within an optimal transport framework, combining proto-type alignment with contrastive learning. However, seman-tic degradation persists due to the entanglement of domain-specific and semantic features. SA-MoE [38] addresses this issue by emphasizing semantic modeling through semanti-cally attentive fusion and contextual relevance, thereby pre-serving semantic integrity and underscoring the importance of semantics in UCDIR. 2Unsupervised Domain Alignment Methods. Unsuper-vised domain alignment aims to bridge the distribution gaps between domains in the absence of labeled data. Within the UCDIR framework, effective domain alignment is critical for robust retrieval performance under domain discrepan-cies. To tackle this challenge, various alignment strategies have been proposed. Statistical alignment methods, such as MMD [22] and MDD [47], explicitly reduce domain dis-crepancies by aligning statistical properties (e.g., means and covariances) across domains. In contrast, adversarial learn-ing approaches, including DANN [9] and CDAN [26], uti-lize domain discriminators to encourage feature extractors to learn domain-invariant representations through adversar-ial training. More recently, Optimal Transport (OT) has been applied to align domain distributions by computing an optimal mapping that minimizes transport cost [1, 4], providing a foundation for subsequent cross-domain con-trastive learning that further mitigates domain discrepan-cies. Diverging from conventional alignment techniques, another line of work [40, 44] uses frequency domain infor-mation to reduce distribution discrepancies while preserv-ing essential semantic content, offering a novel perspective for cross-domain alignment. 
+
+## 3. Method 
+
+3.1. Overview 
+
+We first formulate the problem of the UCDIR. Given two sets of unlabeled training images from different domains, denoted as DA = {xAi }NA 
+
+> i=1
+
+and DB = {xBj }NB
+
+> j=1
+
+, the goal of UCDIR is to learn a shared embedding space where se-mantically similar images from both domains are projected onto nearby representations. During testing, given a query image xAi ∈ D A with class label yi, the model is tasked with retrieving all semantically relevant images from DB
+
+that share the same label yi.UCDIR is a challenging problem due to the stringent re-quirement of training a retrieval model in different data do-mains without relying on any annotations. To address this, we propose a novel approach named TPSNet, as illustrated in Figure 2. TPSNet comprises two key components: one Domain Prompt Generation Module (DPG) and one Text-Phase Dual Priors Network (TPDP). In DPG, class-specific prompts are optimized per domain using CLIP-based con-trastive learning. Having the learned domain prompts at hand, TPDP adopts a dual-path architecture: the text branch leverages the learned domain prompts to provide enriched semantic supervision, while the image branch integrates phase features to support cross-domain alignment and pre-serve semantic content. By leveraging the synergy of text-phase dual priors, TPSNet effectively facilitates the extrac-tion of domain-invariant semantic visual representations. 
+
+3.2. Domain Prompt Generation Module 
+
+The overall diagram of the proposed DPG is presented on the left of Figure 2. Following previous UCDIR meth-ods, we first employ K-means clustering to generate dis-crete pseudo-labels for two domain of images. For each do-main, we initialize C learnable class-specific prompts cor-responding to the clusters identified by pseudo-labels. Each prompt is formulated as a textual template, e.g., “An im-age of a [X]1
+
+> A
+
+[X]2
+
+> A
+
+... [X]MA .” for DA and “An image of a 
+
+[X]1 
+
+> B
+
+[X]2 
+
+> B
+
+... [X]MB .” for DB . Here, [X]i is a learnable to-ken that is randomly initialized, and M denotes the number of learnable tokens. The initialized domain prompts and images are then fed into the pre-trained CLIP model as inputs, where a cross-modal contrastive learning strategy is employed to effec-tively update the domain prompts. Note that the parameters of both the image and text encoders are frozen, with only the token [X]i within the domain prompts is optimized. During this stage, the contrastive losses Lii2t and Lit2i are utilized, defined as follows: 
+
+Lii2t = − log exp ( s (Ii, T i) /τ )
+
+PNj=1 exp ( s (Ii, T j ) /τ ) , (1) and 
+
+Lit2i = − 1
+
+|P (yi)|
+
+X 
+
+> p∈P(yi)
+
+log exp ( s (Ip, T yi ) /τ )
+
+PNj=1 exp ( s (Ij , T yi ) /τ ) ,
+
+(2) where Ii and Ti denote the re-paired image and text embed-dings based on cosine similarity scores, which allows the model to partially correct inaccurate pseudo-labels through contrastive alignment. s(Ii, T i) = I⊤  
+
+> iTi
+> ∥Ii∥∥ Ti∥
+
+and τ is the temperature. N is the batch size, P (yi) is the set of positive samples with respect to Tyi , i.e., P (yi) = p ∈ { 1...N |yp =
+
+yi}. The symbol | · | denotes the Cardinality of this set. Then the proposed DPG is optimized via the following loss: 
+
+Lprompt = Lii2t + Lit2i.By minimizing Lprompt , the incrementally optimized domain prompts are leveraged as supervisory signals to re-fine the potentially inaccurate discrete pseudo-labels gen-erated by the clustering process in DPG. This optimization yields domain prompts that encapsulate semantic informa-tion from the text representations, which are subsequently incorporated into the TPDP module to guide the extraction of semantic representations. 
+
+3.3. Text-Phase Dual Priors Network 
+
+The overall architecture of TPDP is illustrated in the top-right part of Figure 2. The proposed method adopts a dual-path design, consisting of a Text-Prior Semantic Feature Extraction (TPFE) module for the text path and a Phase-Prior Domain-Invariant Feature Extraction (PPFE) module 3𝐼𝐼 1   
+
+> 𝐼𝐼 2
+> 𝐼𝐼 3
+> 𝐼𝐼 𝑁𝑁
+> 𝑇𝑇 1𝑇𝑇 2𝑇𝑇 3𝑇𝑇 𝑁𝑁
+
+𝐿𝐿 𝑖𝑖2𝑡𝑡 + 𝐿𝐿 𝑡𝑡2𝑖𝑖 
+
+Image 
+
+Encoder 
+
+Text 
+
+Encoder    
+
+> Domain A Domain B
+> An image of a [𝑋𝑋 𝐴𝐴 1] [ 𝑋𝑋 𝐴𝐴 2]…[ 𝑋𝑋 𝐴𝐴 𝑀𝑀 ]
+> An image of a [𝑋𝑋 𝐵𝐵 1] [ 𝑋𝑋 𝐵𝐵 2]…[ 𝑋𝑋 𝐵𝐵 𝑀𝑀 ]
+
+K-means 
+
+Domain Prompt Generation Module 
+
+C CA SA  K/V 
+
+Q
+
+Prototypes 
+
+Updat e
+
+𝐿𝐿 𝑖𝑖2𝑡𝑡𝑡𝑡𝑡𝑡   
+
+> Grayscale
+> |𝐴𝐴 𝑢𝑢 ,𝑣𝑣 |
+> FC
+> BN
+
+×3
+
+𝐿𝐿 𝑝𝑝 𝑡𝑡𝑡𝑡 
+
+Text 
+
+Encoder 
+
+> Phase Feature Encoder
+> IFFT
+
+Phase Image   
+
+> An image of a [𝑋𝑋 𝐴𝐴 1] [ 𝑋𝑋 𝐴𝐴 2]…[ 𝑋𝑋 𝐴𝐴 𝑀𝑀 ]
+> An image of a [𝑋𝑋 𝐵𝐵 1] [ 𝑋𝑋 𝐵𝐵 2]…[ 𝑋𝑋 𝐵𝐵 𝑀𝑀 ]
+
+….          
+
+> Domain A Domain B
+> FFT
+> …,𝐼𝐼 𝐴𝐴 _1𝑟𝑟𝑟𝑟𝑟𝑟 ,𝐼𝐼 𝐴𝐴 _2𝑟𝑟𝑟𝑟𝑟𝑟 ,𝐼𝐼 𝐴𝐴 _𝑁𝑁 𝑟𝑟𝑟𝑟𝑟𝑟
+> …,𝐼𝐼 𝐴𝐴 _1𝑝𝑝ℎ𝑎𝑎𝑎𝑎 𝑡𝑡 ,𝐼𝐼 𝐴𝐴 _2𝑝𝑝ℎ𝑎𝑎𝑎𝑎 𝑡𝑡 ,𝐼𝐼 𝐴𝐴 _𝑁𝑁 𝑝𝑝ℎ𝑎𝑎𝑎𝑎 𝑡𝑡
+> …,𝐼𝐼 𝐴𝐴 _1′,𝐼𝐼 𝐴𝐴 _2′,𝐼𝐼 𝐴𝐴 _𝑁𝑁 ′
+
+𝑇𝑇 𝐴𝐴 _1′ …. 𝑇𝑇 𝐴𝐴 _2′ 𝑇𝑇 𝐴𝐴 _𝐶𝐶 ′
+
+𝑇𝑇 𝐵𝐵 _1′ …. 𝑇𝑇 𝐵𝐵 _2′ 𝑇𝑇 𝐵𝐵 _𝐶𝐶 ′
+
+𝑋𝑋 𝑝𝑝ℎ𝑎𝑎𝑎𝑎 𝑡𝑡  
+
+> SA Self-Attention
+> Cross-Attention
+> Prototypes
+> Image Feature
+> CA
+
+C Concatenation     
+
+> ∅(𝑢𝑢 ,𝑣𝑣 )
+> 𝐴𝐴 𝑢𝑢 ,𝑣𝑣 =𝑅𝑅
+
+Text -Phase Dual Priors Network 
+
+Pseudo labels 
+
+𝑓𝑓 𝑝𝑝ℎ𝑎𝑎𝑎𝑎 𝑡𝑡 
+
+∅(·)  
+
+> Pool
+> Conv
+> ReLU
+> 𝐼𝐼 𝐴𝐴 𝑓𝑓 𝑇𝑇 𝐴𝐴 ′
+
+Figure 2. The pipeline of TPSNet. Left: domain prompt generation via the prompt learning paradigm. Top-right: text-phase dual prior construction with contrastive learning for unsupervised cross-domain image retrieval. Bottom: the detailed architecture of the proposed phase feature encoder. 
+
+for the image path. The following sections provide detailed descriptions of TPFE and PPFE, respectively. 
+
+Text-Prior Semantic Feature Extraction. In order to extract domain-invariant semantic features, we design the TPFE module utilizing the domain prompts learned from DPG. These domain prompts are passed through a shared text encoder to generate text features. For DA, the resulting text features are denoted as T ′
+
+A = {T ′
+
+A 1, T ′
+
+A 2, . . . , T ′
+
+A C },and for DB , as T ′
+
+B = {T ′
+
+B 1, T ′
+
+B 2, . . . , T ′
+
+B C }, where C
+
+is the number of semantic categories. These text features, 
+
+T ′
+
+A and T ′
+
+B , will serve as text prior to guide the semantic representation learning in subsequent process. 
+
+Phase-Prior Domain-Invariant Feature Extraction. In the PPFE module, images from two domains DA and DB
+
+are first processed by an image encoder to obtain RGB features Irgb . Although Irgb provides high-level seman-tics, it is inevitably influenced by domain-specific factors such as background and style, which limits its effectiveness for cross-domain retrieval. To further mitigate this issue, we further extract the corresponding phase features Iphase 
+
+from grayscale images using a dedicated Phase Feature En-coder, as described in the following paragraph, and fuse them with Irgb :
+
+If = Mean 
+
+
+
+LayerNorm  Concat (Irgb , I phase )+ SelfAttention  Concat (Irgb , I phase ) 
+
+,
+
+(3) where Concat(·) and Mean(·) denote the concatenation and mean pooling, respectively. SelfAttention(·) and Layer-Norm(·) refer to the self-attention and layer normalization. This operation yields the fused features If for two domains, effectively integrating semantic content from RGB with en-hanced structural consistency from phase to fuse domain-invariant information while retaining rich semantics for ro-bust representations. 
+
+Phase Feature Encoder. The architecture of the Phase Feature Encoder is illustrated at the bottom of Figure 2. In this process, we apply the Fast Fourier Transform (FFT) to the grayscale images to obtain the frequency representation 
+
+F (u, v ) = |A(u, v )|ejϕ (u,v ), where |A(u, v )| and ϕ(u, v )
+
+denote the amplitude spectrum and phase spectrum, respec-tively. To emphasize domain-invariant information, we re-tain the phase spectrum while replacing the amplitude spec-trum with a constant value R, yielding the modified fre-quency signal F ′(u, v ) = Re jϕ (u,v ). The final phase im-age Xphase is reconstructed by applying the Inverse Fast Fourier Transform (IFFT): 
+
+Xphase = F−1{F ′(u, v )}, (4) where F−1 denotes the IFFT operation. Then, we design a lightweight convolutional subnetwork to extract phase in-formation f phase from the phase image Xphase :
+
+ϕ(·) = AvgPool 2×2(ReLU (BN (Conv 3×3(·)))) , (5) 
+
+f phase = ϕ  Xphase  . (6) The f phase is then passed through a fully connected layer, resulting the final phase features as: 
+
+Iphase = FC  Flatten (f phase ) . (7) 4Synergy of Text-Phase Dual Priors. To effectively in-corporate dual priors from text and phase information into cross-domain retrieval, we adopt a cross-attention mecha-nism to enable their synergistic integration. For each do-main, the resulting text features T ′ serve as query vectors and the fused visual features If are used as key and value vectors. The cross-attention mechanism is adopted to fuse the two priors, as: 
+
+I′ = CrossAttention (T ′; If ). (8) This yields the final visual features I′ 
+
+> A
+
+and I′ 
+
+> B
+
+for the two domains, which are enriched with the synergy of text-phase dual priors and retain domain-invariant semantic informa-tion. After obtaining the final visual features for two do-mains, we perform prototype updates at each training epoch for each domain individually: 
+
+Pyi ← mPyi + (1 − m)I′ 
+
+> i
+
+, (9) where P denotes the class prototypes initialized via K-means clustering, and α is a momentum-based update fac-tor. As shown in Figure 2, prototype cross-entropy loss Lpce 
+
+and image-to-text contrastive loss Li2tce are employed in two domains to enhance representation learning: 
+
+Lipce = − log exp ( s (I′ 
+
+> i
+
+, Pyi ) /τ )
+
+PCc=1 exp ( s (I′ 
+
+> i
+
+, Pc) /τ ) , (10) and 
+
+Lii2tce =
+
+> C
+
+X
+
+> j=1
+
+−σj log exp  s  I′ 
+
+> i
+
+, T ′
+
+> j
+
+ /τ PCc=1 exp ( s (I′ 
+
+> i
+
+, T ′
+
+> c
+
+) /τ ) , (11) where C is the number of the categories. To further miti-gate the impact of errors in pseudo-labels, we introduce a smoothing label σj = (1 − ϵ) · yi + ϵ/C , where yi is the one-hot encoding of the pseudo-label and ϵ is a constant. The overall loss function for TPDP is then computed by summing the individual losses: 
+
+L = αLpce + βLi2tce , (12) where α and β are hyperparameters balancing the impor-tance of Lpce and Li2tce , respectively. 
+
+## 4. Experiments 
+
+4.1. Datasets and Setting 
+
+Datasets. We evaluate the proposed TPSNet on two widely used datasets for cross-domain retrieval: Office-Home and DomainNet. Office-Home dataset [37] com-prises 65 classes and 4 domains (Art, Clipart, Product, Real). DomainNet dataset [29] consists of 6 domains: Cli-part, Infograph, Painting, Quickdraw, Real, and Sketch. Following the criteria established by DD [13], we select 7 classes from the DomainNet dataset with over 200 images in each domain for training and testing. 
+
+Evaluation Metrics. Following DD [13], we assess re-trieval performance on the Office-Home dataset using pre-cision at top-k retrieved images, specifically at k = 1 , 5,and 15 (i.e., P @1 , P @5 , and P @15 ). For the DomainNet dataset, we report precision at k = 50 , 100 , and 200 (i.e., 
+
+P @50 , P @100 , and P @200 ). 
+
+Implementation Details. We use the pre-trained CLIP [30] architecture as the backbone framework. Following the consensus in this community, we adopt ResNet-50 [11] and ViT-B [7] as image encoder to investi-gate the effectiveness of TPSNet. During the DPG stage, the CLIP backbone is frozen, and only the learnable text tokens [X]1 [X]2 ... [X]M are updated. In the TPDP stage, we unfreeze the last block of the image encoder, allowing fine-tuning. Each input image is augmented using random horizontal flipping, padding, cropping, and random erasing. The model is optimized using the Adam optimizer with a learning rate of 0.0001, following a cosine decay schedule. All the experiments are conducted on a single NVIDIA GeForce RTX 3090. 
+
+4.2. Comparison with State-of-the-Art Methods (a)  (b)   
+
+> (a) (b)
+> Figure 3. Average Accuracy (%) of UCDIR Methods using (a) ResNet-50 and (b) ViT-B as image encoders.
+
+In our experimental validation, we evaluate the effective-ness of TPSNet by comparing it with the following meth-ods: DD [13], CoDA [42], DG-UCDIR [14], ProtoOT [20], ShieldIR [34] and SA-MoE [38]. Table 1 and Table 2 show the detailed retrieval performance for Office-Home and Do-mainNet, respectively. TPSNet’s impressive performance is evident from the summarized results in Figure 3, with de-tailed average accuracies provided in Table 3. Through comparison, we observe the following: 1) TPSNet outperforms other methods on nearly all metrics across the two datasets, highlighting its effectiveness. 2) With either ResNet-50 or ViT-B as the image encoder, TP-SNet outperforms other compared methods on nearly all metrics, demonstrating its robustness. 3) TPSNet exhibits more substantial performance gains on the Office-Home 5Table 1. Detailed comparison with UCDIR methods on the Office-Home dataset across 12 individual cross-domain retrieval scenarios. 
+
+Method Art → Real Real → Art Art → P roduct P roduct → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 DD [13] 45.12 42.33 40.06 47.95 43.68 38.38 35.39 34.67 32.61 42.51 37.94 31.41 CoDA [42] 44.77 40.99 36.64 44.88 37.54 38.12 34.52 33.96 31.06 40.98 32.24 30.54 ProtoOT [20] 49.94 49.24 49.55 54.90 51.81 48.17 44.25 45.95 45.71 53.43 52.07 46.89 ShieldIR [34] 51.46 50.20 49.27 57.33 53.50 49.26 44.75 46.16 45.33 56.31 52.71 47.39 
+
+TPSNet 69.06 67.22 65.02 74.00 69.72 62.73 59.41 57.21 53.50 63.82 59.98 52.31 
+
+ViT-B DD [13] 60.94 56.44 51.75 61.92 54.14 44.97 58.76 56.55 52.65 60.80 53.89 44.88 CoDA [42] 59.65 53.68 46.84 58.34 52.82 40.84 57.32 53.86 50.80 57.53 51.54 40.11 DG-UCDIR [14] 59.29 52.76 46.59 58.83 51.54 39.48 56.51 53.01 52.65 61.46 55.89 47.42 SA-MoE [38] 71.12 68.93 66.10 73.86 68.85 60.37 64.69 62.39 58.63 66.57 62.82 55.12 
+
+TPSNet 89.53 88.61 87.77 91.74 90.71 86.81 81.17 80.60 79.43 88.80 86.14 81.01 
+
+Method Clipart → Real Real → Clipart P roduct → Real Real → P roduct P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 DD [13] 33.31 30.57 28.14 44.66 41.47 37.41 57.42 52.69 47.90 51.71 48.48 44.95 CoDA [42] 30.12 27.10 24.02 43.65 35.21 29.06 57.37 50.98 42.82 55.23 49.18 44.36 ProtoOT [20] 40.92 40.68 39.96 51.11 52.12 50.44 69.34 67.27 64.74 57.72 59.32 59.72 ShieldIR [34] 43.36 42.58 41.55 52.05 52.38 50.81 70.37 68.33 66.08 61.46 62.08 61.85 
+
+TPSNet 51.68 49.91 47.56 63.53 61.36 57.40 78.85 75.87 72.48 74.39 73.00 70.94 
+
+ViT-B DD [13] 42.66 39.51 36.19 59.31 54.58 48.18 70.56 65.19 58.58 65.87 62.57 57.58 CoDA [42] 41.06 38.46 34.83 57.42 51.47 45.92 70.43 63.62 56.84 63.94 60.13 55.16 DG-UCDIR [14] 42.87 39.31 35.94 60.86 55.35 48.90 72.12 66.87 60.41 66.25 62.97 58.09 SA-MoE [38] 52.99 50.00 47.33 70.41 65.78 60.06 78.91 74.96 70.40 76.52 74.54 71.18 
+
+TPSNet 73.36 72.73 71.85 89.03 88.01 84.86 93.26 92.82 91.78 92.10 92.05 91.78 
+
+Method P roduct → Clipart Clipart → P roduct Art → Clipart Clipart → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 DD [13] 42.26 37.42 33.74 27.79 27.26 25.97 32.67 30.79 28.70 27.26 23.94 20.53 CoDA [42] 47.21 35.43 28.33 27.10 24.77 24.00 36.69 32.19 26.37 25.64 21.17 21.37 ProtoOT [20] 51.92 50.66 49.58 39.01 37.95 37.16 40.54 38.27 36.01 30.24 29.31 27.34 ShieldIR [34] 52.10 52.43 50.23 40.84 39.87 39.45 41.24 39.05 37.44 32.21 30.13 28.39 
+
+TPSNet 60.71 57.49 53.26 46.05 43.77 42.22 56.98 54.07 50.29 43.14 39.66 35.58 
+
+ViT-B DD [13] 57.87 54.00 47.87 45.22 43.29 40.13 56.00 51.89 45.78 39.06 34.64 29.27 CoDA [42] 54.44 51.97 44.68 44.84 42.62 38.91 55.76 50.41 44.63 38.42 33.02 27.41 DG-UCDIR [14] 56.58 53.41 47.09 43.89 41.25 37.48 55.93 51.50 44.93 36.51 30.04 25.43 SA-MoE [38] 65.28 61.09 56.01 47.47 45.81 43.36 61.80 57.82 53.23 46.90 44.39 39.97 
+
+TPSNet 88.31 86.74 84.49 72.67 72.30 71.79 84.55 81.94 79.36 69.87 68.67 64.55 
+
+dataset, which contains a larger number of categories (65 in total). Specifically, when using ResNet-50 as the im-age encoder, TPSNet surpasses the SOTA by average mar-gins of 11.51%, 9.99%, and 8.02% in P @1 , P @5 , and 
+
+P @15 , respectively. The improvements are even more pro-nounced with ViT-B as the image encoder, yielding gains of 19.82%, 22.00%, and 24.48% in the same metrics. These results highlight the effectiveness of TPSNet in handling more complex and challenging datasets. 4) We observe that TPSNet achieves substantial improvements on noisy domains with large visual variation. For instance, on the Infograph-real and Infograph-sketch scenarios of the Do-mainNet dataset, TPSNet outperforms SOTA by more than 20% in P @50 when ViT-B is used as the image encoder. These results demonstrate that TPSNet facilitates more ef-fective semantic learning, thereby improving the model’s robustness to the domain distribution gaps. In addition, to comprehensively evaluate the effective-ness and robustness of TPSNet and ensure that the ob-served improvements are not solely attributed to CLIP, we replace the pre-trained CLIP image encoder with Mo-Cov2 [6] and DINO [5], which are widely adopted in prior works [13, 20, 38]. All backbones are trained under iden-tical settings for fair comparison. As shown in Table 3, TPSNet consistently outperforms state-of-the-art methods across both datasets, even when MoCov2 and DINO are used for initialization. These results strongly indicate that the performance gains are not merely dependent on CLIP, 6Table 2. Detailed comparison with UCDIR methods on the DomainNet dataset across 12 individual cross-domain retrieval scenarios. 
+
+Method Clipart → Sketch Sketch → Clipart Inf ograph → Real Real → Inf ograph P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 DD [13] 56.31 52.47 47.38 63.07 57.26 48.17 35.52 35.24 34.35 57.74 46.69 35.47 CoDA [42] 44.56 35.86 35.14 49.00 38.61 38.49 27.12 27.21 26.43 36.98 30.44 30.02 ProtoOT [20] 82.70 82.26 80.32 86.69 85.57 81.59 48.74 49.28 49.60 75.36 68.49 56.20 ShieldIR [34] 87.16 87.12 86.74 89.95 89.54 88.56 54.41 54.93 55.34 82.26 75.35 64.15 
+
+TPSNet 95.43 95.31 94.63 95.50 95.31 94.26 70.04 69.55 68.74 86.07 81.91 71.99 
+
+ViT-B DD [13] 76.55 73.39 68.66 82.36 79.22 71.46 47.12 47.15 46.89 78.01 68.07 53.17 CoDA [42] 73.62 70.22 65.51 80.21 76.00 67.68 46.11 45.98 45.13 73.69 61.67 45.62 DG-UCDIR [14] 77.47 73.83 69.31 82.86 80.85 72.19 48.92 47.97 45.20 78.72 68.71 52.37 SA-MoE [38] 83.97 82.08 78.40 88.11 86.07 81.21 57.29 57.55 57.67 87.37 80.08 66.24 
+
+TPSNet 97.92 97.84 97.73 98.27 98.20 98.06 78.72 78.55 78.31 93.01 93.04 85.71 
+
+Method Inf ograph → Sketch Sketch → Inf ograph P ainting → Clipart Clipart → P ainting P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 DD [13] 31.29 29.33 26.54 43.66 36.14 28.12 66.42 56.84 46.72 52.58 50.10 46.11 CoDA [42] 24.94 22.48 22.42 27.65 23.85 23.48 57.30 44.25 44.15 46.51 42.38 41.22 ProtoOT [20] 45.72 45.51 43.77 62.92 56.41 47.08 91.04 90.09 86.67 82.70 82.66 81.38 ShieldIR [34] 47.39 47.10 46.34 72.29 67.68 55.00 93.96 93.47 90.99 85.32 85.34 84.30 
+
+TPSNet 67.59 67.00 65.96 90.20 86.27 74.90 94.07 93.27 90.61 94.56 93.99 91.08 
+
+ViT-B DD[13] 49.94 48.72 45.11 71.97 62.05 49.32 93.89 93.24 90.09 86.00 85.57 83.72 CoDA [42] 45.85 44.52 40.35 67.51 55.69 43.87 85.93 82.34 80.29 82.56 80.18 79.65 DG-UCDIR [14] 50.38 49.24 45.62 72.03 63.15 51.99 92.40 93.17 89.43 86.17 85.83 82.86 SA-MoE [38] 53.76 53.07 50.37 79.56 72.29 58.62 95.00 94.59 93.23 90.60 90.42 89.25 
+
+TPSNet 75.87 75.61 75.03 95.21 92.04 84.78 98.49 98.45 98.26 97.84 97.73 96.64 
+
+Method P ainting → Quickdraw Quickdraw → P ainting Quickdraw → Real Real → Quickdraw P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 DD [13] 39.72 38.59 37.63 33.45 33.81 34.29 30.24 28.40 26.14 25.00 22.26 19.73 CoDA [42] 28.73 26.69 24.95 21.05 20.52 20.81 23.98 22.59 21.50 39.87 36.28 32.91 ProtoOT [20] 63.06 59.92 56.73 56.51 55.66 52.04 61.55 61.60 61.63 67.24 67.02 65.41 ShieldIR [34] 65.33 61.25 57.98 58.07 57.42 55.11 67.19 67.36 67.53 75.70 73.60 70.63 
+
+TPSNet 67.21 65.38 61.88 59.27 57.93 54.30 69.34 68.88 68.17 75.06 74.70 72.96 
+
+ViT-B DD [13] 63.19 61.19 58.09 53.55 53.46 53.09 48.71 48.74 48.68 51.65 50.48 48.97 CoDA [42] 50.24 48.58 44.68 43.49 42.65 41.94 37.67 29.63 26.21 39.85 31.84 29.49 DG-UCDIR [14] 65.06 62.90 59.89 54.18 53.95 53.21 45.20 44.30 42.63 50.62 49.24 46.80 SA-MoE [38] 72.54 71.16 69.22 61.32 61.21 61.03 55.78 55.59 55.49 59.02 57.55 55.81 
+
+TPSNet 81.67 77.04 71.34 65.12 64.51 63.31 62.50 62.21 61.56 79.34 76.89 72.14 
+
+Table 3. Average accuracy (%) for evaluating the impact of image encoder initialization on the Office-Home and DomainNet datasets using ResNet-50 and ViT-B backbones.                                                             
+
+> Method ResNet-50 Office-Home Domainnet
+> P@1 P@5 P@15 P@50 P@100 P@200
+> SOTA [34] 50.29 49.12 47.25 73.25 71.68 68.56 TPSNet (MoCov2) 56.71 54.64 52.14 74.04 72.80 70.00
+> TPSNet 61.80 59.11 55.27 80.36 79.13 75.79
+> Method ViT-B Office-Home Domainnet
+> P@1 P@5 P@15 P@50 P@100 P@200
+> SOTA [38] 64.71 61.45 56.81 73.69 71.81 68.05 TPSNet (DINO) 67.62 65.31 62.29 80.97 79.30 75.48
+> TPSNet 84.53 83.44 81.29 85.33 84.34 81.91
+
+but instead reflect the intrinsic effectiveness and general-izability of TPSNet. Additional detailed comparisons are provided in Supplementary Material B.4. 
+
+4.3. Ablation Study 
+
+Quantitative Evaluation. To evaluate the contribution of each component in TPSNet, we perform an ablation study on two datasets using ViT-B as the image encoder, with re-sults summarized in Table 4. The results indicate that the integration of domain prompts provides substantial perfor-mance gains by introducing additional semantic supervi-sion, yielding an improvement of 11.91% in P @1 on the Office-Home dataset and 6.69% in P @50 on DomainNet. Furthermore, the inclusion of TPFE and PPFE modules leads to additional performance enhancements by strength-ening semantic information while reducing domain dis-crepancies. When all components are combined, TPSNet achieves further performance gains, proving the efficacy of our method. 7Table 4. Ablation study of TPSNet components with ViT-B as the image encoder. Results averaged over 12 scenarios. 
+
+DPG TPFE PPFE Office-Home DomainNet 
+
+P @1 P @5 P @15 P @50 P @100 P @200 
+
+% % % 65.18 60.77 54.87 70.94 68.09 62.58 
+
+! % % 77.09 75.10 71.43 77.63 74.72 69.18 
+
+! % ! 81.34 80.22 78.07 81.88 79.73 75.75 
+
+! ! % 81.63 80.13 77.72 82.05 79.94 75.97 
+
+! ! ! 84.53 83.44 81.29 85.33 84.34 81.91 Painting-Clipart 
+
+> Product-Real World
+> Painting-Quickdraw
+> Art-Product
+> v3 : v2+phase prior v2 : v1+text prior v1 : Baseline
+> v3 : TPSNet
+> (v2+phase prior)
+> v2
+> (v1+text prior)
+> v1
+> (Baseline)
+
+Figure 4. t-SNE visualizations of last-layer features for the base-line model (v1), baseline with text prior (v2), and TPSNet (v3) across two scenarios from two datasets. Input     
+
+> Infograph Art Real World Produc t
+> TPSNet
+> v3:TPSNet
+> (v 2+phase prior)
+> v2
+> (v 1+text prior)
+> v1
+> (Baseline)
+
+Figure 5. Grad-CAM visualizations of last-layer features for the baseline model (v1), baseline with text prior (v2), and TPSNet (v3) on randomly selected samples. 
+
+Qualitative Evaluation. To evaluate the explainability of the proposed text-phase dual priors in semantic feature ex-traction and domain distribution alignment, we perform two sets of qualitative assessments. Specifically, we compare three models: the baseline model (v1), the baseline model enhanced with the text prior (v2), and TPSNet (v3), which integrates all components. First, we visualize the t-SNE [36] representations of fea-tures extracted from the final layer of the image encoder, as shown in Figure 4. The results show that incorporat-ing the text prior facilitates more compact clustering of se-Query  Retriev ed Results Tasks 
+
+> Infograph -
+> Real World
+> Painting -
+> Quickdraw
+> Quickdraw -
+> Real World
+> Real World -
+> Clipart
+> Clipart -
+> Sketch
+> Clipart -
+> Painting
+> Extreme abstraction
+> Highly similar
+
+Figure 6. Top-10 retrieval results in various cross-domain retrieval scenarios from two datasets. The green and red boxes denote cor-rect and incorrect retrievals, respectively. 
+
+mantically similar samples, while the phase prior further aligns similar samples across domains into a shared fea-ture space. This highlights the effectiveness of TPSNet in learning domain-invariant semantic representations. Sub-sequently, we present Grad-CAM [32] visualizations of the last-layer features from the backbone for models v1, v2, and v3 in Figure 5. The results indicate that the synergy of the text-phase dual priors enables TPSNet to more accurately focus on target objects, such as the bird in a complex back-ground and the whale leaping across the sea surface. More visualizations can be found in Supplementary Material B.9. 
+
+Visualization of the Retrieval Results. We randomly select various cross-domain retrieval scenarios from two datasets for evaluation. As shown in Figure 6, TPSNet achieves 100% top-10 retrieval accuracy in most scenarios. We further analyze the failure cases and find that retrieval errors mainly arise under two conditions: 1) queries come from highly abstract domains such as Quickdraw, where fine-grained semantic information is severely limited, and 2) query and retrieved samples exhibit strong visual simi-larity, for example when bird and feather instances become nearly indistinguishable in the Quickdraw domain. 
+
+## 5. Conclusion 
+
+In this paper, we address the challenge of unsupervised cross-domain image retrieval (UCDIR) by proposing a novel method called TPSNet. TPSNet leverages domain prompts derived from image-text multi-modal alignment as a text prior to refine inaccurate pseudo-labels and enhance semantic representations. In addition, it integrates phase features as a phase prior to reduce domain discrepancies while preserving semantic information. Through the syn-ergy of text-phase dual priors, TPSNet effectively extracts domain-invariant semantic representations for UCDIR. Extensive experiments on two datasets demonstrate its significant superiority over state-of-the-art methods. 8References 
+
+[1] YM Asano, C Rupprecht, and A Vedaldi. Self-labelling via simultaneous clustering and representation learning. In Pro-ceedings of the International Conference on Learning Rep-resentations , 2019. 3 [2] Shuanghao Bai, Min Zhang, Wanqi Zhou, Siteng Huang, Zhirong Luan, Donglin Wang, and Badong Chen. Prompt-based distribution alignment for unsupervised domain adap-tation. In Proceedings of the AAAI conference on Artificial Intelligence , pages 729–737, 2024. 2 [3] Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang, Jun Tang, et al. Qwen2. 5-vl technical report. arXiv preprint arXiv:2502.13923 , 2025. 5, 7 [4] Mathilde Caron, Ishan Misra, Julien Mairal, Priya Goyal, Pi-otr Bojanowski, and Armand Joulin. Unsupervised learning of visual features by contrasting cluster assignments. In Pro-ceedings of the Annual Conference on Neural Information Processing Systems , pages 9912–9924, 2020. 3 [5] Mathilde Caron, Hugo Touvron, Ishan Misra, Herv´ e J´ egou, Julien Mairal, Piotr Bojanowski, and Armand Joulin. Emerg-ing properties in self-supervised vision transformers. In Pro-ceedings of the IEEE International Conference on Computer Vision , pages 9650–9660, 2021. 6, 3 [6] Xinlei Chen, Haoqi Fan, Ross Girshick, and Kaiming He. Improved baselines with momentum contrastive learning. 
+
+arXiv preprint arXiv:2003.04297 , 2020. 6, 3 [7] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, G Heigold, S Gelly, et al. An image is worth 16x16 words: Transformers for im-age recognition at scale. In Proceedings of the International Conference on Learning Representations , 2020. 5 [8] Kaipeng Fang, Jingkuan Song, Lianli Gao, Pengpeng Zeng, Zhi-Qi Cheng, Xiyao Li, and Heng Tao Shen. Pros: Prompting-to-simulate generalized knowledge for universal cross-domain retrieval. In Proceedings of the IEEE Con-ference on Computer Vision and Pattern Recognition , pages 17292–17301, 2024. 1 [9] Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pas-cal Germain, Hugo Larochelle, Franc ¸ois Laviolette, Mario March, and Victor Lempitsky. Domain-adversarial training of neural networks. Journal of Machine Learning Research ,17(59):1–35, 2016. 3 [10] Chunjiang Ge, Rui Huang, Mixue Xie, Zihang Lai, Shiji Song, Shuang Li, and Gao Huang. Domain adaptation via prompt learning. IEEE Transactions on Neural Networks and Learning Systems , 36(1):1160–1170, 2023. 2 [11] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceed-ings of the IEEE Conference on Computer Vision and Pattern Recognition , pages 770–778, 2016. 5 [12] Brian Hu, Bhavan Vasu, and Anthony Hoogs. X-mir: Ex-plainable medical image retrieval. In Proceedings of the IEEE Winter Conference on Applications of Computer Vi-sion , pages 440–450, 2022. 1 [13] Conghui Hu and Gim Hee Lee. Feature representation learn-ing for unsupervised cross-domain image retrieval. In Pro-ceedings of the European Conference on Computer Vision ,pages 529–544. Springer, 2022. 2, 5, 6, 7, 3 [14] Conghui Hu, Can Zhang, and Gim Hee Lee. Unsuper-vised feature representation learning for domain-generalized cross-domain image retrieval. In Proceedings of the IEEE International Conference on Computer Vision , pages 11016– 11025, 2023. 2, 5, 6, 7 [15] Junshi Huang, Rogerio S Feris, Qiang Chen, and Shuicheng Yan. Cross-domain image retrieval with a dual attribute-aware ranking network. In Proceedings of the IEEE Inter-national Conference on Computer Vision , pages 1062–1070, 2015. 1, 2 [16] Xin Ji, Wei Wang, Meihui Zhang, and Yang Yang. Cross-domain image retrieval with attention modeling. In Proceed-ings of the 25th ACM International Conference on Multime-dia , pages 1654–1662, 2017. 2 [17] Chao Jia, Yinfei Yang, Ye Xia, Yi-Ting Chen, Zarana Parekh, Hieu Pham, Quoc Le, Yun-Hsuan Sung, Zhen Li, and Tom Duerig. Scaling up visual and vision-language representa-tion learning with noisy text supervision. In Proceedings of the International Conference on Machine Learning , pages 4904–4916, 2021. 2 [18] Sri Karnila, Suhendro Irianto, and Rio Kurniawan. Face recognition using content based image retrieval for intelli-gent security. International Journal of Advanced Engineer-ing Research and Science , 6(1):91–98, 2019. 1 [19] Wonjae Kim, Bokyung Son, and Ildoo Kim. Vilt: Vision-and-language transformer without convolution or region su-pervision. In Proceedings of the International Conference on Machine Learning , pages 5583–5594, 2021. 2 [20] Bin Li, Ye Shi, Qian Yu, and Jingya Wang. Unsupervised cross-domain image retrieval via prototypical optimal trans-port. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 3009–3017, 2024. 2, 5, 6, 7, 3 [21] Junnan Li, Dongxu Li, Caiming Xiong, and Steven Hoi. Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation. In Proceed-ings of the International Conference on Machine Learning ,pages 12888–12900, 2022. 2, 4, 5 [22] Jian Liang, Dapeng Hu, and Jiashi Feng. Do we really need to access the source data? source hypothesis transfer for un-supervised domain adaptation. In Proceedings of the Interna-tional Conference on Machine Learning , pages 6028–6039, 2020. 3 [23] Sheng-Chieh Lin, Chankyu Lee, Mohammad Shoeybi, Jimmy Lin, Bryan Catanzaro, and Wei Ping. Mm-embed: Universal multimodal retrieval with multimodal llms. In Pro-ceedings of the International Conference on Learning Rep-resentations , 2025. 5, 7 [24] Haoran Liu, Ying Ma, Ming Yan, Yingke Chen, Dezhong Peng, and Xu Wang. Dida: Disambiguated domain align-ment for cross-domain retrieval with partial labels. In Pro-ceedings of the AAAI conference on Artificial Intelligence ,pages 3612–3620, 2024. 2 [25] Yikun Liu, Pingan Chen, Jiayin Cai, Xiaolong Jiang, Yao Hu, Jiangchao Yao, Yanfeng Wang, and Weidi Xie. Lamra: 
+
+9Large multimodal model as your advanced retrieval assistant. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , 2025. 5, 7 [26] Mingsheng Long, ZHANGJIE CAO, Jianmin Wang, and Michael I Jordan. Conditional adversarial domain adapta-tion. In Proceedings of the Annual Conference on Neural Information Processing Systems , 2018. 3 [27] Alan V Oppenheim and Jae S Lim. The importance of phase in signals. Proceedings of the IEEE , 69(5):529–541, 1981. 2 [28] Or Patashnik, Zongze Wu, Eli Shechtman, Daniel Cohen-Or, and Dani Lischinski. Styleclip: Text-driven manipulation of stylegan imagery. In Proceedings of the IEEE International Conference on Computer Vision , pages 2085–2094, 2021. 2 [29] Xingchao Peng, Qinxun Bai, Xide Xia, Zijun Huang, Kate Saenko, and Bo Wang. Moment matching for multi-source domain adaptation. In Proceedings of the IEEE International Conference on Computer Vision , pages 1406–1415, 2019. 5 [30] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learn-ing transferable visual models from natural language super-vision. In Proceedings of the International Conference on Machine Learning , pages 8748–8763. PMLR, 2021. 2, 5 [31] Yongming Rao, Wenliang Zhao, Guangyi Chen, Yansong Tang, Zheng Zhu, Guan Huang, Jie Zhou, and Jiwen Lu. Denseclip: Language-guided dense prediction with context-aware prompting. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , pages 18082– 18091, 2022. 2 [32] Ramprasaath R. Selvaraju, Michael Cogswell, Abhishek Das, Ramakrishna Vedantam, Devi Parikh, and Dhruv Ba-tra. Grad-cam: Visual explanations from deep networks via gradient-based localization. In Proceedings of the IEEE In-ternational Conference on Computer Vision , pages 618–626, 2017. 8 [33] Xiaohui Shen, Zhe Lin, Jonathan Brandt, and Ying Wu. Mo-bile product image search by automatic query object extrac-tion. In Proceedings of the European Conference on Com-puter Vision , pages 114–127. Springer, 2012. 1 [34] Zixin Tang, Haihui Fan, Jinchao Zhang, Hui Ma, Xiaoyan Gu, Bo Li, and Weiping Wang. Shieldir: Privacy-preserving unsupervised cross-domain image retrieval via dual protec-tion transformation. In Proceedings of the 33rd ACM In-ternational Conference on Multimedia , pages 6383–6392, 2025. 2, 5, 6, 7 [35] Michael Tschannen, Alexey Gritsenko, Xiao Wang, Muham-mad Ferjad Naeem, Ibrahim Alabdulmohsin, Nikhil Parthasarathy, Talfan Evans, Lucas Beyer, Ye Xia, Basil Mustafa, et al. Siglip 2: Multilingual vision-language en-coders with improved semantic understanding, localization, and dense features. arXiv preprint arXiv:2502.14786 , 2025. 2, 3, 4, 5 [36] Laurens Van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of Machine Learning Research , 9 (86):2579–2605, 2008. 8 [37] Hemanth Venkateswara, Jose Eusebio, Shayok Chakraborty, and Sethuraman Panchanathan. Deep hashing network for unsupervised domain adaptation. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition ,pages 5018–5027, 2017. 5 [38] Kai Wang, Jiayang Liu, Xing Xu, Jingkuan Song, Xin Liu, and Heng Tao Shen. Unsupervised cross-domain im-age retrieval with semantic-attended mixture-of-experts. In 
+
+Proceedings of the 47th International ACM SIGIR Confer-ence on Research and Development in Information Retrieval ,pages 197–207, 2024. 2, 5, 6, 7, 3 [39] Lixu Wang, Xinyu Du, and Qi Zhu. Semantic feature learn-ing for universal unsupervised cross-domain retrieval. In 
+
+Proceedings of the Annual Conference on Neural Informa-tion Processing Systems , 2024. 2 [40] Mengzhu Wang, Shanshan Wang, Ye Wang, Wei Wang, Tianyi Liang, Junyang Chen, and Zhigang Luo. Boost-ing unsupervised domain adaptation: A fourier approach. 
+
+Knowledge-Based Systems , 264:110325, 2023. 2, 3 [41] Weiyun Wang, Zhangwei Gao, Lixin Gu, Hengjun Pu, Long Cui, Xingguang Wei, Zhaoyang Liu, Linglin Jing, Shenglong Ye, Jie Shao, et al. Internvl3. 5: Advancing open-source multimodal models in versatility, reasoning, and efficiency. 
+
+arXiv preprint arXiv:2508.18265 , 2025. 5, 7 [42] Xu Wang, Dezhong Peng, Ming Yan, and Peng Hu. Correspondence-free domain alignment for unsupervised cross-domain image retrieval. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 10200–10208, 2023. 2, 5, 6, 7 [43] Ling Xiao and Toshihiko Yamasaki. Boosting fine-grained fashion retrieval with relational knowledge distillation. In 
+
+Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , pages 8229–8234, 2024. 1 [44] Yanchao Yang and Stefano Soatto. Fda: Fourier domain adaptation for semantic segmentation. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recogni-tion , pages 4085–4095, 2020. 2, 3 [45] Weijie Yin, Yongjie Ye, Fangxun Shu, Yue Liao, Zijian Kang, Hongyuan Dong, Haiyang Yu, Dingkang Yang, Jia-cong Wang, Han Wang, et al. Sail-vl2 technical report. arXiv preprint arXiv:2509.14033 , 2025. 5, 7 [46] Xiaohua Zhai, Basil Mustafa, Alexander Kolesnikov, and Lucas Beyer. Sigmoid loss for language image pre-training. In Proceedings of the IEEE International Conference on Computer Vision , pages 11975–11986, 2023. 2, 4, 5 [47] Yuchen Zhang, Tianle Liu, Mingsheng Long, and Michael Jordan. Bridging theory and algorithm for domain adapta-tion. In Proceedings of the 36th International Conference on Machine Learning , pages 7404–7413, 2019. 3 
+
+10 Text-Phase Synergy Network with Dual Priors for Unsupervised Cross-Domain Image Retrieval 
+
+# Supplementary Material 
+
+In the technical appendices and supplementary material, we provide: • Additional implementation details of the proposed meth-ods. • Further experimental results and ablation studies. • A broader discussion of the limitations of this work. 
+
+## A. Implementation Details 
+
+A.1. Re-Paired Image and Text Embeddings. 
+
+In DPG, the loss in Eq.(1) and Eq.(2) are computed between re-paired image and text embeddings. The re-pairing pro-cess is performed dynamically during each training iteration based on the cosine similarity, defined as: 
+
+s(Ii, T c) = I⊤ 
+
+> i
+
+Tc
+
+∥Ii∥∥ Tc∥ . (13) Here, Ii denotes the image embedding, and Tc represents the c-th domain prompt embedding, where c ∈ 1, . . . , C 
+
+and C is the number of domain prompts. Subsequently, the image embedding is paired with the text embedding corre-sponding to the domain prompt with the highest similarity: 
+
+yi = arg max  
+
+> c
+
+s(Ii, T c), Ti = Tyi . (14) Thus, the re-paired image-text pair (Ii, T i) is dynamically updated at each iteration to maximize semantic consistency. This strategy enhances the quality of pseudo-labels and fa-cilitates improved semantic representation learning despite domain discrepancies. 
+
+A.2. Phase Feature Encoder. 
+
+In PPFE, we utilize the Phase Feature Encoder to extract phase features. Specifically, after applying the Fast Fourier Transform (FFT), we retain the phase spectrum while re-placing the amplitude spectrum with a constant value R,which helps preserve domain-invariant information. To in-vestigate the influence of the constant value on the recon-structed image, we analyze the Inverse Fast Fourier Trans-form (IFFT) of a complex signal constructed as R · ejϕ (u,v ).Due to the linearity of the F−1, we obtain: 
+
+F−1[R · ejϕ (u,v )] = R · F −1[ejϕ (u,v )], (15) which demonstrates that the reconstructed image is a scaled version of the phase-only image, with its structure entirely determined by the phase component. Next, we apply min-max normalization to the recon-structed image. For an image ˆxphase , the min-max normal-ization is defined as: 
+
+xphase = ˆxphase − min(ˆ xphase )max(ˆ xphase ) − min(ˆ xphase ) . (16) When we apply the same normalization to the image re-constructed with the constant amplitude R, we have: 
+
+xphase ′
+
+= R · ˆxphase − min( R · ˆxphase )max( R · ˆxphase ) − min( R · ˆxphase ) (17) 
+
+= R · (ˆ xphase − min(ˆ xphase )) 
+
+R · (max(ˆ xphase ) − min(ˆ xphase )) (18) 
+
+= xphase . (19) Thus, we observe that the normalized result xphase ′
+
+is invariant to the choice of R, as long as R̸ = 0 . There-fore, under min-max normalization, the image structure is solely determined by the phase component, while any non-zero constant magnitude R preserves the structural seman-tics and eliminates domain-specific amplitude variations. 
+
+## B. Additional Experiments 
+
+B.1. Domain Prompt Generation Module. 
+
+The Domain Prompt Generation Module involves prompt template design and the impact of K-means clustering on pseudo-label quality, which merit further discussion. 
+
+Prompt Templates. We use the template “An image of a [X]1 . . . [X]M ” for each domain, where the learnable to-kens are category-specific and not shared across classes. We analyze category-agnostic compared with category-specific prompts, as well as the impact of the number of learnable tokens M .In fully unsupervised settings, category names are un-available. We therefore adopt category-specific phrasing (e.g., “An image of a”) while learning category-conditioned prompt tokens. We further analyze a fully category-agnostic design, where both phrasing and prompt tokens are shared across all categories. In this case, performance degrades: P@50 drops by 3.3% on DomainNet, and P@1 drops by 9.8% on Office-Home (65 categories). This result indicates that category-specific prompts are crucial for maintaining discriminability, especially in scenarios with a large num-ber of categories. 1Office-Home DomainNet   
+
+> 76
+> 78
+> 80
+> 82
+> 84
+> 86
+> P@1 / P@50 (%)
+> M=1
+> M=2
+> M=3
+> M=4
+> M=5
+> M=6
+> M=7 Figure 7. Analysis on the number of learnable text tokens Mon two datasets.
+
+We analyze the impact of the number of learnable text to-kens M on retrieval performance. As illustrated in Figure 7, the model achieves optimal performance on both datasets when M = 4 . A small value of M may be insufficient to effectively capture rich class-specific semantics and pro-vide adequate supervisory signals. Conversely, setting M
+
+too large can result in overfitting of the text prompts and a substantial increase in training time, ultimately hindering generalization. 
+
+Pseudo-label Quality. Following existing works, we set the number of clusters K equal to the number of classes in the training set, i.e., 65 for Office-Home and 7 for Domain-Net. Therefore, the issue of incorrect number of clusters is avoided during training. To further examine the impact of using an incorrect num-ber of clusters, we conducted additional experiments on Do-mainNet by setting K to 5 and 9 instead of the ground-truth value of 7. The average P@50 accuracy dropped to 84.59% and 85.01%, respectively, compared to 85.33% under the correct setting. These results indicate that using an inappro-priate cluster number can degrade retrieval performance due to inaccurate pseudo-labels and unreliable domain prompts. Nonetheless, the overall performance remains competitive. We also observe that setting K smaller than the actual num-ber of classes tends to result in more severe misclustering, as multiple distinct categories are forced into a single clus-ter. In contrast, using a larger K may split some categories into multiple clusters, which is generally less detrimental. To investigate how misclassified points affect the final performance, we evaluate our method under a fully su-pervised setting, removing the influence of pseudo-label noise. The results on the DomainNet dataset indicate that under the unsupervised setting, where the clustering ac-curacy is approximately 85%, the fully supervised coun-terpart achieves only a modest improvement of 1.64% in P@50. This confirms that misclassified instances do af-fect final performance. However, the relatively small per-formance gap suggests that our unsupervised framework is sufficiently robust to mitigate the negative effects of noisy pseudo-labels. This robustness can be attributed to the fol-lowing: although some images are incorrectly clustered, the domain prompts are primarily influenced by the majority of correctly clustered samples, resulting in semantically mean-ingful representations. Consequently, our method achieves competitive retrieval performance without relying on man-ual annotations. 
+
+B.2. Ablation Study on the impact of the Phase Prior. 
+
+To validate the effectiveness of the phase prior, we conduct an ablation study comparing full-spectrum phase features with high-frequency (HF) and low-frequency (LF) phase variants in the fusion process. As shown in Table 5, both HF and LF phase priors improve retrieval performance by re-ducing cross-domain discrepancies while preserving certain semantic cues. However, full-spectrum phase features con-sistently achieve superior performance. This is because the complete phase representation jointly encodes global spa-tial layout (low-frequency components) and local structural boundaries (high-frequency components), thereby preserv-ing more holistic and domain-invariant structural semantics. Furthermore, to investigate the effect of different fu-sion strategies for integrating the phase prior, we explore four distinct methods to combine phase features with origi-nal image features: concatenation, learnable weights, gate-based fusion, and self-attention. As presented in Ta-ble 6, the self-attention-based fusion achieves the best per-formance, highlighting its superior ability to adaptively emphasize informative components and facilitate robust domain-invariant representation learning. 
+
+B.3. Ablation Study on the Impact of Vision-Language Pretraining Architectures. 
+
+We further investigate the impact of different vision-language pretraining architectures on the performance of TPSNet. Specifically, we compare CLIP [30], BLIP [21], SigLIP [46] and SigLIP2 [35] as backbone models. The experimental results on the OfficeHome and DomainNet datasets are presented in Table 7 and Table 8, with the average performance summarized in Table 9. Empirical results reveal that TPSNet achieves the best performance with CLIP as the backbone. In contrast, its performance noticeably degrades when using BLIP. We attribute this to BLIP’s multi-task pretraining objective, which incorporates both image-text matching and image-conditioned text gen-eration. While such generative objectives enhance perfor-mance in tasks like image captioning and visual question answering, they may limit the model’s ability to learn fine-2Table 5. Average accuracy (%) for ablation study on phase prior. 
+
+Method Office-Home DomainNet 
+
+P @1 P @5 P @15 P @50 P @100 P @200 
+
+Baseline (w/o Prior) 81.63 80.13 77.72 82.05 79.94 75.97 TPSNet (LF Prior) 83.71 81.06 78.19 84.25 83.02 80.10 TPSNet (HF Prior) 84.02 82.99 80.78 84.37 83.22 80.41 
+
+TPSNet (Phase Prior) 84.53 83.44 81.29 85.33 84.34 81.91 
+
+> Table 6. Ablation study on fusion strategies of the phase prior on the Office-Home dataset (Concat: concatenation, LW: learnable weights, Gate: gate-based fusion, SA: self-attention).
+
+Method Art → Real Real → Art Art → P roduct P roduct → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B Concat 88.50 88.13 87.23 91.30 91.26 87.05 78.78 77.68 76.14 87.02 85.20 79.04 LW 82.86 81.61 79.84 86.39 84.18 78.17 73.01 71.16 67.74 80.83 78.87 70.39 Gate 84.14 82.51 80.56 87.65 85.00 79.25 77.96 76.48 74.73 79.03 79.04 72.09 SA 89.53 88.61 87.77 91.74 90.71 86.81 81.17 80.60 79.43 88.80 86.14 81.01 
+
+Method Clipart → Real Real → Clipart P roduct → Real Real → P roduct P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B Concat 73.20 72.41 71.79 88.41 87.17 84.31 91.60 91.77 91.38 90.57 90.88 90.03 LW 67.40 64.56 62.16 84.00 82.24 77.66 89.93 87.59 85.44 86.71 85.87 84.87 Gate 68.98 66.72 64.59 85.54 83.59 79.59 90.61 88.77 86.11 87.19 86.30 84.95 SA 73.36 72.73 71.85 89.03 88.01 84.86 93.26 92.82 91.78 92.10 92.05 91.78 
+
+Method P roduct → Clipart Clipart → P roduct Art → Clipart Clipart → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B Concat 88.98 87.28 84.46 72.30 72.90 72.74 84.71 82.49 79.17 69.14 67.44 64.07 LW 84.84 83.40 80.74 66.16 65.67 64.47 78.99 76.41 73.16 62.47 59.97 55.52 Gate 84.95 83.37 80.16 67.40 66.05 64.93 79.23 75.14 70.37 62.66 59.58 53.79 SA 88.31 86.74 84.49 72.67 72.30 71.79 84.55 81.94 79.36 69.87 68.67 64.55 
+
+grained, discriminative representations that are critical for cross-domain image retrieval tasks. Similarly, SigLIP also exhibits inferior performance compared to CLIP, despite adopting a contrastive learn-ing framework. We attribute this discrepancy to differ-ences in their loss function formulations. Specifically, SigLIP employs a sigmoid-based contrastive loss that treats each image-text pair independently, whereas CLIP utilizes a softmax-based loss that jointly considers all positive and negative pairs within a batch. This global contrastive ob-jective in CLIP fosters stronger alignment and discrim-ination between modalities, which in turn enhances the model’s capacity to learn semantically consistent represen-tations across domains. SigLIP2 [35], an improved variant of SigLIP, mitigates some of these limitations by introduc-ing architectural enhancements and refined training strate-gies, leading to consistently better performance than SigLIP across two datasets. However, its performance remains in-ferior to CLIP, primarily because the sigmoid-based con-trastive loss fails to capture the global batch-level interac-tions inherent in CLIP’s softmax-based objective. 
+
+B.4. Ablation Study on the Impact of Image En-coder Initialization. 
+
+To evaluate the effectiveness of TPSNet without attribut-ing the observed improvements to the CLIP image encoder, we replace the CLIP pre-trained image encoder with Mo-Cov2 [6] and DINO [5], which have been widely adopted in previous works [13, 20, 38]. This setup ensures that any performance gains are solely due to the effectiveness of TP-SNet itself. The detailed experimental results are provided in Tables 10 and 11. As demonstrated in Table 10 and Table 11, even when MoCov2 and DINO are employed as initialization param-3Table 7. Ablation study on vision-language pretraining architectures on the Office-Home dataset. The table reports results for each of the 12 cross-domain retrieval scenarios individually. 
+
+Method Art → Real Real → Art Art → P roduct P roduct → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B TPSNet (BLIP) [21] 50.27 49.54 47.89 58.43 53.34 47.45 43.68 43.79 42.68 55.67 49.70 42.62 TPSNet (SigLIP) [46] 65.14 63.63 61.62 66.01 62.36 56.33 57.11 53.01 47.67 44.60 42.53 37.48 TPSNet (SigLIP2) [35] 67.11 66.25 62.21 68.31 66.87 63.23 62.11 60.12 58.97 47.54 45.33 44.91 TPSNet (CLIP) 89.53 88.61 87.77 91.74 90.71 86.81 81.17 80.60 79.43 88.80 86.14 81.01 
+
+Method Clipart → Real Real → Clipart P roduct → Real Real → P roduct P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B TPSNet (BLIP) [21] 26.03 23.89 22.26 50.40 45.69 38.95 72.70 69.48 65.94 67.04 65.27 63.13 TPSNet (SigLIP) [46] 36.49 35.17 33.50 61.33 57.89 51.34 58.84 54.87 51.82 67.82 64.78 60.38 TPSNet (SigLIP2) [35] 38.21 37.01 35.03 62.09 61.77 60.01 60.00 59.04 57.77 70.32 68.43 66.09 TPSNet (CLIP) 73.36 72.73 71.85 89.03 88.01 84.86 93.26 92.82 91.78 92.10 92.05 91.78 
+
+Method P roduct → Clipart Clipart → P roduct Art → Clipart Clipart → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ViT-B TPSNet (BLIP) [21] 56.14 49.97 42.35 24.56 24.33 24.09 35.15 31.91 28.22 18.99 17.23 14.92 TPSNet (SigLIP) [46] 45.57 43.77 39.08 32.97 32.20 29.92 55.79 52.01 45.87 30.65 28.20 25.31 TPSNet (SigLIP2) [35] 49.32 48.88 47.61 33.21 32.90 30.05 57.09 54.87 53.21 32.64 30.40 28.65 TPSNet (CLIP) 88.31 86.74 84.49 72.67 72.30 71.79 84.55 81.94 79.36 69.87 68.67 64.55 
+
+Table 8. Ablation study on vision-language pretraining architectures on the Domainnet dataset. The table reports results for each of the 12 cross-domain retrieval scenarios individually.                                                                                                                                                                                                                                                          
+
+> Method Clipart →Sketch Sketch →Clipart Inf ograph →Real Real →Inf ograph P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200
+> ViT-B TPSNet (BLIP) [21] 81.48 79.61 72.53 77.04 75.26 68.83 58.33 58.21 57.84 87.03 78.33 64.53 TPSNet (SigLIP) [46] 84.37 79.48 73.07 81.02 76.99 70.93 63.19 62.90 62.43 73.55 64.03 50.73 TPSNet (SigLIP2) [35] 89.42 86.18 81.06 88.24 85.88 80.63 73.02 72.85 72.67 80.28 78.06 66.05 TPSNet (CLIP) 97.92 97.84 97.73 98.27 98.20 98.06 78.72 78.55 78.31 93.01 93.04 85.71
+> Method Inf ograph →Sketch Sketch →Inf ograph P ainting →Clipart Clipart →P ainting P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200
+> ViT-B TPSNet (BLIP) [21] 50.91 48.61 43.12 59.20 52.93 44.21 86.19 84.71 76.74 81.09 79.39 75.76 TPSNet (SigLIP) [46] 59.46 56.58 53.44 70.11 65.79 62.02 88.79 81.97 79.91 86.50 84.51 81.63 TPSNet (SigLIP2) [35] 64.64 61.40 55.93 73.45 70.22 64.87 94.83 88.82 88.25 89.42 88.75 87.81 TPSNet (CLIP) 75.87 75.61 75.03 95.21 92.04 84.78 98.49 98.45 98.26 97.84 97.73 96.64
+> Method P ainting →Quickdraw Quickdraw →P ainting Quickdraw →Real Real →Quickdraw P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200 P@50 P@100 P@200
+> ViT-B TPSNet (BLIP) [21] 32.06 30.40 28.18 23.75 22.97 22.07 22.34 23.08 23.36 34.92 32.75 30.16 TPSNet (SigLIP) [46] 37.21 36.46 35.51 18.47 17.49 16.69 19.60 18.60 17.71 26.48 25.84 24.67 TPSNet (SigLIP2) [35] 37.04 36.22 35.04 17.22 17.23 17.36 17.66 17.21 17.45 32.45 30.56 29.04 TPSNet (CLIP) 81.67 77.04 71.34 65.12 64.51 63.31 62.50 62.21 61.56 79.34 76.89 72.14
+
+eters for the image encoder, TPSNet consistently outper-forms current state-of-the-art methods on both datasets. Furthermore, when the image encoder is initialized with parameters pre-trained by CLIP, TPSNet’s performance is further enhanced. 
+
+B.5. Dynamic Prompt Generation vs. Our Domain Prompts 
+
+For prompt generation, we also considered alternative learn-able prompt-generation strategies. Regarding the use of pre-trained vision–language models to automatically refine prompts, we experimented with employing QwenVL to generate class-relevant prompts directly from images. How-ever, we found that such models often produce semantically inconsistent textual outputs for instances within the same 4Table 9. Average accuracy (%) compared with universal retrieval models on the Office-Home and DomainNet Datasets. 
+
+Method Office-Home DomainNet 
+
+P @1 P @5 P @15 P @50 P @100 P @200 
+
+TPSNet (BLIP) [21] 46.59 43.68 40.04 57.86 55.52 50.61 TPSNet (SigLIP) [46] 51.86 49.20 45.03 59.06 55.89 52.40 TPSNet (SigLIP2) [35] 54.00 52.66 50.65 63.14 61.12 58.01 
+
+TPSNet (CLIP) 84.53 83.44 81.29 85.33 84.34 81.91 
+
+Table 10. Ablation study on the impact of image encoder initialization on the Office-Home dataset. The table reports results for each of the 12 cross-domain retrieval scenarios individually. 
+
+Method Art → Real Real → Art Art → P roduct P roduct → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 ShieldIR (SOTA) [34] 51.46 50.20 49.27 57.33 53.50 49.26 44.75 46.16 45.33 56.31 52.71 47.39 TPSNet (MoCov2) 60.94 60.06 59.04 65.89 62.10 57.50 53.07 50.67 48.89 60.24 56.92 49.49 TPSNet 69.06 67.22 65.02 74.00 69.72 62.73 59.41 57.21 53.50 63.82 59.98 52.31 
+
+ViT-B SA-MoE (SOTA) [38] 71.12 68.93 66.10 73.86 68.85 60.37 64.69 62.39 58.63 66.57 62.82 55.12 TPSNet (DINO) 73.22 71.54 70.50 79.27 76.15 69.79 64.98 64.23 62.85 74.32 69.94 63.11 TPSNet 89.53 88.61 87.77 91.74 90.71 86.81 81.17 80.60 79.43 88.80 86.14 81.01 
+
+Method Clipart → Real Real → Clipart P roduct → Real Real → P roduct P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 ShieldIR (SOTA) [34] 43.36 42.58 41.55 52.05 52.38 50.81 70.37 68.33 66.08 61.46 62.08 61.85 TPSNet (MoCov2) 46.30 45.45 44.66 59.03 57.49 54.19 76.57 73.56 71.22 71.15 69.66 68.25 TPSNet 51.68 49.91 47.56 63.53 61.36 57.40 78.85 75.87 72.48 74.39 73.00 70.94 
+
+ViT-B SA-MoE (SOTA) [38] 52.99 50.00 47.33 70.41 65.78 60.06 78.91 74.96 70.40 76.52 74.54 71.18 TPSNet (DINO) 54.41 52.77 51.86 73.35 70.38 66.94 82.18 80.61 78.45 79.94 78.32 76.59 TPSNet 73.36 72.73 71.85 89.03 88.01 84.86 93.26 92.82 91.78 92.10 92.05 91.78 
+
+Method P roduct → Clipart Clipart → P roduct Art → Clipart Clipart → Art P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 P @1 P @5 P @15 
+
+ResNet-50 ShieldIR (SOTA) [34] 52.10 52.43 50.23 40.84 39.87 39.45 41.24 39.05 37.44 32.21 30.13 28.39 TPSNet (MoCov2) 59.92 57.74 56.20 42.54 42.68 42.37 48.53 45.74 42.67 36.38 33.58 31.20 TPSNet 60.71 57.49 53.26 46.05 43.77 42.22 56.98 54.07 50.29 43.14 39.66 35.58 
+
+ViT-B SA-MoE (SOTA) [38] 65.28 61.09 56.01 47.47 45.81 43.36 61.80 57.82 53.23 46.90 44.39 39.97 TPSNet (DINO) 72.38 68.05 64.58 49.90 49.23 47.57 63.12 60.66 56.65 44.42 41.87 38.56 TPSNet 88.31 86.74 84.49 72.67 72.30 71.79 84.55 81.94 79.36 69.87 68.67 64.55 
+
+class. For example, images labeled as “bird” may yield prompts such as “a parrot” or “a hummingbird”, leading to semantic fragmentation that severely undermines retrieval consistency. Moreover, these methods typically depend on manually crafted templates (e.g., “What is the specific ob-ject in this image?”) to guide prompt generation, which introduces additional engineering overhead. We also ob-served that each inference takes approximately 0.91 sec-onds and consumes more than 4 GB of GPU memory per image, rendering this approach computationally expensive and impractical for large-scale unsupervised datasets. Therefore, in our setting, we adopt a learnable prompt format of “An image of a [X]1[X]2 . . . [X]M ”, which does not rely on class labels. For each class, we generate a more descriptive yet consistent prompt expression that avoids the semantic fragmentation issue of dynamically generated prompts while remaining robust across domains. We be-lieve this design provides a practical and effective balance between performance and training cost. 
+
+B.6. Limitations of the LMM-based Universal Re-trieval Models for UCDIR. 
+
+In addition, we compare TPSNet with the current state-of-the-art large multimodal models (LMMs) for retrieval performance, including InternVL3.5 [41], SAIL-VL2 [45], MM-Embed [23], Qwen2.5VL [3], and LamRA [25]. The average retrieval performance is summarized in Table 12. Since InternVL3.5 and SAIL-VL2 are primarily designed 5Table 11. Ablation study on the impact of image encoder initialization on the Domainnet dataset. The table reports results for each of the 12 cross-domain retrieval scenarios individually. 
+
+Method Clipart → Sketch Sketch → Clipart Inf ograph → Real Real → Inf ograph P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 ShieldIR (SOTA) [34] 87.16 87.12 86.74 89.95 89.54 88.56 54.41 54.93 55.34 82.26 75.35 64.15 TPSNet (MoCov2) 95.64 95.85 95.93 96.13 96.08 96.03 47.28 47.46 47.40 83.82 76.42 61.52 TPSNet 95.43 95.31 94.63 95.50 95.31 94.26 70.04 69.55 68.74 86.07 81.91 71.99 
+
+ViT-B SA-MoE (SOTA) [38] 83.97 82.08 78.40 88.11 86.07 81.21 57.29 57.55 57.67 87.37 80.08 66.24 TPSNet (DINO) 96.18 96.27 96.19 97.18 97.13 96.82 61.54 61.47 61.35 90.21 83.78 69.13 TPSNet 97.92 97.84 97.73 98.27 98.20 98.06 78.72 78.55 78.31 93.01 93.04 85.71 
+
+Method Inf ograph → Sketch Sketch → Inf ograph P ainting → Clipart Clipart → P ainting P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 ShieldIR (SOTA) [34] 47.39 47.10 46.34 72.29 67.68 55.00 93.96 93.47 90.99 85.32 85.34 84.30 TPSNet (MoCov2) 46.86 46.66 45.82 82.04 73.52 58.22 95.50 95.00 93.95 92.83 92.55 91.70 
+
+TPSNet 67.59 67.00 65.96 90.20 86.27 74.90 94.07 93.27 90.61 94.56 93.99 91.08 ViT-B SA-MoE (SOTA) [38] 53.76 53.07 50.37 79.56 72.29 58.62 95.00 94.59 93.23 90.60 90.42 89.25 TPSNet (DINO) 60.03 59.92 59.44 91.94 85.83 69.64 97.89 97.68 96.77 97.11 96.89 95.29 TPSNet 75.87 75.61 75.03 95.21 92.04 84.78 98.49 98.45 98.26 97.84 97.73 96.64 
+
+Method P ainting → Quickdraw Quickdraw → P ainting Quickdraw → Real Real → Quickdraw P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 P @50 P @100 P @200 
+
+ResNet-50 ShieldIR (SOTA) [34] 65.33 61.25 57.98 58.07 57.42 55.11 67.19 67.36 67.53 75.70 73.60 70.63 TPSNet (MoCov2) 64.56 63.20 61.86 46.74 48.92 49.88 65.81 66.40 66.97 71.26 71.54 70.75 TPSNet 67.21 65.38 61.88 59.27 57.93 54.30 69.34 68.88 68.17 75.06 74.70 72.96 
+
+ViT-B SA-MoE (SOTA) [38] 72.54 71.16 69.22 61.32 61.21 61.03 55.78 55.59 55.49 59.02 57.55 55.81 TPSNet (DINO) 69.00 67.33 64.19 62.70 60.42 56.22 68.98 67.80 65.70 78.93 77.04 75.04 
+
+TPSNet 81.67 77.04 71.34 65.12 64.51 63.31 62.50 62.21 61.56 79.34 76.89 72.14 
+
+for question-answering tasks, we use only their pre-trained vision encoders. All other methods utilize the complete output vectors of LMMs as feature representations. Ex-perimental results demonstrate that, although LMM-based universal retrieval models exhibit strong zero-shot general-ization ability, there remains a noticeable performance gap compared to TPSNet, particularly in scenarios involving significant domain discrepancies. Specifically, their perfor-mance deteriorates significantly in domains with substantial background noise and abstract visual patterns, such as Info-graph and Quickdraw. This degradation can be attributed to the inherent bias of foundation models towards natural-image domains prevalent in their pretraining datasets, which limits their ability to generalize to highly stylized domains. Therefore, despite their strong generalization capacity, universal retrieval models still fall short in effectively ad-dressing the specific challenges of UCDIR. Moreover, these models typically require a substantial number of parame-ters, whereas our TPSNet, based on ViT-B, achieves su-perior performance with a significantly reduced parameter count. This demonstrates the necessity and practical value of developing targeted methods tailored for UCDIR, espe-cially in scenarios with severe domain discrepancies. 
+
+B.7. Analysis on Coefficients α and β.
+
+To investigate the impact of the coefficients α and β in Eq.(12), we conduct hyperparameter analysis experiments 1.0 0.8 0.6 0.4 0.3 0.2 0.1          
+
+> 80 81 82 83 84 85 86
+> Fixed = 1
+> Office-Home Domainnet
+> 0.2 0.5 0.8 1.0 1.2 1.5 1.8 2.0
+> Fixed = 0.2
+> Office-Home Domainnet
+> P@1 / P@50 (%)
+
+Figure 8. Analysis on coefficients α and β on two datasets. 10 6 10 5 10 4 10 3
+
+> Learning Rate
+> 50
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> 85
+> P@1 / P@50 (%)
+> OfficeHome
+> DomainNet
+
+Figure 9. Analysis on learning rate. 
+
+on Office-Home and Domainnet datasets, as shown in Fig-ure 8. The model achieves the best performance when 6Table 12. Average accuracy (%) compared with the LMM-based universal retrieval models on the Office-Home and DomainNet Datasets. 
+
+## Method Office-Home DomainNet 
+
+## P @1 P @5 P @15 P @50 P @100 P @200 
+
+## InternVL3.5 - 6B [41] 66.08 60.88 53.81 58.71 54.82 47.11 SAIL-VL2 - 0.6B [45] 73.08 67.47 58.76 58.29 53.38 46.16 MM-Embed - 7B [23] 79.38 76.20 71.01 78.05 75.18 70.27 Qwen2.5VL - 3B [3] 77.84 75.01 69.40 78.00 77.25 75.81 Qwen2.5VL - 7B [3] 82.56 80.53 76.12 81.45 81.47 80.44 LamRA - 7B [25] 84.20 82.60 79.75 80.77 78.39 74.80 
+
+## TPSNet - 0.086B 84.53 83.44 81.29 85.33 84.34 81.91 
+
+α = 1 and β = 0 .2.
+
+B.8. Analysis on Learning Rate. 
+
+We conduct a learning rate sensitivity analysis on both the Office-Home and DomainNet datasets to examine its impact on model performance. As shown in Figure 9, the best per-formance is achieved when the learning rate is set to 10 −4.
+
+B.9. More Visualization Results 
+
+Here, we present additional t-SNE and Grad-CAM visual-izations across more scenarios and samples in Figure 10, demonstrating the explainability of our TPSNet method on multiple cross-domain tasks and datasets. 
+
+B.10. Computational Cost Analysis 
+
+We evaluate the additional computational overhead intro-duced by the phase prior extraction and text prior cross-modal attention mechanisms. To quantify this overhead, we conduct detailed ablation studies on four key metrics: pa-rameter count, FLOPs, inference time, and memory usage. The results are summarized in Table 13. As shown in our ablation study, the phase branch—though built with a lightweight convolutional encoder—introduces an additional 1.03M parameters and 1.96G FLOPs, primarily due to processing an extra phase image in parallel with the RGB input. Despite this, the increase in inference time is negligible (+0.006ms), and the memory overhead remains modest (+37MB), demonstrating the efficiency of the design. In contrast, text prior cross-modal attention mechanism adds only 0.02M parameters and 0.01G FLOPs, as it reuses existing features and performs lightweight token-level cross-modal inter-actions. However, it results in a more noticeable increase in inference time (+0.064ms), attributed to the sequential attention operations—including Q-K-V projections, matrix multiplications, and softmax computations—which are computationally intensive and less parallelizable than convolutional operations. Overall, the full model intro-duces just 2.08M additional parameters (1.8%) and 2.0G more FLOPs (4.4%) compared to the baseline. Inference time rises from 0.031ms to 0.104ms, and memory usage increases moderately from 1067MB to 1119MB. These results demonstrate that our proposed method maintains high efficiency and is well-suited for scalable deployment on larger datasets or in real-time applications. 
+
+## C. Limitations 
+
+Although TPSNet achieves significant improvements on the UCDIR task, it still has certain limitations. In DPGM, the generation of domain prompts relies on a manu-ally designed prompt in the form of “An image of a 
+
+[X]1[X]2 . . . [X]M .” While this provides a simple and in-terpretable way to encode image semantics, it may limit the expressiveness and flexibility of the prompts, especially in complex or diverse domains. In future work, we plan to ex-plore more dynamic or learnable prompt generation strate-gies to enhance generalization across broader domain dis-tributions. 72025 /9/25  8  
+
+> Painting -
+> Quickdraw
+> Art -
+> Product
+> v3:TPSNet
+> (v 2+phase prior)
+> v2
+> (v 1+text prior)
+> v1
+> (Baseline)
+
+Sketch 
+
+Product 
+
+Clipart   
+
+> v3:TPSNet
+> (v 2+phase prior)
+> v2
+> (v 1+text prior)
+> v1
+> (Baseline)
+> Input
+
+Figure 10. Additional t-SNE and Grad-CAM visualizations of last-layer features for the baseline model (v1), baseline with text prior (v2), and TPSNet (v3) across two datasets. Table 13. The additional computational overhead introduced by the phase spectrum extraction and cross-modal attention mechanisms. 
+
+DPG TPFE PPFE Params all FLOPs Inference Time Memory Usage 
+
+% % % 114.518M 45.081G 0.031ms 1067.23MB 
+
+% % ! 115.549M 47.042G 0.037ms 1104.28MB 
+
+! ! % 115.569M 45.088G 0.095ms 1085.37MB 
+
+! ! ! 116.600M 47.049G 0.104ms 1119.16MB 
+
+8
