@@ -1,0 +1,269 @@
+Title: Plug-and-Steer: Decoupling Separation and Selection in Audio-Visual Target Speaker Extraction
+
+URL Source: https://arxiv.org/pdf/2603.19697v1
+
+Published Time: Mon, 23 Mar 2026 00:33:29 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Plug-and-Steer: Decoupling Separation and Selection in Audio-Visual Target Speaker Extraction 
+
+# Doyeop Kwak 1,∗, Suyeon Lee 1,∗, Joon Son Chung 11 Korea Advanced Institute of Science and Technology, South Korea 
+
+dobbyk@kaist.ac.kr, syl4356@kaist.ac.kr, joonson@kaist.ac.kr 
+
+# Abstract 
+
+The goal of this paper is to provide a new perspective on audio-visual target speaker extraction (AV-TSE) by decoupling the separation and target selection. Conventional AV-TSE systems typically integrate audio and visual features deeply to re-learn the entire separation process, which can act as a fidelity ceiling due to the noisy nature of in-the-wild audio-visual datasets. To address this, we propose Plug-and-Steer, which assigns high-fidelity separation to a frozen audio-only backbone and limits the role of visual modality strictly to target selection. We in-troduce the Latent Steering Matrix (LSM), a minimalist linear transformation that re-routes latent features within the backbone to anchor the target speaker to a designated channel. Exper-iments across four representative architectures show that our method effectively preserves the acoustic priors of diverse back-bones, achieving perceptual quality comparable to the original backbones. Audio samples are available in the demo page. 1
+
+Index Terms : audio-visual target speaker extraction 
+
+# 1. Introduction 
+
+Speech separation is the task of isolating individual voices from a recording where multiple people are speaking simulta-neously—a challenge often referred to as the “Cocktail Party Problem”. In recent years, the performance of Audio-only Speech Separation (AOSS) models has reached an impressive turning point with advanced architectures [1–4]. These systems can now separate overlapping speech with remarkable clarity, often rivaling or even exceeding theoretical limits of acous-tic quality [5]. However, despite these milestones, audio-only models face a fundamental hurdle in real-world deployment: permutation ambiguity. They remain blind to the target’s iden-tity, unable to automatically determine which output channel contains the voice the user intends to hear. To resolve this ambiguity, conventional Audio-Visual Tar-get Speaker Extraction (AV-TSE) architectures typically inte-grate audio and visual features deeply within the model via cross-attention [6–9], concatenation [10–12], or tailored archi-tectures for deep fusion [13–16]. This design paradigm as-sumes that effective extraction requires re-learning the entire separation process to leverage visual cues for both (1) identi-fying the target and (2) refining the separation quality through lip-sync information. While this joint optimization can be bene-ficial, we question whether using visual cues to further improve acoustic separation—a task AOSS models already perform with significant proficiency—always yields a net gain. Large-scale audio-visual datasets collected in-the-wild, such as LRS2 [17] 
+
+> *These authors contributed equally.
+> 1https://plugandsteer.github.io
+
+and VoxCeleb2 [18] , often contain intrinsic noise and reverber-ation, providing sub-optimal supervision for high-fidelity ex-traction [19]. In such cases, full-parameter training on noisy audio-visual data can act as a fidelity ceiling, potentially limit-ing the final output quality compared to what is achievable by pure AOSS models trained on studio-quality corpora. In this work, we propose a shift in perspective: Plug-and-Steer . Instead of pursuing entangled multi-modal fusion to achieve separation and selection simultaneously, we decouple these roles to leverage the strengths of pre-trained acoustic en-gines. We assign high-fidelity separation entirely to a frozen AOSS backbone and limit the visual modality’s role strictly to target selection. This approach is motivated by our observa-tion that frozen AOSS models appear to possess a latent struc-ture where output channels can be reordered at the feature level within a single separator block. We demonstrate that this re-quires nothing more than a minimalist C × C linear transfor-mation, termed a Latent Steering Matrix (LSM). By treating the LSM as a “steering wheel,” we utilize a lightweight visual steering module to anchor the target speaker to a designated output channel. Unlike post-hoc selection—a straightforward strategy that identifies the target from fully de-coded outputs—our mechanism is embedded directly within the feature flow. By reusing fine-grained latent features, Plug-and-Steer eliminates the redundant re-encoding or synchronization stages required by external selection pipelines. Furthermore, the LSM bridges the internal feature flow, allowing the routing logic to be optimized directly through signal-level reconstruc-tion losses. This enables a direct gradient flow that ensures more stable target selection than detached classification. Ultimately, this work serves as a proof-of-concept demon-strating that well-established AOSS backbone can be trans-formed into a target extraction system at minimal cost. By of-fering a scalable blueprint for this adaptation, our framework allows extraction performance to scale naturally alongside the rapid evolution of underlying separation engines. Our primary contributions are summarized as follows: • We analyze the latent structural properties of diverse AOSS architectures, showing that speaker identity is permutable via a simple linear transformation at the feature level. • We propose Plug-and-Steer, a framework decoupling separa-tion from selection to preserve the high-fidelity acoustic pri-ors of frozen AOSS models. • We demonstrate that our internal steering mechanism achieves comparable selection accuracy and better compu-tational efficiency than post-hoc selection strategies. • Experiments across four representative architectures validate that our method effectively inherits the separation capabilities of diverse backbones, achieving better perceptual quality.  
+
+> arXiv:2603.19697v1 [eess.AS] 20 Mar 2026 Sep.
+> block
+
+## … 
+
+> 𝑖 -th block
+
+## … Decoder Encoder  𝑓 𝑖  𝑓 𝑖 ′ 𝑜𝑢𝑡 1      
+
+> 𝑜𝑢𝑡 2
+> 𝑥 Sep.
+> block
+> 𝑖 +1-th block
+> Ƹ
+> 𝑠 2
+> Ƹ
+> 𝑠 1
+> 𝓛 𝐒𝐈 −𝐒𝐍𝐑
+> 𝐼 +𝑊
+
+Figure 1: Training process of the latent steering matrix W for the i-th separator block. ˆs1 and ˆs2 are the outputs from the first and second channels of the pre-trained audio-only backbone. 
+
+# 2. Method 
+
+Our methodology decouples separation from selection by treat-ing the frozen AOSS backbone as a high-fidelity engine steered by visual cues. We first investigate whether a single linear trans-formation can re-route latent features within the backbone. We then leverage this mechanism to train a visual steering module that anchors the target speaker to a fixed output channel. 
+
+2.1. Latent Steering Matrix (LSM): A steering wheel 
+
+We introduce a simple feature-level re-routing strategy to con-trol output channel permutations of the AOSS backbone within the latent space. Given an intermediate audio feature from i-th separator block fi ∈ RC×Ta , we assume that speaker iden-tity reordering can be approximated by a linear transformation 
+
+W ∈ RC×C . We term W the Latent Steering Matrix (LSM), and apply it as a residual transformation as follows: 
+
+f ′ 
+
+> i
+
+= ( I + g · W )fi, (1) where I is the identity matrix and g ∈ { 0, 1} is a binary gate. When the gate is inactive ( g=0 ), the features remain unchanged. Conversely, an active gate ( g=1 ) triggers W to induce a latent speaker swap, effectively permuting the output channels. 
+
+2.2. Training LSM 
+
+To learn the latent transformation required for speaker re-routing, we first train the LSM under a forced-swap condition by fixing g = 1 within a frozen AOSS model. Specifically, for a 2-speaker mixture where the pre-trained model outputs (ˆ s1, ˆs2),we train W to manipulate the audio feature fi to produce the steered output: (ˆ s2, ˆs1). As shown in Fig. 1, the channel-swapped predictions of the pre-trained backbone serve as the training targets. The training objective is the sum of the nega-tive Scale-Invariant Signal-to-Noise Ratio (SI-SNR) [20] across both channels, computed between the steered outputs and the permuted reference signals. 
+
+2.3. Visual steering module: Learning to steer 
+
+We adapt the AOSS model for AV-TSE by consistently rout-ing the target speaker to a designated output channel, regardless of the backbone’s initial output order. To this end, we learn a gate value to control the LSM based on visual cues. As shown in Fig. 2, we design a lightweight visual steering module that predicts a frame-wise gate value gt ∈ [0 , 1] based on the la-tent audio features fi and the visual embedding v ∈ RTv ×Cv
+
+extracted from the target’s lip motion. The temporal dimension of v is linearly interpolated from 
+
+Tv to Ta to match the resolution of the audio feature fi. We then concatenate the two features along the channel dimension. The joint feature is processed through a lightweight modified Temporal Convolutional Network (TCN) adapted from [21], which consists of two blocks, each containing three convolu-tional layers, followed by a sigmoid-activated gate head. The Sep.  
+
+> block
+
+… 
+
+> 𝑖 -th block
+
+… Decoder                         
+
+> 𝑓 𝑖 𝑓 𝑖 ′
+> Sep.
+> block
+> 𝐼 +𝑔 ⋅𝑊
+> 𝑖 +1-th block
+> 𝑜𝑢𝑡 1
+> 𝑜𝑢𝑡 2
+> 𝑠 tgt
+> 𝑠 itf
+> 𝓛 𝐒𝐈 −𝐒𝐍𝐑
+> Visual
+> Encoder
+> Lip
+> Video 𝑣 TCN
+> blocks concat .
+> Gate head
+> 𝜎 𝑔
+> 𝑣 𝑡𝑐𝑛
+> ℒtotal =ℒBCE +𝜆 ℒSI −SNR
+> 𝓛 𝐁𝐂𝐄
+> (Ƹ𝑠 1,Ƹ𝑠 2)!=(𝑠 tgt ,𝑠 itf )
+> ҧ
+> 𝑔
+> Visual Steering Module
+> 𝑇 𝑣 →𝑇 𝑎
+> Encoder 𝑥
+
+Figure 2: Training process of the AV-TSE module by learning the gate value g. The visual steering module predicts the value 
+
+g to control the degree of steering. 
+
+output value gt dynamically modulates the steering operation based on Eq. 1. For backbones utilizing 2D latent spaces such as frequency-time grids, we first project the channel dimension to a reduced space Cr , and flatten the non-temporal dimensions into a 1D feature representation per time step. We derive pseudo-labels ¯g to supervise the gate by com-paring frozen AOSS model’s output permutations against the desired target order. Let the output of the AO backbone be 
+
+ˆs = [ˆ s1, ˆs2]⊤, and the reference signals be sref = [ stgt , s itf ]⊤ for the target speech stgt and interference sitf . Defining Pg ∈ R2×2
+
+as the permutation matrix indexed by g ∈ { 0, 1} (identity for 
+
+g = 0 , swap for g = 1 ), the pseudo-label ¯g is defined as: 
+
+¯g = arg max 
+
+> g∈{ 0,1}
+> 2
+
+X
+
+> i=1
+
+SI -SNR  [Pg ˆs]i, s ref 
+
+> i
+
+, (2) and used for the binary cross-entropy loss LBCE . The steered output ˆsLSM is obtained by applying LSM with predicted 
+
+gt. The SI-SNR loss LSI-SNR is defined as the negative total SI-SNR between ˆsLSM and the reference s. The overall training objective for the visual steering module is given by: 
+
+Ltotal = LBCE (gt, ¯g) + λ LSI-SNR (ˆ sLSM , s). (3) During this phase, only the visual steering module is updated, while the pre-trained backbone and the LSM remain frozen. 
+
+# 3. Experimental Setup 
+
+3.1. Datasets 
+
+We conduct our AV-TSE experiments on LRS2-2mix [11], a two-speaker speech separation benchmark partitioned into 20k (∼23 h), 5k, and 3k samples for training, validation, and testing, respectively. Mixtures are synthesized by mixing pairs of utter-ances from different speakers in LRS2 [17] with random SNRs in [-5, 5] dB. To analyze the effect of the acoustic priors, we compare two pre-training configurations: a clean setup using the studio-quality Libri2Mix train-100 subset [22] ( ∼ 58 h) and in-the-wild, noiser setup using the LRS2-2mix train set. Audio signals are sampled at 16 kHz in mono format and randomly truncated to 3 s during training with variance normalization. Vi-sual inputs are 25 FPS grayscale sequences, obtained by center-cropping the original 224 × 224 LRS2 frames to 112 × 112 .
+
+3.2. Training and evaluation details Baseline models. We conduct our analysis across four representative speech separation models: ConvTasNet [21], DPRNN [23], TF-GridNet [1], and MossFormer2 [2]. To compare our approach against the established AV-TSE base-lines, we use AV-ConvTasNet [24], AV-DPRNN [10], AV-TFGridNet [25], and AV-Mossformer2 [11] with open-sourced First Layer    
+
+> (i= 1)
+> Last Layer
+> (i=L)
+> 30
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> 100
+> Preservation (%)
+> Mossformer2 (L=24)
+> TF-GridNet (L=6)
+> DPRNN (L=6)
+> ConvTasNet (L=24)
+
+Figure 3: Layer-wise performance preservation rate (%) across different AOSS backbones. 
+
+weights pre-trained on LRS2-2mix 2 for evaluation. Our visual encoder follows the same architecture as the AV-TSE baselines and is initialized with lip-reading pre-trained weights. 
+
+Metrics & evaluation. We use the Scale-Invariant Signal-to-Distortion Ratio improvement (SI-SDRi) [20] as a stan-dard metric in speech separation, and DNSMOS [26] and NISQA [27] as non-intrusive metrics to assess the perceptual quality of audio. For the audio-only backbones, we follow the Permutation Invariant Training (PIT) protocol [28], selecting the output-target assignment that maximizes the SI-SDR. 
+
+Inference. We apply a threshold τ = 0 .5 to the averaged gate value g during inference. For AV-TSE methods, we sequentially extract each speaker’s speech with the corresponding video. 
+
+Training configurations. AOSS models are pre-trained using Adam [29] optimizer with an initial learning rate of 5 × 10 −4.The learning rate is halved every 5 plateau epochs, with training terminating below 10 −6. The total batch size is 4, and the train-ing objective is LSI-SNR . After pre-training audio backbones, we optimize our Plug-and-Steer framework with a cosine anneal-ing learning rate scheduler. With the AOSS backbone frozen, training is conducted in two stages: (1) LSM is trained for 10k steps without a warmup period; and (2) the visual steering mod-ule is trained for 100k steps, including a 1k-step warmup. Cr
+
+for DPRNN and TF-GridNet is set to 16 , and λ in Eq. 3 is set to 
+
+0.1. All experiments, including inference, were conducted on NVIDIA RTX 4090 GPUs with AMD EPYC 7543 CPU. 
+
+3.3. Alternative adaptation strategies for AV-TSE 
+
+To evaluate the proposed steering mechanism, we compare it against two alternative strategies that adapt a pre-trained AOSS backbone for target extraction via residual connections. These variants replace the gate head with a visual adapter that trans-forms the vtcn into a residual feature: f ′ 
+
+> i
+
+= fi + Adapter (vtcn ).Unlike our approach, which simply re-routes existing repre-sentations, this method refines the acoustic feature itself. We consider both full fine-tuning, where the entire backbone is unfrozen, and partial adaptation, where the backbone remains frozen. For full fine-tuning specifically, the backbone learning rate is set to 5 × 10 −5 to mitigate catastrophic forgetting, while the adapter follows the standard training protocol. 
+
+# 4. Results and Anaylsis 
+
+4.1. Layer-wise performance preservation 
+
+To identify the optimal location for latent manipulation, we evaluate the performance preservation rate across all separa-tor blocks i ∈ [1 , . . . , L ]. This rate is defined as the ratio of the SI-SDRi achieved after applying the LSM relative to the                                                                                                              
+
+> 2https://github.com/modelscope/ClearerVoice-Studio/tree/ main/train/target_speaker_extraction
+> Method AO # params. SI-SDRi (dB) DNSMOS NISQA
+> Libri2Mix GT --3.16 3.93
+> LRS2-2mix GT --2.38 3.19
+> AO-oriented
+> Conv-TasNet [21] 5.1M 7.12 2.35 2.31 + Residual ✗6.6M 11.72 2.31 2.57 + Residual ✓1.5M 9.37 2.13 2.27 +LSM (Ours) ✓1.5M 6.82 2.28 2.22 DPRNN [23] 2.6M 7.77 2.35 2.37 + Residual ✗5.2M 11.66 2.28 2.43 + Residual ✓2.5M 7.90 2.04 1.71 +LSM (Ours) ✓2.0M 7.74 2.35 2.36 TF-GridNet [1] 14.4M 14.81 2.80 4.32 + Residual ✗17.0M 13.38 2.36 3.17 + Residual ✓2.6M 13.09 2.56 3.20 +LSM (Ours) ✓2.0M 14.79 2.79 4.29
+> MossFormer2 [2] 55.7M 12.68 2.79 3.47 + Residual ✗57.3M 15.54 2.51 3.02 + Residual ✓1.6M 14.02 2.44 2.95 +LSM (Ours) ✓1.6M 12.65 2.79 3.47
+> AV-TSE Baselines
+> AV-ConvTasNet [24] 10.3M 11.51 2.44 2.49 AV-DPRNN [10] 4.1M 11.97 2.40 2.58 AV-TFGridNet [25] 9.6M 15.10 2.51 3.53 AV-MossFormer2 [11] 57.3M 15.52 2.64 3.06
+
+Table 1: Performance of AV-TSE methods on LRS2-2mix grouped by their audio-only (AO) backbone, which is pre-trained on Libri2Mix. AO indicates whether the pre-trained AO backbone is frozen or not. Bold and underlined values rep-resent global and backbone-specific best scores. 
+
+original AO performance. As illustrated in Fig. 3, the capacity for near-lossless swapping increases significantly with model depth. Applying the LSM at the final separator block yields the highest preservation rates across all architectures: 96.22% for Conv-TasNet, 99.67% for DPRNN, 99.91% for TF-GridNet, and 99.43% for MossFormer2. Notably, modern architectures such as TF-GridNet and MossFormer2 demonstrate a remark-able ability to maintain disentangled speaker features through-out the network, retaining 86.13% and 95.44% of their original performance even at their first separator blocks. These obser-vations suggest that in advanced separation backbones, speaker identity is already distinctly encoded and manipulable from the early stages of processing, well before reaching the final output layers. Consequently, we utilize the final layer of each back-bone for all subsequent AV-TSE experiments to ensure maxi-mum fidelity. 
+
+4.2. AV-TSE performance 
+
+4.2.1. Analysis of acoustic prior preservation 
+
+We first conduct a controlled analysis to investigate how Plug-and-Steer preserves acoustic priors compared to conventional adaptation strategies, specifically full and partial residual fine-tuning. As shown in Tab. 1, while residual-based methods may improve intrusive metrics such as SI-SDRi by aligning features with the LRS2-2mix distribution, they often suffer from de-graded perceptual quality (DNSMOS and NISQA). This sug-gests that such methods compromise high-fidelity priors to ac-commodate the noisier ground truth of audio-visual datasets. In contrast, our LSM approach achieves target selectivity while largely retaining the original AO characteristics. In the case of TF-GridNet, residual adaptation results in suboptimal per-formance, even falling below the original AO backbone, which likely stems from architectural mismatches between the 2D fea-ture space and the TCN-based steering module. These results indicate that conventional adaptation may require sophisticated, model-specific designs to bridge such structural gaps. Con-Method AO SI-SDRi (dB) DNSMOS NISQA                    
+
+> MossFormer2 [2] 15.42 2.88 3.88 + Residual ✗17.11 2.53 3.28 + Residual ✓16.24 2.51 3.21 +LSM (Ours) ✓15.40 2.88 3.87
+> AV-MossFormer2 [11] 15.52 2.64 3.06
+
+Table 2: AV-TSE performance on LRS2-2mix using a powerful backbone. The baseline (AV-MossFormer2) is trained solely on LRS2-2mix.                                                                     
+
+> Method AO SI-SDRi (dB) DNSMOS NISQA
+> ConvTasNet [21] 11.50 2.30 2.32 + Residual ✗11.33 2.29 2.33 + Residual ✓11.28 2.28 2.31 +LSM (Ours) ✓11.21 2.26 2.25 DPRNN [23] 12.60 2.38 2.55 + Residual ✗12.59 2.34 2.51 + Residual ✓11.64 2.24 1.97 +LSM (Ours) ✓12.54 2.36 2.53 TF-GridNet [1] 15.90 2.52 3.61 + Residual ✗14.01 2.45 3.20 + Residual ✓14.93 2.47 3.33 +LSM (Ours) ✓15.87 2.52 3.60
+> MossFormer2 [2] 15.07 2.52 3.15 + Residual ✗15.54 2.51 3.02 + Residual ✓15.03 2.52 3.13 +LSM (Ours) ✓15.02 2.52 3.14
+
+Table 3: In-domain AV-TSE performance on LRS2-2mix. Both AO and AV models are trained on the same data. 
+
+versely, since the objective of our approach is to simply steer existing latent features toward the designated output channel, it eliminates the need for complex feature manipulation and pro-vides a robust, architecture-agnostic solution. 
+
+4.2.2. Scaling with powerful AO backbones 
+
+The true potential of Plug-and-Steer is further evidenced when integrated with a more powerful backbone. We employ a Moss-Former2 model pre-trained on a 107-hour high-fidelity corpus consisting of VCTK [30], LibriTTS [31], and internal TTS data 3. As shown in Tab. 2, applying our framework to this high-performance engine yields SI-SDRi levels comparable to established AV-TSE baselines while maintaining significantly higher perceptual fidelity. Although conventional fine-tuning can achieve higher SI-SDRi, it causes perceptual quality to de-cline to levels typical of models trained solely on noisy audio-visual data. By protecting acoustic latents from noisy super-vision, Plug-and-Steer shows that the extraction quality of the system scales directly with the strength of the AO backbone, achieving high-fidelity extraction that conventional adaptation struggles to maintain. 
+
+4.2.3. In-domain adaptation 
+
+Tab. 3 summarizes the in-domain adaptation performance on LRS2-2mix, where AO backbones are pre-trained and adapted within the same data distribution. In this scenario, the perfor-mance of the proposed LSM remains closely anchored to the original AO results, implying that the separation quality of the backbone acts as both a performance floor and an upper bound. This characteristic ensures that the inherent separation capabil-ities are effectively preserved, with the final extraction fidelity naturally defined by the pre-trained AO engine. Unlike con-ventional residual-based fine-tuning, which can be sensitive to specific architectures and often necessitates specialized tuning                      
+
+> 3https://huggingface.co/alibabasglab/MossFormer2_SS_16K
+> Routing Method Accuracy (%) FLOPs RTF 1 epoch Best epoch
+> Internal
+> LBCE 50.00 99.73
+> 256.82 G 0.147 LSI-SNR + LSM 97.03 99.60
+> LBCE +LSI-SNR + LSM 99.01 99.93
+> Post-hoc LSE-C [32, 33] 99.80 308.56 G 0.209 LSE-D [32, 33] 99.83
+
+Table 4: Internal routing vs. post-hoc selection. ‘Internal’ de-notes our routing module with various loss combinations; ‘Post-hoc’ refers to SyncNet-score-based selection. 
+
+to avoid degradation, our approach maintains consistent stabil-ity across all backbones with minimal parameter updates. Al-though LSM may not always yield the absolute peak perfor-mance, its structural simplicity and minimal training require-ments position it as a robust and practical baseline for trans-forming any pre-trained AO engine into a stable TSE system. 
+
+4.3. Routing strategy and optimization 
+
+To validate our internal routing mechanism, we compare it against a post-hoc selection pipeline, which represents one of the most straightforward strategies for specifying a target speaker without retraining the AOSS backbone. In this cas-caded setup, separator outputs are decoded and subsequently evaluated by an off-the-shelf SyncNet-based model [32]. The target is determined based on lip-sync consistency between de-coded output measured by LSE-C and LSE-D scores [33]. As shown in Tab. 4, while our method achieves slightly higher rout-ing accuracy, its primary advantage lies in system efficiency. Unlike post-hoc approaches that necessitate additional decod-ing, re-encoding, and potential preprocessing, Plug-and-Steer reuses fine-grained latent features directly from the backbone for routing. This elimination of redundant stages reduces the computational burden from 308.56 to 256.82 GFLOPs and im-proves the real-time factor from 0.209 to 0.147. Furthermore, ablation results indicate that joint optimiza-tion with classification and reconstruction losses is essential for stable and accurate routing. While LBCE alone suffers from un-stable initial convergence and LSI-SNR yields a slightly lower fi-nal accuracy, combining both objectives ensures both rapid con-vergence and the highest final accuracy. Crucially, the LSM serves as a functional bridge within the latent feature flow, en-abling the use of reconstruction-based objectives for the routing module. Without this structural link, gradients from the final output could not propagate back to the steering logic, reducing target selection to a detached classification task. By facilitating this direct gradient flow, the LSM ensures that visual steering is optimized specifically for signal-level reconstruction, resulting in faster convergence and superior extraction performance. 
+
+# 5. Conclusion 
+
+In this work, we introduced Plug-and-Steer, a framework that decouples acoustic separation from target selection by redefin-ing the visual modality as a selective router. By using a frozen audio-only backbone and a latent steering matrix, we achieve target selection while preserving the high-fidelity acoustic pri-ors of the original engine. Our results demonstrate that while traditional fine-tuning suffers from noisy audio-visual ground truths, our steering approach effectively shields signal integrity. We expect that this decoupled strategy will provide a robust and scalable blueprint for high-fidelity extraction that adapts seam-lessly to evolving speech separation engines. 6. Generative AI Use Disclosure 
+
+During manuscript preparation, the authors used OpenAI’s ChatGPT and Google’s Gemini for language editing and stylis-tic refinement. These tools were not involved in conceptualizing the methods, designing experimental protocols, or interpreting scientific results. The authors reviewed and verified all sug-gestions and maintain full responsibility for the integrity and accuracy of the final content. 
+
+# 7. References 
+
+[1] Z.-Q. Wang, S. Cornell, S. Choi, Y. Lee, B.-Y. Kim, and S. Watan-abe, “TF-GridNet: Making time-frequency domain models great again for monaural speaker separation,” in Proc. ICASSP , 2023. [2] S. Zhao, Y. Ma, C. Ni, C. Zhang, H. Wang, T. H. Nguyen, K. Zhou, J. Q. Yip, D. Ng, and B. Ma, “Mossformer2: Combin-ing transformer and rnn-free recurrent network for enhanced time-domain monaural speech separation,” in Proc. ICASSP , 2024. [3] K. Li, G. Chen, R. Yang, and X. Hu, “Spmamba: State-space model is all you need in speech separation,” arXiv preprint arXiv:2404.02063 , 2024. [4] X. Jiang, C. Han, and N. Mesgarani, “Dual-path mamba: Short and long-term bidirectional selective structured state space mod-els for speech separation,” in Proc. ICASSP , 2025. [5] S. Lutati, E. Nachmani, and L. Wolf, “SepIt: Approaching a single channel speech separation bound,” in Proc. Interspeech , 2022. [6] S. Lee, C. Jung, Y. Jang, J. Kim, and J. S. Chung, “Seeing through the conversation: Audio-visual speech separation based on diffu-sion model,” in Proc. ICASSP , 2024. [7] K. Li, R. Yang, F. Sun, and X. Hu, “Iianet: An intra-and inter-modality attention network for audio-visual speech separation,” in Proc. ICML , 2024. [8] J. Lin, X. Cai, H. Dinkel, J. Chen, Z. Yan, Y. Wang, J. Zhang, Z. Wu, Y. Wang, and H. Meng, “Av-sepformer: Cross-attention sepformer for audio-visual target speaker extraction,” in Proc. ICASSP , 2023. [9] H. Sato, T. Ochiai, K. Kinoshita, M. Delcroix, T. Nakatani, and S. Araki, “Multimodal attention fusion for target speaker extrac-tion,” in IEEE Spoken Language Technology Workshop , 2021. [10] Z. Pan, M. Ge, and H. Li, “Usev: Universal speaker extraction with visual cue,” IEEE/ACM Trans. on Audio, Speech, and Lan-guage Processing , vol. 30, pp. 3032–3045, 2022. [11] S. Zhao, Z. Pan, and B. Ma, “Clearervoice-studio: Bridging ad-vanced speech processing research and practical deployment,” in 
+
+Proc. Interspeech , 2025. [12] J. Li, M. Ge, R. Cao, L. Wang, J. Dang, S. Zhang et al. , “Re-thinking the visual cues in audio-visual speaker extraction,” arXiv preprint arXiv:2306.02625 , 2023. [13] R. Gao and K. Grauman, “Visualvoice: Audio-visual speech sep-aration with cross-modal consistency,” in Proc. CVPR , 2021. [14] K. Li, F. Xie, H. Chen, K. Yuan, and X. Hu, “An audio-visual speech separation model inspired by cortico-thalamo-cortical cir-cuits,” IEEE Trans. on Pattern Analysis and Machine Intelligence ,2024. [15] S. Pegg, K. Li, and X. Hu, “Rtfs-net: Recurrent time-frequency modelling for efficient audio-visual speech separation,” in Proc. ICLR , 2024. [16] R. Tao, X. Qian, Y. Jiang, J. Li, J. Wang, and H. Li, “Audio-visual target speaker extraction with reverse selective auditory attention,” 
+
+IEEE/ACM Trans. on Audio, Speech, and Language Processing ,2025. [17] J. S. Chung, A. W. Senior, O. Vinyals, A. Zisserman et al. , “Lip reading sentences in the wild,” in Proc. CVPR , 2017. [18] J. S. Chung, A. Nagrani, and A. Zisserman, “Voxceleb2: Deep speaker recognition,” in Proc. Interspeech , 2018. [19] J.-C. Chou, C.-M. Chien, and K. Livescu, “Av2wav: Diffusion-based re-synthesis from continuous self-supervised features for audio-visual speech enhancement,” in Proc. ICASSP , 2024. [20] J. Le Roux, S. Wisdom, H. Erdogan, and J. R. Hershey, “Sdr–half-baked or well done?” in Proc. ICASSP , 2019. [21] Y. Luo and N. Mesgarani, “Conv-tasnet: Surpassing ideal time– frequency magnitude masking for speech separation,” IEEE/ACM Trans. on Audio, Speech, and Language Processing , vol. 27, no. 8, pp. 1256–1266, 2019. [22] J. Cosentino, M. Pariente, S. Cornell, A. Deleforge, and E. Vin-cent, “Librimix: An open-source dataset for generalizable speech separation,” arXiv preprint arXiv:2005.11262 , 2020. [23] Y. Luo, Z. Chen, and T. Yoshioka, “Dual-path rnn: Efficient long sequence modeling for time-domain single-channel speech sepa-ration,” in Proc. ICASSP , 2020. [24] J. Wu, Y. Xu, S.-X. Zhang, L.-W. Chen, M. Yu, L. Xie, and D. Yu, “Time domain audio visual speech separation,” in IEEE Automatic Speech Recognition and Understanding workshop , 2019. [25] Z. Pan, G. Wichern, Y. Masuyama, F. G. Germain, S. Khurana, C. Hori, and J. Le Roux, “Scenario-aware audio-visual tf-gridnet for target speech extraction,” in IEEE Automatic Speech Recogni-tion and Understanding workshop , 2023. [26] C. K. Reddy, V. Gopal, and R. Cutler, “Dnsmos: A non-intrusive perceptual objective speech quality metric to evaluate noise sup-pressors,” in Proc. ICASSP , 2021. [27] G. Mittag, B. Naderi, A. Chehadi, and S. M¨ oller, “Nisqa: A deep cnn-self-attention model for multidimensional speech quality pre-diction with crowdsourced datasets,” in Proc. Interspeech , 2021. [28] D. Yu, M. Kolbæk, Z.-H. Tan, and J. Jensen, “Permutation invari-ant training of deep models for speaker-independent multi-talker speech separation,” in Proc. ICASSP , 2017. [29] D. P. Kingma and J. Ba, “Adam: A method for stochastic opti-mization,” in Proc. ICLR , 2015. [30] J. Yamagishi, C. Veaux, and K. MacDonald, “Cstr vctk cor-pus: English multi-speaker corpus for cstr voice cloning toolkit (version 0.92),” The Rainbow Passage which the speakers read out can be found in the International Dialects of English Archive:(http://web. ku. edu/˜ idea/readings/rainbow. htm). , 2019. [31] H. Zen, V. Dang, R. Clark, Y. Zhang, R. J. Weiss, Y. Jia, Z. Chen, and Y. Wu, “Libritts: A corpus derived from librispeech for text-to-speech,” in Proc. Interspeech , 2019. [32] J. S. Chung and A. Zisserman, “Out of time: automated lip sync in the wild,” in Workshop on Multi-view Lip-reading, ACCV , 2016. [33] K. Prajwal, R. Mukhopadhyay, V. P. Namboodiri, and C. Jawahar, “A lip sync expert is all you need for speech to lip generation in the wild,” in Proc. ACM MM , 2020.
