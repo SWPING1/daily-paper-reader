@@ -1,0 +1,288 @@
+Title: SelfTTS: cross-speaker style transfer through explicit embedding disentanglement and self-refinement using self-augmentation
+
+URL Source: https://arxiv.org/pdf/2603.22252v1
+
+Published Time: Tue, 24 Mar 2026 02:54:55 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# SelfTTS: Cross-Speaker Style Transfer through Explicit Embedding Disentanglement and Self-Refinement using Self-Augmentation 
+
+# Lucas H. Ueda ID 1, Jo˜ ao G. T. Lima ID 1, Pedro R. Corrˆ ea ID 1, Fl´ avio O. Sim˜ oes ID 2, M´ ario U. Neto ID 2, Paula D. P. Costa ID 1,∗∗ 
+
+1 Universidade Estadual de Campinas (UNICAMP), Brazil 
+
+2 CPQD, Brazil 
+
+l156368@dac.unicamp.br, j237473@dac.unicamp.br, p243236@dac.unicamp.br, simoes@cpqd.com.br, uliani@cpqd.com.br, paulad@unicamp.br 
+
+# Abstract 
+
+This paper presents SelfTTS, a text-to-speech (TTS) model designed for cross-speaker style transfer that eliminates the need for external pre-trained speaker or emotion encoders. The architecture achieves emotional expressivity in neutral speak-ers through an explicit disentanglement strategy utilizing Gra-dient Reversal Layers (GRL) combined with cosine similarity loss to decouple speaker and emotion information. We intro-duce Multi Positive Contrastive Learning (MPCL) to induce clustered representations of speaker and emotion embeddings based on their respective labels. Furthermore, SelfTTS employs a self-refinement strategy via Self-Augmentation, exploiting the model’s voice conversion capabilities to enhance the natural-ness of synthesized speech. Experimental results demonstrate that SelfTTS achieves superior emotional naturalness (eMOS) and robust stability in target timbre and emotion compared to state-of-the-art baselines. 
+
+Index Terms : text-to-speech, cross-speaker style transfer, syn-thetic data, self-augmentation, disentanglement, representation learning 
+
+# 1. Introduction 
+
+Generating expressive speech in text-to-speech (TTS) models typically requires recordings that capture specific stylistic nu-ances. However, obtaining such high-quality data for every speaker is often unfeasible. Recent literature addresses this lim-itation through cross-speaker style transfer, where the prosodic characteristics of a reference audio signal are mapped onto a target speaker who has provided only neutral recordings. A common framework involves a style encoder module, which extracts a style representation embedding from refer-ence audio to condition the TTS prosody. This encoder gener-ally derives an embedding representation from a reference mel-spectrogram with the goal of creating a style space that isolates prosody from linguistic content and speaker identity. In sce-narios involving labeled datasets this style space can be further used for post-hoc analysis and for conditioning the TTS infer-ence for cross-speaker style transfer [1, 2]. Several studies, such as [3, 4], incorporate an emotion clas-sification layer at the output of the style encoder to improve the emotional alignment of these representations. Alternatively, [5] employs an N-Pair loss to generate a style space that is more effectively clustered across different emotions, while [6] uti-lizes Supervised Contrastive Loss. More recent works, such as [7], utilize separate pre-trained models to extract distinct em-beddings for both speaker identity and style. 
+
+> **
+
+indicates the corresponding author. 
+
+In practice, however, these modules often suffer from speaker leakage, a condition where the reference speaker’s tim-bre is erroneously captured [8, 9, 10]. This leads to degraded performance and identity mismatch during cross-speaker infer-ence [11]. To achieve better disentanglement between emotion and speaker embeddings, some studies incorporate adversarial train-ing with Gradient Reversal Layer [12] (GRL). In this setup, a classifier identifies undesired labels while the GRL reverses the gradients during the backward pass, preventing the model from encoding information related to those labels. Although this technique is widely used in modern TTS models [13, 14], re-lying solely on external labels can be noisy and may not explic-itly handle the entanglement inherent in the embeddings condi-tioning the model. Despite these efforts, maintaining high nat-uralness in cross-speaker scenarios remains a significant chal-lenge [15]. Alternatively, timbre perturbation techniques, such as for-mant shifting, have been employed to force the model to de-couple emotion and prosody from the speaker’s vocal charac-teristics [16, 17, 18]. Other approaches rely on filtering only the first 20 mel-bins of the input mel-spectrogram for the style encoder, as this range contains significant prosodic information with minimal timbre or content interference compared to the full band [19, 20]. When expressive data is limited, synthetic data genera-tion offers a viable path forward. This often involves using a Voice Conversion (VC) model to transform an expressive source speaker into the target speaker’s voice, followed by fine-tuning a TTS model on this augmented data [21, 22]. Recently, the use of synthetic samples to improve disentanglement and nat-uralness has been further explored [23]. Leveraging the VC capabilities of VITS [24], the E3-VITS model [25] proposed batch-permuted style perturbation to improve style transfer us-ing unpaired style samples generated by the model itself. Synthetic data has also been extended to multilingual sys-tems to retain content across languages [26]. Nevertheless, the overall quality of the resulting TTS is strictly bounded by the quality of the synthetic samples, especially when handling high-intensity expressive data [27]. In this paper, we present SelfTTS, a TTS model capa-ble of transferring emotion to neutral speakers without requir-ing external pre-trained speaker or emotion encoders. The proposed model adopts an explicit disentanglement strategy using a GRL combined with a cosine similarity loss to re-move speaker and emotion information from specific lay-ers. We also propose the use of Multi Positive Contrastive Learning (MPCL) loss [28] to induce both speaker and emo-
+
+> arXiv:2603.22252v1 [eess.AS] 23 Mar 2026
+
+tion embeddings to produce clustered representations based on their respective labels. Furthermore, we adopt a self-refinement strategy with Self-Augmentation, utilizing the in-herent voice conversion capabilities of the VITS-based archi-tecture to enhance the naturalness of generated speech while maintaining emotional expressivity and target timbre. Audio samples are available at https://ai-unicamp.github. io/publications/tts/selftts/ . The contributions of this work are validated through a detailed experimental set-ting and include: 1. A model utilizing MPCL loss to generate effective label-oriented clusters for both speaker and emotion embeddings without the need for complex batching pipelines; 2. An explicit disentanglement framework using cosine similar-ity loss in conjunction with GRL to effectively remove over-lapping information from embeddings, thereby enabling ro-bust cross-speaker style transfer; 3. The use of the model’s own Voice Conversion capability for Self-Augmentation to improve the naturalness of synthesized speech; 4. A comprehensive evaluation, including cross-corpus experi-ments, conducted using open datasets and publicly available code 1.
+
+# 2. Methodology 
+
+In this section, we will present the methodology adopted in this work. 
+
+2.1. SelfTTS 
+
+The proposed SelfTTS is built upon the Variational Infer-ence with adversarial learning for end-to-end Text-to-Speech (VITS) [24] framework. We extend the original conditional Variational Autoencoder (CVAE) structure by integrating dedi-cated speaker ( g) and emotion ( e) embeddings across all ma-jor components. Specifically, the Posterior Encoder , Resid-ual Coupling Blocks (Normalizing Flows), Stochastic Duration Predictor (SDP), and the Waveform Decoder are all conditioned on these embeddings. The SelfTTS architecture is represented in Figure 1. The Posterior Encoder processes the linear spectrogram 
+
+xlin of the target speech to parameterize an approximate pos-terior distribution qϕ(z|xlin , g, e ). A latent variable z is sam-pled and transformed into the prior space via a series of four invertible Residual Coupling Blocks that constitute the Normal-izing Flows fθ . This transformation yields the style-neutral and speaker-agnostic representation zp = fθ (z; g, e ), which is aligned with the output of the Text Encoder by minimizing the Kullback-Leibler (KL) divergence: 
+
+Lkl = log qϕ(z|xlin , g, e ) − log pθ (zp|ctext , A ) (1) where A represents the hard monotonic attention matrix es-timated via Monotonic Alignment Search (MAS). To synthesize the raw waveform, the Waveform Decoder 
+
+upsamples the latent representation z. To maintain compu-tational efficiency, we employ windowed generator training, where only a random segment of the latent sequence zslice is decoded into a partial waveform ˆy. The speaker and emotion embeddings are generated using a Reference Encoder [8] (RE) 
+
+> 1https://github.com/AI-Unicamp/SelfTTS
+
+architecture. The RE consists of a 6-layer convolutional neu-ral network that processes a mel-spectrogram reference signal, followed by a Gated Recurrent Unit (GRU) to summarize the sequence into a single fixed-length embedding. As input each encoder receives a random slice of the reference audio to also make it robust against content leakage [29]. Each slice is ran-domly selected in a window of size between the whole sam-ple and half of it to align the training design to inference time where usually the sentence is longer than the emotional refer-ence. An explicit embedding disentanglement technique is ap-plied to these vectors to decouple speaker and emotion informa-tion, ensuring the model can transfer emotions even to neutral-only speakers. 
+
+2.1.1. Multi Positive Contrastive Learning 
+
+To enforce each encoder to generate clustered representations for both speaker and emotion labels we adopt the Multi Positive Contrastive Learning (MPCL) loss [28]. We define a contrastive categorical distribution q that mea-sures the relative compatibility between an anchor a and each candidate bi:
+
+qi =exp 
+
+ a·bi
+
+> τ
+
+PKj=1 exp 
+
+ a·bj
+
+> τ
+
+ (2) where τ ∈ R+ is a temperature parameter that controls the sharpness of the distribution, and both a and bi are assumed to be ℓ2-normalized. The target categorical distribution c is defined as: 
+
+ci = 1match (a, b i)
+
+PKj=1 1match (a, b j ) , (3) where 1match (·, ·) equals one if the anchor and candidate share the same emotional label, and zero otherwise. The MPCL loss is then defined as the cross-entropy be-tween the target distribution c and the predicted distribution q:
+
+LMPCL = −
+
+> K
+
+X
+
+> i=1
+
+ci log qi. (4) The MPCL loss doesn’t require specific batch design and can be trained in an end-to-end fashion within the SelfTTS model. 
+
+2.1.2. Explicit Embedding Disentanglement 
+
+Although widely used, standard techniques like vanilla CE-based Gradient Reversal Layer [12] (GRL) do not necessar-ily prevent speaker leakage within the emotion encoder. Con-sider a case where only one speaker in the dataset provides ex-pressive speech, by design, a correlation exists between emo-tion labels and speaker labels, therefore vanilla CE-based GRL is not capable of removing speaker information using exter-nal speaker labels. To address this, we propose applying a GRL directly between the embeddings generated by the emo-tion and speaker encoders. We employ cosine similarity as the loss function between a simple linear processor of these embeddings ( Φlinear (e) and Φlinear (g)) and the correspond-ing other embedding. Consequently, the model does not rely on labels during the GRL process, it propagates the reversed gradient based on the embeddings themselves, explicitly forc-ing disentanglement between speaker and emotion representa-tions. The Φlinear consists of a stack of three linear layers with Figure 1: SelfTTS model architecture. The emotion and speaker encoders receive mel-spectrogram slices of the reference waveform as input. Each encoder is optimized using the MPCL loss, while their embeddings are disentangled through a cosine-based GRL applied on top of the Linear Processor output for each encoder. The final forward step of the Normalizing Flows ( zp) is also disentangled using a cosine-based GRL, through a Convolutional Processor that predicts the corresponding emotion or speaker embedding. SDP stands for Stochastic Duration Predictor. Purple dashed arrows indicate the proposed Self-Augmentation pipeline. 
+
+ReLU activation outputting the same dimension as the emotion and speaker embeddings. During training, the proposed model learns to generate clustered emotion and speaker representa-tions of their respective labels via MPCL loss while simulta-neously ensuring these representations remain disentangled. The cosine similarity loss Lcos emb used to disentangle both the representations is defined as the two equations below: 
+
+Lcos emb (g, e ) = Φlinear (g) · e.detach () 
+
+∥Φlinear (g)∥ · ∥ e.detach () ∥ (5) 
+
+Lcos emb (e, g ) = Φlinear (e) · g.detach () 
+
+∥Φlinear (e)∥ · ∥ g.detach () ∥ (6) We also enforce robust disentanglement at the latent level 
+
+zp. While the Text Encoder contains purely linguistic informa-tion, the Posterior Encoder is susceptible to leaking speaker and emotional characteristics because it receives xlin as input. Sim-ilarly to speaker and emotion embeddings, we apply the GRL to zp coupled with two convolutional processors, a speaker pro-cessor ( Φconv (g)) and an emotion processor ( Φconv (e)), to en-sure that the representation zp remains invariant to speaker and emotion. These convolutional processors consist of three 1D convolutional layers with reLU activation function and a mean pooling head that generates the same dimension as emotion and speaker encoder outputs. The GRL penalizes the presence of such identifiable information by reversing gradients during backpropagation, forcing the flows to produce a truly style-neutral and speaker-agnostic latent space zp where speaker and emotion characteristics are only reintroduced during the reverse flow or in subsequent modules. Equations 7 and 8 represent the content disentanglement losses. 
+
+Lcos content (zp, e ) = Φconv (zp) · e.detach () 
+
+∥Φconv (zp)∥ · ∥ e.detach () ∥ (7) 
+
+Lcos content (zp, g ) = Φconv (zp) · g.detach () 
+
+∥Φconv (zp)∥ · ∥ g.detach () ∥ (8) 
+
+2.1.3. Self-Augmentation 
+
+The voice conversion capability is derived from the invert-ible nature of Normalizing Flows and the disentanglement of the latent space. To perform conversion, a source audio is mapped to a latent variable z via the posterior encoder 
+
+qϕ(z|xlin , g src , e src ). The forward flow fθ then transforms z
+
+into a style-neutral and speaker-agnostic representation zp =
+
+fθ (z; gsrc , e src ), which resides in a prior distribution contain-ing only linguistic content. Conversion is achieved by passing 
+
+zp through the inverse flow f −1 
+
+> θ
+
+conditioned on target identity and emotion: 
+
+ˆz = f −1 
+
+> θ
+
+(zp; gtgt , e tgt ) (9) The resulting latent variable ˆz is then processed by the de-coder G to synthesize the final waveform ˆy = G(ˆ z; gtgt , e tgt ),effectively transferring the target’s voice and emotion while pre-serving the source’s utterance. Building upon this, we propose leveraging the model’s voice conversion capability optimized by our disentanglement techniques to generate synthetic data for self-refinement via Self-Augmentation. The Self-Augmentation process involves randomly permut-ing the speaker references to generate synthetic samples that maintain the original emotion across different voices ( ˆy =
+
+G(ˆ z; gtgt , e src )). Although a similar permutation could be ap-plied to emotional references while keeping the speaker iden-tity fixed, we observe that since the model’s conversion pro-cess does not explicitly control duration, emotions such as “Sad” could be negatively impacted by the lack of adjustment in speaking rate. A fixed proportion of the batch is masked and replaced with these generated synthetic samples. The mixed batch with both ground-truth and generated samples becomes the input of the emotion encoder, providing different speaker voices for the same emotions. This Self-Augmentation stage is applied only after the base architecture has been pre-trained, en-suring the model has already obtained sufficient cross-speaker style transfer capability before focusing on further performance refinement. The model is optimized using a combination of VITS orig-inal losses augmented with all the proposed new losses (Equa-tion 10). 
+
+Ltotal =
+
+> original VITS losses
+
+z }| {
+
+Lrecon + Lkl + Ldur + Ladv (G) + Lf m (G)+Lcos content (zp, e ) + Lcos content (zp, g )+Lcos emb (g, e ) + Lcos emb (e, g ) + LMPCL (e) + LMPCL (g)
+
+(10) 
+
+2.2. Experimental Setup 
+
+All experiments were conducted on a single NVIDIA L40S GPU with 48GB of VRAM. The model was trained with an initial learning rate of 2 × 10 −4, utilizing a learning rate de-cay scheduled by a factor of 0.999 1/8 per epoch. We employed the AdamW optimizer [30] with hyperparameters β1 = 0 .8,
+
+β2 = 0 .99 , and a weight decay of λ = 0 .01 . The batch size was set to 64. To expedite the initial training phases where the model must learn phonetic alignment and waveform generation, we initial-ized our training from a checkpoint pre-trained on the VCTK dataset [31] for 800k steps. This base checkpoint was trained using a standard lookup table to control speaker voice and only the layers compatible with the proposed architecture were trans-ferred. From this initialization, the proposed model was trained for an additional 200k steps, followed by 50k steps of refine-ment using Self-Augmentation with a reduced learning rate of 
+
+2 × 10 −5. On average, each experimental run required approx-imately two days to complete. In order to generate the test sentences, we extracted centroid prototypes [1] of the emotion and speaker embeddings using the style space of the training data. Therefore, at inference time each centroid prototype was used to generate the cross-speaker style transfer test samples. We evaluated our model against two VITS-based architec-tures designed for cross-speaker style transfer: • E3-VITS [25]: This model proposes batch-permuted style perturbation to enhance style transfer capabilities. It gener-ates synthetic data via a Normalizing Flows block, with the resulting outputs optimized by augmenting the original VITS discriminator losses for those outputs. Since our primary dataset lacks emotional descriptions, that specific component was omitted. • VECL [7]: A state-of-the-art model capable of cross-lingual emotion transfer. It relies on pre-trained emotion and speaker encoders alongside consistency losses for speaker identity, emotion, and intelligibility. These losses ensure that the representations of the generated audio remain consistent with ground-truth audio representations when processed by domain-specific pre-trained models. 
+
+2.2.1. Data 
+
+To train the proposed model, we used the ESD dataset [32], which consists of an emotional speech corpus containing 350 parallel utterances spoken by 20 speakers (10 native English and 10 native Mandarin Chinese speakers), covering five emo-tion categories (neutral, happy, angry, sad, and surprise). In to-tal, the corpus contains more than 29 hours of speech recorded in a controlled acoustic environment using professional equip-ment, ensuring high recording quality. The dataset was specif-ically designed for emotional voice conversion research, pro-viding wide lexical variability, speaker diversity, and consistent recording conditions. In the context of this work we only used the English speakers and we selected speakers 11 (male) and 15 (female) as target speakers for the cross-speaker style trans-fer experiments. For these two speakers, only neutral data was used during model training. Their emotional utterances were used as ground-truth for subsequent evaluations and were not included in any stage of model development or training. 
+
+2.2.2. Evaluation 
+
+To evaluate the performance of the generated audio, we adopted both objective metrics and subjective human assessments to ver-ify perceptual quality. We evaluated several key pillars of cross-speaker synthesis and style transfer quality: • Naturalness: We utilized UTMOS [33] to provide a pre-dicted Mean Opinion Score (MOS) for the synthesized audio; • Intelligibility: We employed the Whisper model [34] to tran-scribe both ground-truth and generated audio, subsequently calculating the Word Error Rate (WER) to measure unintelli-gibility; • Speaker and Emotion Similarity: To assess the models’ ability to maintain target timbre and emotion, we calculated the Speaker Embedding Cosine Similarity (SECS) using Re-semblyzer 2 and the Emotion Embedding Cosine Similarity (EECS) [35]. For EECS, representations were extracted from the emotion2vec+ large model [36] 3.• Disentanglement and Alignment: We calculated the Cen-tered Kernel Alignment (CKA) [37] between the training rep-resentations of the emotion and speaker encoders to mea-sure the degree of entanglement between the two embed-dings. Additionally, we evaluated how well each represen-tation aligned with its respective ground-truth labels by com-paring them against its Label Kernel [38]. We refer to this metric as LK-CKA. While the UTMOS, WER, SECS, and EECS metrics eval-uate the quality of the generated cross-speaker style transfer samples, the CKA and LK-CKA metrics are used to evaluate speaker and emotion embeddings. CKA is a similarity mea-    
+
+> 2Resemblyzer available at: https://github.com/ resemble-ai/Resemblyzer
+> 3Emotion2vec+ Large available at: https://huggingface. co/emotion2vec/emotion2vec_plus_large
+
+sure that quantifies how aligned two sets of representations are by comparing their pairwise similarity (kernel) matrices in a way that is invariant to orthogonal transformations and isotropic scaling (low values mean less alignment between representa-tions). LK-CKA aims to compare the representations gener-ated by an encoder to its label kernel, measuring how aligned is the encoder representation to the labels it was designed to be aligned to (higher values mean good alignment). For the subjective assessment, we randomly selected sam-ples from each evaluated model and conducted a perception test with 30 native English-speaking participants. Each test fol-lowed a Mean Opinion Score (MOS) protocol using a 5-point Likert scale (1: Poor, 5: Excellent). The evaluation comprised three distinct tests: naturalness (nMOS), emotion similarity (eMOS), and speaker similarity (sMOS). For each test, we selected 2 audio samples per speaker for each of the 4 emotions ( 2 × 2 × 4 = 16 samples) across the four primary models and the ground-truth. In total, each participant evaluated 240 samples ( 3 × 16 × 5 = 240 ). 
+
+# 3. Results 
+
+Table 1 presents the subjective and objective metric results com-paring the ground-truth, proposed model, its version without Self-Augmentation, and the two evaluated baselines. As observed, SelfTTS achieves the best eMOS score and the second-best results for nMOS and sMOS, demonstrating its ability to effectively combine naturalness with emotional and speaker consistency. The version without Self-Augmentation yields strong eMOS and sMOS results but reports the low-est naturalness. This highlights the effectiveness of Self-Augmentation in maintaining cross-speaker style transfer ca-pabilities while significantly improving the naturalness of the generated audio. The E3-VITS model achieves the highest naturalness in both nMOS and UTMOS. However, it also shows the poorest performance in eMOS (2.237) and EECS (0.5367). Inability to generate the target emotion may lead the model to produce the average emotion of the training set, which in this case is closer to Neutral, resulting in audio samples that fail to meet the de-sired emotional target, regardless of the higher quality. The VECL model presents intermediate results in both sub-jective and objective metrics, notably achieving the best WER. This superior intelligibility may be attributed to its consistency losses, one of which specifically targets speech intelligibility. Overall, the proposed model demonstrates robustness for the cross-speaker style transfer task, maintaining competitive naturalness with superior stability in emotion and speaker iden-tity. These findings are corroborated by the eMOS, sMOS, SECS, and EECS results for both the SelfTTS and its non-augmented variant. Figure 2 illustrates the eMOS results categorized by emo-tion for each evaluated model. We observe that the proposed model maintains higher recognition correspondence across nearly all emotions, particu-larly in “Surprise” and “Happy”, where it shows the most signif-icant improvement over the baselines. While VECL performed well for the “Angry” emotion, its performance was inconsistent across others, whereas SelfTTS exhibits consistency across all emotional categories. To verify the impact of the different emotion encoders used in each model, we extracted the emotion embedding representa-tions and projected them into a 2D style space using UMAP [39] (Figure 3). 
+
+Figure 2: Emotional similarity (eMOS) per emotion category across different models. The models are ordered as: GT (ground-truth), SelfTTS, SelfTTS w/o Self-Aug., VECL, and E3-VITS. 
+
+The proposed model exhibits clear clustering between dif-ferent emotions which is expected given the MPCL contrastive loss applied. This also justifies its enhanced ability to maintain consistency across different styles during style transfer. VECL shows clear clusters but with visible overlap, while E3-VITS lacks distinct emotional clustering. Without a clear representa-tion between emotions, emotional adherence in generated sam-ple is harder to condition. This aligns with eMOS and EECS performance being lower for E3-VITS and higher for SelfTTS. 
+
+3.1. Towards Developing SelfTTS 
+
+Different architectural configurations and training strategies were explored during the development of SelfTTS. This sec-tion presents the experiments conducted, alongside the objec-tive, perceptual, and disentanglement metrics used for selecting the proposed design. 
+
+3.1.1. Loss-based Inductive Bias 
+
+A conventional approach to conditioning emotion and speaker encoder representations to form label-based clusters is the use of Cross-Entropy (CE). However, this loss does not necessarily focus on generating disjoint representations. A more explicit method is contrastive learning. Consequently, we evaluated the impact of using the proposed MPCL contrastive loss versus CE for both emotion and speaker encoders. Furthermore, we as-sessed the importance of Gradient Reversal Layers (GRL) for disentanglement, comparing its absence against its use with CE and with the proposed cosine-based explicit embedding disen-tanglement. Table 2 shows that using cosine-based GRL leads to the best EECS results while maintaining strong SECS performance, in-dicating its efficacy in conveying the correct emotion and keep-ing the target voice. The CKA calculated between embeddings is the lowest (0.0139), further validating this method for dis-entanglement, and the LK-CKA for both speaker and emotion are the second best. It is also evident from the results with-out GRL that using MPCL significantly improves SECS, EECS, and CKA, making it a strong candidate even without explicit embedding disentanglement. Other metrics remain largely similar, with a negative high-light for CE without GRL, which shows the highest CKA (0.3148) indicating high entanglement and an emotion LK-CKA of 0.6964, suggesting poor alignment with labels. This justifies the lack of visual clustering observed in Figure 3. Notably, audio generated via Voice Conversion (VC) yields Table 1: Subjective and objective performance comparison between SelfTTS and baseline models. Subjective metrics include a 95% confidence interval. For this and the subsequent tables, the following visualization pattern will be adopted: ↑ higher is better. ↓ lower is better. Best values are bolded , second-best values are underlined and proposed model is highlighted in green. 
+
+Model Speaker Encoder Emotion Encoder Subjective Evaluation Objective Evaluation 
+
+nMOS ↑ eMOS ↑ sMOS ↑ UTMOS ↑ WER ↓ SECS ↑ EECS ↑
+
+GT - - 3.638 ± 0.106 3.541 ± 0.122 4.009 ± 0.107 - - - -E3-VITS Lookup StyleSpeech 2.763 ± 0.111 2.237 ± 0.108 2.815 ± 0.116 3.9614 0.2011 0.8069 0.5367 VECL HSAP CNN-based 2.707 ± 0.107 2.556 ± 0.108 2.804 ± 0.114 3.7959 0.1944 0.7806 0.6929 SelfTTS w/o Self-Aug. RE RE 2.228 ± 0.105 2.849 ± 0.108 3.121 ± 0.112 3.4899 0.2567 0.8103 0.8793 
+
+SelfTTS RE RE 2.746 ± 0.109 2.853 ± 0.107 3.112 ± 0.114 3.6104 0.2305 0.8163 0.8423     
+
+> (a) E3-VITS style space generated by emotion encoder. (b) VECL style space generated by emotion encoder.
+> (c) SelfTTS style space generated by emotion encoder.
+
+Figure 3: UMAP projections of the emotion style spaces for all evaluated models. Embeddings are colored by emotion: Neutral (blue), Happy (green), Angry (red), Sad (pink), and Surprise (orange). The emotion style space of SelfTTS clearly forms well-separated emotional clusters. VECL generates highly concentrated clusters, but there is still overlap between different emotions. E3-VITS is not capable of producing clustered representations. Table 2: Objective metrics of TTS and VC samples generated varying the encoder loss (MPCL × CE) and Gradient Reversal Layer configuration (None GRL applied, Cross-Entropy loss and proposed Cosine loss). The table also reports speaker-emotion embedding representations similarity (CKA) and speaker and emotion label alignment (LK-CKA). 
+
+Encoder loss GRL TTS VC CKA & LK-CKA 
+
+UTMOS ↑ WER ↓ SECS ↑ EECS ↑ UTMOS ↑ WER ↓ SECS ↑ EECS ↑ Emb ↓ Speaker ↑ Emotion ↑
+
+MPCL None 3.6268 0.2237 0.8165 0.7903 3.6968 0.1365 0.8213 0.7425 0.0176 0.9588 0.9648 
+
+CE 3.8585 0.2324 0.8064 0.7391 3.8324 0.1319 0.8120 0.7061 0.3148 0.8704 0.6964 MPCL CE 3.4996 0.2461 0.7704 0.7899 3.6247 0.1544 0.7722 0.7545 0.0336 0.9514 0.9458 CE 3.6931 0.2584 0.8019 0.7276 3.7239 0.1440 0.8087 0.7043 0.0235 0.9373 0.9282 MPCL Cosine 3.4899 0.2567 0.8103 0.8793 3.5503 0.1436 0.8130 0.8530 0.0139 0.9581 0.9480 CE 3.4737 0.2543 0.8075 0.8474 3.5507 0.1448 0.8095 0.8107 0.0205 0.9376 0.9024 results similar to TTS but with better intelligibility (overall aver-age WER of 0.1425 for VC vs 0.2452 for TTS). This outcome supports the potential of using data generated by this branch for data augmentation, as these samples generally possess bet-ter naturalness and intelligibility while maintaining SECS and EECS levels. 
+
+3.1.2. Does Emotion Encoder Input and Architecture Matter? 
+
+Other techniques to avoid speaker and emotion entanglement exist in the literature. One such method involves modifying the emotion encoder input, for example by using only the first 20 mel bins of the spectrogram [19, 20] (where most prosody is concentrated) or using formant shifting which results in a timbre perturbation (TP) [16, 17, 18]. Table 3 presents the results of these techniques and evaluates recent emotion encoders from StyleSpeech [40] and StyleTTS [41]. In all cases, the Reference Encoder (RE) was used as the speaker encoder. Table 3: Objective performance comparison of different emo-tion encoder configurations and input perturbation methods. ✓
+
+indicates the feature is used, while × indicates it is not.                                                                  
+
+> Emotion encoder Use 20 mel bin Use TP UTMOS ↑WER ↓SECS ↑EECS ↑
+> RE
+> ××3.4899 0.2567 0.8103 0.8793
+> ×✓3.5171 0.2527 0.8196 0.7771
+> ✓×3.5367 0.2492 0.8102 0.7500
+> ✓✓3.7208 0.2345 0.8080 0.5933 StyleSpeech
+> ××3.6500 0.2657 0.8114 0.7621
+> ×✓3.7438 0.2463 0.8063 0.6439
+> ✓×3.7064 0.2397 0.8160 0.6438
+> ✓✓3.8258 0.2356 0.8094 0.4816 StyleTTS
+> ××3.7088 0.2364 0.8179 0.6702
+> ×✓3.8267 0.2282 0.8174 0.5734
+> ✓×3.8143 0.2419 0.7985 0.5838
+> ✓✓3.8510 0.2374 0.8000 0.5002
+
+Notably, the use of both mel filtering and timbre pertur-bation reduced SECS and EECS, with the best result obtained using the RE without any input perturbation. In particular, emo-tional adherence (EECS 0.8793) is significantly higher com-pared to all other experiments. We also note that lower EECS correlates with higher UTMOS, again suggesting that reduced emotional conditioning leads to higher perceived quality (emo-tion leakage), which is not desired in this case. Furthermore, the use of alternative emotion encoders did not positively impact the model, with results falling below the RE while following the same observed pattern as more input perturbation was added. A possible explanation is that explicit embedding disentanglement may benefit from similar architec-tures to perform more effectively and stabilize the adversarial training, further study would be beneficial. 
+
+3.1.3. Self-Augmentation 
+
+As noted earlier, the voice conversion capability has potential as data augmentation. Table 4 presents the presence of speaker and emotion information at each flow layer during voice conversion, calculated via LK-CKA of the mean embeddings at each step. Table 4: LK-CKA analysis per flow step for speaker and emo-tion representations.                            
+
+> Flow step Reverse LK-CKA (speaker) LK-CKA (emotion)
+> 1FALSE 0.4106 0.0004 2FALSE 0.4294 0.0005 3FALSE 0.2266 0.0010 4FALSE 0.0179 0.0025 5TRUE 0.0820 0.1134 6TRUE 0.0790 0.1686 7TRUE 0.0697 0.2042 8TRUE 0.0348 0.2158
+
+We observe that the end of the forward flow (step 4) results in the lowest LK-CKA metrics, indicating that zp contains min-imal speaker and emotion information, proving the effective-ness of cosine-based GRL. Interestingly, speaker information is highly present at the posterior encoder output (step 1), while emotional information is not. In the inverse flow, emotion is added gradually while speaker information remains low. This suggests that other blocks have assumed the responsibility of conditioning speaker information in the SelfTTS architecture. Similar to [23] we also evaluated synthetic data in three different configurations: using it as the ground-truth (GT), us-ing it only as new emotional references (ENC) with different speaker’s voices, and using it in both (BOTH) configurations. Table 5 presents the results. Despite having the lowest EECS among the evaluated configurations, the proposed ENC configuration provides the best speaker adherence (SECS 0.8162) and highest UTMOS (3.6461). Both GT and BOTH configurations showed lower naturalness than the model without Self-Augmentation, leading us to select ENC as the proposed configuration. The naturalness degradation of using synthetic samples as ground-truth (GT and BOTH configurations) may be due to artificial artifacts that VC is adding to generated samples, forcing the SelfTTS to fit not Table 5: Objective performance comparison of different Self-Augmentation configurations. 
+
+Self Aug. UTMOS ↑ WER ↓ SECS ↑ EECS ↑
+
+config 
+
+GT 3.2509 0.2301 0.7950 0.8896 
+
+ENC 3.6461 0.2337 0.8162 0.8027 BOTH 3.4108 0.2271 0.8024 0.8425 
+
+only the acoustic patterns of ground-truth targets waveforms but also the synthetic artifacts generated by VC. Finally, we evaluated the impact of varying the masked batch proportion with Self-Augmentation (Table 6). Table 6: Impact of different Self-Augmentation proportions on objective metrics. 
+
+Self Aug. UTMOS ↑ WER ↓ SECS ↑ EECS ↑
+
+proportion 
+
+0.00 3.5335 0.2356 0.8150 0.8778 
+
+0.25 3.6104 0.2305 0.8163 0.8423 0.50 3.6461 0.2337 0.8162 0.8027 0.75 3.6738 0.2269 0.8226 0.7651 1.00 3.7663 0.2316 0.8155 0.6624 
+
+A proportion of 0.00 indicates a continuation of origi-nal training for 50k steps with a lower learning rate. Re-sults show that simply continuing training improves naturalness while maintaining high emotional transfer capability. A propor-tion of 0.25 offered the best balance between naturalness and high SECS/EECS adherence, therefore being selected as the proposed approach. We further observed that increasing syn-thetic data samples enhances naturalness but negatively impacts EECS, reinforcing the inverse relationship between emotional conditioning and naturalness quality. 
+
+3.2. Cross-corpus 
+
+Transferring style from cross-corpus settings is a harder prob-lem as other acoustic cues may be present in different recording conditions which are not directly related to speaker, emotion or content. This makes the cross-speaker style transfer task even harder. To evaluate cross-corpus capability, we trained SelfTTS with approximately 350 neutral sentences from LJSpeech and VCTK speakers p226 and p231. We performed style transfer inference for these speakers and evaluated them using the ob-jective metrics (Table 7). For SECS and EECS, we used the centroid of the respective emotion and speaker embeddings as ground-truth. While SelfTTS w/o Self Aug. loses some emotional adher-ence, the version with Self-Augmentation shows significant im-provement in naturalness, validating the approach even in cross-corpus scenarios. However, the WER is very high which may be caused by the differences in recording conditions as emotional references are only available in ESD recording conditions. High SECS values indicate that the proposed SelfTTS model is not leaking speaker voices. On the other hand the EECS values are lower compared to previous experiments, which can be justi-fied by the mismatch between the speaker voices used in the ESD-based centroid emotion2vec+ embedding reference and Table 7: Objective performance comparison across LJspeech, p226 and p231 speakers from LJspeech and VCTK in cross-corpus scenario for SelfTTS.                              
+
+> Model Speaker UTMOS ↑WER ↓SECS ↑EECS ↑
+> SelfTTS w/o Self Aug. p226 3.1898 1.1508 0.8964 0.6583 p231 3.1937 1.1028 0.8714 0.6890
+> LJ 3.1800 1.1159 0.8355 0.6133 SelfTTS p226 3.3806 1.0836 0.9114 0.6074 p231 3.3806 1.0972 0.8914 0.6125 LJ 3.3951 1.0765 0.8587 0.6006
+
+generated samples. The lower values also indicate that in cross-corpus scenarios transferring emotions to neutral speakers is even harder. 
+
+# 4. Conclusion 
+
+In this paper, we presented SelfTTS, a robust text-to-speech framework designed to achieve high-quality cross-speaker style transfer without the need for external pre-trained speaker or emotion encoders. By integrating a novel explicit disentangle-ment strategy utilizing Gradient Reversal Layers (GRL) com-bined with a cosine similarity loss, the model successfully de-couples speaker identity from emotional prosody. The Multi Positive Contrastive Learning (MPCL) loss en-abled the generation of effective, label-oriented clusters for both speaker and emotion embeddings without requiring complex batching pipelines. Furthermore, we leveraged the model’s inherent voice conversion capabilities to implement a self-refinement process. By generating and training on synthetic samples of different voices for the same emotions, SelfTTS sig-nificantly improves the naturalness of synthesized speech while maintaining strong emotional adherence. Experimental results validate that SelfTTS achieves supe-rior perceptual emotional similarity (eMOS) and robust stability in target timbre and emotion compared to state-of-the-art base-lines. UMAP projections further corroborate these findings, dis-playing clearly defined and disjoint emotional clusters that facil-itate precise style conditioning. The proposed SelfTTS model establishes a powerful, self-contained approach for expressive speech synthesis with cross-speaker style transfer capability. 
+
+4.1. Future Work 
+
+Future research will focus on the following areas to further re-fine SelfTTS: • Robustness to cross-corpus scenarios: as maintaining iden-tical recording conditions is often unfeasible in real-world applications, developing models robust to such acoustic dif-ferences is a promising direction; • Scalability for zero-shot: Further investigation is required to determine whether the model scales well with more data even with limited amount of expressive samples to perform zero-shot style transfer for unseen speakers; • Cross-lingual: Given the baseline capabilities of models like VECL in cross-lingual settings and the better intelligibility of VC samples, we plan to evaluate the scalability of the MPCL and Self-Augmentation strategies for multilingual expressive TTS. 5. Acknowledgments 
+
+This study is partially funded by CAPES – Finance Code 001. It is also supported by FAPESP (BI0S #2020/09838-0 and Ho-rus #2023/12865-8). Paula D. P. Costa, Lucas H. Ueda, Jo˜ ao G.T. Lima and Pedro R. Corrˆ ea are affiliated with the Dept. of Computer Engineering and Automation (DCA), Faculdade de Engenharia El´ etrica e de Computac ¸ ˜ ao, and are part of the AI Lab., Recod.ai, Institute of Computing, UNICAMP. This project was supported by MCTI under Law 8.248/1991, PPI-Softex, published as Cognitive Architecture (Phase 3), DOU 01245.003479/2024-1. 
+
+# 6. Generative AI Use Disclosure 
+
+Generative AI tools were used during the preparation of this manuscript exclusively for polishing language for clarity and assisting with LaTeX formatting of results. The authors affirm that the core research, methodology, and the manuscript were produced by the human authors, who remain fully responsible and accountable for the work. All authors have consented to this submission. 
+
+# 7. References 
+
+[1] O. Kwon, I. Jang, C. Ahn, and H.-G. Kang, “Emotional speech synthesis based on style embedded tacotron2 framework,” in 2019 34th International Technical Conference on Circuits/Systems, Computers and Communications (ITC-CSCC) , 2019, pp. 1–4. [2] A. Sorin, S. Shechtman, and R. Hoory, “Principal Style Compo-nents: Expressive Style Control and Cross-Speaker Transfer in Neural TTS,” in Interspeech 2020 , 2020, pp. 3411–3415. [3] C.-B. Im, S.-H. Lee, S.-B. Kim, and S.-W. Lee, “Emoq-tts: Emo-tion intensity quantization for fine-grained controllable emotional text-to-speech,” in ICASSP 2022 - 2022 IEEE International Con-ference on Acoustics, Speech and Signal Processing (ICASSP) ,2022, pp. 6317–6321. [4] K. Zhou, B. Sisman, R. Rana, B. W. Schuller, and H. Li, “Speech synthesis with mixed emotions,” IEEE Transactions on Affective Computing , vol. 14, no. 4, pp. 3120–3134, 2023. [5] A. Kulkarni, V. Colotte, and D. Jouvet, “Improving transfer of expressivity for end-to-end multispeaker text-to-speech synthe-sis,” in 2021 29th European Signal Processing Conference (EU-SIPCO) , 2021, pp. 31–35. [6] B. G. Ngo, M. Rohmatillah, and J.-T. Chien, “Learning con-trastive emotional nuances in speech synthesis,” in 2024 27th Conference of the Oriental COCOSDA International Committee for the Co-ordination and Standardisation of Speech Databases and Assessment Techniques (O-COCOSDA) , 2024, pp. 1–6. [7] A. Gudmalwar, N. Shah, S. Akarsh, P. Wasnik, and R. R. Shah, “VECL-TTS: Voice identity and Emotional style controllable Cross-Lingual Text-to-Speech,” in Interspeech 2024 , 2024, pp. 3000–3004. [8] R. Skerry-Ryan, E. Battenberg, Y. Xiao, Y. Wang, D. Stanton, J. Shor, R. Weiss, R. Clark, and R. A. Saurous, “Towards end-to-end prosody transfer for expressive speech synthesis with tacotron,” in Proceedings of the 35th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, J. Dy and A. Krause, Eds., vol. 80. PMLR, 10–15 Jul 2018, pp. 4693–4702. [Online]. Available: https://proceedings.mlr.press/v80/skerry-ryan18a.html [9] I. Vall´ es-P´ erez, J. Roth, G. Beringer, R. Barra-Chicote, and J. Droppo, “Improving Multi-Speaker TTS Prosody Variance with a Residual Encoder and Normalizing Flows,” in Interspeech 2021 ,2021, pp. 3131–3135. [10] L. H. Ueda, P. D. P. Costa, F. O. Simoes, and M. U. Neto, “Are we truly modeling expressiveness? A study on expressive TTS in Brazilian Portuguese for real-life application styles,” in 11th ISCA Speech Synthesis Workshop (SSW 11) , 2021, pp. 84–89. [11] X. An, F. K. Soong, and L. Xie, “Disentangling Style and Speaker Attributes for TTS Style Transfer,” IEEE/ACM Transactions on Audio, Speech, and Language Processing , vol. 30, pp. 646–658, 2022, conference Name: IEEE/ACM Transactions on Audio, Speech, and Language Processing. [Online]. Available: https://ieeexplore.ieee.org/document/9693198/ [12] Y. Ganin and V. Lempitsky, “Unsupervised Domain Adaptation by Backpropagation,” 2015. [13] Z. Shang, Z. Huang, H. Zhang, P. Zhang, and Y. Yan, Incorpo-rating Cross-Speaker Style Transfer for Multi-Language Text-to-Speech , Aug. 2021, pages: 1623. [14] J. Za¨ ıdi, H. Seut´ e, B. van Niekerk, and M.-A. Carbonneau, “Daft-Exprt: Cross-Speaker Prosody Transfer on Any Text for Expres-sive Speech Synthesis,” in Proc. Interspeech 2022 , 2022, pp. 4591–4595. [15] A. T. Sigurgeirsson and S. King, “Do prosody transfer mod-els transfer prosody?” in ICASSP 2023 - 2023 IEEE Interna-tional Conference on Acoustics, Speech and Signal Processing (ICASSP) , 2023, pp. 1–5. [16] H.-S. Choi, J. Lee, W. Kim, J. H. Lee, H. Heo, and K. Lee, “Neural analysis and synthesis: reconstructing speech from self-supervised representations,” in Proceedings of the 35th Interna-tional Conference on Neural Information Processing Systems , ser. NIPS ’21. Red Hook, NY, USA: Curran Associates Inc., 2021. [17] Y. Lei, S. Yang, X. Zhu, L. Xie, and D. Su, “Cross-Speaker Emotion Transfer Through Information Perturbation in Emotional Speech Synthesis,” IEEE Signal Processing Letters , vol. 29, pp. 1948–1952, 2022, conference Name: IEEE Signal Processing Letters. [Online]. Available: https: //ieeexplore.ieee.org/document/9874835 [18] X. Zhu, Y. Lei, T. Li, Y. Zhang, H. Zhou, H. Lu, and L. Xie, “METTS: Multilingual Emotional Text-to-Speech by Cross-Speaker and Cross-Lingual Emotion Transfer,” IEEE/ACM Transactions on Audio, Speech and Language Processing ,vol. 32, pp. 1506–1518, Feb. 2024. [Online]. Available: https://doi.org/10.1109/TASLP.2024.3363444 [19] Y. Ren, M. Lei, Z. Huang, S. Zhang, Q. Chen, Z. Yan, and Z. Zhao, “Prosospeech: Enhancing prosody with quantized vec-tor pre-training in text-to-speech,” in ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Pro-cessing (ICASSP) , 2022, pp. 7577–7581. [20] Z. Jiang, Y. Ren, Z. Ye, J. Liu, C. Zhang, Q. Yang, S. Ji, R. Huang, C. Wang, X. Yin, Z. Ma, and Z. Zhao, “Mega-tts: Zero-shot text-to-speech at scale with intrinsic inductive bias,” 2023. [Online]. Available: https://arxiv.org/abs/2306.03509 [21] G. Huybrechts, T. Merritt, G. Comini, B. Perz, R. Shah, and J. Lorenzo-Trueba, “Low-resource expressive text-to-speech us-ing data augmentation,” in ICASSP 2021 - 2021 IEEE Interna-tional Conference on Acoustics, Speech and Signal Processing (ICASSP) , 2021, pp. 6593–6597. [22] M. Sam Ribeiro, J. Roth, G. Comini, G. Huybrechts, A. Gabry´ s, and J. Lorenzo-Trueba, “Cross-speaker style transfer for text-to-speech using data augmentation,” in ICASSP 2022 - 2022 IEEE International Conference on Acoustics, Speech and Signal Pro-cessing (ICASSP) , 2022, pp. 6797–6801. [23] L. H. Ueda, L. Marques, F. Sim˜ oes, M. U. Neto, F. Runstein, B. D. B´ o, and P. D. P. Costa, “Exploring synthetic data for cross-speaker style transfer in style representation based TTS,” in Syn-thetic Data’s Transformative Role in Foundational Speech Mod-els , 2024, pp. 76–80. [24] J. Kim, J. Kong, and J. Son, “Conditional variational autoencoder with adversarial learning for end-to-end text-to-speech,” in Proceedings of the 38th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, M. Meila and T. Zhang, Eds., vol. 139. PMLR, 18–24 Jul 2021, pp. 5530–5540. [Online]. Available: https: //proceedings.mlr.press/v139/kim21f.html [25] W. Jung and J. Lee, “E3-vits: Emotional end-to-end tts with cross-speaker style transfer,” in ICML 2023 Workshop on Deployable Generative AI , 2023. [Online]. Available: https://openreview.net/forum?id=qL47xtuEuv [26] H.-W. Yoon, J.-S. Kim, R. Yamamoto, R. Terashima, C.-H. Song, J.-M. Kim, and E. Song, “Enhancing multilingual tts with voice conversion based data augmentation and posterior embedding,” in 
+
+ICASSP 2024 - 2024 IEEE International Conference on Acous-tics, Speech and Signal Processing (ICASSP) , 2024, pp. 12 186– 12 190. [27] R. Terashima, R. Yamamoto, E. Song, Y. Shirahata, H.-W. Yoon, J.-M. Kim, and K. Tachibana, “Cross-Speaker Emotion Transfer for Low-Resource Text-to-Speech Using Non-Parallel Voice Conversion with Pitch-Shift Data Augmentation,” in Interspeech 2022 . ISCA, Sep. 2022, pp. 3018–3022. [Online]. Available: https://www.isca-archive.org/interspeech 2022/terashima22 interspeech.html [28] Y. Tian, L. Fan, P. Isola, H. Chang, and D. Krishnan, “Stablerep: Synthetic images from text-to-image models make strong visual representation learners,” in Thirty-seventh Conference on Neural Information Processing Systems , 2023. [Online]. Available: https://openreview.net/forum?id=xpjsOQtKqx [29] L.-W. Chen and A. Rudnicky, “Fine-grained style control in transformer-based text-to-speech synthesis,” in ICASSP 2022 -2022 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) , 2022, pp. 7907–7911. [30] I. Loshchilov and F. Hutter, “Decoupled weight de-cay regularization,” in International Conference on Learn-ing Representations , 2019. [Online]. Available: https: //openreview.net/forum?id=Bkg6RiCqY7 [31] C. Veaux, J. Yamagishi, and K. MacDonald, “Cstr vctk corpus: English multi-speaker corpus for cstr voice cloning toolkit,” 2017. [Online]. Available: https://datashare.ed.ac.uk/ handle/10283/2950 [32] K. Zhou, B. Sisman, R. Liu, and H. Li, “Emotional voice conversion: Theory, databases and esd,” Speech Communication ,vol. 137, pp. 1–18, 2022. [Online]. Available: https://www. sciencedirect.com/science/article/pii/S0167639321001308 [33] T. Saeki, D. Xin, W. Nakata, T. Koriyama, S. Takamichi, and H. Saruwatari, “UTMOS: UTokyo-SaruLab System for Voice-MOS Challenge 2022,” in Proc. Interspeech 2022 , 2022, pp. 4521–4525. [34] A. Radford, J. W. Kim, T. Xu, G. Brockman, C. Mcleavey, and I. Sutskever, “Robust speech recognition via large-scale weak supervision,” in Proceedings of the 40th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, A. Krause, E. Brunskill, K. Cho, B. Engelhardt, S. Sabato, and J. Scarlett, Eds., vol. 202. PMLR, 23– 29 Jul 2023, pp. 28 492–28 518. [Online]. Available: https: //proceedings.mlr.press/v202/radford23a.html [35] H.-S. Oh, S.-H. Lee, D.-H. Cho, and S.-W. Lee, “Durflex-evc: Duration-flexible emotional voice conversion leveraging discrete representations without text alignment,” IEEE Transactions on Af-fective Computing , vol. 16, no. 3, pp. 1660–1674, 2025. [36] Z. Ma, Z. Zheng, J. Ye, J. Li, Z. Gao, S. Zhang, and X. Chen, “emotion2vec: Self-supervised pre-training for speech emotion representation,” in Findings of the Association for Computational Linguistics: ACL 2024 , L.-W. Ku, A. Martins, and V. Srikumar, Eds. Bangkok, Thailand: Association for Computational Linguistics, Aug. 2024, pp. 15 747–15 760. [Online]. Available: https://aclanthology.org/2024.findings-acl.931/ [37] S. Kornblith, M. Norouzi, H. Lee, and G. Hinton, “Similarity of neural network representations revisited,” in Proceedings of the 36th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, K. Chaudhuri and R. Salakhutdinov, Eds., vol. 97. PMLR, 09–15 Jun 2019, pp. 3519–3529. [Online]. Available: https://proceedings.mlr.press/ v97/kornblith19a.html [38] C. Cortes, M. Mohri, and A. Rostamizadeh, “Algorithms for learning kernels based on centered alignment,” J. Mach. Learn. Res. , vol. 13, no. 1, p. 795–828, Mar. 2012. [39] L. McInnes, J. Healy, N. Saul, and L. Großberger, “Umap: Uniform manifold approximation and projection,” Journal of Open Source Software , vol. 3, no. 29, p. 861, 2018. [Online]. Available: https://doi.org/10.21105/joss.00861 [40] D. Min, D. B. Lee, E. Yang, and S. J. Hwang, “Meta-stylespeech : Multi-speaker adaptive text-to-speech generation,” in Proceedings of the 38th International Conference on Machine Learning , ser. Proceedings of Machine Learning Research, M. Meila and T. Zhang, Eds., vol. 139. PMLR, 18– 24 Jul 2021, pp. 7748–7759. [Online]. Available: https: //proceedings.mlr.press/v139/min21b.html [41] Y. A. Li, C. Han, and N. Mesgarani, “Styletts: A style-based gen-erative model for natural and diverse text-to-speech synthesis,” 
+
+IEEE Journal of Selected Topics in Signal Processing , vol. 19, no. 1, pp. 283–296, 2025.
