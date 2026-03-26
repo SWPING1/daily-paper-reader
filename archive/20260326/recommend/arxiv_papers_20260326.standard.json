@@ -1,0 +1,615 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-03-26T20:28:29.116205+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 11,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2603.21387v2",
+      "title": "Knowledge Priors for Identity-Disentangled Open-Set Privacy-Preserving Video FER",
+      "abstract": "Facial expression recognition relies on facial data that inherently expose identity and thus raise significant privacy concerns. Current privacy-preserving methods typically fail in realistic open-set video settings where identities are unknown, and identity labels are unavailable. We propose a two-stage framework for video-based privacy-preserving FER in challenging open-set settings that requires no identity labels at any stage. To decouple privacy and utility, we first train an identity-suppression network using intra- and inter-video knowledge priors derived from real-world videos without identity labels. This network anonymizes identity while preserving expressive cues. A subsequent denoising module restores expression-related information and helps recover FER performance. Furthermore, we introduce a falsification-based validation method that uses recognition priors to rigorously evaluate privacy robustness without requiring annotated identity labels. Experiments on three video datasets demonstrate that our method effectively protects privacy while maintaining FER accuracy comparable to identity-supervised baselines.",
+      "authors": [
+        "Feng Xu",
+        "Xun Li",
+        "Lars Petersson",
+        "Yulei Sui",
+        "David Ahmedt-Aristizabal",
+        "Dadong Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-22T20:18:31+00:00",
+      "link": "https://arxiv.org/pdf/2603.21387v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Identity-disentangled representation for video FER",
+      "llm_evidence_cn": "视频面部表情识别的身份解耦表示",
+      "llm_evidence": "视频面部表情识别的身份解耦表示",
+      "canonical_evidence": "视频面部表情识别的身份解耦表示",
+      "llm_tldr_en": "Decouples identity and expression features for privacy-preserving facial expression recognition.",
+      "llm_tldr_cn": "解耦身份和表情特征，实现隐私保护的面部表情识别。",
+      "llm_tldr": "解耦身份和表情特征，实现隐私保护的面部表情识别。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled representation learning for multimodal emotion recognition with missing data",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.24569v1",
+      "title": "POLY-SIM: Polyglot Speaker Identification with Missing Modality Grand Challenge 2026 Evaluation Plan",
+      "abstract": "Multimodal speaker identification systems typically assume the availability of complete and homogeneous audio-visual modalities during both training and testing. However, in real-world applications, such assumptions often do not hold. Visual information may be missing due to occlusions, camera failures, or privacy constraints, while multilingual speakers introduce additional complexity due to linguistic variability across languages. These challenges significantly affect the robustness and generalization of multimodal speaker identification systems. The POLY-SIM Grand Challenge 2026 aims to advance research in multimodal speaker identification under missing-modality and cross-lingual conditions. Specifically, the Grand Challenge encourages the development of robust methods that can effectively leverage incomplete multimodal inputs while maintaining strong performance across different languages. This report presents the design and organization of the POLY-SIM Grand Challenge 2026, including the dataset, task formulation, evaluation protocol, and baseline model. By providing a standardized benchmark and evaluation framework, the challenge aims to foster progress toward more robust and practical multimodal speaker identification systems.",
+      "authors": [
+        "Marta Moscati",
+        "Muhammad Saad Saeed",
+        "Marina Zanoni",
+        "Mubashir Noman",
+        "Rohan Kumar Das",
+        "Monorama Swain",
+        "Yufang Hou",
+        "Elisabeth Andre",
+        "Khalid Mahmood Malik",
+        "Markus Schedl",
+        "Shah Nawaz"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-25T17:47:00+00:00",
+      "link": "https://arxiv.org/pdf/2603.24569v1",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "speaker identification under missing-modality conditions",
+      "llm_evidence_cn": "缺失模态条件下的说话人识别",
+      "llm_evidence": "缺失模态条件下的说话人识别",
+      "canonical_evidence": "缺失模态条件下的说话人识别",
+      "llm_tldr_en": "A challenge focused on advancing multimodal speaker identification when visual or audio modalities are missing.",
+      "llm_tldr_cn": "针对视觉或音频模态缺失情况下的多模态说话人识别研究挑战。",
+      "llm_tldr": "针对视觉或音频模态缺失情况下的多模态说话人识别研究挑战。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.23650v1",
+      "title": "Foundation Model Embeddings Meet Blended Emotions: A Multimodal Fusion Approach for the BLEMORE Challenge",
+      "abstract": "We present our system for the BLEMORE Challenge at FG 2026 on blended emotion recognition with relative salience prediction. Our approach combines six encoder families through late probability fusion: an S4D-ViTMoE face encoder adapted with soft-label KL training, frozen layer-selective Wav2Vec2 audio features, finetuned body-language encoders (TimeSformer, VideoMAE), and -- for the first time in emotion recognition -- Gemini Embedding 2.0, a large multimodal model whose video embeddings produce competitive presence accuracy (ACCP = 0.320) from only 2 seconds of input. Three key findings emerge from our experiments: selecting prosody-encoding layers (6--12) from frozen Wav2Vec2 outperforms end-to-end finetuning (Score 0.207 vs. 0.161), as the non-verbal nature of BLEMORE audio makes phonetic layers irrelevant; the post-processing salience threshold $β$ varies from 0.05 to 0.43 across folds, revealing that personalized expression styles are the primary bottleneck; and task-adapted encoders collectively receive 62\\% of ensemble weight over general-purpose baselines. Our 12-encoder system achieves Score = 0.279 (ACCP = 0.391, ACCS = 0.168) on the test set, placing 6th.",
+      "authors": [
+        "Masoumeh Chapariniya",
+        "Aref Farhadipour",
+        "Sarah Ebling",
+        "Volker Dellwo",
+        "Teodora Vukovic"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-24T18:49:49+00:00",
+      "link": "https://arxiv.org/pdf/2603.23650v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal fusion for emotion recognition",
+      "llm_evidence_cn": "多模态融合情感识别",
+      "llm_evidence": "多模态融合情感识别",
+      "canonical_evidence": "多模态融合情感识别",
+      "llm_tldr_en": "A multimodal fusion approach using foundation model embeddings for blended emotion recognition.",
+      "llm_tldr_cn": "一种利用基础模型嵌入进行混合情感识别的多模态融合方法。",
+      "llm_tldr": "一种利用基础模型嵌入进行混合情感识别的多模态融合方法。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2603.24004v1",
+      "title": "Thinking with Tables: Enhancing Multi-Modal Tabular Understanding via Neuro-Symbolic Reasoning",
+      "abstract": "Multimodal Large Language Models (MLLMs) have demonstrated remarkable reasoning capabilities across modalities such as images and text. However, tabular data, despite being a critical real-world modality, remains relatively underexplored in multimodal learning. In this paper, we focus on the task of Tabular-Vision Multi-Modal Understanding (TVMU) and identify three core challenges: (1) high structural variability and data incompleteness in tables, (2) implicit and complex feature dependencies, and (3) significant heterogeneity in problem-solving pipelines across downstream tasks. To address these issues, we propose Thinking with Tables (TWT). TWT employs a program-aided code-based neuro-symbolic reasoning mechanism that facilitates key operations, such as information extraction and element modeling, by interacting with external environments. We evaluate TWT on eight representative datasets. Experimental results demonstrate that TWT consistently outperforms existing baselines by an average of 10\\% in accuracy, achieving performance comparable to, or even surpassing, proprietary commercial SOTA LLMs on TVMU tasks. Models and codes are available at https://github.com/kunyang-YU/Thinking-with-Tables",
+      "authors": [
+        "Kun-Yang Yu",
+        "Zhi Zhou",
+        "Shi-Yu Tian",
+        "Xiao-Wen Yang",
+        "Zi-Yi Jia",
+        "Ming Yang",
+        "Zi-Jian Cheng",
+        "Lan-Zhe Guo",
+        "Yu-Feng Li"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-03-25T07:07:06+00:00",
+      "link": "https://arxiv.org/pdf/2603.24004v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses data incompleteness in multimodal tabular understanding",
+      "llm_evidence_cn": "解决多模态表格理解中的数据不完整性",
+      "llm_evidence": "解决多模态表格理解中的数据不完整性",
+      "canonical_evidence": "解决多模态表格理解中的数据不完整性",
+      "llm_tldr_en": "Proposes Thinking with Tables to handle structural variability and data incompleteness in tabular-vision tasks.",
+      "llm_tldr_cn": "提出Thinking with Tables，解决表格-视觉任务中的结构变异和数据不完整问题。",
+      "llm_tldr": "提出Thinking with Tables，解决表格-视觉任务中的结构变异和数据不完整问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2603.21236v1",
+      "title": "Does Mechanistic Interpretability Transfer Across Data Modalities? A Cross-Domain Causal Circuit Analysis of Variational Autoencoders",
+      "abstract": "Although mechanism-based interpretability has generated an abundance of insight for discriminative network analysis, generative models are less understood -- particularly outside of image-related applications. We investigate how much of the causal circuitry found within image-related variational autoencoders (VAEs) will generalize to tabular data, as VAEs are increasingly used for imputation, anomaly detection, and synthetic data generation. In addition to extending a four-level causal intervention framework to four tabular and one image benchmark across five different VAE architectures (with 75 individual training runs per architecture and three random seed values for each run), this paper introduces three new techniques: posterior-calibration of Causal Effect Strength (CES), path-specific activation patching, and Feature-Group Disentanglement (FGD). The results from our experiments demonstrate that: (i) Tabular VAEs have circuits with modularity that is approximately 50% lower than their image counterparts. (ii) $β$-VAE experiences nearly complete collapse in CES scores when applied to heterogeneous tabular features (0.043 CES score for tabular data compared to 0.133 CES score for images), which can be directly attributed to reconstruction quality degradation (r = -0.886 correlation coefficient between CES and MSE). (iii) CES successfully captures nine of eleven statistically significant architecture differences using Holm--Šidák corrections. (iv) Interventions with high specificity predict the highest downstream AUC values (r = 0.460, p < .001). This study challenges the common assumption that architectural guidance from image-related studies can be transferred to tabular datasets.",
+      "authors": [
+        "Dip Roy",
+        "Rajiv Misra",
+        "Sanjay Kumar Singh",
+        "Anisha Roy"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-03-22T13:51:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.21236v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "VAEs used for imputation and synthetic data generation across modalities",
+      "llm_evidence_cn": "VAE用于跨模态的数据插补和合成数据生成",
+      "llm_evidence": "VAE用于跨模态的数据插补和合成数据生成",
+      "canonical_evidence": "VAE用于跨模态的数据插补和合成数据生成",
+      "llm_tldr_en": "Investigates the transferability of causal circuits in VAEs for data imputation across different modalities.",
+      "llm_tldr_cn": "研究了VAE在不同模态数据插补中因果电路的可迁移性。",
+      "llm_tldr": "研究了VAE在不同模态数据插补中因果电路的可迁移性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.17405v1",
+      "title": "Causal Representation Learning on High-Dimensional Data: Benchmarks, Reproducibility, and Evaluation Metrics",
+      "abstract": "Causal representation learning (CRL) models aim to transform high-dimensional data into a latent space, enabling interventions to generate counterfactual samples or modify existing data based on the causal relationships among latent variables. To facilitate the development and evaluation of these models, a variety of synthetic and real-world datasets have been proposed, each with distinct advantages and limitations. For practical applications, CRL models must perform robustly across multiple evaluation directions, including reconstruction, disentanglement, causal discovery, and counterfactual reasoning, using appropriate metrics for each direction. However, this multi-directional evaluation can complicate model comparison, as a model may excel in some direction while under-performing in others. Another significant challenge in this field is reproducibility: the source code corresponding to published results must be publicly available, and repeated runs should yield performance consistent with the original reports. In this study, we critically analyzed the synthetic and real-world datasets currently employed in the literature, highlighting their limitations and proposing a set of essential characteristics for suitable datasets in CRL model development. We also introduce a single aggregate metric that consolidates performance across all evaluation directions, providing a comprehensive score for each model. Finally, we reviewed existing implementations from the literature and assessed them in terms of reproducibility, identifying gaps and best practices in the field.",
+      "authors": [
+        "Alireza Sadeghi",
+        "Wael AbdAlmageed"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-03-18T06:31:01+00:00",
+      "link": "https://arxiv.org/pdf/2603.17405v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentanglement and reconstruction in causal representation learning",
+      "llm_evidence_cn": "因果表示学习中的解耦与重构",
+      "llm_evidence": "因果表示学习中的解耦与重构",
+      "canonical_evidence": "因果表示学习中的解耦与重构",
+      "llm_tldr_en": "Evaluates causal representation models on reconstruction and disentanglement across high-dimensional data.",
+      "llm_tldr_cn": "评估高维数据下因果表示模型的重构与解耦性能。",
+      "llm_tldr": "评估高维数据下因果表示模型的重构与解耦性能。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.22536v1",
+      "title": "MSP-Conversation: A Corpus for Naturalistic, Time-Continuous Emotion Recognition",
+      "abstract": "Affective computing aims to understand and model human emotions for computational systems. Within this field, speech emotion recognition (SER) focuses on predicting emotions conveyed through speech. While early SER systems relied on limited datasets and traditional machine learning models, recent deep learning approaches demand largescale, naturalistic emotional corpora. To address this need, we introduce the MSP-Conversation corpus: a dataset of more than 70 hours of conversational audio with time-continuous emotional annotations and detailed speaker diarizations. The time-continuous annotations capture the dynamic and contextdependent nature of emotional expression. The annotations in the corpus include fine-grained temporal traces of valence, arousal, and dominance. The audio data is sourced from publicly available podcasts and overlaps with a subset of the isolated speaking turns in the MSP-Podcast corpus to facilitate direct comparisons between annotation methods (i.e., in-context versus out-of-context annotations). The paper outlines the development of the corpus, annotation methodology, analyses of the annotations, and baseline SER experiments, establishing the MSP-Conversation corpus as a valuable resource for advancing research in dynamic SER in naturalistic settings.",
+      "authors": [
+        "Luz Martinez-Lucas",
+        "Pravin Mote",
+        "Abinay Reddy Naini",
+        "Mohammed Abdelwahab",
+        "Carlos Busso"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.SD"
+      ],
+      "published": "2026-03-23T19:58:17+00:00",
+      "link": "https://arxiv.org/pdf/2603.22536v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Corpus for naturalistic time-continuous emotion recognition",
+      "llm_evidence_cn": "自然连续情感识别语料库",
+      "llm_evidence": "自然连续情感识别语料库",
+      "canonical_evidence": "自然连续情感识别语料库",
+      "llm_tldr_en": "Introduces a large-scale conversational audio dataset for speech emotion recognition.",
+      "llm_tldr_cn": "发布了一个用于语音情感识别的大规模对话音频数据集。",
+      "llm_tldr": "发布了一个用于语音情感识别的大规模对话音频数据集。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.18425v1",
+      "title": "Multimodal Task Interference: A Benchmark and Analysis of History-Target Mismatch in Multimodal LLMs",
+      "abstract": "Task interference, the performance degradation caused by task switches within a single conversation, has been studied exclusively in text-only settings despite the growing prevalence of multimodal dialogue systems. We introduce a benchmark for evaluating this phenomenon in multimodal LLMs, covering six tasks across text and vision with systematic variation of history-target along three axes: modality mismatch, reasoning mismatch, and answer format mismatch. Experiments on both open-weights and proprietary models reveal that task interference is highly directional: switching from text-only to image-based targets causes severe performance drops, while the reverse transition yields minimal degradation. Interference is further amplified when mismatches co-occur across multiple dimensions, and is driven most strongly by modality differences, followed by answer format, while reasoning requirement shifts cause minimal degradation.",
+      "authors": [
+        "Masayuki Kawarada",
+        "Tatsuya Ishigaki",
+        "Hiroya Takamura"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-03-19T02:36:42+00:00",
+      "link": "https://arxiv.org/pdf/2603.18425v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Analysis of modality mismatch in multimodal LLMs",
+      "llm_evidence_cn": "多模态大模型中的模态不匹配分析",
+      "llm_evidence": "多模态大模型中的模态不匹配分析",
+      "canonical_evidence": "多模态大模型中的模态不匹配分析",
+      "llm_tldr_en": "Benchmarks performance degradation caused by modality and task mismatch in multimodal dialogues.",
+      "llm_tldr_cn": "评估多模态对话中由模态和任务不匹配引起的性能下降。",
+      "llm_tldr": "评估多模态对话中由模态和任务不匹配引起的性能下降。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.23345v1",
+      "title": "FHAvatar: Fast and High-Fidelity Reconstruction of Face-and-Hair Composable 3D Head Avatar from Few Casual Captures",
+      "abstract": "We present FHAvatar, a novel framework for reconstructing 3D Gaussian avatars with composable face and hair components from an arbitrary number of views. Unlike previous approaches that couple facial and hair representations within a unified modeling process, we explicitly decouple two components in texture space by representing the face with planar Gaussians and the hair with strand-based Gaussians. To overcome the limitations of existing methods that rely on dense multi-view captures or costly per-identity optimization, we propose an aggregated transformer backbone to learn geometry-aware cross-view priors and head-hair structural coherence from multi-view datasets, enabling effective and efficient feature extraction and fusion from few casual captures. Extensive quantitative and qualitative experiments demonstrate that FHAvatar achieves state-of-the-art reconstruction quality from only a few observations of new identities within minutes, while supporting real-time animation, convenient hairstyle transfer, and stylized editing, broadening the accessibility and applicability of digital avatar creation.",
+      "authors": [
+        "Yujie Sun",
+        "Zhuoqiang Cai",
+        "Chaoyue Niu",
+        "Jianchuan Chen",
+        "Zhiwen Chen",
+        "Chengfei Lv",
+        "Fan Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-24T15:43:54+00:00",
+      "link": "https://arxiv.org/pdf/2603.23345v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "explicitly decouple face and hair components",
+      "llm_evidence_cn": "显式解耦面部和头发组件",
+      "llm_evidence": "显式解耦面部和头发组件",
+      "canonical_evidence": "显式解耦面部和头发组件",
+      "llm_tldr_en": "FHAvatar decouples face and hair representations in 3D head avatars for high-fidelity reconstruction.",
+      "llm_tldr_cn": "FHAvatar 在 3D 头部头像中解耦面部和头发表示，实现高保真重建。",
+      "llm_tldr": "FHAvatar 在 3D 头部头像中解耦面部和头发表示，实现高保真重建。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.21584v1",
+      "title": "SSAM: Singular Subspace Alignment for Merging Multimodal Large Language Models",
+      "abstract": "Multimodal large language models (MLLMs) achieve strong performance by jointly processing inputs from multiple modalities, such as vision, audio, and language. However, building such models or extending them to new modalities often requires large paired datasets and substantial computational resources. Since many pretrained MLLMs (e.g., vision-language or audio-language) are publicly available, we ask whether we can merge them into a single MLLM that can handle multiple modalities? Merging MLLMs with different input modalities remains challenging, partly because of differences in the learned representations and interference between their parameter spaces. To address these challenges, we propose Singular Subspace Alignment and Merging (SSAM), a training-free model merging framework that unifies independently trained specialist MLLMs into a single model capable of handling any combination of input modalities. SSAM maintains modality-specific parameter updates separately and identifies a shared low-rank subspace for language-related parameter updates, aligns them within this subspace, and merges them to preserve complementary knowledge while minimizing parameter interference. Without using any multimodal training data, SSAM achieves state-of-the-art performance across four datasets, surpassing prior training-free merging methods and even jointly trained multimodal models. These results demonstrate that aligning models in parameter space provides a scalable and resource-efficient alternative to conventional joint multimodal training.",
+      "authors": [
+        "Md Kaykobad Reza",
+        "Ameya Patil",
+        "Edward Ayrapetian",
+        "M. Salman Asif"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-03-23T05:24:52+00:00",
+      "link": "https://arxiv.org/pdf/2603.21584v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Aligning and merging models with different input modalities",
+      "llm_evidence_cn": "对齐并合并具有不同输入模态的模型",
+      "llm_evidence": "对齐并合并具有不同输入模态的模型",
+      "canonical_evidence": "对齐并合并具有不同输入模态的模型",
+      "llm_tldr_en": "Proposes SSAM to merge pretrained MLLMs of different modalities into a single unified model.",
+      "llm_tldr_cn": "提出 SSAM 方法，将不同模态的预训练多模态大模型合并为统一模型。",
+      "llm_tldr": "提出 SSAM 方法，将不同模态的预训练多模态大模型合并为统一模型。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.23481v1",
+      "title": "VTAM: Video-Tactile-Action Models for Complex Physical Interaction Beyond VLAs",
+      "abstract": "Video-Action Models (VAMs) have emerged as a promising framework for embodied intelligence, learning implicit world dynamics from raw video streams to produce temporally consistent action predictions. Although such models demonstrate strong performance on long-horizon tasks through visual reasoning, they remain limited in contact-rich scenarios where critical interaction states are only partially observable from vision alone. In particular, fine-grained force modulation and contact transitions are not reliably encoded in visual tokens, leading to unstable or imprecise behaviors. To bridge this gap, we introduce the Video-Tactile Action Model (VTAM), a multimodal world modeling framework that incorporates tactile perception as a complementary grounding signal. VTAM augments a pretrained video transformer with tactile streams via a lightweight modality transfer finetuning, enabling efficient cross-modal representation learning without tactile-language paired data or independent tactile pretraining. To stabilize multimodal fusion, we introduce a tactile regularization loss that enforces balanced cross-modal attention, preventing visual latent dominance in the action model. VTAM demonstrates superior performance in contact-rich manipulation, maintaining a robust success rate of 90 percent on average. In challenging scenarios such as potato chip pick-and-place requiring high-fidelity force awareness, VTAM outperforms the pi 0.5 baseline by 80 percent. Our findings demonstrate that integrating tactile feedback is essential for correcting visual estimation errors in world action models, providing a scalable approach to physically grounded embodied foundation models.",
+      "authors": [
+        "Haoran Yuan",
+        "Weigang Yi",
+        "Zhenyu Zhang",
+        "Wendi Chen",
+        "Yuchen Mo",
+        "Jiashi Yin",
+        "Xinzhuo Li",
+        "Xiangyu Zeng",
+        "Chuan Wen",
+        "Cewu Lu",
+        "Katherine Driggs-Campbell",
+        "Ismini Lourentzou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-03-24T17:45:06+00:00",
+      "link": "https://arxiv.org/pdf/2603.23481v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Handling partially observable states in multimodal interaction",
+      "llm_evidence_cn": "处理多模态交互中的部分可观测状态",
+      "llm_evidence": "处理多模态交互中的部分可观测状态",
+      "canonical_evidence": "处理多模态交互中的部分可观测状态",
+      "llm_tldr_en": "Integrates tactile perception to compensate for states partially observable from vision alone.",
+      "llm_tldr_cn": "整合触觉感知，以补偿仅靠视觉无法完全观测到的交互状态。",
+      "llm_tldr": "整合触觉感知，以补偿仅靠视觉无法完全观测到的交互状态。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.21597v2",
+      "title": "Cerebra: A Multidisciplinary AI Board for Multimodal Dementia Characterization and Risk Assessment",
+      "abstract": "Modern clinical practice increasingly depends on reasoning over heterogeneous, evolving, and incomplete patient data. Although recent advances in multimodal foundation models have improved performance on various clinical tasks, most existing models remain static, opaque, and poorly aligned with real-world clinical workflows. We present Cerebra, an interactive multi-agent AI team that coordinates specialized agents for EHR, clinical notes, and medical imaging analysis. These outputs are synthesized into a clinician-facing dashboard that combines visual analytics with a conversational interface, enabling clinicians to interrogate predictions and contextualize risk at the point of care. Cerebra supports privacy-preserving deployment by operating on structured representations and remains robust when modalities are incomplete. We evaluated Cerebra using a massive multi-institutional dataset spanning 3 million patients from four independent healthcare systems. Cerebra consistently outperformed both state-of-the-art single-modality models and large multimodal language model baselines. In dementia risk prediction, it achieved AUROCs up to 0.80, compared with 0.74 for the strongest single-modality model and 0.68 for language model baselines. For dementia diagnosis, it achieved an AUROC of 0.86, and for survival prediction, a C-index of 0.81. In a reader study with experienced physicians, Cerebra significantly improved expert performance, increasing accuracy by 17.5 percentage points in prospective dementia risk estimation. These results demonstrate Cerebra's potential for interpretable, robust decision support in clinical care.",
+      "authors": [
+        "Sheng Liu",
+        "Long Chen",
+        "Zeyun Zhao",
+        "Qinglin Gou",
+        "Qingyue Wei",
+        "Arjun Masurkar",
+        "Kevin M. Spiegler",
+        "Philip Kuball",
+        "Stefania C. Bray",
+        "Megan Bernath",
+        "Deanna R. Willis",
+        "Jiang Bian",
+        "Lei Xing",
+        "Eric Topol",
+        "Kyunghyun Cho",
+        "Yu Huang",
+        "Ruogu Fang",
+        "Narges Razavian",
+        "James Zou"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-03-23T05:46:45+00:00",
+      "link": "https://arxiv.org/pdf/2603.21597v2",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "reasoning over incomplete patient data",
+      "llm_evidence_cn": "对不完整患者数据进行推理",
+      "llm_evidence": "对不完整患者数据进行推理",
+      "canonical_evidence": "对不完整患者数据进行推理",
+      "llm_tldr_en": "A multi-agent AI system designed to handle heterogeneous and incomplete clinical data for dementia assessment.",
+      "llm_tldr_cn": "一种多智能体AI系统，旨在处理临床中异构且不完整的患者数据以进行痴呆症评估。",
+      "llm_tldr": "一种多智能体AI系统，旨在处理临床中异构且不完整的患者数据以进行痴呆症评估。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.24105v1",
+      "title": "Causality-Driven Disentangled Representation Learning in Multiplex Graphs",
+      "abstract": "Learning representations from multiplex graphs, i.e., multi-layer networks where nodes interact through multiple relation types, is challenging due to the entanglement of shared (common) and layer-specific (private) information, which limits generalization and interpretability. In this work, we introduce a causal inference-based framework that disentangles common and private components in a self-supervised manner. CaDeM jointly (i) aligns shared embeddings across layers, (ii) enforces private embeddings to capture layer-specific signals, and (iii) applies backdoor adjustment to ensure that the common embeddings capture only global information while being separated from the private representations. Experiments on synthetic and real-world datasets demonstrate consistent improvements over existing baselines, highlighting the effectiveness of our approach for robust and interpretable multiplex graph representation learning.",
+      "authors": [
+        "Saba Nasiri",
+        "Selin Aviyente",
+        "Dorina Thanou"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.SI"
+      ],
+      "published": "2026-03-25T09:10:28+00:00",
+      "link": "https://arxiv.org/pdf/2603.24105v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "disentangles common and private components in multiplex graphs",
+      "llm_evidence_cn": "在多重图中解耦公共和私有组件",
+      "llm_evidence": "在多重图中解耦公共和私有组件",
+      "canonical_evidence": "在多重图中解耦公共和私有组件",
+      "llm_tldr_en": "Introduces a causal framework to disentangle shared and layer-specific information in multiplex graphs.",
+      "llm_tldr_cn": "引入因果框架来解耦多重图中的共享信息和层特定信息。",
+      "llm_tldr": "引入因果框架来解耦多重图中的共享信息和层特定信息。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2603.21886v1",
+      "title": "ADaFuSE: Adaptive Diffusion-generated Image and Text Fusion for Interactive Text-to-Image Retrieval",
+      "abstract": "Recent advances in interactive text-to-image retrieval (I-TIR) use diffusion models to bridge the modality gap between the textual information need and the images to be searched, resulting in increased effectiveness. However, existing frameworks fuse multi-modal views of user feedback by simple embedding addition. In this work, we show that this static and undifferentiated fusion indiscriminately incorporates generative noise produced by the diffusion model, leading to performance degradation for up to 55.62% samples. We further propose ADaFuSE (Adaptive Diffusion-Text Fusion with Semantic-aware Experts), a lightweight fusion model designed to align and calibrate multi-modal views for diffusion-augmented I-TIR, which can be plugged into existing frameworks without modifying the backbone encoder. Specifically, we introduce a dual-branch fusion mechanism that employs an adaptive gating branch to dynamically balance modality reliability, alongside a semantic-aware mixture-of-experts branch to capture fine-grained cross-modal nuances. Via thorough evaluation over four standard I-TIR benchmarks, ADaFuSE achieves state-of-the-art performance, surpassing DAR by up to 3.49% in Hits@10 with only a 5.29% parameter increase, while exhibiting stronger robustness to noisy and longer interactive queries. These results show that generative augmentation coupled with principled fusion provides a simple, generalizable alternative to fine-tuning for interactive retrieval.",
+      "authors": [
+        "Zhuocheng Zhang",
+        "Xingwu Zhang",
+        "Kangheng Liang",
+        "Guanxuan Li",
+        "Richard Mccreadie",
+        "Zijun Long"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.CV"
+      ],
+      "published": "2026-03-23T12:13:57+00:00",
+      "link": "https://arxiv.org/pdf/2603.21886v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Adaptive fusion to bridge the modality gap and handle noise",
+      "llm_evidence_cn": "自适应融合以弥合模态间隙并处理噪声",
+      "llm_evidence": "自适应融合以弥合模态间隙并处理噪声",
+      "canonical_evidence": "自适应融合以弥合模态间隙并处理噪声",
+      "llm_tldr_en": "An adaptive fusion model that calibrates multi-modal views to mitigate noise in generative retrieval.",
+      "llm_tldr_cn": "一种自适应融合模型，通过校准多模态视图来减轻生成式检索中的噪声。",
+      "llm_tldr": "一种自适应融合模型，通过校准多模态视图来减轻生成式检索中的噪声。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.23617v1",
+      "title": "M3T: Discrete Multi-Modal Motion Tokens for Sign Language Production",
+      "abstract": "Sign language production requires more than hand motion generation. Non-manual features, including mouthings, eyebrow raises, gaze, and head movements, are grammatically obligatory and cannot be recovered from manual articulators alone. Existing 3D production systems face two barriers to integrating them: the standard body model provides a facial space too low-dimensional to encode these articulations, and when richer representations are adopted, standard discrete tokenization suffers from codebook collapse, leaving most of the expression space unreachable. We propose SMPL-FX, which couples FLAME's rich expression space with the SMPL-X body, and tokenize the resulting representation with modality-specific Finite Scalar Quantization VAEs for body, hands, and face. M3T is an autoregressive transformer trained on this multi-modal motion vocabulary, with an auxiliary translation objective that encourages semantically grounded embeddings. Across three standard benchmarks (How2Sign, CSL-Daily, Phoenix14T) M3T achieves state-of-the-art sign language production quality, and on NMFs-CSL, where signs are distinguishable only by non-manual features, reaches 58.3% accuracy against 49.0% for the strongest comparable pose baseline.",
+      "authors": [
+        "Alexandre Symeonidis-Herzig",
+        "Jianhe Low",
+        "Ozge Mercanoglu Sincan",
+        "Richard Bowden"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-03-24T18:05:03+00:00",
+      "link": "https://arxiv.org/pdf/2603.23617v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "modality-specific VAEs for recovering non-manual features",
+      "llm_evidence_cn": "用于恢复非手动特征的特定模态 VAE",
+      "llm_evidence": "用于恢复非手动特征的特定模态 VAE",
+      "canonical_evidence": "用于恢复非手动特征的特定模态 VAE",
+      "llm_tldr_en": "Proposes M3T using modality-specific VAEs to produce sign language with essential non-manual features.",
+      "llm_tldr_cn": "提出 M3T，利用特定模态 VAE 生成包含必要非手动特征的手语动作。",
+      "llm_tldr": "提出 M3T，利用特定模态 VAE 生成包含必要非手动特征的手语动作。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
