@@ -6,67 +6,61 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-03-26
-- 运行时间：2026-03-26 20:30:11 UTC
+- 最新运行日期：2026-03-27
+- 运行时间：2026-03-27 19:51:32 UTC
 - 运行状态：成功
-- 本次总论文数：15
+- 本次总论文数：13
 - 精读区：4
-- 速读区：11
+- 速读区：9
 
 ### 今日简报（AI）
-今日深度解析隐私保护下的视频表情识别与多语种声纹识别，共收录 15 篇 AI 前沿成果。
-重点推荐利用知识先验实现身份解耦的 FER 框架，以及应对缺失模态挑战的全球多语种识别方案。
-建议关注隐私计算与多模态融合技术，探索如何在保障安全的前提下提升复杂场景的感知精度。
-- 详情：[/202603/26/README](/202603/26/README)
+今日聚焦多模态学习的鲁棒性突破，深入探讨了故障容错表示与微服务故障管理等前沿应用。
+重点推荐通过逐层 Lipschitz 调制增强模型稳定性，以及针对数据缺失场景的微服务多模态融合方案。
+建议关注如何利用对比监督与自适应合并技术，在语音情感识别等垂直领域实现更精准的跨模态知识迁移。
+- 详情：[/202603/27/README](/202603/27/README)
 
 ### 精读区论文标签
-1. [Knowledge Priors for Identity-Disentangled Open-Set Privacy-Preserving Video FER](/202603/26/2603.21387v2-knowledge-priors-for-identity-disentangled-open-set-privacy-preserving-video-fer)  
+1. [Layer-Specific Lipschitz Modulation for Fault-Tolerant Multimodal Representation Learning](/202603/27/2603.25103v1-layer-specific-lipschitz-modulation-for-fault-tolerant-multimodal-representation-learning)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：视频面部表情识别的身份解耦表示
-2. [POLY-SIM: Polyglot Speaker Identification with Missing Modality Grand Challenge 2026 Evaluation Plan](/202603/26/2603.24569v1-poly-sim-polyglot-speaker-identification-with-missing-modality-grand-challenge-2026-evaluation-plan)  
+   evidence：传感器部分失效和信号退化下的容错多模态学习
+2. [Missing-Aware Multimodal Fusion for Unified Microservice Incident Management](/202603/27/2603.25538v1-missing-aware-multimodal-fusion-for-unified-microservice-incident-management)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：缺失模态条件下的说话人识别
-3. [Foundation Model Embeddings Meet Blended Emotions: A Multimodal Fusion Approach for the BLEMORE Challenge](/202603/26/2603.23650v1-foundation-model-embeddings-meet-blended-emotions-a-multimodal-fusion-approach-for-the-blemore-challenge)  
+   evidence：针对缺失模态场景设计的鲁棒框架
+3. [Identifiable Deep Latent Variable Models for MNAR Data](/202603/27/2603.24771v1-identifiable-deep-latent-variable-models-for-mnar-data)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：多模态融合情感识别
-4. [Thinking with Tables: Enhancing Multi-Modal Tabular Understanding via Neuro-Symbolic Reasoning](/202603/26/2603.24004v1-thinking-with-tables-enhancing-multi-modal-tabular-understanding-via-neuro-symbolic-reasoning)  
+   evidence：针对非随机缺失(MNAR)数据归补的深度潜变量模型
+4. [Hierarchy-Guided Multimodal Representation Learning for Taxonomic Inference](/202603/27/2603.25573v1-hierarchy-guided-multimodal-representation-learning-for-taxonomic-inference)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：解决多模态表格理解中的数据不完整性
+   evidence：分类推理中缺失模态的鲁棒性
 
 ### 速读区论文标签
-1. [Does Mechanistic Interpretability Transfer Across Data Modalities? A Cross-Domain Causal Circuit Analysis of Variational Autoencoders](/202603/26/2603.21236v1-does-mechanistic-interpretability-transfer-across-data-modalities-a-cross-domain-causal-circuit-analysis-of-variational-autoencoders)  
+1. [Crab: Multi Layer Contrastive Supervision to Improve Speech Emotion Recognition Under Both Acted and Natural Speech Condition](/202603/27/2603.23673v1-crab-multi-layer-contrastive-supervision-to-improve-speech-emotion-recognition-under-both-acted-and-natural-speech-condition)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：VAE用于跨模态的数据插补和合成数据生成
-2. [MSP-Conversation: A Corpus for Naturalistic, Time-Continuous Emotion Recognition](/202603/26/2603.22536v1-msp-conversation-a-corpus-for-naturalistic-time-continuous-emotion-recognition)  
+   evidence：用于语音情感识别的多模态融合
+2. [AdaLTM: Adaptive Layer-wise Task Vector Merging for Categorical Speech Emotion Recognition with ASR Knowledge Integration](/202603/27/2603.25041v1-adaltm-adaptive-layer-wise-task-vector-merging-for-categorical-speech-emotion-recognition-with-asr-knowledge-integration)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：自然连续情感识别语料库
-3. [FHAvatar: Fast and High-Fidelity Reconstruction of Face-and-Hair Composable 3D Head Avatar from Few Casual Captures](/202603/26/2603.23345v1-fhavatar-fast-and-high-fidelity-reconstruction-of-face-and-hair-composable-3d-head-avatar-from-few-casual-captures)  
+   evidence：集成语音识别知识的语音情感识别
+3. [Label What Matters: Modality-Balanced and Difficulty-Aware Multimodal Active Learning](/202603/27/2603.25107v1-label-what-matters-modality-balanced-and-difficulty-aware-multimodal-active-learning)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：显式解耦面部和头发组件
-4. [VTAM: Video-Tactile-Action Models for Complex Physical Interaction Beyond VLAs](/202603/26/2603.23481v1-vtam-video-tactile-action-models-for-complex-physical-interaction-beyond-vlas)  
+   evidence：动态重要性下的模态平衡多模态学习
+4. [AD-CARE: A Guideline-grounded, Modality-agnostic LLM Agent for Real-world Alzheimer's Disease Diagnosis with Multi-cohort Assessment, Fairness Analysis, and Reader Study](/202603/27/2603.25322v1-ad-care-a-guideline-grounded-modality-agnostic-llm-agent-for-real-world-alzheimers-disease-diagnosis-with-multi-cohort-assessment-fairness-analysis-and-reader-study)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：处理多模态交互中的部分可观测状态
-5. [Causality-Driven Disentangled Representation Learning in Multiplex Graphs](/202603/26/2603.24105v1-causality-driven-disentangled-representation-learning-in-multiplex-graphs)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：在多重图中解耦公共和私有组件
-6. [Causal Representation Learning on High-Dimensional Data: Benchmarks, Reproducibility, and Evaluation Metrics](/202603/26/2603.17405v1-causal-representation-learning-on-high-dimensional-data-benchmarks-reproducibility-and-evaluation-metrics)  
+   evidence：不完整且异构的多模态数据
+5. [Adapting Point Cloud Analysis via Multimodal Bayesian Distribution Learning](/202603/27/2603.22070v2-adapting-point-cloud-analysis-via-multimodal-bayesian-distribution-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：因果表示学习中的解耦与重构
-7. [Multimodal Task Interference: A Benchmark and Analysis of History-Target Mismatch in Multimodal LLMs](/202603/26/2603.18425v1-multimodal-task-interference-a-benchmark-and-analysis-of-history-target-mismatch-in-multimodal-llms)  
+   evidence：用于鲁棒自适应的多模态贝叶斯分布学习
+6. [Mamba-VMR: Multimodal Query Augmentation via Generated Videos for Precise Temporal Grounding](/202603/27/2603.22121v1-mamba-vmr-multimodal-query-augmentation-via-generated-videos-for-precise-temporal-grounding)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：多模态大模型中的模态不匹配分析
-8. [SSAM: Singular Subspace Alignment for Merging Multimodal Large Language Models](/202603/26/2603.21584v1-ssam-singular-subspace-alignment-for-merging-multimodal-large-language-models)  
+   evidence：生成辅助视频用于多模态定位
+7. [Few-Shot Generative Model Adaption via Identity Injection and Preservation](/202603/27/2603.22965v1-few-shot-generative-model-adaption-via-identity-injection-and-preservation)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：对齐并合并具有不同输入模态的模型
-9. [Cerebra: A Multidisciplinary AI Board for Multimodal Dementia Characterization and Risk Assessment](/202603/26/2603.21597v2-cerebra-a-multidisciplinary-ai-board-for-multimodal-dementia-characterization-and-risk-assessment)  
+   evidence：生成式适配中潜空间的身份注入
+8. [A Semantically Disentangled Unified Model for Multi-category 3D Anomaly Detection](/202603/27/2603.25159v1-a-semantically-disentangled-unified-model-for-multi-category-3d-anomaly-detection)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：对不完整患者数据进行推理
-10. [ADaFuSE: Adaptive Diffusion-generated Image and Text Fusion for Interactive Text-to-Image Retrieval](/202603/26/2603.21886v1-adafuse-adaptive-diffusion-generated-image-and-text-fusion-for-interactive-text-to-image-retrieval)  
+   evidence：基于解耦语义表示的特征重建
+9. [PixelSmile: Toward Fine-Grained Facial Expression Editing](/202603/27/2603.25728v1-pixelsmile-toward-fine-grained-facial-expression-editing)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：自适应融合以弥合模态间隙并处理噪声
-11. [M3T: Discrete Multi-Modal Motion Tokens for Sign Language Production](/202603/26/2603.23617v1-m3t-discrete-multi-modal-motion-tokens-for-sign-language-production)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：用于恢复非手动特征的特定模态 VAE
+   evidence：通过对称联合训练解耦表情语义
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,2457 @@
+Title: Identifiable Deep Latent Variable Models for MNAR Data
+
+URL Source: https://arxiv.org/pdf/2603.24771v1
+
+Published Time: Fri, 27 Mar 2026 00:10:13 GMT
+
+Number of Pages: 43
+
+Markdown Content:
+Identifiable Deep Latent Variable Models for MNAR Data 
+
+# Identifiable Deep Latent Variable Models for MNAR Data 
+
+Huiming Xie xie339@purdue.edu 
+
+Department of Statistics Purdue University West Lafayette, IN 47907, USA 
+
+Fei Xue feixue@purdue.edu 
+
+Department of Statistics Purdue University West Lafayette, IN 47907, USA 
+
+Xiao Wang wangxiao@purdue.edu 
+
+Department of Statistics Purdue University West Lafayette, IN 47907, USA 
+
+Editor: 
+
+Abstract 
+
+Missing data is a ubiquitous challenge in data analysis, often leading to biased and inaccu-rate results. Traditional imputation methods usually assume that the missingness mech-anism is missing-at-random (MAR), where the missingness is independent of the missing values themselves. This assumption is frequently violated in real-world scenarios, prompted by recent advances in imputation methods using deep learning to address this challenge. However, these methods neglect the crucial issue of nonparametric identifiability in missing-not-at-random (MNAR) data, which can lead to biased and unreliable results. This paper seeks to bridge this gap by proposing a novel framework based on deep latent variable models for MNAR data. Building on the assumption of conditional no self-censoring given latent variables, we establish the identifiability of the data distribution. This crucial the-oretical result guarantees the feasibility of our approach. To effectively estimate unknown parameters, we develop an efficient algorithm utilizing importance-weighted autoencoders. We demonstrate, both theoretically and empirically, that our estimation process accurately recovers the ground-truth joint distribution under specific regularity conditions. Extensive simulation studies and real-world data experiments showcase the advantages of our pro-posed method compared to various classical and state-of-the-art approaches to missing data imputation. 
+
+Keywords: Autoencoders, generative models, imputation, missing-not-at-random, vari-ational inference 
+
+1 Introduction 
+
+The issue of missing data poses a pervasive challenge across diverse applications, often necessitating data imputation due to the prevalence of models designed exclusively for com-plete data. Methods for addressing missing data have been studied extensively in ignorable missing situations where missingness depends only on the fully observed variables of the data, known as missing-at-random (MAR), or is independent of any data variable, known 
+
+1
+
+> arXiv:2603.24771v1 [stat.ME] 25 Mar 2026 Xie, Xue, Wang
+
+as missing-completely-at-random (MCAR) (Robins et al., 1994). On the basis of such ig-norability assumptions, many interesting imputation methods have been developed to make use of most models designed for complete data. For example, missForest (Stekhoven and B¨ uhlmann, 2012) based on random forests is one of the popular methods for single impu-tation, while MICE (Van Buuren and Groothuis-Oudshoorn, 2011), short for multivariate imputation by chained equations, is a typical method for multiple imputation (Little and Rubin, 2019). Supported by increased computing power, recent advances have witnessed the development of sophisticated imputation methods, particularly deep generative models, based on these ignorability assumptions (Yoon et al., 2018; Ma et al., 2018; Li et al., 2019; Mattei and Frellsen, 2019). While convenient for modeling, these ignorability assumptions often do not align with the reality of real-world applications, spanning domains such as surveys, recommendation systems, and the medical field. For instance, in surveys, a question associated with social stigma could result in nonresponse (Marra et al., 2017; Malinsky et al., 2021). Certain med-ical records could be incomplete either because the information is unnecessary or because acquiring it is challenging due to the patients’ health conditions (Shpitser, 2016; Jakobsen et al., 2017). In situations where absence of data is potentially influenced by character-istics of missing variables, known as missing-not-at-random (MNAR), modeling becomes significantly more complex (Robins, 1997). There has been a relatively limited body of work addressing MNAR settings within the context of scalable missing value imputation. The scenario is explored more often in the application of recommender systems using probabilistic models (Hern´ andez-Lobato et al., 2014; Ling et al., 2012; Liang et al., 2016b). Other perspectives include causal approaches with an explicit model of exposure for MNAR (Liang et al., 2016a; Wang et al., 2018; Wang and Blei, 2019), and inverse probability weighting methods (Ma and Chen, 2019; Schnabel et al., 2016; Wang et al., 2019). More recently, deep generative models, especially deep latent variable models (DLVMs) have been studied under MNAR assumptions. For example, not-MIWAE (Ipsen et al., 2020), short for the not-missing-at-random importance-weighted autoencoder, is a powerful model that incorporates prior knowledge of the missingness mechanism into density estimation. Nonetheless, these models often overlook the critical issue of nonparametric identifiability in MNAR data, as discussed in the seminal work by Robins (1997). Some initial efforts in DLVMs to address identification issues, such as the deep generative imputation model (GINA) (Ma and Zhang, 2021), require the presence of auxiliary variables, which may not always be available. Consequently, these models tend to learn multiple non-unique complete data distributions that match the observed data (Robins, 1997). Overlooking this fundamental aspect of MNAR data in modeling can introduce bias and inconsistency, potentially impairing inference and downstream tasks. On the other hand, numerous theoretical studies have delved into the identification of MNAR data using nonparametric or semiparametric inference techniques. They of-ten impose constraints on the missingness mechanism to uniquely identify a functional or parameter of interest. Examples include the group permutation missing process (Robins, 1997), sequential identification (Sadinle and Reiter, 2018), discrete choice models (Tchetgen et al., 2018), nearest identified pattern restriction (Linero, 2017), conditions in graphical models (Fay, 1986; Ma et al., 2003; Mohan and Pearl, 2021; Nabi et al., 2020), the no 
+
+> 2Identifiable Deep Latent Variable Models for MNAR Data
+
+self-censoring model (Malinsky et al., 2021; Shpitser, 2016; Sadinle and Reiter, 2017), and the self-censoring model with completeness assumptions (Li et al., 2022). However, these methods generally impose a specific parametric model on the ground-truth distributions, which might be misspecified. In this paper, we propose an identifiable missing-not-at-random importance-weighted autoencoder (IM-IWAE) method to estimate the true distribution of all the variables and impute missing values for MNAR data. The proposed method is built upon a new con-ditional no self-censoring assumption given latent variables for missingness mechanisms, which assumes that the missing indicator of a random variable is conditionally independent of this variable and other missing indicators given all other variables and latent factors. Our contributions are outlined as follows: 
+
+• We establish the nonparametric identifiability of the true data distribution under our proposed conditional no self-censoring assumption for MNAR data. Beyond provid-ing identifiability, this assumption clarifies how no self-censoring can be formulated within latent variable models, offering a foundation for subsequent methodological developments. 
+
+• We propose IM-IWAE, a working parametric model based on deep neural networks, which can asymptotically approximate the full-data distribution without requiring parametric assumptions on the true data distribution. The model can be used to impute missing values and generate synthetic data from the underlying distribu-tion, where the parameters are estimated through an algorithm based on importance weighted variational inference. To our knowledge, this is the first approach that jointly addresses nonparametric identifiability of MNAR data and practical modeling through deep latent variable methods. 
+
+• Through extensive numerical studies, we demonstrate the ability of our method to pro-vide identifiable estimates and valid imputations and generations under correct model assumptions, as well as its robustness to practical violations of the no self-censoring assumption in MNAR data. This empirical evaluation, conducted across simulations and real-world datasets, shows advantages over classical imputation methods and existing deep learning imputation methods in handling MNAR data. Reproducible Python code is available at https://github.com/hxstat/IM-IWAE .The remainder of the paper is organized as follows. Section 2 introduces the ground-truth model for the full-data distribution. Section 3 provides identification assumptions on the missingness mechanism in the ground-truth model. In Section 4, we propose a deep latent variable approach for learning the ground-truth data distribution in the presence of MNAR data. In Section 5, we establish the theoretical properties of the proposed method. Sections 6 and 7 provide numerical studies through simulations and real data analysis, respectively. The paper ends with the conclusion of Section 8. 
+
+2 Ground-truth model of full-data distribution 
+
+In this section, we present the ground-truth model for the distribution of all variables and missing indicators. We begin by introducing the notation. We use capital letters to denote 
+
+> 3Xie, Xue, Wang
+
+random variables or vectors, and lowercases for their values. Consider a random vector 
+
+X = ( X1, · · · , X p)T ∈ X , where X is a d-dimensional manifold embedded in Rp for d ≤ p.Let R = ( R1, · · · , R p)T ∈ { 0, 1}p be a vector of missingness indicators of X, where 1 corresponds to “observed”, and 0 corresponds to “missing”. Let ( r(1) , x (1) ), · · · , (r(n), x (n))denote n independently and identically distributed (i.i.d.) samples of the pair ( R, X ). With a slight abuse of notation, we write R = r as a shorthand for ( R1, .., R p) = ( r1, · · · , r p). Let X(r) be a subvector of observed elements in X when R = r. The observed data consist of i.i.d. realizations of the vector ( R, X (R)). For convenience, we define another indicator 
+
+M = 1 − R as the opposite of R, that is, Mj = 1 represents Xj missing and 0 represents 
+
+Xj observed. For simplicity and clarity, we call the joint distribution of ( X, R ) the full-data distri-bution . Let pgt (x, r ) = pgt (x)pgt (r|x) denote the ground-truth full-data distribution , where 
+
+pgt (x) is the ground-truth complete data distribution of X, and pgt (r|x) is the ground-truth conditional distribution of R given X, known as the missingness mechanism .When data are high-dimensional, latent variable models (LVMs) are powerful tools for characterizing and discovering low-dimensional structures in data (Kingma and Welling, 2013; Chen et al., 2016). From this inspiration, we adopt an LVM for the data distribution 
+
+pgt (x) by assuming that X are generated from a latent variable Z ∈ Rq1 through the conditional distribution pX|Z (x|z) so that pgt (x) = R pX|Z (x|z)pZ (z)dz . Analogously, for the missingness mechanism pgt (r|x), we adopt another latent variable ˜Z ∈ Rq2 to capture the information in R that could not be explained by X alone and assume that R is generated through pR|X, ˜Z (r|x, ˜z). For this reason, it is natural to have the following assumptions: 
+
+Assumption 1. The ground-truth data distribution can be decomposed as 
+
+pgt (x) = 
+
+Z
+
+pX|Z (x|z)pZ (z)dz. (1) 
+
+Assumption 2. Assume ˜Z is independent of X and Z, and the ground-truth missingness mechanism can be decomposed as 
+
+pgt (r|x) = 
+
+Z
+
+pR|X, ˜Z (r|x, ˜z)p ˜Z (˜ z)d˜z. (2) The above two assumptions lead to the decomposition of the full-data distribution: 
+
+pgt (x, r ) = 
+
+Z Z 
+
+pX|Z (x|z)pR|X, ˜Z (r|x, ˜z)pZ (z)p ˜Z (˜ z)dzd ˜z. (3) At this point, we present a theoretical justification for adopting this decomposition approach for modeling the full-data distribution in general missing data problems. 
+
+Theorem 1. Suppose that X is a Riemannian manifold diffeomorphic to Rd, and that μgt 
+
+is a probability measure on X which has a nowhere vanishing density function pgt (x) with respect to the volume measure. (a) If d < p , then for any ϵ > 0, r ∈ { 0, 1}p, and a measurable set A ⊂ Rp satisfy-ing μgt (∂A ∩ X ) = 0 , where ∂A is the boundary of A, there exist latent variables 
+
+> 4Identifiable Deep Latent Variable Models for MNAR Data
+
+Z ∼ N (0 , I q1 ) with q1 ≥ d, ˜Z ∼ N (0 , I q2 ) with q2 ≥ 1, a multivariate normal density 
+
+pX|Z (x|z), and a multivariate Bernoulli distribution pR|X, ˜Z (r|x, ˜z) such that 
+
+Z
+
+> x∈A
+
+Z Z 
+
+pX|Z (x|z)pR|X, ˜Z (r|x, ˜z)pZ (z)p ˜Z (˜ z)dzd ˜zdx −
+
+Z
+
+> X ∩ A
+
+pgt (r|x)μgt (dx ) < ϵ. (4) 
+
+(b) If d = p, then for any ϵ > 0, r ∈ { 0, 1}p, and x ∈ X , there are latent variables and distributions as above satisfying 
+
+Z Z 
+
+pX|Z (x|z)pR|X, ˜Z (r|x, ˜z)pZ (z)p ˜Z (˜ z)dzd ˜z − pgt (r|x)pgt (x) < ϵ. (5) Technical terms notwithstanding, Theorem 1 shows that in the missing data problem, the true full-data distribution can always be approximated arbitrarily well by an analyti-cally tractable distribution in the form of R R pX|Z (x|z)pR|X, ˜Z (r|x, ˜z)pZ (z)p ˜Z (˜ z)dzd ˜z . This implies that modeling the full-data distribution of ( X, R ) using the decomposition in (3) ei-ther accurately represents the true data generation process or approximates the distribution with high fidelity, thereby justifying its application. 
+
+Remark. We emphasize that Theorem 1 should be regarded as a motivating result for our latent variable formulation rather than as a central theoretical contribution. It primarily serves to illustrate the representational capacity of latent variable models, not to provide a fully general or exhaustive theoretical statement. While the theorem is presented under a diffeomorphism assumption for analytical simplicity, recent results such as Dahal et al. (2022) and Wang et al. (2025) demonstrate that mappings from simple base distributions to arbitrary target distributions can exist without this assumption, suggesting possible extensions beyond the present theoretical scope. Nevertheless, these generalizations fall beyond the present scope but may offer promising directions for future theoretical work. Henceforth, we will refer to (3) as the ground-truth model on which we build our method throughout the paper. 
+
+3 Conditional no self-censoring given latent variables 
+
+Without any assumption on the missingness mechanism, the identification of the joint dis-tribution of ( X, R ) is unachievable when data are MNAR. To solve this identifiability issue, we make the following assumption about the missingness mechanism. 
+
+Assumption 3 (Conditional no self-censoring given latent variables) . We assume that 
+
+Rj ⊥⊥ (Xj , R −j ) X−j , ˜Z for j = 1 , ..., p, (6) 
+
+where A−j = ( A1, ..., A j−1, A j+1 , ..., A p) denotes a subvector of A with the jth entry removed. 
+
+Assumption 3 incorporates two parts: conditional independence among missingness in-dicators in R and conditional independence between each missingness indicator Rj and its corresponding data variable Xj . In fact, conditional independence assumption among miss-ingness indicators given X and ˜Z is natural under the latent variable model for R and the 
+
+> 5Xie, Xue, Wang
+
+Figure 1: Left: An example architecture of conditional no self-censoring given latent vari-ables for 3 variables. Right: An example architecture of the traditional no self-censoring independence model for 3 variables. independence between X and ˜Z, as X and ˜Z are supposed to capture all the dependence among missingness indicators. Besides that, our Assumption 3 requires that the conditional independence related to Rj still holds even if we exclude Xj from the given variables. This and the second part (conditional independence between each missingness indicator and its corresponding data variable) are where “no self-censoring” involved. From a practical standpoint, there are many real-world situations in which a no self-censoring mechanism is plausible. For instance, in the clinical evaluation of Alzheimer’s disease, the decision to perform an invasive lumbar puncture depends on prior examination results, physician judgment, and patient preference, rather than on the unobserved values of the cerebrospinal fluid (CSF) biomarkers themselves (Lo et al., 2012). More generally, choices about whether to conduct additional diagnostic tests are typically informed by available clinical evidence, not by the unseen outcomes of the tests (Djulbegovic et al., 2015). Such scenarios illustrate a no self-censoring mechanism, where missingness is independent of the variable itself once other relevant variables are taken into account. An example architecture of our conditional no self-censoring model given latent variables is illustrated on the left panel of Figure 1 with p = 3, where each missingness indicator Rj
+
+is generated from X−j along with ˜Z for j = 1 , 2, 3. Note that given X−j and ˜Z, Assumption 3 excludes the conditional dependency between Xj and its own missingness Rj , but does not exclude the marginal dependencies between them. Compared to existing no self-censoring assumptions Rj ⊥⊥ Xj |X−j , R −j and Rj ⊥⊥
+
+(Xj , R −j )|X−j (Sadinle and Reiter, 2017; Shpitser, 2016; Malinsky et al., 2021; Mohan et al., 2013; Mohan and Pearl, 2021), Assumption 3 accounts for latent variables and requirements from latent variable models. For a better comparison between these assumptions, we provide an example architecture of the Rj ⊥⊥ Xj |X−j , R −j assumption on the right panel of Figure 1. An example of the Rj ⊥⊥ (Xj , R −j )|X−j assumption can be achieved if we eliminate the dependence of missingness indicators R on the latent variables ˜Z in the left panel of Figure 1. Under our proposed conditional no self-censoring assumption, we establish the identifi-ability of the ground-truth missingness mechanism in the following theorem. 
+
+Theorem 2 (Identifiability of missingness mechanism) . The ground-truth missingness mech-anism pgt (r|x) is nonparametrically identifiable under Assumptions 2 and 3. 
+
+> 6Identifiable Deep Latent Variable Models for MNAR Data
+
+Nonparametric identifiability essentially requires that there is a one-to-one mapping be-tween the full-data distribution and the observed data distribution, so that the distribution of interest is a function of observed data only and not a function of unobserved data at all (Sadinle and Reiter, 2018; Malinsky et al., 2021). For the identification of the full-data dis-tribution, an additional mild assumption on the probability of observing all data variables is required. 
+
+Assumption 4 (Positivity) . Suppose that 
+
+pgt (R = 1|X) > c (7) 
+
+with probability 1 for some constant c > 0.
+
+Corollary 3. Under Assumptions 2–4, the full-data distribution with ground truth pgt (x, r )is nonparametrically identifiable. This result further implies that the ground-truth data distribution pgt (x) of X is also nonparametrically identifiable. The identifiability not only serves as a desirable property itself, but also lays the foundation for the subsequent theoretical results of our proposed method on recovery of the full-data distribution. 
+
+4 Method 
+
+4.1 The working model 
+
+In this subsection, we propose to approximate the true full-data distribution pgt (x, r ) using a parametric working model. The proposed working model is 
+
+pθ,ψ (x, r ) = pθ(x)pψ(r|x),
+
+where 
+
+pθ(x) = 
+
+Z pY
+
+> j=1
+
+pθ(xj |z)p(z)dz =
+
+Z
+
+pθ(x(r)|z)pθ(x(m)|z)p(z)dz (8) and 
+
+pψ(r|x) = 
+
+Z pY
+
+> j=1
+
+pψ(rj |x−j , ˜z)p(˜ z)d˜z. (9) Here x(r) and x(m) represent vectors consisting of observed and missing elements in x,respectively, pθ and pψ are known distributions up to unknown parameters θ ∈ Ωθ and 
+
+ψ ∈ Ωψ, respectively, and p(z) and p(˜ z) are density functions of latent variables Z and ˜Z,respectively, where Ω θ and Ω ψ are parameter spaces. We will provide specific forms for the known distributions pθ and pψ in Section 4.3. In this working model, we let latent variables Z ∼ N (0 , I κ1 ) and ˜Z ∼ N (0 , I κ2 ), where the dimensions κ1 and κ2 of the Z and ˜Z
+
+are not required to be the same as those ( q1 and q2) in the ground-truth model since that information is lacking in practice. Note that conditional independence among X given latent variable Z is used in Equation (8), which enables us to separate observed and missing elements in x given Z. In fact, it does not exclude the correlations among X themselves. The conditional no self-censoring 
+
+> 7
+
+Xie, Xue, Wang 
+
+in Assumption 3 is preserved in Equation (9) of the working model. We will demonstrate in Section 5.2 that the factorization in Equations (8) and (9) does not prevent the proposed model from recovering the ground-truth full data distribution. We propose to estimate the parameters ( θ, ψ ) through maximizing the log-likelihood of observed data under the working model: log pθ,ψ (x(r), r ) = log 
+
+Z Z Z 
+
+pθ(x(r)|z)pθ(x(m)|z)
+
+> p
+
+Y
+
+> j=1
+
+pψ(rj |x−j , ˜z)p(z)p(˜ z)dzd ˜zdx (m). (10) However, the integral over missing and latent variables makes the maximization intractable. We will provide an efficient approximation to the log-likelihood in the following subsection. 
+
+4.2 Variational inference 
+
+In this subsection, we introduce a variational inference method to solve the intractabil-ity issue of the integral in Equation (10). Specifically, we propose variational distribu-tions qϕ(z|x(r), r ) and qλ(˜ z|x(r), r ) as approximations to the posteriors pθ,ψ (z|x(r), r ) and 
+
+pθ,ψ (˜ z|x(r), r ) in the working model, respectively, where ϕ ∈ Ωϕ and λ ∈ Ωλ are unknown parameters with parameter spaces Ω ϕ and Ω λ. We incorporate the variational distributions through rewriting the log-likelihood log pθ,ψ (x(r), r ) of the observed data as log pθ,ψ (x(r), r ) = log Eqϕ(z|x(r),r )qλ(˜ z|x(r),r )pθ (x(m)|z)
+
+ pθ(x(r)|z)pψ(r|x(r), x (m), ˜z)p(z)p(˜ z)
+
+qϕ(z|x(r), r )qλ(˜ z|x(r), r )
+
+
+
+.
+
+The evidence lower bound (ELBO) (Kingma and Welling, 2013) for this log-likelihood is 
+
+L1(θ, ψ, ϕ, λ ; x(r), r ) = Eqϕ(z|x(r),r )qλ(˜ z|x(r),r )pθ (x(m)|z)
+
+
+
+log pθ(x(r)|z)pψ(r|x(r), x (m), ˜z)p(z)p(˜ z)
+
+qϕ(z|x(r), r )qλ(˜ z|x(r), r )
+
+
+
+.
+
+For simplicity, we denote the fraction inside the logarithm as 
+
+w = pθ(x(r)|z)pψ(r|x(r), x (m), ˜z)p(z)p(˜ z)
+
+qϕ(z|x(r), r )qλ(˜ z|x(r), r ) . (11) Similar to the approach proposed in Ipsen et al. (2020) inspired by the importance-weighted variational inference in Burda et al. (2015), we improve the above ELBO through replacing the fraction inside the logarithm in the ELBO with a Monte Carlo estimate of it. Thus our proposed objective function is 
+
+LK (θ, ψ, ϕ, λ ; x(r), r ) = EQKk=1 qϕ(zk |x(r),r )qλ(˜ zk |x(r),r )pθ (x(m),k |zk )
+
+"
+
+log 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+wk
+
+#
+
+, (12) where 
+
+wk = pθ(x(r)|zk)pψ(r|x(r), x (m),k , ˜zk)p(zk)p(˜ zk)
+
+qϕ(zk|x(r), r )qλ(˜ zk|x(r), r ) ,X(m),k , Zk and ˜Zk follow the same distributions as X(m), Z and ˜Z, respectively, for 1 ≤
+
+k ≤ K. Note that when K = 1, the lower bound (12) coincides with ELBO. In Section 5.1, 
+
+8Identifiable Deep Latent Variable Models for MNAR Data 
+
+we will show that LK is a tighter lower bound for the log-likelihood than L1 for K > 1. The lower bounds of the log-likelihood based on variational distributions approximate the log-likelihood in the working model while circumventing the issue of intractability. Despite our common foundation with the model of not-MIWAE by Ipsen et al. (2020) built on importance weighted variational inference and missingness mechanisms, we note a main difference of the proposed objective function: we have an additional latent variable ˜Z for 
+
+R, and hence an additional qλ(˜ z|x(r), r ) as approximations to the posterior pθ,ψ (˜ z|x(r), r ), and prior p(˜ z), along with the conditional independence of Rj and Xj given ˜Z. These are critical for incorporating correlations among the missingness indicators and identifiability. Since the expectation in LK is unachievable from samples, we define the per-sample estimator of LK ,ˆLK = log 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+wk,
+
+and use ˆLK as our objective in practice. We estimate the variational parameters ( ϕ, λ ) and the generative parameters ( θ, ψ ) through maximizing ˆLK .We note that this working parametric deep latent variable model architecture explicitly incorporates the proposed no self-censoring condition (Assumption 3) through Equation (9), which directly constrains the log-likelihood, its lower bound, and the empirical lower bound that defines the objective function. Consequently, the condition required for identifiability is enforced during learning, guiding the model to generalize to the shape of the complete-data distribution. 
+
+4.3 Implementation 
+
+In this subsection, we provide implementation details of the proposed method based on the stochastic gradient descent algorithm. As in the architectures of VAEs, we refer to the inference models qϕ(z|x(r), r ) and qλ(˜ z|x(r), r ) as probabilistic encoders , and pθ(x|z) and 
+
+pψ(r|x, ˜z) as probabilistic decoders , for which we have the following conventions. The encoders are set to take the form of multivariate Gaussian such that qϕ(z|x(r), r ) = 
+
+N (μz , Σz ) and qλ(˜ z|x(r), r ) = N (μ˜z , Σ˜z ), where μz = fμz (x(r), r ; ϕ) and Σ z = Sz STz with 
+
+Sz = fSz (x(r), r ; ϕ), and μ˜z = fμ˜z (x(r), r ; λ) and Σ ˜z = S˜z ST 
+
+> ˜z
+
+with S˜z = fS˜z (x(r), r ; λ). For the decoders, a Gaussian decoder is adopted for the data: pθ(x|z) = N (μx, Σx), with decoder moments μx = fμx (z; θ) and Σ x = γI for a tunable scalar γ > 0. For the bi-nary missingness indicators, a Bernoulli decoder is used for each dimension 1 ≤ j ≤ p:
+
+pψ(rj |x, ˜z) = Bernoulli( πj ), where πj = frj (x, ˜z; ψ). Here fμz , f Sz , f μ˜z , f S˜z , f μx and frj
+
+specify parameterized functional forms that can be arbitrarily complex, and we use deep neural networks to approximate these functions. For the missing part of the input to neural networks, we resort to an initial zero im-putation following the common practice in Nazabal et al. (2020); Ipsen et al. (2020); Ma and Zhang (2021). In the generative missingness model pψ(r|x, ˜z), we use a mixture of the observed part of the data x(r) and the generated data for the original missing part ˆ x(m)
+
+from the generative model pθ(x|z). Parameters {θ, ψ, ϕ, λ } are estimated by stochastic gra-dient descent, with reparameterization tricks (Kingma and Welling, 2013) for latent random 
+
+> 9
+
+Xie, Xue, Wang 
+
+Algorithm 1 The proposed IM-IWAE 
+
+Input: Missingness indicators r(1) , · · · , r (n), observed data x(1) (r(1) ), · · · , x (n)(r(n)), batch size b, learning rate α, number of importance samples K, decoder variance γ, maximum number of iterations 
+
+lmax , deterministic neural networks: encoders fμz , f Sz , f μ˜z , f S˜z , decoders fμx , frj for 1 ≤ j ≤ p
+
+Output: ϕ, λ, θ, ψ ϕ[0] , λ [0] , θ [0] , ψ [0] ←random initialization 
+
+for l ← 1 to lmax do 
+
+Select a batch {(x(1) (r(1) ), r (1) ), · · · , (x(b)(r(b)), r (b))} from the data at random Let ˜ x(i)(m(i)) = 0 for 1 ≤ i ≤ b, and ˜X = {˜x(1) , · · · , ˜x(b)}
+
+for each ˜ x(i) ∈ ˜X do 
+
+Generate noise ϵ1, · · · , ϵ K
+
+> i.i.d
+
+∼ N (0 , I κ1+κ2 )(μTz , μ T 
+
+> ˜z
+
+)T ←  f Tμz (˜ x(i); ϕ[l−1] ), f Tμ˜z (˜ x(i); λ[l−1] )T , with μz ∈ Rκ1 , μ ˜z ∈ Rκ2 ,(σTz , σ T 
+
+> ˜z
+
+)T ←  f TSz (˜ x(i); ϕ[l−1] ), f TS˜z (˜ x(i); λ[l−1] )T , with σz ∈ Rκ1 , σ ˜z ∈ Rκ2
+
+for k ← 1 to K do 
+
+(zTk , ˜zTk )T ← (μTz , μ T 
+
+> ˜z
+
+)T + ( σTz , σ T 
+
+> ˜z
+
+)T ⊙ ϵk, where ⊙ denotes Hadamard product 
+
+μx ← fμx
+
+ zk; θ[l−1] , ˆ x(i) 
+
+> k
+
+← N (μx, γI )
+
+for j ← 1 to p do 
+
+ˆr(i) 
+
+> j,k
+
+← frj
+
+
+
+(¯ x(i) 
+
+> k
+
+)−j , ˜zk; ψ[l−1] 
+
+
+
+, where ¯ x(i) 
+
+> k
+
+= ˜ x(i) + ˆ x(i) 
+
+> k
+
+⊙ (1 − r(i))
+
+end for end for 
+
+L(i) 
+
+> K
+
+= log 1
+
+> K
+
+PKk=1 w(i) 
+
+> k
+
+, where w(i) 
+
+> k
+
+= pθ[l−1] (ˆ x(i)(r(i))|zk )pψ[l−1] (ˆ r(i)         
+
+> k|¯x(i)
+> k,˜zk)p(zk)p(˜ zk)
+> qϕ[l−1] (zk|x(i)(r(i)),r (i))qλ[l−1] (˜ zk|x(i)(r(i)),r (i))
+
+end for 
+
+(ϕ[l], λ [l], θ [l], ψ [l])T ← (ϕ[l−1] , λ [l−1] , θ [l−1] , ψ [l−1] )T −α ·∇ Pbi=1 L(i) 
+
+> K
+
+(ϕ[l−1] , λ [l−1] , θ [l−1] , ψ [l−1] )
+
+if convergence then 
+
+break 
+
+end if end for 
+
+variables and missing data so that Monte Carlo estimates of expectations with respect to 
+
+qϕ(z|x(r),r )qλ(˜ z|x(r), r )pθ(x(m)|z) are differentiable. We summarize the algorithm for the implementation of the proposed method in Algorithm 1. 
+
+4.4 Data imputation 
+
+We propose to impute missing values through min 
+
+ximpute 
+
+Ex(m) [L(x(m), x impute )|x(r), r ], where L
+
+is a criterion function. When L corresponds to the squared error, the proposed imputation will be the conditional mean 
+
+E[x(m)|x(r), r ] = 
+
+Z Z Z 
+
+x(m)
+
+pψ(r|x(r), x (m), ˜z)pθ(x(r)|z)p(z)p(˜ z)
+
+qϕ(z|x(r), r )qλ(˜ z|x(r), r ) dzd ˜zdx (m). (13) After obtaining the estimated parameters ( ˆϕ, ˆλ, ˆθ, ˆψ) through Algorithm 1, we use the self-normalized importance sampling (Mattei and Frellsen, 2019; Ipsen et al., 2020), with the 
+
+10 Identifiable Deep Latent Variable Models for MNAR Data 
+
+proposal qˆϕ(z|x(r), r )qˆλ(˜ z|x(r), r )pˆθ(x(m)|z) to obtain an estimate ˆx(m) = E[x(m)|x(r), r ] ≈
+
+> B
+
+X
+
+> b=1
+
+αbx(m),b , with αb = wb
+
+w1 + ... + wB
+
+,
+
+where for 1 ≤ b ≤ B, wb = pˆθ(x(r)|zb)p ˆψ(r|x(r), x (m),b , ˜zb)p(zb)p(˜ zb)
+
+qˆϕ(zb|x(r), r )qˆλ(˜ zb|x(r), r ) ,
+
+and {(zb, ˜zb, x (m),b )}Bb=1 are B i.i.d. samples from qˆϕ(z|x(r), r )qˆλ(˜ z|x(r), r )pˆθ(x(m)|z). In addition to missing data imputation, the proposed model can generate synthetic data from the latent variables through the learned distribution of the data. This is an important advantage of generative models in the presence of missing data, since the generated data can be used to gain more insight into the distribution itself in addition to predicting missing values using the observed data, which we will illustrate in Section 6. 
+
+4.5 On the choice of latent dimensions 
+
+In real-world data scenarios, where the true latent dimensions q1, q2 are unknown, the latent dimensions in the learning method, κ1, κ2, must be empirically set to chosen values. We have observed that varying the latent dimension for the missingness mechanism, κ2, does not significantly impact performance, with κ2 = 1 generally performing as well as higher values (See Appendix C for more details). This aligns with our theoretical results and the proof in A.1.1: a single continuous latent dimension for the missingness mechanism suffices to approximate the joint distribution of binary variables. Additional dimensions add no benefit, as they can be ignored in recovering the joint distribution. In contrast, for κ1, the dimension of the latent variable corresponding to the continuous data, setting its value just above the intrinsic dimensionality generally improves performance compared with smaller values, as it allows the latent space to represent the data distribution more faithfully under practical network capacity (Wang et al., 2025). For κ1, we propose the following cross-validation selection procedure. One challenge in applying cross-validation to real-world data with missing values is that not all data points are available. To address this, we propose the following approach: for each training and validation dataset, both containing missing values, we train the model on the training data and mask some observed values in the validation data completely at random. We then use the trained model to impute the missing values in the validation set (including both the originally missing and synthetically masked values) and calculate the imputation errors solely on the synthetically masked entries. Recognizing that these synthetically masked missing values are ignorable, we impute them using a different estimate, E[x(m)|x(r)], which does not depend on the values of the missingness indicators as in (13). The value of κ1 that minimizes the imputation errors on average across the validation sets is selected. See Figure 5 in Section 7 for an example of choosing the latent dimensions in the real data. 
+
+> 11 Xie, Xue, Wang
+
+5 Theory 
+
+In this section, we establish asymptotic properties of the proposed objective function LK ,as well as the capacity of the proposed method to recover ground-truth distributions. All proofs are postponed to the supplementary material. 
+
+5.1 Convergence of lower bounds 
+
+In this subsection, we investigate theoretical limits on the approximation of the objective function to the log-likelihood of the observed data under the working model, along with the bias and variance of the objective function when we consider it as an estimator of the log-likelihood. 
+
+Theorem 4. For all K ≥ 1, the lower bounds satisfy 
+
+LK+1 (θ, ψ, ϕ, λ ; x(r), r ) ≥ L K (θ, ψ, ϕ, λ ; x(r), r ),
+
+and 
+
+log pθ,ψ (x(r), r ) ≥ L K (θ, ψ, ϕ, λ ; x(r), r ) ∀ϕ ∈ Ωϕ, λ ∈ Ωλ.
+
+Moreover, if w in Equation (11) is bounded, we have 
+
+log pθ,ψ (x(r), r ) = lim  
+
+> K→∞
+
+LK (θ, ψ, ϕ, λ ; x(r), r ) ∀ϕ ∈ Ωϕ, λ ∈ Ωλ.
+
+Theorem 4 demonstrates the convergence of the lower bound (the population-version ob-jective function LK ) of the proposed IM-IWAE method to the log-likelihood. A distinction of our bound from the one for not-MIWAE is that we integrate over two latent spaces for not only the data but also the missingness mechanism (Ipsen et al., 2020). Such a difference does not fundamentally alter the property of the bound in terms of the approximation to the log-likelihood. In the following, we provide the bias and variance of the empirical-version objective function ˆLK when we treat it as an estimate of the log-likelihood log pθ,ψ (x(r), r ). 
+
+Proposition 5 (Bias and variance of ˆLK ). Suppose that the distribution of w defined in Equation (11) is supported on the positive real line with finite moments of every order. As 
+
+K → ∞ , we have the following asymptotic results for ˆLK as an estimator of log pθ,ψ (x(r), r ):Bias ( ˆLK ) = − 1
+
+Kμ2
+
+2μ2 + 1
+
+K2
+
+ μ3
+
+3μ3 − 3μ22
+
+4μ4
+
+
+
++ o(K−2),
+
+and Var ( ˆLK ) = 1
+
+Kμ2
+
+μ2 − 1
+
+K2
+
+ μ3
+
+μ3 − 5μ22
+
+2μ4
+
+
+
++ o(K−2),
+
+where μi := E[( w − E[w]) i] and μ := EP [w].
+
+For each ( θ, ψ ), Proposition 5 shows that both the bias and the variance of the estimator ˆLK decrease at a rate of O(1 /K ). Note that the leading terms involves μ2/μ 2, which is the variance of the distribution of w divided by the squared mean, also known as the squared 
+
+coefficient of variation . Hence, for large K, the bias and the variance of ˆLK are small when the coefficient of variation is low. This leads to the following convergence of ˆLK .
+
+> 12 Identifiable Deep Latent Variable Models for MNAR Data
+
+Corollary 6 (Convergence of ˆLK ). For all ϵ > 0, lim  
+
+> K→∞
+
+P (| ˆLK − log pθ,ψ (x(r), r )| ≥ ϵ) = 0 
+
+5.2 Recovery of the ground-truth full-data distribution 
+
+In this subsection, we establish the theoretical framework at the population level for recov-ering the ground-truth full-data distribution using the proposed working model, towards which a crucial step is to demonstrate that the proposed model can accurately approximate the ground-truth distribution of missingness indicators. 
+
+Lemma 7. When we consider a Bernoulli distribution with mean frj (x−j , ˜z; ψ) as the decoder pψ(rj |x−j , ˜z) of the missingness mechanism for j = 1 , . . . , p , there exist frj ’s with parameter ψ∗ that recover the ground truth such that 
+
+pψ∗ (r|x) = pgt (r|x).
+
+Lemma 7 theoretically justifies the capacity of the proposed model to recover the ground-truth missingness mechanism by means of a factorization among the missingness indicators given the data X and the latent variable ˜Z. Based on the result for the capacity with respect to the decoder in Lemma 7, we can show that the underlying true joint distribution of X(R) and R can be well approximated by our latent variable models, as stated in the following theorem. 
+
+Theorem 8. Consider the proposed IM-IWAE method with the objective function in Equa-tion (12). Suppose the ground-truth density pgt (x) is nonzero everywhere on Rp. Assume that w is bounded. Then for any chosen latent dimension κ1 and κ2 for the method with κ1 ≥ p and κ2 ≥ 1, there is a sequence of decoders and encoders with parameters 
+
+{θ∗ 
+
+> t
+
+, ψ ∗ 
+
+> t
+
+, ϕ ∗ 
+
+> t
+
+, λ ∗ 
+
+> t
+
+} such that 
+
+lim  
+
+> t→∞
+
+lim  
+
+> K→∞
+
+LK (θ∗ 
+
+> t
+
+, ψ ∗ 
+
+> t
+
+, ϕ ∗ 
+
+> t
+
+, λ ∗ 
+
+> t
+
+; x(r), r ) = log pgt (x(r), r ).
+
+We note that Theorem 8, our central result on recovering data distributions with the working models, holds independently of the manifold assumption in Theorem 1, as Theorem 1 only serves to motivate the use of latent variable models. Theorem 8 suggests that, given a sufficiently large K, we can approximate the ground-truth joint distribution of the observed data and the missingness indicators through the parameterized objective function, regardless of conditions on the missingness mechanism. Theorem 2 (identification) and Theorem 8 (recovery of the true distribution pgt (x(r), r )) together ensure the recovery of the true full-data distribution pgt (x, r ) including the missing part, which is the target of our method, as the identification specifies a one-to-one mapping between the joint distribution pgt (x(r), r )of the observed part and the full-data distribution pgt (x, r ). 
+
+6 Simulations 
+
+In this section, we provide a series of simulation studies to evaluate our approach. Our evaluation encompasses various aspects, including data imputation, data generation, and 
+
+> 13 Xie, Xue, Wang
+
+estimation for a parameter of interest. To benchmark the effectiveness of our proposed methods, we compare them with two contemporary deep generative models for MNAR data, GINA (Ma and Zhang, 2021) and not-MIWAE (Ipsen et al., 2020). Furthermore, we include two classical imputation methods, MICE (Van Buuren and Groothuis-Oudshoorn, 2011) and missForest (Stekhoven and B¨ uhlmann, 2012), which are based on the commonly used MAR assumptions, as our baseline references. We adopt the same neural network structures and hyperparameter settings for methods based on generative models. 
+
+6.1 Imputation and generation 
+
+We first focus on 3-dimensional missing data scenarios with no self-censoring, and then consider more complex cases later in this subsection. 
+
+Generation of complete data. The data generation process begins with latent variables 
+
+Z1, Z 2, Z 3 i.i.d 
+
+∼ N (0 , 1) . Subsequently, we generate each data variable as 
+
+Xj = fθj (Z1, Z 2, Z 3) + ϵj ,
+
+for j = 1 , 2, 3, where fθj represents a nonlinear mapping with one hidden layer coupled with the tanh function and randomly generated coefficients, and θj denotes distinct parameter sets for fθj . And ϵ1, ϵ 2, ϵ 3 i.i.d 
+
+∼ N (0 , 0.01) serve as noise variables. For the missingness mechanism, we simulate missingness under two different strategies. 
+
+Simulation of missingness with latent variables. For the first strategy, we adopt the scheme 
+
+Rj ∼ Bernoulli  hψj (X−j , ˜Z), 1 ≤ j ≤ 3,
+
+involving a latent variable ˜Z ∼ N (0 , 1) and a mapping function hψj for which we experiment with both linear and nonlinear structures, where the coefficients are randomly chosen, and the tanh function is used for the nonlinear case. Note that in this scenario, all variables 
+
+X1, X 2, X 3 could be missing and that auxiliary variables are unavailable. 
+
+Simulation of missingness without latent variables. We also examine a more general case, where we simulate missingness according to the no self-censoring condition without resorting to a latent variable. We establish a dependency of the missingness indicators on the other data variables while preserving the correlation between these indicators, as in the right panel of Figure 1. This is achieved using an independent noise variable according to the noise-outsourcing lemma in probability theory (Kallenberg and Kallenberg, 1997; Austin, 2015). Specifically, when generating missingness, for each dimension j ∈ { 1, 2, 3} of the missingness indicators, we sample from a uniform distribution U ∼ U (0 , 1) and apply a transformation gψj (X−j ) with randomized parameter ψj , where gψj is a linear function or a nonlinear function with tanh activations. We let Rj = 1 if U > g ψj (X−j ), and Rj = 0 otherwise. In each missingness strategy, we simulate a total of 20 , 000 random samples in each replication, with a total of 50 replications conducted. The simulated missing rates are controlled to fall within the range of 30% to 40% by adding a constant to the logits of Bernoulli distribution for the missingness mechanism. Samples in which all variables are missing are excluded from the training set. 
+
+Results. We evaluate the performance of each method under each setting via the imputation root mean squared error (RMSE) which is provided in Table 1. In the first setting where 
+
+> 14 Identifiable Deep Latent Variable Models for MNAR Data
+
+Table 1: Imputation RMSE of simulated missing data with no self-censoring Method With latent variables Without latent variables linear nonlinear linear nonlinear Proposed 0.7081 (0.1146) 0.7145 (0.1325) 0.7386 (0.1687) 0.7188 (0.1186) 
+
+GINA 0.8682 (0.2309) 0.8676 (0.1324) 0.9957(0.3484) 0.8650(0.1062) Not-MIWAE 0.9311(0.6139) 0.7570(0.1619) 0.8877(0.3558) 0.7423(0.1230) MICE 1.2544(0.3144) 1.0498(0.2255) 1.1998(0.2794) 1.0772 (0.2370) MissForest 0.9718(0.2198) 0.9507(0.1400) 0.9998(0.1694) 0.9506(0.1208) latent variables are used for the missingness mechanism, there is no model misspecification for our method. As shown on the left side of Table 1, the proposed method significantly outperforms GINA which also incorporates latent variables for the missingness indicators yet with a modeling of self-censoring. Not-MIWAE shows a less stable performance in terms of both mean and standard deviation. This instability is likely due to its inability to account for the correlation among missingness indicators and the exclusion of self-censoring. It is noteworthy that neither of GINA and not-MIWAE guarantees model identifiability under this MNAR scenario, which may have contributed to their inferior performance in our experiments. The three deep generative models designed for MNAR data clearly outperform the classical methods (MICE and MissForest) based on MAR assumptions in terms of lower imputation RMSE. In the setting where missingness is generated without latent variables, as shown on the right side of Table 1, our imputation errors increase slightly compared to the previous case probably due to the model misspecification of the missingness mechanism. However, our method still outperforms other methods overall. In contrast, GINA exhibits deteriorated imputation performance similar to the baseline methods for MAR data, and increased vari-ance, in the linear case, which could be possibly due to its nonidentifiability issue that our model has successfully addressed. These results demonstrate advantages of our proposed method over existing methods and certain robustness in terms of missing value imputation in different scenarios of no self-censoring. 
+
+Visualization. We plot the generated data distributions of the three deep generative models in Figure 2, and compare them with the original complete data and the training data with missing values. We examine the data in all 2-dimensional combinations of the 3-dimensional data. The contour lines in Figure 2 represent the density of the true data distribution, where pink represents lower values, white ones represent middle values, and green ones represent higher values. The blue dots in Figure 2 represent samples in the training data or from the imputation based on deep generative models. Due to MNAR, samples in the training data are a biased representation of the true data distribution. Although all three generative models have made a clear effort to recover the original distribution by including a missingness model, not-MIWAE produced a substantial bias. The performances of the proposed model and GINA do not appear to differ much, but a closer examination of the areas in the red circles in Figure 2 reveals that GINA tends to miss some of the modes in the data distribution, while the proposed model captured those more closely. In addition, calculations of the maximum mean discrepancy (MMD) against the true data distribution over 50 replications show that the proposed model has a mean 
+
+> 15 Xie, Xue, Wang
+
+Figure 2: Visualization of generated data from the deep generative models under the setting with latent variables and a linear transformation gψj .0.0086 with a standard deviation 0 .0074, while GINA has a higher mean of 0 .0098 with a larger standard deviation 0 .0102, again demonstrating the superior learning and generative performance of our model in this scenario. 
+
+Higher dimensions The low-dimensional simulation enabled us to closely examine the per-formance of the method, both numerically and visually, in comparison with other methods across different scenarios. Applying similar settings to higher dimensions provides valuable insights into the model’s performance in more challenging situations. For higher dimensions, we generated X from latent variables, experimenting with data dimensions of p = 30 , 50 , 100 while keeping the latent dimension fixed at 10. All other parameters and settings were consistent with the previous 3-dimensional experiments, with no latent variable used for generating missingness and with the mapping function h being linear. The missing rates were controlled to be around 50%. In these higher-dimensional simulations, we considered different settings with block-wise missingness, where variables within the same group are either missing together or observed together. See Figure 3 for an illustration of a dataset with 3 groups. Specifically, we varied the sizes of the groups. The term “no self-censoring” in the context of block-wise missingness refers to the scenario where the missingness of the variables in a group does not depend on any of the variables within that group. The imputation results are presented in Table 2. Due to the prohibitive computational time of the MissForest method, we excluded it from these higher-dimensional simulations. However, we retained MICE as a baseline for comparison, given its ignorability assumption in contrast to other methods. 
+
+> 16 Identifiable Deep Latent Variable Models for MNAR Data
+
+Figure 3: An illustration of block-wise missingness with 4 groups for n subjects. Each group is a set of variables either missing together or observed together. Each row represents a subject, that is, a sample of X. Here white areas represent blocks of missing values. Different colors represent different missing patterns. Note that subjects are arranged in an order such that they have the same missing pattern. For the sake of brevity, we present only a subset of the missing patterns, omitting the others. (Note that the group sizes are not required to be the same, where the group size means the number of variables within a group.The block-wise missingness with 4 groups correspond to the case with p = 100 and gs = 25, the last column in Table 2 for the experiments.) The proposed method demonstrated a clear advantage in these scenarios. The improve-ment of the proposed method became more pronounced as the group size increased. It is notable that with the increasing group sizes (and consequently the decreasing number of groups) for a given number of variables, the issue of nonidentifiability is magnified in the other imputation methods assuming MNAR. Under these conditions, GINA and Not-MIWAE showed significantly deteriorating performances, whereas the proposed method exhibited relative stability. The imputation performance of MICE remained fairly stable, but its overall imputation RMSE was noticeably worse compared to the proposed method. 
+
+6.2 Mean estimation for mixture of Gaussian distributions 
+
+In this subsection, we evaluate our method from an alternative perspective, focusing on the estimation of a mean parameter. This allows us to put our model in the context of conventional statistical techniques (such as parameter estimation), as one of our goals is to harness the strengths of these traditional methods, backed by well-established theory. 
+
+> 17
+
+Xie, Xue, Wang 
+
+Table 2: Imputation RMSE of simulated data with higher dimensions and 10 latent vari-ables, where p is the number of variables in X and gs is the group size of the variables, i.e., the number of variables within a group. Method p = 30 p = 50 p = 100                     
+
+> gs = 2 gs = 3 gs = 5 gs = 2 gs = 5 gs = 10 gs = 5 gs = 10 gs = 25 Proposed 0.61(0.02) 0.64(0.02) 0.74(0.16) 0.47(0.01) 0.55(0.02) 0.70(0.17) 0.34(0.01) 0.38(0.02) 0.50(0.18)
+> GINA 0.70(0.04) 0.86(0.15) 1.37(0.31) 0.50(0.02) 0.88(0.15) 1.15(0.27) 0.42(0.06) 0.60(0.09) 0.90(0.30) Not-MIWAE 0.65(0.06) 0.99(0.25) 1.79(0.31) 0.47(0.02) 1.19(0.16) 1.50(0.20) 0.46(0.08) 0.74(0.13) 1.00(0.24) MICE 0.83(0.03) 0.83(0.03) 0.82(0.03) 0.74(0.03) 0.75(0.02) 0.77(0.02) 0.60(0.01) 0.69(0.02) 0.90(0.01)
+
+Figure 4: Estimation of E(X3) in the Gaussian mixtures. The dotted line represents the true value of E(X3). We follow the data generation framework in Malinsky et al. (2021), which involves a 3-dimensional mixture of Gaussian distributions with missingness introduced into the data via a conditional Gaussian graph model that complies with the no self-censoring assumption. The missingness patterns R = r are sampled from a multinomial distribution, while the data follow distinct Gaussian distributions based on varying missingness patterns, i.e. X|R =
+
+r ∼ N (μ0(r), Σ0). By adjusting certain interaction terms or mean parameters to zero, the no self-censoring condition can be satisfied in this parametric data generation process (Højsgaard et al., 2012, p.119–120). The parameter values for the simulation study are detailed in the supplementary material. In this setting, all variables X = ( X1, X 2, X 3) could potentially be missing. Our aim is to estimate the mean of a specific variable, that is, X3. We performed 100 replications with sample size 20000 and provided boxplots of estimated mean values of all replications and methods in Figure 4 to illustrate the results, where green boxes represent estimates based on observed values and imputed values, and red boxes represent estimates based on generated values only. 
+
+18 Identifiable Deep Latent Variable Models for MNAR Data 
+
+In particular, the estimates derived from our proposed method, whether based on im-puted values or generated data, exhibit a substantial convergence with respect to the actual value represented by the dotted line in Figure 4. This signifies a successful recovery of the distribution, in contrast to the estimates obtained from other methods, which demon-strate biases. Our performance in mean estimation is also competitive in terms of accuracy with the semiparametric inference method proposed by Malinsky et al. (2021) for the same problem. Furthermore, the estimates generated by our approach display a limited range of variation, similar to the results of two well-established classical imputation methods operat-ing under the inherently identifiable MAR assumption. We suspect that the large variation of the other deep generative models is due to their lack of identifiability. 
+
+7 Real data analysis 
+
+7.1 UCI data with synthetic missingness 
+
+To assess the efficacy of our method in more realistic data distributions, we perform a se-ries of experiments focusing on missing value imputation utilizing datasets from the widely recognized UCI machine learning repository (Asuncion and Newman, 2007). These experi-ments encompass six different datasets, including banknote authentication, red wine quality, white wine quality, concrete compressive strength, yeast, and waveform database genera-tor. These datasets do not contain inherent missing values. We introduce synthetic MNAR missingness to evaluate the performance of imputation. Since we know the truth, this al-lows us to compare our proposed method with other baseline techniques and state-of-the-art methods. We use the imputation RMSE to evaluate each method. Considering the fact that real-world missing data with MNAR mechanisms could be different from no self-censoring, we conduct experiments using simulated MNAR mecha-nism which is different from no self-censoring for the investigation of robustness. In this setting, each missing indicator could potentially depend on all variables in the data. This generation of missingness closely resembles the one in our experiments of linear no self-censoring without latent variables on synthetic data in Section 6.1, with the exception that the self-censoring aspect is also included in the missingness mechanisms. Specifically, we sample U ∼ U (0 , 1) and apply a linear transformation gψj (X) on X,for each dimension j of missingness indicators R, with randomized parameters ψj . We let 
+
+Rj = 1 if U > g ψj (X), and Rj = 0 otherwise. 
+
+Figure 5: Selection of latent dimensions for UCI datasets with MNAR missingness. The curves represent the average imputation RMSE across each validation set during 5-fold cross-validation, where the entries to be imputed are MCAR in the valida-tion sets. 
+
+> 19 Xie, Xue, Wang
+
+The missing rates in our experiments range from 30% to 50%, and no variables are designed to always be observed. It is noteworthy that, unlike in simulations where latent dimensions are known, the latent dimensions in real-world data are not as clear. Conse-quently, we select the latent dimensions for each dataset in the presence of missingness using cross-validation, as described in Section 4.5. The process of selecting the data latent di-mensions involves imputing the manually MCAR missing entries in the validation sets after training the model on the training sets. Figure 5 illustrates the average imputation RMSE on 5-fold cross-validated missing data with different latent dimensions for each dataset. The optimal latent dimensions were determined using the elbow method, identifying the point where the rate of improvement for imputation sharply decreases. Table 3: Imputation RMSE on UCI Data with MNAR. The default missingness model in the generative models is linear; (nl) denotes a nonlinear missingness model and (s) represents self-censoring. Method banknote concrete yeast red wine white wine waveform Proposed 0.713(0.118) 0.745(0.070) 0.966(0.134) 0.762(0.059) 0.827(0.054) 0.722(0.011)        
+
+> Proposed(nl) 0.715(0.129) 0.748(0.064) 0.965(0.132) 0.787(0.055) 0.840(0.056) 0.730(0.013)
+> GINA 0.843(0.106) 0.884(0.055) 1.062(0.120) 0.877(0.051) 0.921(0.049) 0.786(0.007) GINA(nl) 0.880(0.119) 0.926(0.056) 1.110(0.083) 0.915(0.051) 0.970(0.041) 0.799(0.010) Not-MIWAE 0.772(0.209) 0.825(0.077) 1.115(0.271) 0.853(0.079) 0.870(0.059) 0.736(0.011) Not-MIWAE(nl) 0.915(0.150) 0.841(0.068) 1.029(0.087) 0.879(0.055) 0.901(0.041) 0.770(0.015) Not-MIWAE(s) 1.693(0.672) 1.619(0.539) 2.225(0.710) 2.222(0.626) 2.493(0.685) 1.889(0.642) MICE 1.045(0.155) 1.054(0.061) 3.030(1.585) 1.050(0.051) 1.078(0.050) 0.991(0.032) MissForest 0.940(0.155) 1.020(0.071) 1.534(0.289) 1.013(0.071) 1.053(0.067) 0.891(0.022)
+
+We conduct 50 replications for simulating missingness, and explore the influence of linear and non-linear structures on deep generative models in this setting. The results in Table 3 show that our method outperforms both other deep generative models and classical imputation baselines, even when other deep generative models employ a missingness model that matches the missingness generation in this setting, which is likely due to their nonidentifiability. This could also be attributed to the fact that the assumption of no self-censoring only excludes one variable for each dimension in the missingness mechanism, which contributes to its strong performance. The good performance may also rely on the proposed method’s robustness to self-censoring, as mentioned in the supplementary material, which may result from the correlations between data variables. In contrast, Not-MIWAE(s) perform poorly in this case, as the model only considers self-censoring and ignores all other parts in the missingness mechanism, which deviates from the true model by a large amount. Furthermore, from the comparisons of linear and nonlinear missingness models for the generative models, it is evident that the model complexity has little influence on the proposed method, which produces the best performance using either missingness model, while using the nonlinear model for GINA and Not-MIWAE yield more apparent variation in performance. These experiments illustrate that our approach could prove beneficial in situations where the data is believed to exhibit MNAR patterns, but the exact missingness mechanisms are uncertain or not well-defined. Additionally, the finding that there is minimal discrepancy between the results obtained with linear and nonlinear choices for the missingness model 
+
+> 20 Identifiable Deep Latent Variable Models for MNAR Data
+
+Table 4: Estimated joint distribution of HAART continuation during pregnancy (H), low CD4 + count (C), and preterm delivery (P) in HIV-infected women in Botswana. P, C, H 1, 1, 1 1, 1, 0 1, 0, 0 1, 0, 1 0, 1, 1 0, 1, 0 0, 0, 0 0, 0, 1 Proposed 0.0188 0.0616 0.5030 0.1582 0.0112 0.0380 0.1604 0.0487 AIPW 0.0122 0.0268 0.5206 0.1722 0.0091 0.0542 0.1618 0.0430 MICE 0.0164 0.0355 0.5156 0.1705 0.0140 0.0483 0.1641 0.0357 CC 0.0137 0.0342 0.3320 0.0979 0.0333 0.1802 0.2380 0.0705 in our method demonstrates that it could effectively learn the distribution, even when employing an overparameterized nonlinear structure, aligning with our theoretical findings regarding identification. 
+
+7.2 HIV positive mothers in Botswana 
+
+A well-known dataset for the study of MNAR data is the data of HIV positive mothers in Botswana. In this dataset, the goal is to estimate the association between highly active antiretroviral therapy (HAART) during pregnancy and preterm delivery. The complete data consists of 33 , 148 obstetric records from 6 cites in Botswana (Chen et al., 2012). We follow the practice of Tchetgen et al. (2018); Sun et al. (2018); Shpitser (2016); Malinsky et al. (2021) by focusing on HIV-positive women ( n = 9711) and 3 binary variables: HAART exposure during pregnancy (68 .9% missing), an indicator of low CD4 +count (less than 200 μL ), and preterm delivery (6 .7% missing). There is a small portion of complete cases (10 .5%). The missingness mechanism is suspected to be MNAR (Shpitser, 2016; Malinsky et al., 2021). We learn the distribution of the data using our method with the Bernoulli distribution for the data generative model. As the first step in estimating the relationship of interest, we obtained the joint distribution using our generative model, and compared the results with other estimation methods including complete case analysis (CC), MICE, and estimation using the augmented inverse probability weighted (AIPW) by Malinsky et al. (2021) which assumes a no self-censoring model. We can see from the joint distribution in Table 4 that certain probabilities are similar for the proposed method, AIPW and MICE, which all have substantial differences from those for the complete case analysis. Based on the estimated joint distribution by the proposed method, we estimate the odds ratios between HAART and preterm delivery at different levels of CD4 + count: 1.03 (0 .53 , 2.94) for low CD4 + count and 1 .04 (0 .73 , 1.53) for moderate or high CD4 + count, respectively. Without conditioning on CD4 +, the odds ratio is computed as 1 .04 (0 .76 , 1.48). We also estimate the effect of low CD4 + on the result of delivery and obtain the odds ratio as 0 .52 (0 .36 , 0.81). The numbers in parentheses represent the 95% confidence intervals and are computed by bootstrap (percentile) over 1000 subsamples. The method of AIPW found a significantly positive relationship conditional on low CD4 +. Our method does not find a significant result that appears similar to the result of Shpitser (2016) with an estima-tion based on the pseudo-likelihood approach using a no self-censoring model. It has been suspected that the data is sufficiently noisy to find insignificant results (Shpitser, 2016). 
+
+> 21 Xie, Xue, Wang
+
+Figure 6: Bar graphs over rating values for the Yahoo! R3 dataset. The first two are from the MNAR training set and the MCAR test set. The last three show the data values of the imputed test set using different methods. 
+
+7.3 Yahoo! R3 music ratings 
+
+In this subsection, we apply our method to the Yahoo! R3 dataset (Marlin and Zemel, 2009; Wang et al., 2018). This dataset is primarily designed for the analysis of user-song ratings, with a specific focus on evaluating MNAR imputation techniques. Within this dataset, we have a training set that consists of more than 300,000 self-selected ratings on a scale from 1 to 5 provided by 15,400 users for a selection of 1,000 songs, which has an entry-wise missing rate of around 98 .0%. In addition, there is an MCAR test set, which comprises ratings from 5,400 users across a set of 10 songs chosen at random. We train our model on the training set and subsequently evaluate the imputation performance on the test set. We acknowledge that this dataset likely involves self-censoring. Our aim here is not to assume otherwise, but to demonstrate the robustness and practical effectiveness of our method on a complex real-world dataset. We compare the proposed method with GINA (Ma and Zhang, 2021) and not-MIWAE (Ipsen et al., 2020), which are also designed for MNAR but did not address the issue of identifiability without resorting to auxiliary variables. We model the missingness mechanism as a linear function in all methods, allowing each Rj to depend on all dimensions of X in the baselines. We did not include classical methods such as MICE or missForest due to their prohibitively long training time. We visualize the imputation results in the five categorical bar graphs, together with the training and test data. First, we can notice that the training data have a very different distribution from the test data, where the latter is known to be a relatively unbiased representation of the true data distribution, while the training data are MNAR and thus biased. More importantly, we find that all the generative models learn a data distribution closer to the test data than to the training data, where the proposed model produces the most pronounced difference between ratings 1 and 2 among all the methods, relatively closest to the distribution of the unbiased test data. Since results of deep generative methods depend on choices of seeds, we re-run each deep generative method for 50 times using different seeds, yielding the results of mean and standard deviation of imputation RMSE for the different methods: 1.1807(0 .0073), 1.1870(0 .0089), 1 .1818(0 .0062) for the proposed model, GINA and not-MIWAE, respec-tively. Consistent with the bar graphs, our proposed method shows slightly better perfor-mance than the alternatives, though the differences are not substantial. This is expected, 
+
+> 22 Identifiable Deep Latent Variable Models for MNAR Data
+
+since in high-dimensional settings correlations across many variables may dilute the impact of self-censoring, making the no self-censoring assumption relatively mild. 
+
+8 Conclusion 
+
+In this paper, we propose a new deep latent variable model for MNAR data under a con-ditional no self-censoring assumption. We have established theoretical identifiability under mild conditions. This theoretical foundation forms the basis for the novel practical algo-rithm IM-IWAE using importance-weighted autoencoders for data generation and imputa-tion of MNAR data, with the theoretical justification of its ability to recover ground-truth data distributions. Our comprehensive experiments, which include simulation studies and real-world applications, effectively highlight the advantages and robustness of the proposed method. The experiments have also demonstrated that our method could be potentially useful when data is suspected to be MNAR but the specific missingness mechanisms are agnostic or unclear. Some future directions include but not limited to extending identifiable deep latent variable models for MNAR data to more general topological spaces, enhancing the imputa-tion performance of the proposed method in data with extremely high missing rates, and investigating other reasonable and practical identification conditions for MNAR data to incorporate them into deep generative models. 
+
+Appendix A. Proofs of Theoretical Results 
+
+A.1 Proof of Theorem 1 Proof We focus on the missingness mechanism first, i.e., the conditional distribution of R
+
+given X.
+
+A.1.1 The approximation of the missingness mechanism 
+
+Without loss of generality, let ˜Z ∼ N (0 , 1), i.e. q2 = 1. (In the case of q2 > 1, it is trivial to show that the last q2 − 1 dimensions can be ignored in the conditional distribution of R
+
+given ˜Z and X.) Then we have 
+
+dH (˜ z) = p(˜ z)d˜z = N (˜ z|0, 1) d˜z. 
+
+Now, denote the ground-truth missingness mechanism as 
+
+Pgt (R = r|x) = pr,
+
+with P 
+
+> r∈{ 0,1}p
+
+pr = 1. With a little abuse of notation, we write below r < r ′ by treating r,
+
+r′ as binary numbers. For example, if r = (0 , 0, 1) and r′ = (0 , 1, 0), then write r < r ′. By using indicator functions 1(·), we define a set of deterministic functions 
+
+f (x, u ) = ( f (1) (x, u ), · · · , f (p)(x, u )) for x ∈ Rp and u ∈ [0 , 1] as 
+
+f (1) (x, u ) = 1{ X
+
+> r′<(1 ,0... 0)
+
+pr′ < u ≤ 1}r1 1{0 ≤ u ≤ X
+
+> r′<(1 ,0... 0)
+
+pr′ }1−r1 ,
+
+> 23
+
+Xie, Xue, Wang 
+
+f (2) (x, u ) = 1{ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ < u ≤ X
+
+> r′<(1 ,0,0... 0)
+
+pr′ or X
+
+> r′<(1 ,1,0... 0)
+
+pr′ < u ≤ 1}r2
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ or X
+
+> r′<(1 ,0,0... 0)
+
+pr′ < u X
+
+> r′<(1 ,1,0... 0)
+
+pr′ }1−r2 ,
+
+· · · 
+
+f (p)(x, u ) = 1{ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ < u ≤ X
+
+> r′<(0 ,..., 0,1,0)
+
+pr′ or · · · or X
+
+> r′<(1 ,..., 1)
+
+pr′ < u ≤ 1}rp
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ or X
+
+> r′<(1 ,..., 1,0)
+
+pr′ < u X
+
+> r′<(1 ,..., 1)
+
+pr′ }1−rp .
+
+Then we have that 
+
+Pgt (R = r|x) = 
+
+Z 10
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j)(x, u )) du 
+
+=
+
+Z 10
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j)(x, H (˜ z)) dH (˜ z)=
+
+Z
+
+> R
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j)(x, H (˜ z)) p(˜ z)d˜z
+
+(14) Hence, there exists a decomposition of the missingness mechanism in the form of 
+
+Pgt (R = r|x) = 
+
+Z
+
+> R
+
+Pgt (R = r|x, ˜z)p(˜ z)d˜z, 
+
+where 
+
+Pgt (R = r|x, ˜z) = 
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j)(x, H (˜ z))) .
+
+For the part of the data variables X, we separate the proof into two cases d < p and 
+
+d = p, where d is the dimension of the manifold X for the data variable X.
+
+A.1.2 The approximation for the data distribution when d < p 
+
+We first examine the variable Z for the data X. For clarity, let pxgt (·) denote the ground-truth manifold density of X(instead of simply pgt (·)). We aim to construct a bijection between X
+
+and Rd which transforms the ground-truth measure μgt to a Gaussian distribution, before which one step is needed that bijects between X and Rd using a diffeomorphism φ(·), so it transforms the ground-truth probability distribution pxgt (x) to another distribution pugt (u), where u ∈ Rd. The relationship between the two distributions is 
+
+pugt (u)du = pxgt (x)μV (dx )|x=φ−1(u) = μgt (dx ),
+
+where μV (dx ) is the volume measure with respect to X .
+
+24 Identifiable Deep Latent Variable Models for MNAR Data 
+
+Define the function F : Rd 7 → [0 , 1] d as 
+
+F (u) = [ F1(u1), F 2(u2; u1), · · · , F d(ud; ud−1)] ,
+
+with 
+
+Fj (uj ; u1: j−1) = 
+
+Z uj 
+
+> u′
+> j=−∞
+
+pugt (u′ 
+
+> j
+
+|u1: j−1)du ′ 
+
+> j
+
+.
+
+By this definition, we have 
+
+dF (u) = pugt (u)du. 
+
+Because φ is a diffeomorphism, both φ and φ−1 are differentiable. Thus dx/du is nonzero everywhere on the manifold. Considering pxgt (x) is also nonzero everywhere, pugt (u) is nonzero everywhere. Since pugt (u) is nonzero everywhere, F (·) is invertible. W.l.o.g., let Z ∼ N (0 , I q1 ) and 
+
+q1 = d. (In the case of q1 > d , it is trivial to show that the last q1 − d dimensions can be ignored in the conditional distribution of X given Z.) We define another differentiable and invertible function G : Rd 7 → [0 , 1] d as 
+
+G(z) = [ G1(z1), G 2(z2), · · · , G d(zd)] T ,
+
+with 
+
+Gj (zj ) = 
+
+Z zj 
+
+> z′
+> j=−∞
+
+N (zj |0, 1) dz ′ 
+
+> j
+
+.
+
+Then 
+
+dG (z) = p(z)dz = N (z|0, I )dz. 
+
+Now, consider a random variable Y ∈ Rp with a parameter β > 0 for its density: 
+
+p(y; β) = 
+
+Z
+
+> Rd
+
+p(y|z; β)p(z)dz. 
+
+Let 
+
+p(y|z; β) = N (y|φ−1 ◦ F −1 ◦ G(z), 1
+
+β I)so that 
+
+p(y; β) = 
+
+Z
+
+> Rd
+
+N (y|φ−1 ◦ F −1 ◦ G(z), 1
+
+β I)dG (z)=
+
+Z
+
+> [0 ,1] d
+
+N (y|φ−1 ◦ F −1(ξ), 1
+
+β I)dξ 
+
+=
+
+Z
+
+> Rd
+
+N (y|φ−1(u), 1
+
+β I)pugt (u)du 
+
+=
+
+Z
+
+> y′∈X
+
+N (y|y′, 1
+
+β I)μgt (dy ′)(15) Consider a measurable set A ∈ Rp. Let 
+
+pR|X, ˜Z (r|y, ˜z) = 
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j)(y, H (˜ z)) 
+
+25 Xie, Xue, Wang 
+
+as in (14). Also, by (14), we have lim 
+
+> β→∞
+
+Z
+
+> y∈A
+
+Z Z
+
+p(y|z; β)p(z)pR|X, ˜Z (r|y, ˜z)p(˜ z)dzd ˜zdy = lim 
+
+> β→∞
+
+Z
+
+> y∈A
+
+p(y|β)pgt (r|y)dy. (16) Furthermore, lim 
+
+> β→∞
+
+Z
+
+> y∈A
+
+p(y|β)pgt (r|y)dy = lim 
+
+> β→∞
+
+Z
+
+> y∈A
+
+Z 
+
+> y′∈X
+
+N (y|y′, 1
+
+β I)μgt (dy ′)pgt (r|y)
+
+
+
+dy 
+
+= lim 
+
+> β→∞
+
+Z
+
+> y′∈X
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′)=
+
+Z
+
+> y′∈X
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′).
+
+(17) The second equality follows by Fubini’s theorem. The third equality follows by the bounded convergence theorem. We now note that the term inside the first integration. Now, note that lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+=
+
+(
+
+pgt (r|y) if y′ ∈ A − ∂A, 
+
+0 if y′ ∈ Ac − ∂A. 
+
+We separate the manifold X into three parts: X ∩ (A − ∂A ), X ∩ (Ac − ∂A ) and X ∩ ∂A .Then (17) can be separated into three parts correspondingly. The first two parts can be derived as 
+
+Z
+
+> X ∩ (A−∂A )
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′) = 
+
+Z
+
+> X ∩ (A−∂A )
+
+pgt (r|y)μgt (dy ′),
+
+Z
+
+> X ∩ (Ac−∂A )
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′) = 
+
+Z
+
+> X ∩ (A−∂A )
+
+0μgt (dy ′) = 0 .
+
+For the third part, given the assumption that μgt (∂A ) = 0, we have 0 ≤
+
+Z
+
+> X ∩ ∂A
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′) ≤
+
+Z
+
+> X ∩ ∂A
+
+1μgt (dy ′) = μgt (X ∩ ∂A ) = 0 .
+
+Therefore, we have 
+
+Z
+
+> X ∩ ∂A
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′) = 0 and so lim 
+
+> β→∞
+
+Z
+
+> y∈A
+
+p(y|β)pgt (r|y)dy =
+
+Z
+
+> X
+
+lim 
+
+> β→∞
+
+Z 
+
+> y∈A
+
+N (y|y′, 1
+
+β I)pgt (r|y)dy 
+
+
+
+μgt (dy ′)=
+
+Z
+
+> X ∩ (A−∂A )
+
+pgt (r|y)μgt (dy ′) + 0 + 0 =
+
+Z
+
+> X ∩ A
+
+pgt (r|y)μgt (dy ′).
+
+Combining this and (16), we have the result as desired. 
+
+26 Identifiable Deep Latent Variable Models for MNAR Data 
+
+A.1.3 The approximation for the data distribution when d = p
+
+Take φ in the case of d = p to be the identity function (so that we can actually omit the diffeomorphism step when constructing a bijection between X and Rd.) In the case of 
+
+d = p, pxgt (x) ≜ μgt (dx )/dx represents the ground-truth probability density with respect to the standard Lebesgue measure in Euclidean space. Define the function F : Rp 7 → [0 , 1] p as 
+
+F (x) = [ F1(x1), F 2(x2; x1), · · · , F p(xp; xp−1)] ,Fj (xj ; x1: j−1) = 
+
+Z xj 
+
+> x′
+> j=−∞
+
+pxgt (x′ 
+
+> j
+
+|x1: j−1)dx ′ 
+
+> j
+
+.
+
+By this definition, we have 
+
+dF (x) = pxgt (x)dx. 
+
+Since pxgt (x) is nonzero everywhere, F (·) is invertible. W.l.o.g., let Z ∼ N (0 , I q1 ) and q1 = p.(In the case of q1 > p , it is trivial to show that the last q1 − p dimensions can be ignored in the conditional distribution of X given Z.) We define another differentiable and invertible function G : Rp 7 → [0 , 1] p as 
+
+G(z) = [ G1(z1), G 2(z2), · · · , G p(zp)] T ,Gj (zj ) = 
+
+Z zj 
+
+> z′
+> j=−∞
+
+N (zj |0, 1) dz ′ 
+
+> j
+
+.
+
+Then 
+
+dG (z) = p(z)dz = N (z|0, I )dz. 
+
+Now, consider a random variable Y ∈ Rp with a parameter β > 0 for its density: 
+
+p(y; β) = 
+
+Z
+
+> Rp
+
+p(y|z; β)p(z)dz. 
+
+Let 
+
+p(y|z; β) = N (y|F −1 ◦ G(z), 1
+
+β I)so that 
+
+p(y; β) = 
+
+Z
+
+> Rp
+
+N (y|F −1 ◦ G(z), 1
+
+β I)dG (z)=
+
+Z
+
+> [0 ,1] p
+
+N (y|F −1(ξ), 1
+
+β I)dξ, 
+
+where ξ = G(z). Let y′ = F −1(ξ) such that dξ = dF (y′) = pxgt (y′)dy ′. Plugging this expression into p(y; β) we have 
+
+p(y; β) = 
+
+Z
+
+> Rp
+
+N (y|y′, 1
+
+β I)pxgt (y′)dy ′.
+
+As β → ∞ , N (y|y′, 1 
+
+> β
+
+I) becomes a Dirac-delta function, resulting in lim  
+
+> β→∞
+
+p(y; β) = 
+
+Z
+
+> Rp
+
+δ(y′ − y)pxgt (y′)dy ′ = pxgt (y).
+
+27 Xie, Xue, Wang 
+
+Putting the results for pgt (x) and pgt (r|x) together, we have the result for the case d = p
+
+in the theorem. 
+
+A.2 Proof of Theorem 2 Proof Under Assumption 3, 
+
+pgt (r|x) = 
+
+Z
+
+pgt (r|x, ˜z)p(˜ z)d˜z
+
+=
+
+Z pY
+
+> j=1
+
+pgt (rj |x−j , ˜z)p(˜ z)d˜z
+
+=
+
+Z pY
+
+> j=1
+
+pgt (rj |x−j , R −j = 1, ˜z)p(˜ z)d˜z. 
+
+Thus, pgt (r|x) is only a function of observed data. 
+
+A.3 Proof of Corollary 3 Proof 
+
+Using the odds ratio parametrization (Yun Chen, 2007; Chen, 2010) with odds ratio function OR( r, x ) ≡ OR( r, x ; r0 = 1, x 0 = 0) = pgt (r|x)
+
+pgt (R = 1|x)
+
+pgt (R = 1|X = 0)
+
+pgt (r|X = 0) .
+
+Then the full-data distribution (Li et al., 2022) can be written as 
+
+pgt (x, r ) = OR (r, x )pgt (x|R = 1)pgt (r|X = 0)
+
+P 
+
+> r′
+
+E[OR (r′, y )|R = 1]pgt (r′|X = 0) ,
+
+which is also a function of observed data only. 
+
+A.4 Proof of Theorem 4 Proof We need to show log pθ,ψ (x(r), r ) ≥ Lk, Lk ≥ Lm for k ≥ m ≥ 1; we also need to show log pθ,ψ (x(r), r ) = lim k→∞ Lk assuming w is bounded, with 
+
+Lk(θ, ψ, ϕ, λ ) = E log 1
+
+k
+
+> k
+
+X
+
+> l=1
+
+wk
+
+,
+
+where 
+
+wl = pθ(x(r)|zl)pψ(r|x(r), x (m),l , ˜zl)p(zl)p( ˜ zl)
+
+qϕ(zl|x(r), r )qλ( ˜ zl|x(r), r ) ,
+
+28 Identifiable Deep Latent Variable Models for MNAR Data 
+
+for 1 ≤ l ≤ k. We have 
+
+Lk(θ, ψ, ϕ, λ ) = E log 1
+
+k
+
+> k
+
+X
+
+> l=1
+
+wl
+
+ ≤ log E 1
+
+k
+
+> k
+
+X
+
+> l=1
+
+wl
+
+ = log pθ,ψ (x(r), r ).
+
+For k ≥ m, denoting hl = ( zl, ˜zl, x (m),l ) for 1 ≤ l ≤ k
+
+Lk = Eh1,··· ,h k
+
+ log 1
+
+k
+
+> k
+
+X
+
+> l=1
+
+wl
+
+ = Eh1,··· ,h k
+
+ log EI={l1,...,l m}
+
+ 1
+
+m
+
+> m
+
+X
+
+> j=1
+
+wlj
+
+ 
+
+≥ Eh1,··· ,h k
+
+EI={l1,...,l m}
+
+ log 1
+
+m
+
+> m
+
+X
+
+> j=1
+
+wlj
+
+ = Eh1,··· ,h m
+
+ log 1
+
+m
+
+> m
+
+X
+
+> l=1
+
+wl
+
+ = Lm.
+
+Consider the random variable Mk = 1
+
+> k
+
+Pkl=1 wl. If w is bounded. then it follows from SLLN that Mk converges to Eq(h|x(r),r )[w] = pθ,ψ (x(r), r ) almost surely. Hence Lk = E[log Mk]converges to log pθ,ψ (x(r), r ) as k → ∞ .
+
+A.5 Proof of Proposition 5 Proof First, define the random variable YK := 1
+
+> K
+
+PKk=1 wk, which corresponds to the sample mean of w1, · · · , w K . We have ˆLK = log YK = log( E[w] + ( YK − E[w])) = log E[w] −
+
+> ∞
+
+X
+
+> i=1
+
+(−1) i
+
+iE[w]i (YK − E[w]) i,
+
+and so 
+
+E[ ˆLK ] = E[log YK ] = log E[w] −
+
+> ∞
+
+X
+
+> i=1
+
+(−1) i
+
+iE[w]i E[( YK − E[w]) i]. (18) Denote γi := E[( YK − E[YK ]) i], the i-th central moments of YK for i ≥ 2, and μi := 
+
+E[( w − E[w]) i], the i-th central moments of P for i ≥ 2. Denote γ = E[YK ] and μ = E[w], the first non-central moments. Since YK is a sample mean, we can use existing results that relate γi to μi. In Angelova (2012), Theorem 1 gives the relations: γ = μ, γ 2 = μ2 
+
+> K
+
+, γ 3 = 
+
+> μ3
+> K2
+
+, γ 4 = 3 
+
+> K2
+
+μ22 + 1 
+
+> K3
+
+(μ4 −3μ22), γ 5 = 10  
+
+> K3
+
+μ3μ2 + 1 
+
+> K4
+
+(μ5 −10 μ3μ2), where the first two are well-known relations of means and variances of between samples and populations. Expanding (18) to the fifth order using the above relations gives 
+
+E[ ˆLK ] = log E[w] − 12μ2
+
+μ2
+
+K + 13μ3
+
+μ3
+
+K2 − 14μ4
+
+ 3
+
+K2 μ22 + 1
+
+K3 (μ4 − 3μ22)
+
+
+
++ 15μ5
+
+ 10 
+
+K3 μ3μ2 + 1
+
+K4 (μ5 − 10 μ3μ2)
+
+
+
++ o(K−3). (19) The result for bias follows by regrouping the terms by order of K and then subtracting log pθ,ψ (x(r), r ) = log E[w] from (19). 
+
+29 Xie, Xue, Wang 
+
+By using the definition of the variance and the series expansion of the logarithm function, we have Var(log YK ) = E[(log YK − E[log YK ]) 2]= E
+
+ log μ −
+
+> ∞
+
+X
+
+> i=1
+
+(−1) i
+
+iμ i (YK − μ)i − log μ +
+
+> ∞
+
+X
+
+> i=1
+
+(−1) i
+
+iμ i E[( YK − μ)i]
+
+!2
+
+= E
+
+
+
+> ∞
+
+X
+
+> i=1
+
+(−1) i
+
+iμ i (E[( YK − μ)i] − (YK − μ)i)
+
+!2 .
+
+By expanding the above equation to the third order we have the following: Var(log YK ) ≈ γ2
+
+μ2 − 1
+
+μ3 (γ3 − γ1γ2) + 23μ4 (γ4 − γ1γ3) + 14μ4 (γ4 − γ22 )
+
+− 13μ5 (γ5 − γ2γ3) + 19μ6 (γ6 − γ23 ).
+
+By substituting the sample moments γi of YK with the central moments μi of distribution 
+
+P using their relations, we get Var(log YK ) = 1
+
+Kμ2
+
+μ2 − 1
+
+K2
+
+ μ3
+
+μ3 − 5μ22
+
+2μ4
+
+
+
++ o(K−2).
+
+A.6 Proof of Corollary 6 Proof 
+
+P(| ˆLK − log pθ,ψ (x(r), r )| ≥ ϵ) = P(| ˆLK − E[ ˆLK ] + E[ ˆLK ] log pθ,ψ (x(r), r )| ≥ ϵ)
+
+≤ P(| ˆLK − E[ ˆLK ]| + |E[ ˆLK ] log pθ,ψ (x(r), r )| ≥ ϵ)
+
+≤ P(| ˆLK − E[ ˆLK ]| ≥ ϵ
+
+2 ) + P(|E[ ˆLK ] log pθ,ψ (x(r), r )| ≥ ϵ
+
+2 ),
+
+where the second term is deterministic and is either 0 or 1, and it will always be zero for K
+
+large enough according to Proposition 1. Applying Chebyshev’s inequality to the first term and setting τ = ϵ
+
+> 2
+
+√Var( ˆLK ) , we have 
+
+P(| ˆLK − E[ ˆLK ]| ≥ ϵ
+
+2 ) = P(| ˆLK − E[ ˆLK ]| ≥ τ
+
+q
+
+Var( ˆLK )) ≤ 1
+
+τ 2 = 4 
+
+q
+
+Var( ˆLK )
+
+ϵ2 = O(1 /K ).
+
+For K → ∞ and any ϵ > 0, this term has a limit of 0. And we have the convergence in probability, and hence consistency. 
+
+30 Identifiable Deep Latent Variable Models for MNAR Data 
+
+A.7 Proof of Lemma 7 Proof Without loss of generality, we assume the dimension of ˜ z to be κ2 = 1 in the proof. (In the case of κ2 > 1, it is trivial to show that the last κ2 − 1 dimensions can be ignored in the conditional distribution of R given ˜Z and X.) Define a differentiable and invertible function G : R → [0 , 1] as 
+
+G(˜ z) = 
+
+Z ˜z
+
+> ˜z′=−∞
+
+N (˜ z|0, 1) d˜z′.
+
+Then 
+
+dG (˜ z) = p(˜ z)d˜z = N (˜ z|0, 1) d˜z. 
+
+For rj ∈ { 0, 1} for 1 ≤ j ≤ p, we have 
+
+Pψ(R1 = r1, · · · , R p = rp|x) = 
+
+Z
+
+> R
+> p
+
+Y
+
+> j=1
+
+Pψ(Rj = rj |x, ˜z)p(˜ z)d˜z
+
+=
+
+Z
+
+> R
+> p
+
+Y
+
+> j=1
+
+Pψ(Rj = rj |x, G (˜ z)) dG (˜ z)=
+
+Z 10
+
+> p
+
+Y
+
+> j=1
+
+Pψ(Rj = rj |x, u )du 
+
+=
+
+Z 10
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j) 
+
+> ψ
+
+(x, u )) du, 
+
+where fψ(x, u ) = ( f (1)  
+
+> ψ
+
+(x, u ), · · · , f (p) 
+
+> ψ
+
+(x, u )) is the deterministic decoder for the missingness mechanism. Now, denote the ground-truth joint density as 
+
+Pgt (R = r|x) = pr, with X
+
+> r∈{ 0,1}p
+
+pr = 1 .
+
+With a little abuse of notation, we write below r < r ′ by treating r, r′ as binary numbers. For example, if r = (0 , 0, 1) and r′ = (0 , 1, 0), then write r < r ′. By using indicator functions 
+
+1(·), we can write the ground-truth distribution of the missingness mechanism as 
+
+Pgt (R = r|x) = 
+
+Z
+
+> [0 ,1]
+
+1{ X
+
+> r′<(1 ,0... 0)
+
+pr′ < u ≤ 1}r1 1{0 ≤ u ≤ X
+
+> r′<(1 ,0... 0)
+
+pr′ }1−r1
+
+1{ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ < u ≤ X
+
+> r′<(1 ,0,0... 0)
+
+pr′ or X
+
+> r′<(1 ,1,0... 0)
+
+pr′ < u ≤ 1}r2
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ or X
+
+> r′<(1 ,0,0... 0)
+
+pr′ < u X
+
+> r′<(1 ,1,0... 0)
+
+pr′ }1−r2
+
+· · · 
+
+1{ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ < u ≤ X
+
+> r′<(0 ,..., 0,1,0)
+
+pr′ or · · · or X
+
+> r′<(1 ,..., 1)
+
+pr′ < u ≤ 1}rp
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ or X
+
+> r′<(1 ,..., 1,0)
+
+pr′ < u X
+
+> r′<(1 ,..., 1)
+
+pr′ }1−rp du. 
+
+31 Xie, Xue, Wang 
+
+Hence, we can see that by setting 
+
+f (1)  
+
+> ψ∗
+
+(x, u ) = 1{ X
+
+> r′<(1 ,0... 0)
+
+pr′ < u ≤ 1}r1 1{0 ≤ u ≤ X
+
+> r′<(1 ,0... 0)
+
+pr′ }1−r1 ,f (2)  
+
+> ψ∗
+
+(x, u ) = 1{ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ < u ≤ X
+
+> r′<(1 ,0,0... 0)
+
+pr′ or X
+
+> r′<(1 ,1,0... 0)
+
+pr′ < u ≤ 1}r2
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,1,0... 0)
+
+pr′ or X
+
+> r′<(1 ,0,0... 0)
+
+pr′ < u X
+
+> r′<(1 ,1,0... 0)
+
+pr′ }1−r2 ,
+
+· · · 
+
+f (p) 
+
+> ψ∗
+
+(x, u ) = 1{ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ < u ≤ X
+
+> r′<(0 ,..., 0,1,0)
+
+pr′ or · · · or X
+
+> r′<(1 ,..., 1)
+
+pr′ < u ≤ 1}rp
+
+1{0 ≤ u ≤ X
+
+> r′<(0 ,..., 0,1)
+
+pr′ or X
+
+> r′<(1 ,..., 1,0)
+
+pr′ < u X
+
+> r′<(1 ,..., 1)
+
+pr′ }1−rp ,
+
+the decoder fψ∗ (x, u ) can recover the ground-truth distribution of missingness mechanism, i.e., 
+
+Pgt (R = r|x) = 
+
+Z 10
+
+> p
+
+Y
+
+> j=1
+
+Bernoulli( f (j) 
+
+> ψ∗
+
+(x, u )) du. 
+
+A.8 Proof of Theorem 8 Proof For VAE (the special case of K = 1 for IWAE) for complete data, Dai and Wipf (2019) showed that there is a sequence of decoders such that lim  
+
+> t→∞
+
+pθ∗ 
+
+> t
+
+(x) = pgt (x),
+
+under certain conditions. We first show that such a result on complete data is applicable to the observed data when there is missingness in the data. Denote the dimension of the observed data as p(r) for 1 ≤ p(r) ≤ p, with p(r) being the number of 1’s in r. Define the function F : Rp(r) 7 → [0 , 1] p(r) as 
+
+F (x(r)) = [ F1(x(r),1), F 2(x(r),2; x(r),1), · · · , F p(r) (x(r),p (r) ; x(r),p (r)−1)] ,
+
+where for 1 ≤ j ≤ p(r), Fj is defined as 
+
+Fj (x(r),j ; x(r),1: j−1) = 
+
+Z x(r),j  
+
+> x′
+> (r),j =−∞
+
+pgt (x′ 
+
+> (r),j
+
+|x(r),1: j−1)dx ′ 
+
+> (r),j
+
+,
+
+32 Identifiable Deep Latent Variable Models for MNAR Data 
+
+where x(r),j denotes the jth observed dimension in x(r). By this definition, we have 
+
+dF (x(r)) = pgt (x(r))dx (r).
+
+Since pgt (x), and hence pgt (x(r)), is assumed to be nonzero everywhere, F (·) is invertible. Similarly, we define another differentiable and invertible function G : Rp(r) 7 → [0 , 1] p(r)
+
+for the part of the latent variable corresponding to the observed part of the data x(r), which we denote as z(r):
+
+G(z(r)) = [ G1(z(r),1), G 2(z(r),2), · · · , G p(r) (z(r),p (r) )] T ,
+
+with 
+
+Gj (z(r),j ) = 
+
+Z z(r),j  
+
+> z′
+> (r),j =−∞
+
+N (z(r),j |0, 1) dz ′ 
+
+> (r),j
+
+.
+
+Then 
+
+dG (z(r)) = p(z(r))dz (r) = N (z(r)|0, I )dz (r).
+
+Let the decoder be 
+
+fμx (z(r); θ∗ 
+
+> t
+
+) = F −1 ◦ G(z(r)),
+
+with 
+
+γ∗ 
+
+> t
+
+= 1
+
+t .
+
+Then we have that 
+
+pθ∗ 
+
+> t
+
+(x(r)) = 
+
+Z
+
+> Rp(r)
+
+pθ∗ 
+
+> t
+
+(x(r)|z(r))p(z(r))dz (r)
+
+=
+
+Z
+
+> Rp(r)
+
+N (x(r)|F −1 ◦ G(z(r)), γ ∗ 
+
+> t
+
+I)dG (z(r)).
+
+Let ξ = G(z(r)) such that 
+
+pθ∗ 
+
+> t
+
+(x(r)) = 
+
+Z
+
+> [0 ,1] p(r)
+
+N (x(r)|F −1(ξ), γ ∗ 
+
+> t
+
+I)dξ, 
+
+and let x′ 
+
+> (r)
+
+= F −1(ξ) such that dξ = dF (x′
+
+> (r)
+
+) = pgt (x′
+
+> (r)
+
+)dx ′
+
+> (r)
+
+. Plugging this expression into the previous pθ∗ 
+
+> t
+
+(x(r)) we get 
+
+pθ∗ 
+
+> t
+
+(x(r)) = 
+
+Z
+
+> Rp(r)
+
+N (x(r)|x′
+
+> (r)
+
+, γ ∗ 
+
+> t
+
+I)pgt (x′
+
+> (r)
+
+)dx ′
+
+> (r)
+
+.
+
+As t → ∞ , γ ∗ 
+
+> t
+
+becomes infinitely small and N (x(r)|x′
+
+> (r)
+
+, γ ∗ 
+
+> t
+
+I) becomes a Dirac-delta function, resulting in lim  
+
+> t→∞
+
+pθ∗ 
+
+> t
+
+(x(r)) = 
+
+Z
+
+> X(r)
+
+δ(x′ 
+
+> (r)
+
+− x(r))pgt (x′
+
+> (r)
+
+)dx ′ 
+
+> (r)
+
+= pgt (x(r)).
+
+where X(r) denotes the part of the data space corresponding to the observed dimensions of the data. 
+
+33 Xie, Xue, Wang 
+
+Combining this result with Lemma 7 that there exists a decoder with parameter ψ∗
+
+that recovers the ground truth pψ∗ (r|x(r)) = pgt (r|x(r)), we have that there is a sequence of decoders for the observed joint distribution such that lim  
+
+> t→∞
+
+pθ∗  
+
+> t,ψ ∗
+> t
+
+(x(r), r ) = pgt (x(r), r ).
+
+By continuity, we have lim  
+
+> t→∞
+
+log pθ∗  
+
+> t,ψ ∗
+> t
+
+(x(r), r ) = log pgt (x(r), r ).
+
+According to Theorem 4, if w is bounded, then lim  
+
+> K→∞
+
+LK (θ∗ 
+
+> t
+
+, ψ ∗ 
+
+> t
+
+, ϕ ∗ 
+
+> t
+
+, λ ∗ 
+
+> t
+
+) = log pθ∗  
+
+> t,ψ ∗
+> t
+
+(x(r), r ), ∀ϕ∗ 
+
+> t
+
+∈ Ωϕ, λ ∗ 
+
+> t
+
+∈ Ωλ.
+
+So we have lim  
+
+> t→∞
+
+lim  
+
+> K→∞
+
+LK (θ∗ 
+
+> t
+
+, ψ ∗ 
+
+> t
+
+, ϕ ∗ 
+
+> t
+
+, λ ∗ 
+
+> t
+
+) = log pgt (x(r), r ).
+
+Appendix B. Parameter Settings for Simulation Study 
+
+We followed the parameter settings in Malinsky et al. (2021) for the simulation study for mean estimation. For K = 3 missing variables, missingness patterns (1 , 0, 0), (0 , 1, 0), (1 , 1, 0), (0 , 0, 1), (1 , 0, 1), (0 , 1, 1), (1 , 1, 1), and (0 , 0, 0) were sampled with probabilities 0.169, 0 .153, 0 .136, 0 .119, 0 .102, 0 .085, 0 .169, and 0 .068 respectively (rounded to the 3 rd 
+
+decimal place). Set the mean parameter vector for each missingness pattern R = r is 
+
+μ0(r) = Σ 0h(r) where 
+
+h(1 , 0, 0) = (1 .4, 1.6, 0.9) ′
+
+h(0 , 1, 0) = (1 .9, 1.1, 1.4) ′
+
+h(1 , 1, 0) = (1 .9, 1.6, 0.2) ′
+
+h(0 , 0, 1) = (0 .5, 1.9, 2.1) ′
+
+h(1 , 0, 1) = (0 .5, 2.4, 0.9) ′
+
+h(0 , 1, 1) = (1 .0, 1.9, 1.4) ′
+
+h(1 , 1, 1) = (1 .0, 2.4, 0.2) ′
+
+h(0 , 0, 0) = (1 .4, 1.1, 2.1) ′.
+
+and the variance-covariance matrix as Σ0 =
+
+
+
+4.4 1.3 −2.81.3 3.2 1.3
+
+−2.8 1.3 3.5
+
+ ,
+
+It is straightforward to verify that under these parameter settings, the assumption of no self-censoring is met in the generated data. 
+
+34 Identifiable Deep Latent Variable Models for MNAR Data 
+
+Figure 7: Imputation RMSE with different latent dimensions for the missingness mecha-nism, dim( ˜Z) in UCI datasets with simulated no self-censoring missingness. Each column is a different dataset, and each row represents the true latent dimension for the missingness mechanism in the simulation in the corresponding dataset. The y-axis shows the imputation RMSE on the synthetically missing entries. The x-axis shows the latent dimension for the missingness mechanism used in the learning model. 
+
+Appendix C. More Details on the Choice of the Latent Dimension κ2
+
+We experimented with the choice of latent dimensions for the missingness mechanism using the UCI datasets. We simulated missingness on the original complete UCI data according to no self-censoring with the latent q2 dimensions chosen from 0 , ⌊p/ 2⌋ and p, where p is the data dimension of each dataset. In each of these simulation settings, (fixing the latent dimensions for the data, which have been known for the complete datasets through cross-validation using the generative models,) we experimented with different latent dimensions for the missingness mechanism, κ2 in the learning model. See Figure 7. There does not appear to be significant difference among different choices of κ2 in the learning model in each case, and choosing the dimension κ2 to be 1 works sufficiently well in the learning model from these experiments, no matter what the true latent dimensions are. This empirical result is consistent with the theoretical conclusion in Lemma 7. 
+
+Appendix D. Additional Experimental Results 
+
+D.1 Maximum Mean Discrepancy (MMD) for synthetic data experiments 
+
+We present more numerical results on the comparison of generated data in the synthetic data experiments with the condition of no self-censoring in Section 5.1 in terms of maximum mean discrepancy (MMD). As shown in Table 5 below, the proposed method shows a clear advantage over the other state-of-the-art methods in terms of mean of MMD when 
+
+> 35 Xie, Xue, Wang
+
+comparing the generated data distribution with the ground-truth complete-data distribution 
+
+pgt (x). Table 5: Mean(SD) for maximum mean discrepancy (MMD) of simulated 3D no self-censoring missing data using different imputation methods, for both linear and nonlinear censoring with corresponding generative model architectures. Method Using latent variables No latent variables linear nonlinear linear nonlinear Proposed 0.0086 (0.0074) 0.0062 (0.0071) 0.0126 (0.0203) 0.0053 (0.0039) 
+
+GINA 0.0098 (0.0102) 0.0073 (0.0069) 0.0143 (0.0131) 0.0061 (0.0039) Not-MIWAE 0.0167 (0.0192) 0.0085 (0.0083) 0.0145 (0.0155) 0.0059 (0.0038) 
+
+D.2 Experiments with no self-censoring in UCI data 
+
+For the real-world data from UCI machine learning repository, we evaluated the imputation performance in scenarios where the missingness mechanism aligns with the no self-censoring assumption, but without using latent variables for the missingness mechanism. To empha-size the role of the MNAR mechanism, we primarily focused on linear transformations for generating the missingness indicators from the data. We simulated the missingness according to no self-censoring without latent variables as described in the synthetic experiments in Section 5.1. The results, as presented in Table 6, consistently indicated that our method outper-formed alternative approaches in the missingness mechanism of no self-censoring, even though the simulation of missingness did not rely on latent variables. Table 6: Mean(SD) for imputation RMSE on UCI Data with no self-censoring. By de-fault, the missingness mechanisms in deep generative models are general linear structures, while (nl) indicates that a nonlinear structure is used instead, and (s) means self-censoring structure which particularly applies to not-MIWAE. Method banknote concrete yeast red wine white wine waveform Proposed 0.62(0.09) 0.65(0.05) 0.91(0.08) 0.71(0.03) 0.75(0.02) 0.69(0.01) 
+
+Proposed(nl) 0.62(0.08) 0.67(0.05) 0.95(0.10) 0.73(0.04) 0.77(0.03) 0.70(0.01) 
+
+GINA 0.82(0.12) 0.85(0.04) 1.06(0.05) 0.87(0.04) 0.91(0.02) 0.78(0.01) GINA(nl) 0.85(0.12) 0.90(0.05) 1.11(0.05) 0.91(0.04) 0.96(0.03) 0.79(0.01) Not-MIWAE 0.76(0.15) 0.81(0.10) 1.16(0.18) 0.85(0.07) 0.88(0.08) 0.73(0.01) Not-MIWAE(nl) 0.92(0.11) 0.85(0.08) 1.06(0.06) 0.86(0.04) 0.90(0.04) 0.77(0.02) Not-MIWAE(s) 1.82(0.78) 1.74(0.55) 2.44(0.67) 2.27(0.63) 2.37(0.4) 1.94(0.58) MICE 1.00(0.13) 1.01(0.05) 4.79(2.17) 1.01(0.05) 1.02(0.03) 0.94(0.02) MissForest 0.87(0.15) 0.94(0.08) 1.46(0.29) 0.96(0.06) 0.97(0.07) 0.83(0.01) 
+
+> 36 Identifiable Deep Latent Variable Models for MNAR Data
+
+D.3 Experiments with self-censoring in UCI data 
+
+Despite its mild and flexible nature as a condition for nonparametric identification in MNAR data, it is important to acknowledge that the no self-censoring model assumption may not always hold in real MNAR data scenarios. To assess the robustness and adaptability of our model in the presence of model misspecification, we conducted a comparative analysis by contrasting the results of different methods under the opposite of no self-censoring within the MNAR regime — the self-censoring model. In the self-censoring model, we followed the methodology outlined in Ipsen et al. (2020). Here, we retained the values for half of the features, while for the other half, their values were set to be missing if they exceeded the average value of that respective feature. Among all MNAR mechanisms, this particular setting stands out as one of the most challenging scenarios for a method based on the no self-censoring model, as it specifically encompasses the self-censoring aspect that our model inherently lacks. In the results presented in Table 7, it is observed that not-MIWAE with a linear self-censoring model for missingness consistently outperforms other models. This aligns with expectations since it is the only model that matches the self-censoring assumption. However, when the self-censoring missingness model is replaced by a general linear one, as seen in both not-MIWAE and GINA, there is a noticeable decline in performance, despite the linear self-censoring being a special case of the linear model. Remarkably, our proposed model, which does not incorporate any modeling of self-censoring, achieves relatively acceptable results even in the presence of model misspeci-fication, particularly when using a nonlinear no self-censoring missingness model. This observation implies that the correlation between data variables could make the no self-censoring model a practical assumption, even in scenarios where self-censoring might be a factor to consider. Table 7: Mean(SD) for imputation RMSE on UCI Data with self-censoring. The best two results are highlighted. By default, the missingness mechanisms in deep generative models are general linear structures, while (nl) indicates that a nonlinear structure is used instead, and (s) means a self-censoring structure which particularly applies to not-MIWAE. The results show a certain degree of robustness of the proposed method in the case of model misspecification. Method banknote concrete yeast red wine white wine waveform Proposed 1.38(0.08) 1.77(0.10) 1.65(0.05) 1.52(0.03) 1.59(0.02) 1.45(0.02) Proposed(nl) 1.21(0.04) 1.67(0.03) 1.65(0.05) 1.44(0.02) 1.57(0.02) 1.43(0.01) GINA 2.66(1.46) 2.37(1.32) 1.52(0.05) 1.88(0.56) 1.74(0.26) 1.55(0.10) Not-MIWAE 1.73(0.61) 1.99(0.67) 1.51(0.11) 1.79(0.65) 1.63(0.01) 1.52(0.04) Not-MIWAE(s) 1.04(0.16) 1.21(0.10) 1.27(0.12) 1.15(0.01) 1.20(0.03) 0.94(0.02) 
+
+MICE 1.41(0.00) 1.87(0.00) 1.76(0.00) 1.68(0.00) 1.41(0.00) 1.42(0.00) 
+
+MissForest 1.28(0.01) 1.81(0.02) 1.72(0.01) 1.62(0.02) 1.63(0.01) 1.51(0.00) 
+
+> 37 Xie, Xue, Wang
+
+Appendix E. Implementation Details in Experiments 
+
+We consider the implementation for both linear missingness models and nonlinear missing-ness models, that is, whether pψ(r|x) is a linear or nonlinear function of x. For learning a linear missingness model, there are no hidden layers from input X and ˜Z to the output R.We can remove the connection between Xj and Rj for all 1 ≤ j ≤ p from the fully connected neural network structure to arrive at a structure of no self-censoring. To model a nonlinear relationship, at least one hidden layer is added with a nonlinear transformation such as RELU or tanh . There is no direct way of removing edges from such a network to obtain a no self-censoring effect. One brute-force way to implement this nonlinear self-censoring model is to use a whole set of unique edges for each missingness indicator Rj for 1 ≤ j ≤ p
+
+and iterate through the dimensions. Instead, we propose to use a shortcut by remasking each corresponding data variable Xj with zero for each missingness indicator Rj , while still sharing all the weight parameters for each dimension j for 1 ≤ j ≤ p. This is inspired by the practice of initial zero imputation prior to training used for DLVMs for missing data, which deactivates the propagation of the loss on the associated weight parameters (Nazabal et al., 2020). The number of parameters of the model can be kept down in this regime, and even smaller than a general missingness mechanism model without considering no self-censoring. For all experiments, TensorFlow probability (Dillon et al., 2017) and the Adam optimizer (Kingma and Ba, 2014) were employed, with the learning rate set at 0.001. No regularization techniques were applied. For MICE and missForest, we utilize the implementation in the Python package sklearn directly. In the following, we use D for the dimension of the latent space for the data, and H for the number of neurons in the hidden layer. A 1-dimensional latent space was employed for the missingness indicators. In the inference network, we mainly utilized a structure of p-H-H-( D + 1), which maps the data (with missing data filled with zero) into distributional parameters for the two latent spaces. The decoder 
+
+pθ(x|z) followed a structure of D-H-H-p. In the linear implementation of the missingness model, there was no hidden layer, while in the nonlinear one, we included one hidden layer. All neural networks incorporated tanh activations, except for the output layer where no activation function was used. The generative models adopted the objectives with K = 20 importance samples. The observational noise γ for the data variables was set as a learnable parameter in the model. All methods were trained with a batch size of 16 for 10k epochs. Imputation RMSE was estimated using 10k importance samples. For data generation, we generated from the latent variables one sample for each data dimension in each iteration. 
+
+Simulation We used latent dimension H = 128 with D = 3 for low-dimensional data, and D = 10 for high-dimensional data in the simulation. In the mixture of Gaussians, we simplified the network structures to have one hidden layer for both the encoder and decoder for the data, p-H-( D + 1) and D-H-p respectively, and the maximum number of epochs were set to be 20k. 
+
+UCI data We used latent dimension D = p − 1 for UCI data, where the data were stan-dardized to have a mean of 0 and unit variance before introducing missing values. And the data are randomly shuffled at the beginning of each iteration of the experiment. 
+
+HIV data As the data is binary, one can not differentiate between the zero values and the initial zero imputation, we input both the data and missingness indicators to the encoder 
+
+> 38 Identifiable Deep Latent Variable Models for MNAR Data
+
+and employed an encoder structure similar to the one in the synthetic experiment for a mixture of Gaussians. Additionally, a Bernoulli decoder instead of a Gaussian decoder was used for the data. 
+
+Yahoo! data Prior to training, all user ratings are normalized to fall within the range of 0 to 1 (this normalization will be reversed during evaluation). Gaussian likelihood with a variance of γ = 0 .02 is employed for all the generative models. A 20-dimensional latent space for the data is utilized, and the decoder follows a structure of 20-10-p. The inference network adopts the point net structure proposed by Ma et al. (2018), employing a 20-dimensional feature mapping h parameterized by a single-layer neural network and 20-dimensional ID vectors for each variable. The symmetric operator is defined as the summation operator. The missing model is parameterized by a linear neural network. All methods underwent training for 100 epochs with a batch size of 100. Imputation RMSE was estimated using 10 importance samples. 
+
+References 
+
+Jordanka A Angelova. On moments of sample mean and variance. Int. J. Pure Appl. Math ,79(1):67–85, 2012. Arthur Asuncion and David Newman. UCI machine learning repository, 2007. Tim Austin. Exchangeable random measures. In Annales de l’IHP Probabilit´ es et statis-tiques , volume 51, pages 842–861, 2015. Yuri Burda, Roger Grosse, and Ruslan Salakhutdinov. Importance weighted autoencoders. 
+
+arXiv preprint arXiv:1509.00519 , 2015. Hua Yun Chen. Compatibility of conditionally specified models. Statistics & probability letters , 80(7-8):670–677, 2010. Jennifer Y Chen, Heather J Ribaudo, Sajini Souda, Natasha Parekh, Anthony Ogwu, Shahin Lockman, Kathleen Powis, Scott Dryden-Peterson, Tracy Creek, William Jimbo, et al. Highly active antiretroviral therapy and adverse birth outcomes among HIV-infected women in botswana. The Journal of infectious diseases , 206(11):1695–1705, 2012. Xi Chen, Yan Duan, Rein Houthooft, John Schulman, Ilya Sutskever, and Pieter Abbeel. Infogan: Interpretable representation learning by information maximizing generative ad-versarial nets. Advances in neural information processing systems , 29, 2016. Biraj Dahal, Alexander Havrilla, Minshuo Chen, Tuo Zhao, and Wenjing Liao. On deep gen-erative models for approximation and estimation of distributions on manifolds. Advances in Neural Information Processing Systems , 35:10615–10628, 2022. Bin Dai and David Wipf. Diagnosing and enhancing VAE models. arXiv preprint arXiv:1903.05789 , 2019. Joshua V Dillon, Ian Langmore, Dustin Tran, Eugene Brevdo, Srinivas Vasudevan, Dave Moore, Brian Patton, Alex Alemi, Matt Hoffman, and Rif A Saurous. Tensorflow distri-butions. arXiv preprint arXiv:1711.10604 , 2017. 
+
+> 39 Xie, Xue, Wang
+
+Benjamin Djulbegovic, Jef van den Ende, Robert M Hamm, Thomas Mayrhofer, Iztok Hozo, Stephen G Pauker, and International Threshold Working Group (ITWG). When is rational to order a diagnostic test, or prescribe treatment: the threshold model as an explanation of practice variation. European journal of clinical investigation , 45(5): 485–493, 2015. Robert E Fay. Causal models for patterns of nonresponse. Journal of the American Statis-tical Association , 81(394):354–365, 1986. Jos´ e Miguel Hern´ andez-Lobato, Neil Houlsby, and Zoubin Ghahramani. Probabilistic matrix factorization with non-random missing data. In International Conference on Machine Learning , pages 1512–1520. PMLR, 2014. Søren Højsgaard, David Edwards, and Steffen Lauritzen. Graphical models with R . Springer Science & Business Media, 2012. Niels Bruun Ipsen, Pierre-Alexandre Mattei, and Jes Frellsen. not-MIWAE: Deep generative modelling with missing not at random data. arXiv preprint arXiv:2006.12871 , 2020. Janus Christian Jakobsen, Christian Gluud, Jørn Wetterslev, and Per Winkel. When and how should multiple imputation be used for handling missing data in randomised clinical trials–a practical guide with flowcharts. BMC medical research methodology , 17(1):1–10, 2017. Olav Kallenberg and Olav Kallenberg. Foundations of modern probability , volume 2. Springer, 1997. Diederik P Kingma and Jimmy Ba. Adam: A method for stochastic optimization. arXiv preprint arXiv:1412.6980 , 2014. Diederik P Kingma and Max Welling. Auto-encoding variational bayes. arXiv preprint arXiv:1312.6114 , 2013. Steven Cheng-Xian Li, Bo Jiang, and Benjamin Marlin. MisGAN: Learning from incomplete data with generative adversarial networks. arXiv preprint arXiv:1902.09599 , 2019. Yilin Li, Wang Miao, Ilya Shpitser, and Eric J Tchetgen Tchetgen. A self-censoring model for multivariate nonignorable nonmonotone missing data. arXiv preprint arXiv:2207.08535 , 2022. Dawen Liang, Laurent Charlin, and David M Blei. Causal inference for recommendation. In Causation: Foundation to Application, Workshop at UAI. AUAI , 2016a. Dawen Liang, Laurent Charlin, James McInerney, and David M Blei. Modeling user expo-sure in recommendation. In Proceedings of the 25th international conference on World Wide Web , pages 951–961, 2016b. Antonio R Linero. Bayesian nonparametric analysis of longitudinal studies in the presence of informative missingness. Biometrika , 104(2):327–341, 2017. 
+
+> 40 Identifiable Deep Latent Variable Models for MNAR Data
+
+Guang Ling, Haiqin Yang, Michael R Lyu, and Irwin King. Response aware model-based collaborative filtering. arXiv preprint arXiv:1210.4869 , 2012. Roderick JA Little and Donald B Rubin. Statistical analysis with missing data , volume 793. John Wiley & Sons, 2019. Raymond Y Lo, William J Jagust, Paul Aisen, Clifford R Jack Jr, Arthur W Toga, Laurel Beckett, Anthony Gamst, Holly Soares, Robert C. Green, Tom Montine, et al. Predicting missing biomarker data in a longitudinal study of alzheimer disease. Neurology , 78(18): 1376–1382, 2012. Chao Ma and Cheng Zhang. Identifiable generative models for missing not at random data imputation. Advances in Neural Information Processing Systems , 34:27645–27658, 2021. Chao Ma, Sebastian Tschiatschek, Konstantina Palla, Jos´ e Miguel Hern´ andez-Lobato, Se-bastian Nowozin, and Cheng Zhang. Eddi: Efficient dynamic discovery of high-value information with partial VAE. arXiv preprint arXiv:1809.11142 , 2018. Wei Ma and George H Chen. Missing not at random in matrix completion: The effectiveness of estimating missingness probabilities under a low nuclear norm assumption. Advances in neural information processing systems , 32, 2019. Wen-Qing Ma, Zhi Geng, and Yong-Hua Hu. Identification of graphical models for nonig-norable nonresponse of binary outcomes in longitudinal studies. Journal of multivariate analysis , 87(1):24–45, 2003. Daniel Malinsky, Ilya Shpitser, and Eric J Tchetgen Tchetgen. Semiparametric inference for nonmonotone missing-not-at-random data: the no self-censoring model. Journal of the American Statistical Association , pages 1–9, 2021. Benjamin M Marlin and Richard S Zemel. Collaborative prediction and ranking with non-random missing data. In Proceedings of the third ACM conference on Recommender systems , pages 5–12, 2009. Giampiero Marra, Rosalba Radice, Till B¨ arnighausen, Simon N Wood, and Mark E McGov-ern. A simultaneous equation approach to estimating HIV prevalence with nonignorable missing responses. Journal of the American Statistical Association , 112(518):484–496, 2017. Pierre-Alexandre Mattei and Jes Frellsen. MIWAE: Deep generative modelling and impu-tation of incomplete data sets. In International conference on machine learning , pages 4413–4423. PMLR, 2019. Karthika Mohan and Judea Pearl. Graphical models for processing missing data. Journal of the American Statistical Association , 116(534):1023–1037, 2021. Karthika Mohan, Judea Pearl, and Jin Tian. Graphical models for inference with missing data. Advances in neural information processing systems , 26, 2013. 
+
+> 41 Xie, Xue, Wang
+
+Razieh Nabi, Rohit Bhattacharya, and Ilya Shpitser. Full law identification in graphical models of missing data: Completeness results. In International Conference on Machine Learning , pages 7153–7163. PMLR, 2020. Alfredo Nazabal, Pablo M Olmos, Zoubin Ghahramani, and Isabel Valera. Handling incom-plete heterogeneous data using VAEs. Pattern Recognition , 107:107501, 2020. James M Robins. Non-response models for the analysis of non-monotone non-ignorable missing data. Statistics in medicine , 16(1):21–37, 1997. James M Robins, Andrea Rotnitzky, and Lue Ping Zhao. Estimation of regression coeffi-cients when some regressors are not always observed. Journal of the American statistical Association , 89(427):846–866, 1994. Mauricio Sadinle and Jerome P Reiter. Itemwise conditionally independent nonresponse modelling for incomplete multivariate data. Biometrika , 104(1):207–220, 2017. Mauricio Sadinle and Jerome P Reiter. Sequential identification of nonignorable missing data mechanisms. Statistica Sinica , 28(4):1741–1759, 2018. Tobias Schnabel, Adith Swaminathan, Ashudeep Singh, Navin Chandak, and Thorsten Joachims. Recommendations as treatments: Debiasing learning and evaluation. In inter-national conference on machine learning , pages 1670–1679. PMLR, 2016. Ilya Shpitser. Consistent estimation of functions of data missing non-monotonically and not at random. Advances in Neural Information Processing Systems , 29, 2016. Daniel J Stekhoven and Peter B¨ uhlmann. MissForest—non-parametric missing value im-putation for mixed-type data. Bioinformatics , 28(1):112–118, 2012. BaoLuo Sun, Lan Liu, Wang Miao, Kathleen Wirth, James Robins, and Eric J Tchetgen Tchetgen. Semiparametric estimation with data missing not at random using an instru-mental variable. Statistica Sinica , 28(4):1965, 2018. Eric J Tchetgen Tchetgen, Linbo Wang, and BaoLuo Sun. Discrete choice models for nonmonotone nonignorable missing data: Identification and inference. Statistica Sinica ,28(4):2069, 2018. Stef Van Buuren and Karin Groothuis-Oudshoorn. MICE: Multivariate imputation by chained equations in R. Journal of statistical software , 45:1–67, 2011. Kevin Wang, Hongqian Niu, Yixin Wang, and Didong Li. Deep generative models: Com-plexity, dimensionality, and approximation. arXiv preprint arXiv:2504.00820 , 2025. Xiaojie Wang, Rui Zhang, Yu Sun, and Jianzhong Qi. Doubly robust joint learning for recommendation on data missing not at random. In International Conference on Machine Learning , pages 6638–6647. PMLR, 2019. Yixin Wang and David M Blei. The blessings of multiple causes. Journal of the American Statistical Association , 114(528):1574–1596, 2019. 
+
+> 42 Identifiable Deep Latent Variable Models for MNAR Data
+
+Yixin Wang, Dawen Liang, Laurent Charlin, and David M Blei. The deconfounded recommender: A causal inference approach to recommendation. arXiv preprint arXiv:1808.06581 , 2018. Jinsung Yoon, James Jordon, and Mihaela Schaar. GAIN: Missing data imputation using generative adversarial nets. In International conference on machine learning , pages 5689– 5698. PMLR, 2018. Hua Yun Chen. A semiparametric odds ratio model for measuring association. Biometrics ,63(2):413–421, 2007.
