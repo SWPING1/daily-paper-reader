@@ -6,44 +6,38 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-03-28
-- 运行时间：2026-03-28 19:16:53 UTC
+- 最新运行日期：2026-03-29
+- 运行时间：2026-03-29 19:53:30 UTC
 - 运行状态：成功
-- 本次总论文数：7
+- 本次总论文数：5
 - 精读区：0
-- 速读区：7
+- 速读区：5
 
 ### 今日简报（AI）
-今日速览 7 篇前沿论文，聚焦 3D 情感数字人合成与多模态强化学习推理。
-重点关注 EmoTaG 利用 3DGS 实现的高保真情感驱动头像，以及 R-C2 通过循环一致性强化学习对多模态逻辑推理的显著提升。
-建议关注 3D 生成与因果表征学习的结合，探索更具逻辑性与表现力的交互式 AI 应用。
-- 详情：[/202603/28/README](/202603/28/README)
+今日聚焦多模态追踪与大模型效率优化，深入探索语音伪造检测新前沿。
+重点关注通过子空间重构提升视觉语言模型效率的 ResPrune，以及利用说话人置零技术精准识别语音深伪的 SNAP 方案。
+建议关注大模型轻量化与多模态安全防护，紧跟视觉与语音交叉领域的最新落地技术。
+- 详情：[/202603/29/README](/202603/29/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [EmoTaG: Emotion-Aware Talking Head Synthesis on Gaussian Splatting with Few-Shot Personalization](/202603/28/2603.21332v1-emotag-emotion-aware-talking-head-synthesis-on-gaussian-splatting-with-few-shot-personalization)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：情感感知运动建模与音频情感不匹配
-2. [Discrete Causal Representation Learning](/202603/28/2603.25017v1-discrete-causal-representation-learning)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：用于解耦潜变量的因果表示学习
-3. [R-C2: Cycle-Consistent Reinforcement Learning Improves Multimodal Reasoning](/202603/28/2603.25720v1-r-c2-cycle-consistent-reinforcement-learning-improves-multimodal-reasoning)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：跨模态循环一致性与重建
-4. [Cross-modal Fuzzy Alignment Network for Text-Aerial Person Retrieval and A Large-scale Benchmark](/202603/28/2603.20721v1-cross-modal-fuzzy-alignment-network-for-text-aerial-person-retrieval-and-a-large-scale-benchmark)  
+1. [SNAP: Speaker Nulling for Artifact Projection in Speech Deepfake Detection](/202603/29/2603.20686v1-snap-speaker-nulling-for-artifact-projection-in-speech-deepfake-detection)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：通过跨模态模糊对齐减轻退化的视觉信息影响
-5. [Statistical Learning for Latent Embedding Alignment with Application to Brain Encoding and Decoding](/202603/28/2603.21042v1-statistical-learning-for-latent-embedding-alignment-with-application-to-brain-encoding-and-decoding)  
+   evidence：消除说话人纠缠的说话人置零框架
+2. [Learning Progressive Adaptation for Multi-Modal Tracking](/202603/29/2603.21100v1-learning-progressive-adaptation-for-multi-modal-tracking)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：有限配对数据下的潜嵌入对齐
-6. [Group3D: MLLM-Driven Semantic Grouping for Open-Vocabulary 3D Object Detection](/202603/28/2603.21944v1-group3d-mllm-driven-semantic-grouping-for-open-vocabulary-3d-object-detection)  
+   evidence：多模态跟踪的模态依赖与纠缠适配器
+3. [ResPrune: Text-Conditioned Subspace Reconstruction for Visual Token Pruning in Large Vision-Language Models](/202603/29/2603.21105v1-resprune-text-conditioned-subspace-reconstruction-for-visual-token-pruning-in-large-vision-language-models)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：处理多模态3D检测中不完整的几何证据
-7. [Adapting Point Cloud Analysis via Multimodal Bayesian Distribution Learning](/202603/28/2603.22070v1-adapting-point-cloud-analysis-via-multimodal-bayesian-distribution-learning)  
+   evidence：视觉令牌剪枝的子空间重构问题
+4. [Conformal Cross-Modal Active Learning](/202603/29/2603.23159v1-conformal-cross-modal-active-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于鲁棒适配的多模态贝叶斯分布学习
+   evidence：通过教师-学生架构桥接视觉和语言模态
+5. [OmniACBench: A Benchmark for Evaluating Context-Grounded Acoustic Control in Omni-Modal Models](/202603/29/2603.23938v1-omniacbench-a-benchmark-for-evaluating-context-grounded-acoustic-control-in-omni-modal-models)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：多模态情感与声学控制基准
 
 
 <div class="dpr-home-promo-card">
