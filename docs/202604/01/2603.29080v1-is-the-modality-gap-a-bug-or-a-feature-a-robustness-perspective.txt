@@ -1,0 +1,1361 @@
+Title: Is the Modality Gap a Bug or a Feature? A Robustness Perspective
+
+URL Source: https://arxiv.org/pdf/2603.29080v1
+
+Published Time: Wed, 01 Apr 2026 00:22:21 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# Is the Modality Gap a Bug or a Feature? A Robustness Perspective 
+
+Rhea Chowers Hebrew University Jerusalem, Israel 
+
+rhea.chowers@mail.huji.ac.il 
+
+Udi Barzelay IBM Research Haifa, Israel 
+
+udib@il.ibm.com 
+
+Oshri Naparstek IBM Research Haifa, Israel 
+
+Oshri.Naparstek@ibm.com 
+
+Yair Weiss Hebrew University Jerusalem, Israel 
+
+yair.weiss@mail.huji.ac.il 
+
+Abstract 
+
+Many modern multi-modal models (e.g. CLIP) seek an em-bedding space in which the two modalities are aligned. Somewhat surprisingly, almost all existing models show a strong modality gap: the distribution of images is well-separated from the distribution of texts in the shared embed-ding space. Despite a series of recent papers on this topic, it is still not clear why this gap exists nor whether closing the gap in post-processing will lead to better performance on downstream tasks. In this paper we show that under certain conditions, minimizing the contrastive loss yields a represen-tation in which the two modalities are separated by a global gap vector that is orthogonal to their embeddings. We also show that under these conditions the modality gap is mono-tonically related to robustness: decreasing the gap does not change the clean accuracy of the models but makes it less likely that a model will change its output when the embed-dings are perturbed. Our experiments show that for many real-world VLMs we can significantly increase robustness by a simple post-processing step that moves one modality towards the mean of the other modality, without any loss of clean accuracy. 
+
+1. Introduction 
+
+Foundation models are a common and successful approach to solving a variety of problems - models are trained on ex-tremely large datasets and then adapted to other tasks either by fine tuning or zero shot application, under the assump-tion that they learned a meaningful embedding space. A specific and popular class of these models are contrastive multi-modal models. These are trained to learn a shared embedding space for different data types such as images and texts by aligning pairs of similar instances from the two modalities via a contrastive loss [ 30 , 32 , 41 ]. These shared embedding spaces, specifically that of CLIP [ 20 ], are com-monly used for various tasks such as zero shot classification, text-to-image retrieval, text to image generation, and more. The success of multi-modal models on a wide range of different applications (e.g. text-to-image generative models [ 22 ]), might imply that they have successfully solved the optimization problem on which they were trained, yet some open questions persist. One of these regards the "modality gap" [ 11 ] - a phenomenon in which the two modalities are embedded into linearly separable regions of the unit hyper-sphere. Figure 1a shows projections of CLIP’s embedding of the MS-COCO validation set onto its first three principal components. Clearly, the two modalities are well separated in embedding space. This widely observed phenomenon across models and data types contradicts the training objec-tive which aims to make similar texts and images perfectly overlap in embedding space—an objective known as "align-ment" [34]. Recent works have tried to explain the cause for the for-mation of the gap, suggesting either information imbalance between images and texts (i.e. when a single caption is ap-propriate for multiple images) [ 25 ] or the use of contrastive loss in cases when the effective dimension of each modality is small ("dimensionality collapse") [ 43 ], but a clear expla-nation remains elusive. Concurrently, investigation into the downstream effects of the gap has also failed to reach a clear conclusion [ 5, 11 , 12 , 21 , 27 , 43 ]. Figure 2 presents the application of various multi-modal models on common downstream tasks. The performance of these models varies non-monotonously when adjusting the gap by moving the modality means towards each other, implying no clear rela-tion between performance and the size of the gap. 1     
+
+> arXiv:2603.29080v1 [cs.CV] 30 Mar 2026 Image Embeddings Text Embeddings (a) CLIP’s embedding of MS-COCO validation set
+> (b) "a photo of a dog / frog" ∨
+> "photograph of the dog / frog "×
+
+Figure 1. Left: Projections of CLIPs embedding of the MS-COCO validation set onto its first 3 principal components. A clear separa-tion between images and texts is evident. Right: An image from the Imagenet [ 1] validation set that’s misclassified by CLIP when changing the caption template. Multi-modal models can lose more than 6% of their accuracy when replacing the caption template. 
+
+Another open topic regarding multi-modal models and deep learning in general focuses on the robustness of models to small variations in their input. Various works have shown that despite their large training corpus and the numerous augmentations used during their training, the performance of these models on downstream tasks is sensitive to small varia-tions in the input such as single pixel shifts [ 28 ] and caption rephrasing [ 9, 44 ]. Figure 1b demonstrates this brittleness. When trying to classify an image as a dog or a frog using CLIP, the model outputs different predictions depending on the the two texts with which the image is compared, even if the change is semantically meaningless. In this work we establish a direct link between these two lines of work. In Sec. 3 we expand on [ 43 ] and prove that under realistic assumptions, multi-modal models learn an embedding space containing a modality gap due to their initialization and the dynamics induced by the contrastive loss. We continue to prove that the size of the gap is corre-lated with the robustness of these models, i.e. their ability to perform consistently under small changes to the embedding space. Our theory, along with empirical verification on real models and datasets, with both controlled (i.e. Gaussian) and real noise (i.e. text rephrasing), leads us to conclude that if robustness is a desired property of the models then the modality gap is indeed a bug caused by an interaction of the multi-modal contrastive loss and the initialization scheme. Inspired by our theoretical findings, in Sec. 4 we present a simple, efficient algorithm to close the gap which can be applied as a post processing step when using the different models’ embeddings spaces. In Sec. 5 we demonstrate a use case of this algorithm in dealing with various noise models such as quantization and other real noise settings where the theoretical assumptions are not met. −1.0 −0.5 0.0 0.5 1.0     
+
+> Alpha
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> 100
+> Accuracy
+> SigLIP CLIP (ViT-B16) CLIP (ViT-L14) Original Gap No Gap
+> (a) Zero Shot on Imagenet −1.0−0.50.00.51.0
+> Alpha
+> 30
+> 40
+> 50
+> 60
+> 70
+> R@1
+> MetaCLIP (ViT-L14) CLIP (ViT-L14) SigLIP Original Gap No Gap (b) I2T Retrieval on MS-COCO
+
+Figure 2. Is the modality gap a bug or a feature? Changing the gap by moving the text embeddings by α ·⃗g has an inconsistent effect on downstream performance. The figure follows [ 11 ] and shows that for some datasets, models benefit from slightly enlarging the gap (2a), some from maintaining it (2b) . 
+
+2. Related Work 
+
+Multi-modal contrastive learning [ 41 ] is a method for learn-ing a shared embedding space for different modalities e.g. images and texts. Models trained in this manner such as CLIP [ 20 ] and others [ 36 , 40 ] show impressive performance on downstream tasks, e.g. zero shot classification. This has led to widespread use of CLIP’s embedding space in vari-ous tasks, most notably in text to image generation [ 7, 22 ]. While the contrastive loss [ 30 , 32 ] of multi-modal models pushes the modality pairs’ embeddings to be aligned and uniformly spread on the unit sphere [ 34 ], in practice multi-modal models map the different modalities to distinct areas of the shared embedding space, creating a modality gap [ 11 ]. Several explanations as to the formation of the gap were suggested, stemming from either the data used to train these models [ 11 , 25 ], the inherent differences between text and images [ 25 ] or the training procedure [ 27 , 37 ]. Recently, Zhang et al. [ 43 ] have suggested that the gap is caused due to a combination of training with the contrastive loss and a dimensional collapse in the initial embeddings of the two modalities [ 6]. In this work we show that dimensionality collapse is neither necessary nor sufficient for the formation of the gap and we provide a more nuanced analysis of the dynamics of learning which cause the gap. In addition to explaining the formation of the gap, previ-ous works have also attempted to understand its effects on downstream performance. It has previously been shown that a large gap limits the ability to perform cross-modal tasks with uni-modal data [ 43 ] and is negatively correlated in spe-cific settings of cross modal retrieval [ 12 , 15 ]. In general, however, recent work concludes that there is at most a weak effect of the gap on downstream performance [ 5 , 11 , 25 ]while other factors such as model and embedding size seem to have a stronger effect [ 25 ]. Some works even suggest maintaining the modality gap [ 5 , 21 ], or show that it has no effect in specific downstream settings [ 42 ]. We build on these findings and and prove that the gap indeed has negative 2effect on downstream performance in terms of robustness. Alongside the attempt to understand the gap and its impli-cations, previous works suggested various methods for clos-ing the gap. These were mainly motivated by failure modes in specific settings [ 12 , 16 ], or by the inherent contradiction of the gap to the contrastive loss objective. Some works suggest closing the gap by altering the training procedure of multi-modal models with specific losses and augmenta-tions [ 17 , 37 ], while others include the training of models that implicitly close the gap as part of pipelines performing complex downstream tasks such as text to image generation [ 18 , 22 ]. Our work falls in line with these, but is appli-cable in a general setting - for any downstream task that relies on cross modal nearest neighbor retrieval, and with no additional training required. A different line of work studies multi-modal models in the context of robustness [ 2, 31 , 39 ]. Various works have shown that their performance on downstream tasks is sen-sitive to both textual variations [ 19 , 44 ], adversarial attacks [ 23 ], various image perturbations such as augmentations [19 ], spurious correlations [ 33 ], natural variations [ 28 ] and more [ 35 ]. These are tackled mainly via finetuning and retraining with different objectives or data [ 8, 24 , 29 , 44 ]. Our theoretical work aims to enrich the understanding of these shortcomings by proving that a modality gap causes degrading in robustness. 
+
+3. Theory 
+
+3.1. Notation and Definitions 
+
+As in previous work, we assume two modalities that are embedded on the d-dimensional unit hypersphere. Our em-beddings are in the form of sample matrices X ∈ RN ×d
+
+and Y ∈ RM ×d with modality means μx = 1
+
+> N
+
+P⃗x∈X ⃗ x
+
+and μy = 1
+
+> M
+
+P⃗y∈Y ⃗ y . Many downstream tasks rely on cross modal retrieval - finding the nearest neighbor of sample ⃗y ∈ Y among the samples in the other embed-ding X by computing the ℓ2 distance between the two: NN (⃗y, X ) = arg min ⃗ x∈X ∥⃗x −⃗y∥ 2.Since the embeddings lie on the unit hypersphere, the NN can equivalently be computed using cosine similarity. We focus on models trained with the multi-modal con-trastive loss. During training we are given a paired dataset 
+
+{xi, y i} (e.g. image and matching caption) and minimize the following loss: 
+
+L(X , Y) = − 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+log ℓ(⃗x i, Y) − 1
+
+N
+
+> N
+
+X
+
+> j=1
+
+log ℓ(⃗y j , X )
+
+(1) Where ℓ contrasts an embedding with the other modality: 
+
+ℓ(⃗x i, Y) = e−∥ ⃗x i−⃗y i∥/τ 
+
+P⃗y j ∈Y e−∥ ⃗x i−⃗y j ∥/τ  (2) with τ > 0 being the temperature parameter. We follow previous works [ 42 ] and define, for a paired dataset the local gap as the vector between a pair from the two modalities: ⃗g i =⃗x i −⃗y i (3) We also define the global gap [ 11 , 27 , 42 ] as the vector between the modality means: ⃗g = 1
+
+M
+
+X⃗y∈Y ⃗y − 1
+
+N
+
+X⃗x∈X ⃗x = μ y − μx (4) When the two modalities are balanced ( N = M ), the global vector is the average of local vectors. Nevertheless, the global gap vector is well defined for any dataset consisting of two modalities, whether a bijective pairing exists or not. 0.0 0.2 0.4 0.6 0.8 1.00.00.20.40.60.8                                          
+
+> L(X, Y )≈10 ,||∇ xL|| ≈ 6.7
+> YX−1.0−0.50.00.51.00.00.20.40.60.81.0
+> L(X, Y )>20 ,||∇ xL|| >8
+> YX0.00.20.40.60.81.00.00.20.40.60.8
+> L(X, Y )<10 −4,||∇ xL|| ≈ 5×10 −4
+> YX−1.0−0.50.00.51.00.00.20.40.60.81.0
+> L(X, Y )<10 −4,||∇ xL|| ≈ 2×10 −4
+> YX
+
+Figure 3. Three points in each modality in R2 and the correspond-ing multi-modal contrastive loss along with the magnitude of the gradient of the loss. Lines connect true pairs. As long as the points satisfy relative alignment - the true pair of any point is also its nearest neighbor - the loss and the gradient magnitude are close to zero, even when there exists a gap. 
+
+3.2. Why Should a Global Gap Exist? 
+
+Since the contrastive loss rewards embeddings in which the representations in the two modalities are aligned [ 34 ], the presence of a global gap in embeddings learned using such a loss is highly surprising. Indeed, it is easy to show that the global minimum of the contrastive loss is obtained when the representations are maximally aligned, i.e. ∀i : xi = yi,entailing no local or global gap, i.e. ⃗ g i = 0 . But it is also easy to see that there exist many other embeddings that achieve almost the same loss as the globally aligned embedding. Figure 3 shows an example. The lines are the local gap vectors ⃗g i which show the correspondence between the two modalities: ideally we want circles and crosses that are connected to lie on top of each other in embedding 3−0.4 −0.2 0.0 0.2 0.4                                       
+
+> −1.0
+> −0.50.00.51.0t=0 , L(X, Y ) = 2.31 −1.0−0.50.00.51.0
+> −1.0
+> −0.50.00.51.0t=500 , L(X, Y ) = 1.69 −101
+> −1.0
+> −0.50.00.51.0t=1000 , L(X, Y ) = 1.01 −4−2024
+> −1.0
+> −0.50.00.51.0t=10000 , L(X, Y ) = 0.05 −4−2024
+> −1.0
+> −0.50.00.51.0t=50000 , L(X, Y ) = 0.00 −0.50.5
+> t=0 , L(X, Y ) = 6.91 −0.50.5
+> t=5000 , L(X, Y ) = 6.91 −0.50.5
+> t=50000 , L(X, Y ) = 6.15 −0.50.5
+> t=500000 , L(X, Y ) = 3.57 −0.50.5
+> t=10000000 , L(X, Y ) = 0.57
+
+Figure 4. The evolution of embeddings using gradient descent on the contrastive loss (Eq. (6)) starting with two tight clusters. Both when using an unnormalized embedding space (top) and when constricting the embeddings to the sphere (bottom) they converge to a solution that has almost zero loss and for which a global gap vector exists and the gap vector is orthogonal to both modalities. We prove that minimizing the contrastive loss will lead to such a solution under certain assumptions. For full training details see Sec. H. 
+
+space, meaning ⃗g i = 0 . As can be seen in the figure, the loss and the gradient can be made arbitrarily close to zero without perfect alignment: as long as the corresponding embeddings are closer than all other cross-modal pairs, the loss and the gradient will approach 0. In particular, the solution in the bottom right (where there is a modality gap) achieves practically the same loss and gradient magnitude as the desired, perfectly aligned solution. Intriguingly, gradient descent sometimes seems to prefer these low-loss solutions over the global optimum. Figure 4 shows dynamics of points in low dimensions, in which we minimize the contrastive loss with respect to the embeddings coordinates. In both of these cases, training converges to a solution that has almost zero loss but for which a global gap vector remains. Zhang et al. [43 ] postulate that dimensional collapse, i.e. when the embeddings’ variance within each modality is concentrated in relatively few dimensions, is the cause for the modality gap. But why does the modality gap happen when there is equal variance in all dimensions? Figures 4 and 5 show such cases - both embeddings are initialized by sampling from isotropic Gaussians, therefore maintaining equal variance in all dimensions even after normalization to the sphere. Still learning yields a representation with a global gap, even without dimensional collapse. Therefore, further investigation is needed. We begin by defining: 
+
+Qx(i, j ) = e−∥ xi−yj ∥2/τ 
+
+P 
+
+> j′
+
+e−∥ xi−yj′ ∥2/τ 
+
+Qy (i, j ) = e−∥ xi−yj ∥2/τ 
+
+P 
+
+> i′
+
+e−∥ xi′ −yj ∥2/τ  (5) Which are known as the softmax of the logit matrix [ 20 ]. 
+
+Qx can be thought of as a soft assignment matrix: for each 
+
+xi it measures the normalized affinity between xi and all points yj in the other modality while Qy does the same for each point yi. By construction, the sum of the rows of Qx
+
+are equal to one, and the sum of the columns of Qy are equal to one. Using these matrices the loss becomes: 
+
+L(X , Y) = − 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+log Qx(i, i ) + log Qy (i, i )
+
+!
+
+(6) The gradient of the loss can be written: 
+
+∂L
+
+∂y i
+
+∝ (xi − yi) −
+
+> N
+
+X
+
+> k=1
+
+Qx(k, i ) + Qy (k, i )2 (xk − yi) (7) The gradient has two opposing effects: an attractive force 
+
+(xi − yi) pushes yi towards it matching xi and repulsive forces which push yi away from xk. The strength of the repulsive force is determined by PNk=1   
+
+> Qx(k,i )+ Qy(k,i )2
+
+= 
+
+> 12
+
+(1 + Syi ) with Syi := P 
+
+> k
+
+Qx(k, i ). Intuitively, this means that points for which Syi > 1 will be pushed away from the other modality (their repulsive force are stronger than the attractive force) while those for which Si < 1 will be pushed towards the other modality. Interestingly, points for which Syi > 1 are those that are close to the other modality (Fig. 5 top), so gradient descent will reduce the variance in the direction of the initial gap vector (Fig. 5 bottom). The following theorem formalizes this intuition. 
+
+Theorem 3.1. Let μx and μy be the modalities’ empirical means. Assume that ∀i : ∥yi − μy ∥ ≤ ϵ, ∥xi − μx∥ ≤ ϵ,and ∥μx − μy ∥ ≫ ϵ. Then the gradient of the contrastive loss with respect to the embeddings is approximately in the direction that shrinks the variance of each modality in the direction of the gap vector ⃗g = μ x − μy .
+
+4Proof Sketch. We compute the Taylor expansion of k(x) = 
+
+e−∥ x−y∥2/τ 2
+
+around μx and use it to simplify Eq. (7), yield-ing: 
+
+∂L
+
+∂y i
+
+≈ −2
+
+τ [⃗g · (y i − μy )] ⃗g + O(ϵ) (8) Thus yi moved along the gap in the direction of μy . See full proof in Sec. A. -1.5 -1 -0.5 0 0.5 1 1.5 
+
+> -1.5
+> -1
+> -0.5
+> 0
+> 0.5
+> 1
+> 1.5
+> 0.5
+> 1
+> 1.5
+> 2
+> 2.5
+
+Init. t = 25 t = 100 1.0 0.5 0.0 0.5 1.0         
+
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0 1.0 0.5 0.0 0.5 1.0
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0 1.0 0.5 0.0 0.5 1.0
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+
+Figure 5. (Top:) Two initial embeddings where the bottom embed-ding is color-coded based on Syi . Syi decreases with distance to the other modality. ( Bottom: ) The training dynamics of a toy model initialized with isotropic Gaussians. Training starts by shrinking variance in the direction of the gap according to Theorem 3.1. 
+
+Figure 5 illustrates Theorem 3.1. The embeddings begin with equal variance in all directions, but training first shrink the variance in each modality along the initial gap direction ⃗g, resulting in no variance in the gap. We now prove that once there exists a direction along which both modalities are constant, gradient descent will converge to a solution where both the local gap vectors gi
+
+and the global gap vector ⃗g are orthogonal to both modalities. Our result similar to that of [ 43 ] but it highlights the crucial role of double-stochasticity: convergence to a nonzero, or-thogonal gap vectors requires that the two matrices Qx, Q y
+
+are doubly-stochastic , i.e. Sxj = Syj = 1 . While both matri-ces Qx, Q y are singly stochastic by definition, only in certain point configurations will they also be doubly stochastic. One such case is when the nearest neighbor matching between the two sets is a perfect match so each xi is assigned to exactly one yj and vice versa. Empirically, we have found that in the later stages of gradient descent, double stochasticity does indeed hold approximately but this is not true in the initial iterations (Fig. 6 left). 
+
+Theorem 3.2. Assume that at a given iteration t there exists a direction ⃗v such that ∀⃗x i ∈ X :⃗v T⃗x i = a and ∀⃗y i ∈ Y :⃗v T⃗y i = b. Assume that for all iterations after t the matrices 
+
+Qx, Q y are doubly stochastic. Then gradient descent on the contrastive loss (Eq. (6) ) will converge to a solution where all the local gap vectors are the same ⃗g i =⃗g and furthermore, ⃗g i and ⃗g are orthogonal to both X and Y .Proof Sketch. By the assumption that vT xi = a for all xi
+
+and vT yj = b for all yj we see that using Eq. (7): 
+
+vT ∂L
+
+∂y i
+
+∝ vT (xi − yi)
+
+−vTNX
+
+> k=1
+
+Qx(k, i ) + Qy (k, i )2 (xk − yi)= 0
+
+where the last equality used the assumption of double stochasticity. This means that gradient descent will not change the values of either modality in direction ⃗v and hence will converge to a solution in which this direction is un-changed and in all other directions ⃗u , the modalities will be perfectly aligned ⃗u T xi =⃗u T yi.Together, Theorem 3.1 and Theorem 3.2 explain the dy-namics seen in Fig. 4. At first, according to Theorem 3.1, learning begins by shrinking the variance in the direction of the gap. Once this happens and there is no variance in the direction of the gap, then according to Theorem 3.2 the gradient in the vertical dimension of the top figure remains zero and the loss continues to decrease by moving the points only in the horizontal direction until the loss reaches a value close to zero with a constant, orthogonal gap vector. In the bottom figure, the initial iterations reduces the variance in the gap direction and subsequent iterations decrease while moving in the other two directions. This phenomenon of an orthogonal gap has previously been noticed to hold empirically for multi-modal models trained on various datatypes [ 42 ]. We term this the global orthogonality assumption and formally define it as: 
+
+Assumption 3.3. The gap vector ⃗g is orthogonal to the affine subspaces defined by X and Y:
+
+∀x ∈ X , y ∈ Y : cos ( x − μx,⃗ g)= cos ( y − μy ,⃗ g) = 0  (9) Our theorems provide an explanation for the origin of assumption 3.3 provided that the initialization of the two modalities takes the form of two, separated and concentrated clusters. Figure 6 (right) shows that this is indeed the case - the distance between the two modalities is much larger than the inner modality distance for random initializations of CLIP on real data. This has already been shown to be the case for multi-modal models, a phenomenon termed the "cone effect" [11]. To summarize, multi-modal models are commonly ini-tialized in non-intersecting tight clusters with an existing gap. According to our analysis, under these conditions ini-tial training dynamics decrease the variance of these clusters 5in the direction of the initial gap, while subsequent itera-tions maintain the gap while aligning the two modalities only in directions orthogonal to the gap, thus creating global orthogonality at convergence. For completeness, we provide more empirical support for our assumptions in Sec. D and further discussion of the dimensionality collapse assumption in Sec. C. 0 2000 4000 6000 8000 10000            
+
+> Training Iteration
+> 10 −7
+> 10 −6
+> 10 −5
+> 10 −4
+> 10 −3
+> 10 −2
+> 10 −1
+> 10 0
+> 10 1
+> log  V ar (Si)
+> Sxi
+> Syi0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75
+> || · || 2
+> 0123456
+> Density
+> || yi−μy|| 2
+> || xi−μx|| 2
+> || ~g|| 2
+
+Figure 6. Empirical evidence for the assumptions of our thoeorems on training dynamics Left : The variance of Sxi , S yi in log scale throughout training of Fig. 5. The values of Sxi and Syi approach their means as training progresses, which is 1 by definition, mean-ing that the matrices Qx, Q y are approximately doubly-stochastic. 
+
+Right : KDE plot of the gap’s norm and the distances between the embeddings and their means calculated over 50 random initializa-tions of CLIP (ViT-B-32) on 5000 randomly sampled images and texts from the Flickr30k dataset [ 10 ]. The within modality distance is much smaller than the distance between the modalities. 
+
+3.3. The Modality Gap Decreases Robustness 
+
+We define robustness ("Rob") as the probability that when adding noise sampled from some distribution P to the em-beddings of modality X , the nearest neighbor of some y ∈ Y 
+
+will not change: 
+
+Rob (X , Y, P) = Ey∼Y ,ϵ ∼P 
+
+1NN y, X )= NN (y, X +ϵ)
+
+ (10) Notice that in the zero shot classification setting, this defini-tion of robustness captures semantically meaningful changes - any change of nearest neighbor from image embedding to text, necessarily changes the classification of that image. We now ask how does the existence of the gap relate to the robustness of the models to noise in the embedding space. Figure 7 provides intuition. In this figure, there are two captions and the space of images that are close to one caption or another is defined by a linear decision boundary. Any noise added to the text embeddings changes the decision boundary between the two classes. In the case of a gap between the cluster of image embeddings and text embeddings, as images are further away from the texts, their sensitivity to change in the classification decision boundary grows. We prove this formally in the following theorem. 
+
+Theorem 3.4. Let {⃗y i} be a set of points in one modality (e.g. an image embedding) and ⃗x 1,⃗ x 2 ∈ X two vectors in the second modality (e.g. captions) with mean μx =⃗x 1+⃗x 2 
+
+> 2
+
+. Assume ⃗x 1 is the nearest neighbor of some ⃗y in 
+
+X . Under the orthogonality assumption 3.3, moving any 
+
+Figure 7. Illustration of the relationship between robustness and the modality gap. Two image embeddings (blue squares) are classified identically when using the black texts. However, once slight noise is added to the texts (red), only the image with a smaller "gap" will maintain its classification. 
+
+point ⃗y towards the other modality by a global translation ⃗g = μ y − μx increases robustness: the probability that the nearest neighbor of ⃗y in X does not change after adding noise to X , with covariance σ2I and zero empirical mean. Proof Sketch. The proof follows the intuition presented in Fig. 7 - as the query vector ⃗y is closer to modality X , a larger rotation of the separating hyperplane is required to decrease robustness. Therefore the theorem holds as subtracting the global gap vector decreases the distance between ⃗y and X .For full proof and generalization for the cases of |X | > 2
+
+and general noise we refer the reader to Sec. A. Theorem 3.4 proves that under the orthogonality assumption, when mov-ing one modality towards the other by translating it with the global gap vector then the embedding spaces become more robust and less sensitive to noise. This provides us with clear motivation to close the gap. We note that while the theorem is phrased in terms of the global gap vector, any vector that is orthogonal to modality 
+
+X will suffice, as long as translating ⃗y with it will decrease the distance between ⃗y and the mean of modality X .In real applications, robustness is not the only desirable property of a system and a method that increases robustness while significantly decreasing the clean accuracy, will be of limited interest. We therefore strive to understand when does closing the gap have no effect on downstream performance, therefore solely improving robustness. Since most down-stream tasks such as zero shot classification or text to image retrieval are based on cross modal nearest neighbors, we ask when can we guarantee that the nearest neighbors will not change when varying the gap. 
+
+Theorem 3.5. As in Theorem 3.4, let ⃗v be some vector that is orthogonal to the affine subspace containing the modality 
+
+X . Then translating the embeddings of modality X by α ·⃗v
+
+for any α ∈ R, such that ∀xi ∈ X : xi ← xi + α ·⃗v , does not change the nearest neighbor of ⃗y in X for any ⃗y ∈ Y .
+
+6Proof Sketch. Since the vector ⃗v is orthogonal to X , the variance of modality X in ⃗v is zero, therefore moving X by 
+
+α ·⃗v changes the distance from any ⃗y ∈ Y to all ⃗x ∈ X by the same constant, meaning cross modal nearest neighbors are preserved. For full proof see Sec. A. Under the orthogonality assumption 3.3 such a nearest neighbor preserving direction is simply the gap vector ⃗g .Therefore Theorem 3.5 ensures us that narrowing the gap along this direction would not change performance of the model on downstream tasks such as zero shot classification. 
+
+4. Algorithm 
+
+From Sec. 3 we conclude that although the contrastive loss maintains the gap created at initialization throughout the training, it is desirable to close the gap in order to improve robustness. Theorems 3.4 and 3.5 provide us with a tool to do so - move the modalities towards each other along the global gap vector, as under assumption 3.3 this provably does not affect performance on downstream tasks when there is no noise at all. Since in practice the gap vector is not completely orthog-onal to the modality subspaces (see Sec. D), we suggest pro-jecting the gap vector to be exactly orthogonal to the affine subspace of the modality being retrieved before closing the gap. This is done by computing the principal components V
+
+of the modality being retrieved (texts in case of classifica-tion) and projecting the gap ⃗g to the orthogonal complement of the components: ⃗g ′ ←⃗g − V V T⃗g (11) Afterwards, the modality being retrieved is moved towards the mean over the other modality by translating Y ← Y − ⃗g ′, therefore decreasing the distance of any query point to the retrieved modality, as per Theorem 3.4. Theorem 3.5 assures us that closing the gap in the direction of ⃗g ′ would not affect performance on any downstream tasks that relies on computing nearest neighbors. In the appendix, we also provide an extension to this algorithm that allows moving in directions that are not perfectly orthogonal to each modality (see Sec. G). Contrary to previous attempts at closing the gap, our method requires no retraining or finetuning of the models [ 16 ,17 ], or the training of new ones (such as the prior network in [18 , 22 ]). Our method is also general and does not adhere to a specific setting [ 12 ] - any task using cross modal nearest neighbors could benefit from it. 
+
+5. Experiments 
+
+We turn our attention to understanding how well our theory and algorithm work in practice for various real world models and datasets. We follow [ 11 ] and experiment on standard 0 1 2 3 4 
+
+> Gap
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100 σ2
+> 0.005 0.022 0.040 Accuracy Original Gap
+> σ2
+> 0.005 0.022 0.040
+
+(a) CLIP (ViT L-14) on CIFAR10 1 2 3 4  
+
+> Gap
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100 σ2
+> 0.005 0.022 0.040 Accuracy Original Gap
+> σ2
+> 0.005 0.022 0.040
+
+(b) CLIP (ViT B-16) on CIFAR100 −1.0 −0.8 −0.6 −0.4 −0.2 0.0
+
+> α
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> % Acc Original Gap
+> σ
+> 0.005 0.0225 0.04
+> σ
+> 0.005 0.0225 0.04
+
+(c) CLIP (ViT B-16) on A-OKVQA −1.0 −0.8 −0.6 −0.4 −0.2 0.0 
+
+> α
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> %
+> Acc Original Gap
+> σ
+> 0.005 0.0225 0.04
+> σ
+> 0.005 0.0225 0.04
+
+(d) SigLIP on A-OKVQA 
+
+Figure 8. The zero shot classification accuracy, multiple choice VQA accuracy and robustness under noise η ∼ N (0 , σ 2I), on various models and datasets. As predicted by our theory, robustness monotonically increases when the gap is closed while accuracy is maintained. 
+
+zero shot classification and image-text retrieval tasks. We create embeddings of commonly used, pretrained, multi-modal models using using the openclip library [4]. To measure robustness, we empirically estimate: 
+
+R(α) = 1
+
+K
+
+> K
+
+X
+
+> i=1
+
+1
+
+|Y| 
+
+X
+
+> y∈Y
+
+1NN (y, X +α·⃗g)= NN (y, (X +ϵ i)+ α·⃗g
+
+(12) Where K is the number of samples of noise, ϵi ∼ P is a sample from the noise model P (such as quantization or gaussian noise) and α ∈ R is a scalar controlling the amount of the gap that we close. We set K = 1 (e.g. when there is a single deterministic quantization) unless stated otherwise. 
+
+5.1. Robustness Under Controlled Noise 
+
+Our first set of experiments attempts to verify our theory and algorithm in the presence of controlled noise added to the embedding space. We add varying degrees of independent Gaussian noise with zero mean and variance σ2 to each text embedding ⃗x ∈ X and translate the text embeddings by α·⃗g ′
+
+according to our algorithm (Sec. 4). We do this for different values of α therefore expanding or closing the gap. For each change in the gap, we measure both accuracy and robustness (Eq. (12)) averaging over K = 100 samples of noise. We test our algorithm on various models, in both zero shot classification and visual question answering (VQA) on the A-OKVQA dataset [ 26 ], following the evaluation protocol of Ghosal et al. [3] for CLIP-like models. Results 70 1 2 3 4    
+
+> Gap
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> 100
+> %
+> Intervals
+> Accuracy 32 64 128 256 Original Gap (a) CLIP (ViT L-14) on CIFAR10 1234
+> Gap
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> %
+> Intervals
+> Accuracy 32 64 128 256 Original Gap (b) CLIP (ViT B-16) on CIFAR100
+
+Figure 9. CLIP variants are increasingly more robust to quantization as the gap is closed. The gap norm is measured in the non-quantized space. 
+
+are displayed in Fig. 8 - when applying our algorithm under Gaussian noise robustness greatly increases when closing the gap across all models and tasks, and greatly decreases when expanding the gap. As noise increases, robustness is lower but still improves when the gap is closed. See Sec. E for similar results on other noise distributions. As predicted by Theorem 3.5, the zero shot and VQA accuracy do not change when closing the gap in the direction orthogonal to the affine subspace of texts. 
+
+5.2. Robustness to Quantization 
+
+We continue and test our theory and algorithm on noise dis-tributions that apply to real world applications. A setting of uncorrelated noise is that of quantization [ 14 ]. While many forms of model quantizations exist, we limit ourselves to the simple case of post-training quantizing of the embedding vectors alone, a setting relevant to tasks in which the embed-dings were calculated in advance e.g. retrieval augmented generation (RAG) [ 38 ]. We close the gap to varying degrees and then quantize the text and image embedding vectors to different numbers of intervals between a constant range of 
+
+[−3, 3] (as all embeddings are on the unit hypersphere), and measure robustness. Empirically, we find that since quantization noise does not always have zero mean, it is better to close the gap un-til the gap is minimized in the quantized embedding space rather than the original one. Figure 9 displays results for these experiments. As can be seen, robustness is greatly improved when closing the gap before quantizing the em-bedding vectors. 
+
+5.3. Robustness to Rephrasing 
+
+We now turn our attention to text rephrasings - noise that is added in the input space rather than embedding space -which we’ve investigated thus far. We find that in this setting our theoretical assumptions do not hold - specifically, the noise in the embedding space that results from the rephrasing has non-zero mean and tends to lie entirely within the text subspace, with little to no variance in the direction of the gap (and see Sec. F). This is not surprising as models that −0.8 −0.6 −0.4 −0.2 0.0     
+
+> α
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> % Accuracy Rephrase Accuracy Original Gap
+> (a) CLIP (ViT B-16) −0.8−0.6−0.4−0.20.0
+> α
+> 60
+> 70
+> 80
+> % Accuracy Rephrase Accuracy Original Gap (b) SigLIP
+
+Figure 10. We apply rephrasing noise to textual inputs on the A-OKVQA dataset, and measure average accuracy and rephrase accuracy in the noisy setting over K = 500 samples of wrong and correct answers for each question. Models are increasingly more accurate once the gap is closed, without change in clean accuracy, even though this setting is far from our theoretical assumptions. 
+
+are trained on large datasets are expected to be invariant to various input noises, such as text rephrasing. We find that our algorithm can indeed be used for such cases. For each question in the A-OKVQA dataset, we simulate a sample of random noise by sampling 3 random wrong answers and a random correct answer, exact details are provided in Sec. F. Since in this setting the answers are randomly selected, we focus on measuring accuracy under noise instead of robustness, while closing the gap using our algorithm. Results are presented in Fig. 10 - accuracy under rephrasings greatly increases when the gap is closed using our algorithm, while clean accuracy is unaffected. 
+
+6. Discussion 
+
+In this paper, we have attempted to provide a comprehensive theory for the formation of an orthogonal gap in multi-modal models. Specifically we showed that when initializing with tight clusters, minimizing the contrastive loss will lead to solutions where a global gap vector separates the two modali-ties and that this vector will be orthogonal to both modalities. We continued to examine the effect of such a gap in the context of robustness. We prove that in this context, the gap is indeed a bug - as the modality gap increases, the consis-tency of the retrieval when applying subtle variations to the embedding space is decreased. Following this theoretical insight, we presented a simple and computationally inexpensive algorithm that improves robustness with hardly any reduction in clean accuracy. Our algorithm could easily be implemented as a post processing step when using multi-modal model embeddings. Finally, we began examining the effect of our theory and algorithm in the context of real noise, such as quantization and text rephrasing. We view our experiments as a hint to the potential of our algorithm and encourage further investi-gation as to settings of noise in which our simple algorithm could improve downstream performance. 8Acknowledgments 
+
+This research was supported by a joint Hebrew Uni-versity IBM Research grant. YW thanks the ISF and the Gatsby Foundation for their financial support. 
+
+References 
+
+[1] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE Conference on Computer Vision and Pattern Recognition , pages 248–255, 2009. 2 [2] Alex Fang, Gabriel Ilharco, Mitchell Wortsman, Yuhao Wan, Vaishaal Shankar, Achal Dave, and Ludwig Schmidt. Data determines distributional robustness in contrastive language image pre-training (CLIP). In Proceedings of the 39th Inter-national Conference on Machine Learning , pages 6216–6234. PMLR, 2022. 3 [3] Deepanway Ghosal, Navonil Majumder, Roy Lee, Rada Mi-halcea, and Soujanya Poria. Language guided visual question answering: Elevate your multimodal language model using knowledge-enriched prompts. In Findings of the Associa-tion for Computational Linguistics: EMNLP 2023 , pages 12096–12102, Singapore, 2023. Association for Computa-tional Linguistics. 7, 5 [4] Gabriel Ilharco, Mitchell Wortsman, Ross Wightman, Cade Gordon, Nicholas Carlini, Rohan Taori, Achal Dave, Vaishaal Shankar, Hongseok Namkoong, John Miller, Hannaneh Ha-jishirzi, Ali Farhadi, and Ludwig Schmidt. Openclip, 2021. 7[5] Qian Jiang, Changyou Chen, Han Zhao, Liqun Chen, Qing Ping, Son Dinh Tran, Yi Xu, Belinda Zeng, and Trishul Chilimbi. Understanding and constructing latent modal-ity structures in multi-modal representation learning. In 
+
+IEEE/CVF Conference on Computer Vision and Pattern Recognition, CVPR 2023, Vancouver, BC, Canada, June 17-24, 2023 , pages 7661–7671. IEEE, 2023. 1, 2 [6] Li Jing, Pascal Vincent, Yann LeCun, and Yuandong Tian. Understanding dimensional collapse in contrastive self-supervised learning. In International Conference on Learning Representations , 2022. 2 [7] Minguk Kang, Jun-Yan Zhu, Richard Zhang, Jaesik Park, Eli Shechtman, Sylvain Paris, and Taesung Park. Scaling up gans for text-to-image synthesis. In Proceedings of the IEEE Con-ference on Computer Vision and Pattern Recognition (CVPR) ,2023. 2 [8] Muhammad Uzair Khattak, Syed Talal Wasim, Muzammal Naseer, Salman Khan, Ming-Hsuan Yang, and Fahad Shahbaz Khan. Self-regulating prompts: Foundational model adap-tation without forgetting. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , pages 15190–15200, 2023. 3 [9] Hyunjae Kim, Seunghyun Yoon, Trung Bui, Handong Zhao, Quan Hung Tran, Franck Dernoncourt, and Jaewoo Kang. Fine-tuning CLIP text encoders with two-step paraphrasing. In Findings of the Association for Computational Linguistics: EACL 2024, St. Julian’s, Malta, March 17-22, 2024 , pages 2175–2184. Association for Computational Linguistics, 2024. 2[10] Polina Kuznetsova, Vicente Ordonez, Alexander C. Berg, Tamara L. Berg, and Yejin Choi. Collective generation of natural image descriptions. In The 50th Annual Meeting of the Association for Computational Linguistics, Proceedings of the Conference, July 8-14, 2012, Jeju Island, Korea - Volume 1: Long Papers , pages 359–368. The Association for Computer Linguistics, 2012. 6 [11] Weixin Liang, Yuhui Zhang, Yongchan Kwon, Serena Yeung, and James Zou. Mind the gap: Understanding the modality gap in multi-modal contrastive representation learning. In 
+
+Advances in Neural Information Processing Systems , 2022. 1, 2, 3, 5, 7 [12] Christopher Liao, Christian So, Theodoros Tsiligkaridis, and Brian Kulis. Multimodal unsupervised domain generalization by retrieving across the modality gap. In The Thirteenth International Conference on Learning Representations , 2025. 1, 2, 3, 7 [13] Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C. Lawrence Zitnick. Microsoft coco: Common objects in context. In 
+
+Computer Vision – ECCV 2014 , pages 740–755, Cham, 2014. Springer International Publishing. 8 [14] D. Marco and D.L. Neuhoff. The validity of the additive noise model for uniform scalar quantizers. IEEE Transactions on Information Theory , 51(5):1739–1755, 2005. 8 [15] Yifei Ming and Yixuan Li. Understanding retrieval-augmented task adaptation for vision-language models. In 
+
+Proceedings of the 41st International Conference on Machine Learning , pages 35719–35743. PMLR, 2024. 2 [16] Marco Mistretta, Alberto Baldrati, Lorenzo Agnolucci, Marco Bertini, and Andrew D. Bagdanov. Cross the gap: Exposing the intra-modal misalignment in CLIP via modality inver-sion. In The Thirteenth International Conference on Learning Representations , 2025. 3, 7 [17] Changdae Oh, Junhyuk So, Hoyoon Byun, YongTaek Lim, Minchul Shin, Jong-June Jeon, and Kyungwoo Song. Geodesic multi-modal mixup for robust fine-tuning. In Thirty-seventh Conference on Neural Information Processing Sys-tems , 2023. 3, 7 [18] Maitreya Patel, Changhoon Kim, Sheng Cheng, Chitta Baral, and Yezhou Yang. Eclipse: A resource-efficient text-to-image prior for image generations. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 9069–9078, 2024. 3, 7 [19] Jielin Qiu, Yi Zhu, Xingjian Shi, Zhiqiang Tang, Ding Zhao, Bo Li, and Mu Li. Benchmarking robustness under distribu-tion shift of multimodal image-text models. In NeurIPS 2022 Workshop on Distribution Shifts: Connecting Methods and Applications , 2022. 3 [20] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural language supervision. In Proceedings of the 38th International Conference on Machine Learning ,pages 8748–8763. PMLR, 2021. 1, 2, 4, 6 
+
+9[21] Sameera Ramasinghe, Violetta Shevchenko, Gil Avraham, and Ajanthan Thalaiyasingam. Accept the modality gap: An exploration in the hyperbolic space. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 27263–27272, 2024. 1, 2 [22] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. Hierarchical text-conditional image genera-tion with clip latents. arXiv preprint arXiv:2204.06125 , 1(2): 3, 2022. 1, 2, 3, 7 [23] Christian Schlarmann and Matthias Hein. On the adversarial robustness of multi-modal foundation models. In Proceed-ings of the IEEE/CVF International Conference on Computer Vision (ICCV) Workshops , pages 3677–3685, 2023. 3 [24] Christian Schlarmann, Naman Deep Singh, Francesco Croce, and Matthias Hein. Robust CLIP: Unsupervised adver-sarial fine-tuning of vision embeddings for robust large vision-language models. In Proceedings of the 41st Interna-tional Conference on Machine Learning , pages 43685–43704. PMLR, 2024. 3 [25] Simon Schrodi, David T. Hoffmann, Max Argus, Volker Fis-cher, and Thomas Brox. Two effects, one trigger: On the modality gap, object bias, and information imbalance in con-trastive vision-language models. In The Thirteenth Interna-tional Conference on Learning Representations , 2025. 1, 2, 3, 6 [26] Dustin Schwenk, Apoorv Khandelwal, Christopher Clark, Kenneth Marino, and Roozbeh Mottaghi. A-OKVQA: A benchmark for visual question answering using world knowl-edge. In Computer Vision - ECCV 2022 - 17th European Conference, Tel Aviv, Israel, October 23-27, 2022, Proceed-ings, Part VIII , pages 146–162. Springer, 2022. 7 [27] Peiyang Shi, Michael C. Welle, Mårten Björkman, and Danica Kragic. Towards understanding the modality gap in CLIP. In 
+
+ICLR 2023 Workshop on Multimodal Representation Learn-ing: Perks and Pitfalls , 2023. 1, 2, 3, 6 [28] Ofir Shifman and Yair Weiss. Lost in translation: Modern neural networks still struggle with small realistic image trans-formations. In Computer Vision - ECCV 2024 - 18th Euro-pean Conference, Milan, Italy, September 29-October 4, 2024, Proceedings, Part LXIX , pages 231–247. Springer, 2024. 2, 3 [29] Yang Shu, Xingzhuo Guo, Jialong Wu, Ximei Wang, Jianmin Wang, and Mingsheng Long. CLIPood: Generalizing CLIP to out-of-distributions. In Proceedings of the 40th Interna-tional Conference on Machine Learning , pages 31716–31731. PMLR, 2023. 3 [30] Kihyuk Sohn. Improved deep metric learning with multi-class n-pair loss objective. In Advances in Neural Information Processing Systems . Curran Associates, Inc., 2016. 1, 2 [31] Weijie Tu, Weijian Deng, and Tom Gedeon. A closer look at the robustness of contrastive language-image pre-training (CLIP). In Thirty-seventh Conference on Neural Information Processing Systems , 2023. 3 [32] Aaron van den Oord, Yazhe Li, and Oriol Vinyals. Represen-tation learning with contrastive predictive coding, 2019. 1, 2[33] Qizhou Wang, Yong Lin, Yongqiang Chen, Ludwig Schmidt, Bo Han, and Tong Zhang. Do CLIP models always generalize better than imagenet models? In The Thirty-eighth Annual Conference on Neural Information Processing Systems , 2024. 3[34] Tongzhou Wang and Phillip Isola. Understanding contrastive representation learning through alignment and uniformity on the hypersphere. In International Conference on Machine Learning , pages 9929–9939. PMLR, 2020. 1, 2, 3 [35] Mitchell Wortsman, Gabriel Ilharco, Jong Wook Kim, Mike Li, Simon Kornblith, Rebecca Roelofs, Raphael Gon-tijo Lopes, Hannaneh Hajishirzi, Ali Farhadi, Hongseok Namkoong, and Ludwig Schmidt. Robust fine-tuning of zero-shot models. In 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 7949–7961, 2022. 3 [36] Hu Xu, Saining Xie, Xiaoqing Tan, Po-Yao Huang, Russell Howes, Vasu Sharma, Shang-Wen Li, Gargi Ghosh, Luke Zettlemoyer, and Christoph Feichtenhofer. Demystifying CLIP data. In The Twelfth International Conference on Learn-ing Representations , 2024. 2 [37] Can Yaras, Siyi Chen, Peng Wang, and Qing Qu. Explaining and mitigating the modality gap in contrastive multimodal learning. In The Second Conference on Parsimony and Learn-ing (Proceedings Track) , 2025. 2, 3 [38] Mert Yazan, Suzan Verberne, and Frederik Situmeang. The impact of quantization on retrieval-augmented generation: An analysis of small llms. In Proceedings of the Workshop Information Retrieval’s Role in RAG Systems (IR-RAG 2024) co-located with the 47th International ACM SIGIR Confer-ence on Research and Development in Information Retrieval (SIGIR 2024), Washington DC, USA, 07 18, 2024 , pages 77–81. CEUR-WS.org, 2024. 8 [39] Jingwen Ye, Ruonan Yu, Songhua Liu, and Xinchao Wang. Mutual-modality adversarial attack with semantic perturba-tion. In Thirty-Eighth AAAI Conference on Artificial Intel-ligence, AAAI 2024, Thirty-Sixth Conference on Innovative Applications of Artificial Intelligence, IAAI 2024, Fourteenth Symposium on Educational Advances in Artificial Intelligence, EAAI 2014, February 20-27, 2024, Vancouver, Canada , pages 6657–6665. AAAI Press, 2024. 3 [40] Xiaohua Zhai, Basil Mustafa, Alexander Kolesnikov, and Lucas Beyer. Sigmoid loss for language image pre-training. In IEEE/CVF International Conference on Computer Vision, ICCV 2023, Paris, France, October 1-6, 2023 , pages 11941– 11952. IEEE, 2023. 2, 8 [41] Yuhao Zhang, Hang Jiang, Yasuhide Miura, Christopher D. Manning, and Curtis P. Langlotz. Contrastive learning of medical visual representations from paired images and text. In Proceedings of the 7th Machine Learning for Healthcare Conference , pages 2–25. PMLR, 2022. 1, 2 [42] Yuhui Zhang, Jeff Z. HaoChen, Shih-Cheng Huang, Kuan-Chieh Wang, James Zou, and Serena Yeung. Diagnosing and rectifying vision models using language. In The Eleventh International Conference on Learning Representations , 2023. 2, 3, 5, 4 [43] Yuhui Zhang, Elaine Sui, and Serena Yeung. Connect, col-lapse, corrupt: Learning cross-modal tasks with uni-modal data. In The Twelfth International Conference on Learning Representations , 2024. 1, 2, 4, 5 
+
+10 [44] Kaiyang Zhou, Jingkang Yang, Chen Change Loy, and Ziwei Liu. Conditional prompt learning for vision-language models. In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2022. 2, 3 
+
+11 Is the Modality Gap a Bug or a Feature? A Robustness Perspective 
+
+# Supplementary Material 
+
+A. Theorem Proofs 
+
+A.1. Proof of Theorem 3.1 
+
+Proof. Calculating the gradient of the loss using the notation in Eq. (6): 
+
+∇yi L = 2
+
+τ [2( xi − yi)
+
+−
+
+> N
+
+X
+
+> k=1
+
+(Qx(k, i ) + Qy (k, i ))( xk − yi)]  (13) Defining Si = P 
+
+> k
+
+Qx(k, i ) and ˜xi:
+
+˜xi =
+
+P
+
+> k
+
+(Qx(k, i ) + Qy (k, i )) xk
+
+Si + 1  (14) Inputting into Eq. (13): 
+
+∇yi L = 2
+
+τ [2( xi − yi) − (Si + 1)( μx − yi)]  (15) Assume ∀j : ∥xj − μx∥ ≤ ϵ and ∀i : ∥yi − μy ∥ ≤ ϵ .Substituting into Eq. (15): 
+
+∇yi L = 2
+
+τ [2( xi − μx + μx − yi)
+
+− (Si + 1)(˜ xi − μx + μx − yi)] = 2
+
+τ [2( xi − μx) + 2( μx − yi)
+
+− (Si + 1)(˜ xi − μx) − (Si + 1)( μx − yi)] = 2
+
+τ [(1 − Si)( μx − yi) + O(ϵ)]  (16) From our assumption yi = μy +O(ϵ) and that ∥μx − μy ∥ ≫ 
+
+ϵ:
+
+∇yi L = 2
+
+τ [(1 − Si)( μx − μy ) + O(ϵ)]  (17) Meaning that the gradient of yi is approximately along the direction of the gap ⃗g = μ x − μy .The last thing left to prove is that the specific direction along the gap shrinks the variance in the gap. We’ll show that: 
+
+Si ≈ 1 + 2
+
+τ (μx − μy ) · (yi − μy ) (18) Meaning that each yi moves towards μy along the gap, thus shrinking the variance. Let k(x, y ) = e−∥ x−y∥2/τ be the Gaussian kernel. Under our assumption, for ϵ → 0 we get that xi → μx and yj →
+
+μy . Thus we can use a (linear) Taylor expansion of the kernel around the values of the means: 
+
+k(xk, y i) ≈ k(xk, μ y ) + ∇y k(xk, y ) y=μy
+
+· (yi − μy ) (19) The gradient of the kernel is ∇y k(x, y ) = 2 
+
+> τ
+
+(x − y)k(x, y ).Substituting this into the expansion: 
+
+k(xk, y i) ≈ k(xk, μ y )
+
+
+
+1 + 2
+
+τ (xk − μy ) · (yi − μy )
+
+
+
+(20) Substituting the linearized kernel into the expression for 
+
+Qx(k, i ), the common factor k(xk, μ y ) cancels from the numerator and denominator: 
+
+Qx(k, i ) ≈ 1 + 2 
+
+> τ
+
+(xk − μy ) · (yi − μy )
+
+PNj=1 
+
+1 + 2 
+
+> τ
+
+(xk − μy ) · (yj − μy ) (21) The denominator sum simplifies significantly: 
+
+> N
+
+X
+
+> j=1
+
+
+
+1 + 2
+
+τ (xk − μy ) · (yj − μy )
+
+
+
+= N + 2
+
+τ (xk − μy ) ·
+
+> N
+
+X
+
+> j=1
+
+(yj − μy ) (22) Under the assumption that the cluster Y is centered at its mean ( P(yj − μy ) = 0 ), the denominator becomes exactly 
+
+N .Summing Qx(k, i ) over all k:
+
+Si ≈ 1
+
+N
+
+> N
+
+X
+
+> k=1
+
+
+
+1 + 2
+
+τ (xk − μy ) · (yi − μy )
+
+
+
+(23) Applying the centering identity for X (P xk = N μ x): 
+
+Si ≈ 1 + 2
+
+τ (μx − μy ) · (yi − μy ) (24) 
+
+A.2. Proof of Theorem 3.2 
+
+Proof. As stated in the theorem, assume that at some itera-tion t of gradient descent Qx, Q y are doubly stochastic and that exists ⃗v in which both modalities have zero variance. Assume that Qx, Q y stay doubly stochastic throughout the training. We’ll begin by showing that iteration t + 1 main-tains the zero variance in direction ⃗v : By the assumption that vT xi = a for all xi and vT yj = b for all yj we see that using Eq. (7): 
+
+vT ∂L
+
+∂y i
+
+∝ vT (xi − yi)
+
+−vTNX
+
+> k=1
+
+Qx(k, i ) + Qy (k, i )2 (xk − yi)= 0
+
+1where the last equality follows from double stochasticity. To show that training will converge when global and local orthogonality hold, we’ll change the coordinate system s.t.: ⃗x i = ( a, ˜xi)⃗y i = ( b, ˜yi)
+
+and minimize the loss w.r.t. ˜xi, ˜yi. From standard uniformity and alignment arguments, the loss will be minimal when 
+
+˜xi = ˜ yi and the points are uniformly distributed. Note that at such a solution all the local gap vectors will be of the form 
+
+∀i :⃗g i =⃗x i −⃗y i = ( a − b, 0, 0, ... ) (25) meaning that by definition the global gap vector will also be equal to the above (as it is the mean). Orthogonality will also hold since the gap is solely in the direction of ⃗v which is orthogonal to both modalities. 
+
+A.3. Proof of Theorem 3.4 
+
+Lemma A.1. Under the orthogonality assumption, for every point y ∈ Y and μx the mean of modality X :
+
+∥μx − (y − g)∥ < ∥μx − y∥ (26) 
+
+with ⃗g = μ y − μx the global gap vector. Proof. Assume coordinate frame s.t. μx = 0 . Therefore the claim reduces to: 
+
+∥y − g∥ < ∥y∥ (27) Under the orthogonality assumption, the points y, g, μ x form a right angled triangle with ∡y, g, μ x = π/ 2. Therefore, from the Pythagorean theorem ∥y∥2 = ∥g∥2 + ∥y − g∥2.Since ∥g∥2 > 0 then: 
+
+∥y∥2 > ∥y − g∥2 (28) as required. Now to prove the theorem: 
+
+Proof. The separating hyperplane between x1 and x2 is char-acterized by the normal to the plane w = x1−x2 
+
+> ∥x1−x2∥
+
+. Denote 
+
+˜w the normal to the separating hyperplane between the noisy versions X i.e ˜x1 and ˜x2.Since the nearest neighbor of y is x1 then wT y > 0. We wish to show that the probability of ˜wT (y +v) > 0 is greater than the probability that ˜wT y > 0.Since by our assumptions the noise only rotates the hy-perplane, then ˜w = R(θ)w with R(θ) some rotation matrix. Therefore: 
+
+P ( ˜ wT y > 0) = P (wT (R(−θ)y) > 0)  (29) Notice that wT (R(−θ)y) > 0 only if π 
+
+> 2
+
+− cos −1( wT y 
+
+> ∥y∥
+
+) > θ 
+
+where cos −1( wT y 
+
+> ∥y∥
+
+) is the angle between w and y.From Theorem A.1, y − g has smaller norm than y and due to the orthogonality assumption, gT w = 0 . Therefore: 
+
+wT (y + g)
+
+∥y + g∥ = wT y
+
+∥y + g∥ > wT y
+
+∥y∥⇒ cos −1( wT (y + g)
+
+∥y + g∥ ) < cos −1( wT y
+
+∥y∥ ) (30) 
+
+⇒ π
+
+2 − cos −1( wT (y + g)
+
+∥y + g∥ ) > π
+
+2 − cos −1( wT y
+
+∥y∥ ) (31) Therefore the event that wT y > θ is a strict subset of the event that wT (y + g) > θ , meaning that: 
+
+P  wT (y + g) > θ  > P  wT (y + g) > θ  (32) Another way to see this is to note that we can write ˜w =
+
+w + η with η a zero mean r.v. with covariance 2σ2I. The retrieval is robust if ˜wT y > 0. Substituting: 
+
+˜wT y = ( w + η)T y = wT y + ηT y (33) From our assumption, wT y > 0, so robustness will be main-tained if wT y > −ηT y. From our assumptions: 
+
+Var (ηT y) = 2 σ2 ∥y∥2 (34) Again, according to our assumptions, replacing y → y + g
+
+maintains: 
+
+wT y = wT (y + g) (35) since g is orthogonal to w, and from Theorem A.1: 
+
+∥y∥ > ∥y + g∥ (36) Therefore: 
+
+Var (ηT (y + g)) = 2 σ2 ∥y + g∥2 < 2σ2 ∥y∥2
+
+= Var (ηT y) (37) meaning that: 
+
+P  wT (y + g) < −ηT (y + g) < P  wT y < −ηT y
+
+(38) Since we decreased the variance of a zero mean r.v.. 
+
+A.4. Extensions to Theorem 3.4 
+
+For completeness, we provide two extensions for the proof, one in the case of perturbation with non-zero mean, and another in the case of a general covariance structure. 2A.4.1. Extension to Non-Zero Mean 
+
+Suppose that the noise can change the mean of the perturbed points. Following all notations of proof A.3, the requirement for robustness is that: 
+
+˜wT y > b  (39) where 2b = ˜ xT 
+
+> 1
+
+˜x1 − ˜xT 
+
+> 2
+
+˜x2, so robustness is maintained if: 
+
+−ηT y ≤ wT y − b (40) If we assume that wT y > b , i.e. that the margin between y
+
+and the decision boundary between x1, x 2 is at least b, then the same proof from proof A.3 holds. 
+
+A.4.2. Extension to General Covariance 
+
+Suppose that the noise has covariance C. Then: 
+
+Var (ηT y) = yT (2 C)y (41) In this case we would like to chose v s.t. it is orthogonal to 
+
+x1, x 2 (maintaining wT y = wT (y + v)), but also satisfies: 
+
+(y + v)T C(y + v) ≤ yT Cy 
+
+⇒ 2vT Cy + vT Cv ≤ 0 (42) Any direction maintaining the above will increase robustness. Notice that this direction does not necessarily point from y
+
+to the origin (which in our case is the mean of modality X ), therefore the gap is not necessarily closed. 
+
+A.5. Proof of Theorem 3.5 
+
+Proof. Observe the relative distance between some y ∈ Y
+
+and two points in the other modality when translating modal-ity X along the gap by α · v:
+
+∀xi, x j ∈ X :
+
+∥y − (xi + α · v)∥2 − ∥ y − (xj + α · v)∥2 =
+
+∥xi∥2 − 2xTi y − 2xTi v − ∥ xj ∥2 + 2 xTj y + 2 xTj v (43) Since xi, x j are embedded on the unit sphere ∥xi∥ =
+
+∥xj ∥ = 1 . Since y is also on the unit sphere, −2xT y =
+
+∥x − y∥2 − 2. Additionally, under the orthogonality as-sumption ∀x ∈ X : xT v = c for some constant c ∈ R.Substituting into equation 43: 
+
+∥y − (xi + α · v)∥2 − ∥ y − (xj + α · v)∥2 =1 + ∥xi − y∥2 − 2c − 1 + 2 c − ∥ xj − y∥2 =
+
+∥xi − y∥2 − ∥ xj − y∥2 (44) Therefore: 
+
+∥y − xi∥2 < ∥y − xj ∥2 ⇒∥y − (xi + α · v)∥2 < ∥y − (xj + α · v)∥2 (45) Meaning the nearest neighbor structure is maintained after translating one modality along the gap. 
+
+B. Does Information Imbalance Cause the Gap? 
+
+It has previously been postulated that information imbalance between texts and images, i.e. when texts are much less informative that their image counterparts, plays a role in the creation of the modality gap [25]. We observe a simplified setting in which a training set for a model trained with the contrastive loss contains only two images x1, x 2 with the same caption y. We’ll show that the minima of these dynamics isn’t when a gap exists but when all points lie on top one another. The loss is therefore: 
+
+L(x1, x 2, y ) = − 12 (log e−d(x1,y )
+
+e−d(x1,y ) + e−d(x1,y )
+
++ log e−d(x2,y )
+
+e−d(x2,y ) + e−d(x2,y )
+
++ log e−d(x1,y )
+
+e−d(x1,y ) + e−d(x2,y )
+
++ log e−d(x2,y )
+
+e−d(x2,y ) + e−d(x1,y ) )= − log 12 + d(x1, y ) + d(x2, y )+ log( e−d(x1,y ) + e−d(x2,y )) (46) With d = ℓ2 distance. Taking the derivative: 
+
+dL
+
+dx i
+
+= 2( y − xi) + e−d(xi,y )
+
+e−d(x1,y ) + e−d(x2,y ) · 2( xi − y) (47) Since e−d(xi,y ) 
+
+> e−d(x1,y )+e−d(x2,y )
+
+< 1 we get that the total gradient is dL 
+
+> dx i
+
+= c(y − xi) for some c > 0. The same analysis can be done for dL 
+
+> dy
+
+where we get: 
+
+dL
+
+dy = 2( x1 − y) + 2( x2 − y)+ e−d(x1,y ) · 2( y − x1) + e−d(x2,y ) · 2( y − x2)
+
+e−d(x1,y ) + e−d(x2,y ) (48) Now assume by negation that the minima of these dynamics isn’t when x1 = x2 = y. For xi it is obvious from the gradient that the only minima is xi = y. For y, it is enough to see that y = x1+x2 
+
+> 2
+
+is a minima by substituting into the gradient. Therefore contradicting that there is a different minima except x1 = x2 = y, as required. 
+
+C. Dimensionality Collapse and the Gap 
+
+As mentioned in the paper, an orthogonal gap can emerge even without dimensionality collapse, as in Fig. 4 where initialization has equal variance in all dimensions. This makes it an unnecessary condition for the formation of an orthogonal gap. 3-0.5 0 0.5 1 1.5 
+
+> -1.5
+> -1
+> -0.5
+> 0
+> 0.5
+> 1
+> 1.5
+> 0.88
+> 0.9
+> 0.92
+> 0.94
+> 0.96
+> 0.98
+> 1
+> 1.02
+> 1.04
+> 1.06
+> 1.08
+
+Initialization Iteration 100 Iteration 500 Iteration 1000 Iteration 5000 0.0 0.2 0.4 0.6 0.8 1.0                         
+
+> 0.100
+> 0.075
+> 0.050
+> 0.025
+> 0.000
+> 0.025
+> 0.050
+> 0.075
+> 0.100 0.0 0.2 0.4 0.6 0.8 1.0
+> 0.10
+> 0.05
+> 0.00
+> 0.05
+> 0.10 0.2 0.0 0.2 0.4 0.6 0.8 1.0 1.2
+> 0.10
+> 0.05
+> 0.00
+> 0.05
+> 0.10 0.25 0.00 0.25 0.50 0.75 1.00 1.25
+> 0.15
+> 0.10
+> 0.05
+> 0.00
+> 0.05
+> 0.10
+> 0.15 1.0 0.5 0.0 0.5 1.0 1.5 2.0
+> 1.0
+> 0.5
+> 0.0
+> 0.5
+> 1.0
+
+Figure 11. (Top: Two set of points that perfectly satisfy dimensionality collapse. The bottom points are color-coded by Syi . Note that Si > 1
+
+for points near the center. (bottom: The training dynamics. Despite no variance in the direction of the gap for both modalities, the solution converged to has no gap and is perfectly aligned. This is because in the initial iterations, points near the center are pushed away from the other modality hence destroying the original low dimensionality of each modality. 
+
+But it the condition sufficient? Figure 11 shows that the answer is no as well. We train again follow the simplified setting of experiment of Fig. 4, only initializing the two modalities with complete dimensional collapse - all variance lies in a single dimension with the other containing none. In this case, training converges to a fully aligned solution with no gap, making the condition of dimensionality collapse insufficient to explain the formation of the gap. The behavior is consistent with our analysis because in the initial itera-tions double stochasticity does not hold. The top of Fig. 11 color-codes the bottom points by Syi . Note that Si > 1 for points near the center, so at the initial iterations, points near the center are pushed away from the other modality more than points at the edges hence destroying the original low dimensionality of each modality. 
+
+D. Empirical Evidence for Assumptions 
+
+D.1. Empirical Evidence for Apprximate Double Stochasticity 
+
+We repeat the experiment measuring Sxj , S yj as in Fig. 6 only for embeddings trained on the unit hypersphere in 
+
+R64 . Results are shown in Fig. 12 - as training progresses, 
+
+Sxj , S yj → 1 meaning that the matrices Qx, Q y become more doubly-stochastic. 
+
+D.2. Empirical Evidence for Orthogonality 
+
+For completeness we recompute results from [ 42 ] showcas-ing the orthogonality of the global gap vector for different models and datasets in Fig. 13. 0 100000 200000 300000 400000 500000 
+
+> Training Iteration
+> 10 −9
+> 10 −8
+> 10 −7
+> 10 −6
+> 10 −5
+> 10 −4
+> 10 −3
+> 10 −2
+> log  V ar (Si)
+> Sxi
+> Syi
+
+Figure 12. We calculate Sxi , S yi throughout the training of N =500 embedding pairs initialized from a Gaussian distribution with variance σ2 = 0 .01 and gap of ∥⃗g∥ = 1 .8 . As training progresses, the values of Sxi , S yi are concentrated around their means, which by definition equal 1, making the matrices Qx, Q y more doubly-stochastic. 
+
+E. Robustness to Various Noise Distributions 
+
+Here we expand on the results presented in Sec. 5.1. As The-orem 3.4 states, robustness should increase for any distribu-tion of noise which has no correlation between the different dimensions and zero mean, not necessarily Gaussian noise. Figure 14 expands the experiments in Fig. 8 to non-Gaussian distributions with zero mean and where all dimensions are sampled i.i.d. . As can be seen, as long as the noise’s dimen-sions are uncorrelated, robustness increases when the gap is closed. 4−1.0 −0.5 0.0 0.5 1.0cos θ     
+
+> 0246
+> Density
+> Image Embeddings Text Embeddings (a) SigLIP on Imagenet (b) CLIP on MS-COCO
+> Figure 13. The orthogonality assumption - the cosine of angle θ
+> between ⃗gand each embedding in each modality is nearly 0for different models and datasets, confirming assumption 3.3.
+
+F. Rephrasing Experiments - Further Details 
+
+This section provides details on the experiments presented in Sec. 5.3. 
+
+F.1. Rephrasing Noise is Correlated 
+
+Caption rephrasing, such as replacing the caption "a photo of a X" to "an image of X", tends to result in correlated noise in the embedding space. Intuitively, this is because in the input space, rephrasing can be seen as subtraction of a constant input - the string "a photo of a" followed by addition of the constant string "an image of". When these changes are applied to all inputs, it can be expected that the change in the embedding space would either not exist (if the model is completely robust to such changes) or be consistent. To show this, we conduct the above experiment on Ima-genet. Assume all N class names (texts) are embedded with the prefix "a photo of a", resulting in the text embedding matrix X. We create a noise text embedding matrix, ˜X by embedding all class names with a different prefix (e.g. "an image of"). We repeat for 400 different caption templates, and calculate the empirical noise covariance. Define the noise to be M = ˜X − X. The covariance C is then: 
+
+C = ( M − 1
+
+N⃗ 1⃗1T M )T (M − 1
+
+N⃗ 1⃗ 1T M ) (49) To measure how much the noise is correlated, we simply measure the norm of all off-diagonal elements relative to the forbenius norm of the covariance matrix: 
+
+d(C) = ∥C − diag (C)∥F
+
+∥C∥F
+
+(50) This is of course equal to zero in the case that the noise is uncorrelated and d(C) = 1 when completely correlated. Fig. 15 measures d(C) for different caption rephrasings for different models on Imagenet. As can be seen, in all cases 
+
+d(C) ≈ 1 meaning the noise is indeed extremely correlated. 
+
+F.2. Rephrasing A-OKVQA 
+
+In the multiple choice VQA setting, we follow the protocol of Ghosal et al. [3] : given a question Q, for each possible answer Ai for i ∈ [NA] we embed the text that is the con-catenation of Q + Ai resulting in NA text embeddings. We chose the estimated answer via cosine similarity with the image embedding. We evaluate on the entire A-OKVQA validation set. In order to rephrase a correct answer, we simply swap the correct answer Aj with each of the "direct answers" options for that particular question in the dataset. Each question has up to 10 different possible correct answers, each one constitutes as a rephrasing. To replace the wrong answers we sample from the entire answer bank (not including the correct answers). Notice that in this case our measure of robustness isn’t meaningful as the "noisy" wrong answers are completely different texts, therefore we shouldn’t expect the model to consistently predict the same wrong answer when adding this type of noise. Therefore, under this setting we focus on consistency w.r.t. right answers, which is similar to measur-ing accuracy when adding noise. If accuracy increases when closing the gap, the model is more consistent on predicting the right answer, or in other words - robust w.r.t. that answer. 
+
+G. Approximately Orthogonal Algorithm 
+
+As Theorem 3.4 proves, improvement of robustness is cor-related with the amount of the gap that is closed, and is maximized when the two modality means overlap. In prac-tice, the gap vector g can almost be non-orthogonal to the subspace of X , meaning that closing the gap in the direc-tion of g′ = g − V V T g will produce a small increase in robustness since ∥g′∥ ≪ ∥ g∥.To solve this we rely on Theorem 3.4 that states that any direction which decreases the distance will increase ro-bustness. We propose closing the gap in directions which are decreasingly orthogonal to the affine subspace of the modality being moved. Following from Theorem 3.5, this procedure assures us that closing of the gap would result in minimal change to the clean nearest neighbor retrieval. We implement this idea by simply thresholding the number of components to which the gap vector is orthogonal, start-ing with those containing minimal variance. Algorithm 1 presents a simple python pseudocode implementation. 
+
+Algorithm 1: Approximately Orthogonal Gap Vec-tor  
+
+> 1:
+
+// ϵ - variance threshold, ⃗ g - gap vector, X - modality to move  
+
+> 2:
+
+V SV T ← PCA (X) 
+
+> 3:
+
+inds ← { i : Si > ϵ } 
+
+> 4:
+
+V ′ ← V [: , inds ] 
+
+> 5:
+
+return (I − V ′V ′T )g
+
+This algorithm produces a tradeoff between the increment 50.4 0.6 0.8 1.0      
+
+> Gap
+> 60 70 80 90 100
+> Robustness  Accuracy Student’s-t Uniform Gaussian Laplacian Original Gap 0.81.01.2
+> Gap
+> 60 70 80 90 100
+> Robustness  Accuracy Student’s-t Uniform Gaussian Laplacian Original Gap 0.20.40.60.81.0
+> Gap
+> 50 60 70 80 90 100
+> Robustness  Accuracy Student’s-t Uniform Gaussian Laplacian Original Gap
+
+(a) CLIP ViT-L-14 (b) SigLIP (c) CLIP ViT-B-16 Figure 14. Results for different noise distributions and models on CIFAR10. All are normalized to have variance σ2 = 0 .025 2. Robustness increases when the gap is closed. 0.945 0.950 0.955 0.960 0.965    
+
+> d(C)
+> 010 20
+> Count 0.970 0.975 0.980 0.985
+> d(C)
+> 010 20 30 40
+> Count
+
+(a) CLIP (ViT B-16) on Imagenet (b) SigLIP on Imagenet Figure 15. We compute d(C) according to Eq. (50). For all models we tested, with over 400 different captions, d(C) ≈ 1 suggesting the noise is extremely correlated in the embedding space. 
+
+in robustness and loss of accuracy controlled by the param-eter ϵ. An example of using the algorithm is displayed in Fig. 18 and the tradeoff induces can be seen in Fig. 19. 
+
+H. Simulations 
+
+H.1. Details 
+
+All simulations are done by optimizing randomly initialized embedding vectors using the Eq. (6). We use full batch gradient descent with a learning rate of 0.01. In Fig. 4 (top) we train unnormalized embedding vectors, directly optimizing Eq. (6) without a normalization step. We initialize the embeddings sampled from two normal distri-butions N (μ1,2, 0.01 2 · I) with μ1,2 = (0 , ±0.5) . We use a constant temperature of τ = 0 .1 and train for 10 7 iterations. In Fig. 4 (bottom) and Fig. 16 we initialize 1000 em-beddings per modality drawn from a normal distribution 
+
+N (±⃗e 1, 0.01 2 · I) with ⃗e 1 being the first elementary basis vector. All embeddings are normalized as is done in training multi-modal contrastive models [20]. 
+
+H.2. Further Experiments 
+
+We ablate both the dimension, initial distance between modality means and temperature. As stated in the main paper (and shown in [ 27 ] and [ 25 ]), there exist cases in which train-ing converges to completely aligned modalities. This can 10 1 10 3 10 5 10 7       
+
+> Iteration
+> 0246
+> Loss
+> 020 40 60 80 100
+> % of Aligned Pairs
+> X→YY→X
+> Loss 10 110 310 510 7
+> Iteration
+> 0.00.51.01.52.0
+> || ~g|| −1.0
+> −0.50.00.51.0cos( ~g, ~ xi − ¯x)
+> Orthogonality Gap Norm
+
+Figure 16. We follow Shi et al. [27] and learn embeddings 
+
+X , Y ∈ R1000 ×512 on the hypersphere using the contrastive loss (Eq. (6)) and gradient descent. While the loss decreases and train-ing converges (left), a major gap remains between the embeddings and orthogonality holds (right, measured using Eq. (9)). 
+
+happen when double stochasticity does not hold throughout the iterations, and double stochasticity may depend subtly on the temperature τ and the number of iterations. We demon-strate this in Fig. 17. 6−0.50.5
+
+t=5000 , L(X, Y ) = 6.91 −0.50.5
+
+t=5000000 , L(X, Y ) = 2.15 0.0 0.5 1.0 1.5 2.0
+
+Initial Gap 
+
+0.00 0.25 0.50 0.75 1.00 1.25 
+
+> Final Gap
+
+Dimension 64 
+
+Temperature 
+
+> 0.1 1.0 10.0
+
+1.4 1.6 1.8 2.0
+
+Initial Gap 
+
+0.25 0.50 0.75 1.00 1.25 
+
+> Final Gap
+
+Dimension 256 
+
+Temperature 
+
+> 0.1 1.0 10.0
+
+10 1 10 3 10 5 10 7
+
+Iteration 
+
+0246
+
+> Loss
+
+020 40 60 80 100     
+
+> % of Aligned Pairs
+> X→YY→X
+> Loss
+
+10 1 10 3 10 5 10 7
+
+Iteration 
+
+0.00 0.25 0.50 0.75 1.00 1.25 1.50 
+
+> || ~g||
+
+−1.0
+
+−0.50.00.51.0cos( ~g, ~ xi − ¯x)
+
+> Orthogonality Gap Norm
+
+Figure 17. Top: When training with τ = 1 training converges to a solution without a gap, despite existence of an initial gap and orthogonality. Middle: This is consistent for training in higher dimensions as well - different temperatures have different effects on how much of the gap is closed. When temperatures are ≥ 1, the gap closes throughout training. In higher temperatures training hardly differs from initialization. When the gap is initialized at zero it remains so for all temperatures. Bottom: Example of dynamics in R256 with τ = 10 . The gap closes throughout training as it converges to perfect alignment. 
+
+71.0 1.5 2.0 2.5
+
+Gap 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+80 
+
+90 
+
+100 σ2
+
+> 0.005 0.022 0.040 Accuracy Original Gap
+
+σ2
+
+> 0.005 0.022 0.040
+
+1.0 1.5 2.0 2.5
+
+Gap 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+80 
+
+90 
+
+100 σ2
+
+> 0.005 0.022 0.040 Accuracy Original Gap
+
+σ2
+
+> 0.005 0.022 0.040
+
+1.0 1.5 2.0 2.5 3.0 3.5
+
+Gap 
+
+0
+
+10 
+
+20 
+
+30 
+
+40 
+
+50 
+
+60 
+
+70 
+
+80 
+
+90 
+
+100 σ2
+
+> 0.005 0.022 0.040 Accuracy Original Gap
+
+σ2
+
+> 0.005 0.022 0.040
+
+(a) CLIP (ViT B-16) on Imagenet (b) CLIP (ViT L-14) on Imagenet (c) SigLIP on Imagenet 0.4 0.6 0.8 1.0 1.2 1.4
+
+Gap 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+100        
+
+> %
+> Robustness σ2=0.02 R@1 =40 R@1 =25 R@1 =5Original Gap
+
+0.50 0.75 1.00 1.25 1.50 1.75 
+
+Gap 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+100         
+
+> %
+> Robustness σ2=0.020 Accuracy =40 Accuracy =25 Accuracy =5Original Gap
+
+0.5 1.0 1.5 2.0
+
+Gap 
+
+0
+
+20 
+
+40 
+
+60 
+
+80 
+
+100         
+
+> %
+> Robustness σ2=0.020 Accuracy =40 Accuracy =25 Accuracy =5Original Gap
+
+(d) CLIP (ViT L-14), MS-COCO (e) CLIP (ViT L-14), ImageNet (f) SigLIP, ImageNet Figure 18. The zero shot classification accuracy and robustness under noise η ∼ N (0 , σ 2I), on ImageNet and MS-COCO. Top row: When using Algorithm 1 with ϵ = 5% of the variance, decrease in accuracy is negligible ( < 1% ) relative to the robustness gained, which can be ∼ 10% .Bottom row: As the threshold ϵ grows larger, more of the gap is closed, greatly increasing robustness at a negligible cost of accuracy. 0.6 0.8 1.0 1.2 1.4 1.6 1.8 2.0         
+
+> Gap
+> 0
+> 20
+> 40
+> 60
+> 80
+> 100
+> %
+> R@1
+> 2=0.005
+> 2=0.01
+> 2=0.025
+> Original Gap 0.0 2.5 5.0 7.5 10.0 12.5 15.0 17.5 20.0
+> Singular Value Threshold
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> Change in %
+> Decrease in R@1
+> Increase in Robustness
+
+(a) SigLIP on MS-COCO (b) Tradeoff for σ2 = 0 .01 [-0.3em] Figure 19. Even when using Algorithm 1 the drop in R@1 for SigLIP [ 40 ] on image to text retrieval on MS-COCO dataset [ 13 ] is negligible relative to the improvement in robustness for different Gaussian noises (left). Sec. H.2 shows the ranges of the singular value threshold ϵ for which the increment in robustness (for Gaussian noise with σ2 = 0 .01 ) is larger than the decrease in R@1. 
+
+8

@@ -6,58 +6,46 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-03-31
-- 运行时间：2026-03-31 20:14:31 UTC
+- 最新运行日期：2026-04-01
+- 运行时间：2026-04-01 19:49:30 UTC
 - 运行状态：成功
-- 本次总论文数：12
-- 精读区：6
+- 本次总论文数：8
+- 精读区：2
 - 速读区：6
 
 ### 今日简报（AI）
-今日深度解析 12 篇多模态前沿论文，重点攻克模态缺失与稀疏观测下的学习难题。
-POLY-SIM 提出的多语种说话人识别评估计划与 BLOSSOM 的块级联邦学习方案最值得关注。
-建议从多模态鲁棒性与分布式学习的结合点入手，探索复杂现实场景下的模型优化路径。
-- 详情：[/202603/31/README](/202603/31/README)
+今日深度剖析多模态主动学习的评估陷阱，并探索类脑架构在脑电情感识别中的前沿应用。
+核心结论揭示了多模态学习中易被忽视的评估偏差，并证实了类脑专家模型（BiMoE）在处理复杂情感信号时的显著优势。
+建议关注细粒度动作理解与语音-文本预训练的结合，以提升多模态交互系统在真实场景下的感知精度。
+- 详情：[/202604/01/README](/202604/01/README)
 
 ### 精读区论文标签
-1. [POLY-SIM: Polyglot Speaker Identification with Missing Modality Grand Challenge 2026 Evaluation Plan](/202603/31/2603.24569v2-poly-sim-polyglot-speaker-identification-with-missing-modality-grand-challenge-2026-evaluation-plan)  
+1. [Mind the Gap: A Framework for Assessing Pitfalls in Multimodal Active Learning](/202604/01/2603.29677v1-mind-the-gap-a-framework-for-assessing-pitfalls-in-multimodal-active-learning)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：缺失模态下的多模态说话人识别
-2. [BLOSSOM: Block-wise Federated Learning Over Shared and Sparse Observed Modalities](/202603/31/2603.27552v1-blossom-block-wise-federated-learning-over-shared-and-sparse-observed-modalities)  
-   标签：评分：9.0/10、query:missing-modality
-   evidence：缺失模态下的联邦学习
-3. [Dual-branch Graph Domain Adaptation for Cross-scenario Multi-modal Emotion Recognition](/202603/31/2603.26840v1-dual-branch-graph-domain-adaptation-for-cross-scenario-multi-modal-emotion-recognition)  
+   evidence：评估多模态主动学习中包括缺失模态在内的陷阱的框架
+2. [BiMoE: Brain-Inspired Experts for EEG-Dominant Affective State Recognition](/202604/01/2603.29205v1-bimoe-brain-inspired-experts-for-eeg-dominant-affective-state-recognition)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：跨场景条件下的对话多模态情感识别
-4. [Omni-Modal Dissonance Benchmark: Systematically Breaking Modality Consensus to Probe Robustness and Calibrated Abstention](/202603/31/2603.27187v1-omni-modal-dissonance-benchmark-systematically-breaking-modality-consensus-to-probe-robustness-and-calibrated-abstention)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：系统性破坏模态共识以探测鲁棒性
-5. [Learning to See through Illumination Extremes with Event Streaming in Multimodal Large Language Models](/202603/31/2603.27558v1-learning-to-see-through-illumination-extremes-with-event-streaming-in-multimodal-large-language-models)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：通过多模态融合补偿极端光照下丢失的信息
-6. [Integrating Multimodal Large Language Model Knowledge into Amodal Completion](/202603/31/2603.28333v1-integrating-multimodal-large-language-model-knowledge-into-amodal-completion)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：重建人与物体的遮挡部分
+   evidence：结合脑电图和生理信号的多模态情感分析
 
 ### 速读区论文标签
-1. [Gaussian Joint Embeddings For Self-Supervised Representation Learning](/202603/31/2603.26799v1-gaussian-joint-embeddings-for-self-supervised-representation-learning)  
+1. [MA-Bench: Towards Fine-grained Micro-Action Understanding](/202604/01/2603.26586v1-ma-bench-towards-fine-grained-micro-action-understanding)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：多模态逆问题的生成式联合建模
-2. [TMTE: Effective Multimodal Graph Learning with Task-aware Modality and Topology Co-evolution](/202603/31/2603.27723v1-tmte-effective-multimodal-graph-learning-with-task-aware-modality-and-topology-co-evolution)  
+   evidence：用于人类情感分析的微动作理解
+2. [CLIP-AUTT: Test-Time Personalization with Action Unit Prompting for Fine-Grained Video Emotion Recognition](/202604/01/2603.27999v1-clip-autt-test-time-personalization-with-action-unit-prompting-for-fine-grained-video-emotion-recognition)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：具有缺失连接的多模态图学习
-3. [Beyond Cosine Similarity: Zero-Initialized Residual Complex Projection for Aspect-Based Sentiment Analysis](/202603/31/2603.28205v1-beyond-cosine-similarity-zero-initialized-residual-complex-projection-for-aspect-based-sentiment-analysis)  
+   evidence：使用动作单元进行细粒度视频情感识别
+3. [ParaSpeechCLAP: A Dual-Encoder Speech-Text Model for Rich Stylistic Language-Audio Pretraining](/202604/01/2603.28737v1-paraspeechclap-a-dual-encoder-speech-text-model-for-rich-stylistic-language-audio-pretraining)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：在复数语义空间中解耦情感极性
-4. [Le MuMo JEPA: Multi-Modal Self-Supervised Representation Learning with Learnable Fusion Tokens](/202603/31/2603.24327v1-le-mumo-jepa-multi-modal-self-supervised-representation-learning-with-learnable-fusion-tokens)  
+   evidence：用于情感和风格描述符的语音文本模型
+4. [LogSigma at SemEval-2026 Task 3: Uncertainty-Weighted Multitask Learning for Dimensional Aspect-Based Sentiment Analysis](/202604/01/2603.24896v1-logsigma-at-semeval-2026-task-3-uncertainty-weighted-multitask-learning-for-dimensional-aspect-based-sentiment-analysis)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：带有融合令牌的多模态自监督表示学习
-5. [Good Scores, Bad Data: A Metric for Multimodal Coherence](/202603/31/2603.25924v1-good-scores-bad-data-a-metric-for-multimodal-coherence)  
+   evidence：基于效价和唤醒度的维度情感分析
+5. [MAR3: Multi-Agent Recognition, Reasoning, and Reflection for Reference Audio-Visual Segmentation](/202604/01/2603.27706v1-mar3-multi-agent-recognition-reasoning-and-reflection-for-reference-audio-visual-segmentation)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：多模态一致性与融合质量指标
-6. [FusionAgent: A Multimodal Agent with Dynamic Model Selection for Human Recognition](/202603/31/2603.26908v1-fusionagent-a-multimodal-agent-with-dynamic-model-selection-for-human-recognition)  
+   evidence：多模态线索中的鲁棒分析与主导模态识别
+6. [Is the Modality Gap a Bug or a Feature? A Robustness Perspective](/202604/01/2603.29080v1-is-the-modality-gap-a-bug-or-a-feature-a-robustness-perspective)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：基于模态可靠性的动态模型选择
+   evidence：从鲁棒性视角看待多模态模型中的模态间隙
 
 
 <div class="dpr-home-promo-card">
