@@ -1,0 +1,615 @@
+Title: SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation
+
+URL Source: https://arxiv.org/pdf/2603.25776v1
+
+Published Time: Mon, 30 Mar 2026 00:01:41 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Yuan-Hao Wei 
+
+Yuan-Hao.Wei@outlook.com; yuan-hao.wei@connect.polyu.hk 
+
+Abstract 
+
+We propose SAHMM-VAE, a source-wise adaptive Hidden Markov prior variational autoencoder for unsupervised blind source separation. Instead of treating the latent prior as a single generic regularizer, the proposed framework assigns each latent dimension its own adaptive regime-switching prior, so that different latent dimensions are pulled toward different source-specific temporal organizations during training. Under this formulation, source separation is not implemented as an external post-processing step; it is embedded directly into variational learning itself. The encoder, decoder, posterior parameters, and source-wise prior parameters are optimized jointly, where the encoder progressively learns an inference map that behaves like an approximate inverse of the mixing transformation, while the decoder plays the role of the generative mixing model. Through this coupled optimization, the gradual alignment between posterior source trajectories and heterogeneous HMM priors becomes the mechanism through which different latent dimensions separate into different source components. To instantiate this idea, we develop three branches within one common framework: a Gaussian-emission HMM prior, a Markov-switching autoregressive HMM prior, and an HMM state-flow prior with state-wise autoregressive flow transformations. Experiments show that the proposed framework achieves unsupervised source recovery while also learning meaningful source-wise switching structures. More broadly, the method extends our structured-prior VAE line from smooth, mixture-based, and flow-based latent priors to adaptive switching priors, and provides a useful basis for future work on interpretable and potentially identifiable latent source modeling. 
+
+Keywords: blind source separation (BSS); unsupervised learning; variational autoencoder (VAE); hid-den markov model (HMM); source-wise latent modeling; adaptive structured prior; switching temporal dynamics; independent component analysis (ICA) 
+
+# 1 Introduction 
+
+Many real source signals are not governed by a single stationary law. They alternate between activity patterns, switch between local regimes, and exhibit temporal dependence that changes from segment to segment. From the viewpoint of blind source separation (BSS), this observation is important because such switching structure is often not a nuisance but part of the information that distinguishes one source from another. If a latent model ignores this structure and forces all hidden components to share one simple prior, then it may still reconstruct the observations well, yet remain poorly matched to the heterogeneous source processes that make separation possible in the first place. BSS seeks to recover latent source signals from observed mixtures without direct access to the mixing mechanism. Independent component analysis (ICA) established one of the most influential solutions by showing that, under suitable linear assumptions, statistical independence and non-Gaussianity can be sufficient for source recovery (Comon, 1994; Hyv¨ arinen and Oja, 1997, 2000). Once the setting becomes nonlinear, noisy, or temporally structured, however, the problem becomes much harder and the role of latent structural assumptions becomes substantially more central. 
+
+> arXiv:2603.25776v1 [stat.ML] 26 Mar 2026
+
+SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Variational autoencoders (VAEs) (Kingma and Welling, 2014) provide a natural probabilistic lan-guage for revisiting this problem. In a source-separation interpretation, the encoder can be read as a demixing map from mixtures to latent components, while the decoder acts as a generative remixing map from latent components back to observations (Wei et al., 2024a). This perspective has become increas-ingly meaningful in light of identifiable nonlinear ICA and identifiable VAE formulations, which show that latent recovery is deeply tied to the structure imposed on latent variables and their conditional laws (Hyv¨ arinen and Morioka, 2017; Hyv¨ arinen et al., 2019; Khemakhem et al., 2020). In other words, deep encoder–decoder flexibility alone is not enough; the latent prior matters because it determines what kinds of hidden variables the model prefers to infer. This is precisely where standard VAE practice becomes limiting for BSS. A shared isotropic Gaussian prior is convenient, but it is also deliberately featureless. It does not distinguish between a source that is smooth, one that is multimodal, one that exhibits temporal persistence, and one that repeatedly switches among local dynamic modes. For source separation, such symmetry can be counterproductive: if all latent dimensions are encouraged toward the same simple prior, then the model is given little incentive to let different dimensions specialize into genuinely different source processes. Our work has therefore treated prior design not as a background regularization choice but as the main vehicle for source-oriented latent modeling. In PAVAE, adaptive Gaussian-process priors were used to encode source-wise smoothness and temporal correlation (Wei et al., 2024a). In PDGMM-VAE, each latent dimension was assigned its own adaptive Gaussian mixture prior to capturing different source dimensions that were not Gaussian (Wei and Sun, 2026). AR-Flow VAE further expanded this line by equipping each latent source with a parameter-adaptive autoregressive flow prior to model richer ordered dependence and non-Gaussian temporal structure (Wei et al., 2026). A consistent lesson emerging from these studies is that, when each latent dimension is treated explicitly as a source candidate, heterogeneous prior constraints can drive different latent dimensions toward different source roles. The present paper extends that program from continuously varying source structure to switching source structure. We propose SAHMM-VAE , a source-wise adaptive Hidden Markov prior variational autoencoder for unsupervised blind source separation. The key modeling move is simple but consequential: rather than assigning all latent variables one common prior, we equip each latent dimension with its own adaptive hidden-state process. Each source dimension therefore carries its own regime-switching bias, and different latent dimensions are encouraged to settle into different switching organizations. This is especially natural when sources are better described by alternating regimes than by a single static density. To make this idea operational, we develop a unified family with three representative branches. The first uses a Gaussian-emission HMM prior and captures source-wise switching among state-dependent marginal distributions. The second upgrades each source prior to a Markov-switching autoregressive process, thereby incorporating state-dependent linear temporal dynamics. The third further enriches the state-conditional dynamics by using state-wise invertible flow transformations, allowing non-Gaussian innovations within each regime. These are not three unrelated models, but three increasingly expressive realizations of the same source-wise switching-prior principle. This work should also be distinguished from neighboring lines of research. It is not classical HMM-based source separation in the factorial-HMM tradition, which typically performs source inference outside a VAE formulation (Ghahramani and Jordan, 1997; Reyes-Gomez et al., 2003). It is also different from Hidden Markov nonlinear ICA, whose main focus is unsupervised nonlinear ICA and identifiability through a latent Markov chain rather than source-wise VAE prior design (H¨ alv¨ a and Hyv¨ arinen, 2020). Nor is it the same as speech-oriented HMM-VAE models for acoustic unit discovery, where HMMs organize discrete speech units rather than act as source-specific priors for latent source recovery (Ebbers et al., 2017; Glarner et al., 2018). Our emphasis is instead on using source-wise adaptive switching priors to make latent dimensions separate as source processes within one unified encoder–decoder training objective. A further point deserves emphasis. In this paper, unsupervised does not merely mean that ground-truth sources are absent from the labels. The separation process itself is embedded in training. As the 2Yuan-Hao Wei 
+
+reconstruction term and the prior-matching term are optimized jointly, the posterior trajectories, decoder parameters, and source-wise prior parameters co-adapt. Different latent dimensions gradually become associated with different prior parameters; those priors, in turn, pull the posterior trajectories toward different structured source explanations through the KL term. Thus, optimization of the loss function is simultaneously the process by which the sources become separated. The main contributions of this paper are threefold. First, we introduce a source-oriented VAE framework in which each latent dimension is assigned its own adaptive HMM prior. Second, we unify three increasingly expressive switching-prior branches within one training structure, ranging from Gaussian-emission HMMs to state-flow HMM priors. Third, we show experimentally that this source-wise switching-prior design supports accurate unsupervised source recovery while also learning interpretable hidden temporal structure, thereby broadening the methodological scope of structured-prior VAE research for BSS. 
+
+# 2 Related Work 
+
+Research on blind source separation has long been shaped by ICA and its extensions. Classical ICA exploits independence and non-Gaussianity to recover latent components from mixtures and remains one of the central theoretical viewpoints in source separation (Comon, 1994; Hyv¨ arinen and Oja, 1997, 2000). In nonlinear settings, however, identifiability is no longer automatic, and substantial work has focused on what additional structure is needed to make nonlinear source recovery possible (Hyv¨ arinen and Morioka, 2017; Hyv¨ arinen et al., 2019). This broader literature is directly relevant here because it clarifies that latent recovery depends not only on the observation model but also on structural assumptions imposed on hidden variables. A particularly important bridge between nonlinear ICA and deep latent-variable models was es-tablished by Khemakhem et al., who showed that identifiable nonlinear ICA can be expressed within a VAE-style probabilistic framework when suitable factorization and conditioning assumptions are imposed on the latent prior (Khemakhem et al., 2020). From the viewpoint of BSS, this result is conceptually significant: it suggests that the prior is not just a mathematical convenience for variational training, but one of the main mechanisms through which source recovery may become structured, interpretable, and potentially identifiable. Temporal and switching structure have also played a central role in recent nonlinear ICA research. Temporal dependence and nonstationarity have been used repeatedly as signals that help break the ambiguities of nonlinear source models (Hyv¨ arinen and Morioka, 2017; Hyv¨ arinen et al., 2019). Hidden Markov Nonlinear ICA is especially relevant, because it replaces observed segment indices by an inferred hidden-state sequence and thereby achieves fully unsupervised nonlinear ICA under a Markovian latent-state process (H¨ alv¨ a and Hyv¨ arinen, 2020). That work is highly relevant in spirit, but its primary objective differs from ours. It studies how a latent Markov chain can enable unsupervised nonlinear ICA and identifiability, whereas the present paper studies how each source dimension in a VAE can be assigned its own adaptive HMM prior so that different latent dimensions are biased toward different switching source processes. There is also prior work directly combining HMMs and VAEs. Ebbers et al. proposed an HMM-VAE for acoustic unit discovery, and Glarner et al. further developed a Bayesian HMM-VAE with a Dirichlet-process prior over acoustic units (Ebbers et al., 2017; Glarner et al., 2018). These studies show that HMM and VAE components can be integrated effectively, but the latent semantics are different. In acoustic unit discovery, the HMM is used to model discrete units in speech; in our setting, the HMM is assigned source-wise and serves as a structured prior over continuous latent source trajectories for BSS. Another neighboring tradition is HMM-based source separation outside the VAE framework. Facto-rial HMMs and related models assign separate hidden-state processes to different sources and have been used for mixture modeling and source recovery (Ghahramani and Jordan, 1997; Reyes-Gomez et al., 2003). 3SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+This literature is important because it confirms that giving different sources separate Markov structure is a natural modeling principle. Nevertheless, these methods are methodologically distinct from the present study: they are not based on encoder–decoder variational inference, do not frame the problem through a VAE objective, and do not focus on source-wise adaptive prior learning inside a deep generative model. Finally, the present paper continues our own structured-prior VAE line for BSS and nonlinear ICA. PAVAE introduced adaptive Gaussian-process priors to model source-wise smoothness and temporal cor-relation (Wei et al., 2024a). PDGMM-VAE then moved toward per-dimension heterogeneous priors by assigning each latent component its own adaptive Gaussian mixture model (Wei and Sun, 2026). AR-Flow VAE further enriched this direction by equipping each latent source with a parameter-adaptive autoregressive flow prior (Wei et al., 2026). In a related but architecturally different branch, Half-VAE explored ICA-style latent recovery without an encoder by directly optimizing latent variables as trainable parameters (Wei et al., 2024b). Relative to these works, the present study fills the switching-prior gap in this broader research program: it asks what happens when each latent source is driven not by a smooth, mixture-based, or continuously transformed prior, but by its own adaptive regime-switching process. 
+
+# 3 Methodology 
+
+3.1 Source-wise switching latent formulation 
+
+We consider a sequence of observed mixtures Y = {yt}Tt=1 with yt ∈ Rm. The latent representation at time index t is denoted by st ∈ Rn, and the jth latent dimension is interpreted explicitly as the jth source candidate trajectory across the whole sequence. Instead of introducing a single common latent prior for all dimensions, we assign each source trajectory its own hidden-state process. The resulting latent prior is therefore decomposed source by source , not merely sample by sample. Under this view, the generative model is written as 
+
+pθ,ψ (Y, S) = pθ(Y | S) pψ(S), (1) where S = {st}Tt=1 , θ collects decoder parameters, and ψ collects the source-wise prior parameters. The decoder maps latent source samples back to the observation space through ˆyt = gθ(st), (2) so the same formulation covers both linear and nonlinear mixing mappings depending on the choice of 
+
+gθ(·). The intractable posterior is approximated by a variational encoder qϕ(S | Y). In the present imple-mentation, the encoder produces source-wise posterior means 
+
+μt = fϕ(yt) = [ μt, 1, μ t, 2, . . . , μ t,n ]⊤, (3) and the variational posterior is factorized as 
+
+qϕ(S | Y) = 
+
+> n
+
+Y
+
+> j=1
+> T
+
+Y
+
+> t=1
+
+N (st,j | μt,j , σ 2 
+
+> j
+
+), (4) where σ2 
+
+> j
+
+> 0 is a learnable variance shared across time for source dimension j. Sampling is performed by reparameterization: 
+
+st,j = μt,j + σj ϵt,j , ϵt,j ∼ N (0 , 1) . (5) This source-wise posterior parameterization is important for the present paper. The encoder does not merely produce a generic latent code. It produces candidate source trajectories, while the KL term later 4Yuan-Hao Wei 
+
+compares each of these trajectories with a corresponding source-specific switching prior. This posterior– prior pairing is the main mechanism by which different latent dimensions are encouraged to settle into different source roles. The reconstruction term is implemented by 
+
+Lrec =
+
+> T
+
+X
+
+> t=1
+
+∥ˆyt − yt∥22. (6) The posterior log-density is log qϕ(S | Y) = 
+
+> n
+
+X
+
+> j=1
+> T
+
+X
+
+> t=1
+
+"
+
+− 12 log(2 π) − 12 log σ2 
+
+> j
+
+− (st,j − μt,j )2
+
+2σ2
+
+> j
+
+#
+
+. (7) 
+
+3.2 Source-wise adaptive HMM prior backbone 
+
+For each source dimension j ∈ { 1, . . . , n }, we introduce a discrete hidden-state path 
+
+c:,j = [ c1,j , c 2,j , . . . , c T,j ]⊤, ct,j ∈ { 1, . . . , K }, (8) with source-specific initial distribution and transition matrix, 
+
+p(c1,j = k) = πj,k , p(ct,j = b | ct−1,j = a) = Aj,ab . (9) Thus, each latent dimension carries its own Markov chain rather than sharing one global hidden-state process. Conditioned on this hidden-state path, the source trajectory s:,j is scored by a branch-dependent state-conditional density. In generic form, 
+
+p(s:,j , c:,j ) = p(c1,j )
+
+> T
+
+Y
+
+> t=2
+
+p(ct,j | ct−1,j )
+
+> T
+
+Y
+
+> t=1
+
+p(st,j | ⋆, c t,j ), (10) where the symbol ⋆ indicates that the state-conditional term may or may not depend on previous source values depending on the chosen branch. Marginalizing the hidden states gives 
+
+p(s:,j ) = X
+
+> c:,j
+
+p(s:,j , c:,j ), (11) and the full prior factorizes across source dimensions: 
+
+pψ(S) = 
+
+> n
+
+Y
+
+> j=1
+
+p(s:,j ). (12) This decomposition is the structural center of SAHMM-VAE. Different latent dimensions are sepa-rated not because a post hoc algorithm rotates them afterward, but because during training each dimen-sion is repeatedly evaluated against its own source-specific HMM prior, whose parameters are updated jointly with the rest of the model. As the latent dimensions progressively align with different source pro-cesses, the associated prior parameters also converge to distinct configurations for different dimensions. The KL term then reinforces this source-wise differentiation by encouraging each posterior factor to stay consistent with its corresponding learned prior. Importantly, this consistency is established through a bidirectional coupling between posterior and prior during optimization: the learned priors progressively adapt to different source dynamics, while the encoder is simultaneously driven toward a representation map that behaves as an approximate inverse of the underlying mixing function g, that is, an effective 
+
+g−1-like demixing map. In this way, source separation emerges gradually as an intrinsic consequence of unsupervised training rather than as a separate post-processing step. 5SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+3.3 Three prior branches as a progressive family 
+
+The three branches differ only in how the state-conditioned source density is defined. This yields a clean progression from switching marginal structure to switching linear dynamics and then to switching nonlinear state-wise innovations. 
+
+3.3.1 Branch I: Gaussian-emission HMM prior 
+
+The first branch assumes that, once the current hidden state is known, the source value is generated from a state-specific Gaussian emission: 
+
+p(st,j | ct,j = k) = N (st,j | mj,k , v j,k ), vj,k > 0. (13) The corresponding local score is 
+
+ℓ(1)  
+
+> t,j
+
+(k) = − 12
+
+ (st,j − mj,k )2
+
+vj,k 
+
++ log(2 π) + log vj,k 
+
+
+
+. (14) Using forward recursion in log domain, 
+
+α(1) 1,j (k) = log πj,k + ℓ(1) 1,j (k), (15) 
+
+α(1)  
+
+> t,j
+
+(k) = ℓ(1)  
+
+> t,j
+
+(k) + LSE Ka=1 
+
+ α(1)  
+
+> t−1,j
+
+(a) + log Aj,ak 
+
+, t ≥ 2, (16) where LSE denotes log-sum-exp. Then log p(1) (s:,j ) = LSE Kk=1 α(1)  
+
+> T,j
+
+(k). (17) This branch emphasizes switching amplitude statistics but does not explicitly model state-dependent autoregression. 
+
+3.3.2 Branch II: Markov-switching autoregressive HMM prior 
+
+The second branch keeps the source-wise Markov chain but allows each regime to carry its own linear temporal dynamics. The initial observation term is 
+
+p(s1,j | c1,j = k) = N (s1,j | ˜μj,k , ˜vj,k ), (18) and for t ≥ 2, 
+
+p(st,j | st−1,j , c t,j = k) = N
+
+
+
+st,j | μj,k + ϕj,k (st−1,j − μj,k ), σ 2
+
+> j,k
+
+
+
+. (19) Define the state-wise autoregressive (AR) mean 
+
+ηt,j,k = μj,k + ϕj,k (st−1,j − μj,k ), (20) so that the local score is 
+
+ℓ(2)  
+
+> t,j
+
+(k) = − 12
+
+"
+
+(st,j − ηt,j,k )2
+
+σ2
+
+> j,k
+
++ log(2 π) + log σ2
+
+> j,k
+
+#
+
+. (21) The forward recursion becomes 
+
+α(2) 1,j (k) = log πj,k + ℓ(2) 1,j (k), (22) 
+
+α(2)  
+
+> t,j
+
+(k) = ℓ(2)  
+
+> t,j
+
+(k) + LSE Ka=1 
+
+ α(2)  
+
+> t−1,j
+
+(a) + log Aj,ak 
+
+, t ≥ 2, (23) and log p(2) (s:,j ) = LSE Kk=1 α(2)  
+
+> T,j
+
+(k). (24) Relative to Branch I, this branch can distinguish states not only by marginal level but also by state-dependent persistence. 6Yuan-Hao Wei 
+
+3.3.3 Branch III: HMM state-flow prior 
+
+The third branch retains switching dynamics and state-wise autoregression, but replaces Gaussian inno-vations by state-specific invertible flow-transformed innovations. The initial term is again Gaussian, 
+
+p(s1,j | c1,j = k) = N (s1,j | ¯μj,k , ¯vj,k ), (25) while for t ≥ 2 we define the state-conditioned AR backbone 
+
+ut,j,k = st,j − aj,k st−1,j 
+
+ρj,k 
+
+, ρj,k > 0. (26) This residual is linked to standard Gaussian base noise through an invertible state-wise transformation: 
+
+ut,j,k = fj,k (εt,j,k ), εt,j,k ∼ N (0 , 1) . (27) Equivalently, εt,j,k = f −1 
+
+> j,k
+
+(ut,j,k ), and the conditional density is obtained by change of variables, 
+
+p(st,j | st−1,j , c t,j = k) = 1
+
+ρj,k 
+
+N (f −1 
+
+> j,k
+
+(ut,j,k ) | 0, 1) ∂f −1 
+
+> j,k
+
+(ut,j,k )
+
+∂u t,j,k 
+
+. (28) In implementation, each fj,k is composed of one-dimensional sinh–arcsinh style layers. Writing the inverse-flow output as εt,j,k = f −1 
+
+> j,k
+
+(ut,j,k ), the local score can be expressed compactly as 
+
+ℓ(3)  
+
+> t,j
+
+(k) = − 12 (ε2 
+
+> t,j,k
+
++ log(2 π)) + log ∂f −1 
+
+> j,k
+
+(ut,j,k )
+
+∂u t,j,k 
+
+− log ρj,k . (29) The forward recursion is then 
+
+α(3) 1,j (k) = log πj,k + ℓ(3) 1,j (k), (30) 
+
+α(3)  
+
+> t,j
+
+(k) = ℓ(3)  
+
+> t,j
+
+(k) + LSE Ka=1 
+
+ α(3)  
+
+> t−1,j
+
+(a) + log Aj,ak 
+
+, t ≥ 2, (31) with log p(3) (s:,j ) = LSE Kk=1 α(3)  
+
+> T,j
+
+(k). (32) This is the most expressive branch because it allows each hidden regime to induce its own non-Gaussian innovation law. 
+
+3.4 Unified objective and the separation mechanism 
+
+For any selected branch b ∈ { 1, 2, 3}, define log pψ(S) = 
+
+> n
+
+X
+
+> j=1
+
+log p(b)(s:,j ). (33) The evidence lower bound is 
+
+LELBO = Eqϕ(S|Y)[log pθ(Y | S)] − KL  qϕ(S | Y) ∥ pψ(S). (34) In implementation, a single reparameterized sample is used, yielding the normalized objective 
+
+L = Lrec + β [log qϕ(S | Y) − log pψ(S)] , (35) where β > 0 controls the strength of prior matching (Burgess et al., 2018; Wei et al., 2024a). 7SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Equation (35) makes the source-separation mechanism explicit. The reconstruction term alone en-courages latent variables that explain the observed mixtures. The prior term alone encourages trajectories that are plausible under source-wise adaptive switching priors. Their joint optimization couples these two pressures. As training proceeds, each latent dimension is repeatedly nudged toward a source trajectory that both reconstructs the mixtures and fits one evolving source-specific prior. Once different dimensions begin to align with different regimes and different prior parameters, the KL term amplifies that divergence rather than collapsing them back together. In this sense, minimizing the loss is simultaneously the process of learning the priors and the process of separating the sources. 
+
+Algorithm 1: Unified training of SAHMM-VAE with branch-specific source scoring 
+
+Input: Observed mixtures Y = {yt}Tt=1 ; number of latent sources n; number of hidden states K; branch index 
+
+b ∈ { 1, 2, 3}
+
+Output: Trained ( ϕ, θ, σ2, ψ (b)) and posterior qϕ(S | Y) 
+
+> 1
+
+Initialize encoder fϕ, decoder gθ , posterior variances σ2, and branch-specific source-prior parameters 
+
+ψ(b) = {πj , A j , state parameters }nj=1  
+
+> 2
+
+while not converged do  
+
+> 3
+
+Obtain posterior means μt = fϕ(yt) for t = 1 , . . . , T  
+
+> 4
+
+Sample latent trajectories using st,j = μt,j + σj ϵt,j with ϵt,j ∼ N (0 , 1)  
+
+> 5
+
+Reconstruct observations by ˆ yt = gθ (st) and compute Lrec from (6)  
+
+> 6
+
+Compute posterior score log qϕ(S | Y) using (7)  
+
+> 7
+
+for j ← 1 to n do  
+
+> 8
+
+Build source-specific hidden-state scorer for trajectory s:,j  
+
+> 9
+
+if b = 1 then  
+
+> 10
+
+Form Gaussian-emission local scores ℓ(1)  
+
+> t,j
+
+(k) using state means mj,k and variances vj,k  
+
+> 11
+
+Run forward recursion α(1)  
+
+> t,j
+
+(k) and obtain log p(1) (s:,j ) = LSE k α(1)  
+
+> T,j
+
+(k) 
+
+> 12
+
+else  
+
+> 13
+
+if b = 2 then  
+
+> 14
+
+Form MSAR local scores ℓ(2)  
+
+> t,j
+
+(k) using ηt,j,k = μj,k + ϕj,k (st−1,j − μj,k ) and innovation variances σ2 
+
+> j,k
+> 15
+
+Run forward recursion α(2)  
+
+> t,j
+
+(k) and obtain log p(2) (s:,j ) = LSE k α(2)  
+
+> T,j
+
+(k) 
+
+> 16
+
+else  
+
+> 17
+
+Construct state-flow residuals ut,j,k = ( st,j − aj,k st−1,j )/ρ j,k  
+
+> 18
+
+Evaluate inverse-flow noise εt,j,k = f −1 
+
+> j,k
+
+(ut,j,k ) and Jacobian term log |∂f −1 
+
+> j,k
+
+/∂u t,j,k | 
+
+> 19
+
+Form state-flow local scores ℓ(3)  
+
+> t,j
+
+(k) and run forward recursion α(3)  
+
+> t,j
+
+(k) 
+
+> 20
+
+Obtain log p(3) (s:,j ) = LSE k α(3)  
+
+> T,j
+
+(k) 
+
+> 21
+
+end  
+
+> 22
+
+end  
+
+> 23
+
+end  
+
+> 24
+
+Aggregate source-wise prior score log pψ (S) = Pnj=1 log p(b)(s:,j ) 
+
+> 25
+
+Form final objective 
+
+L = Lrec + β [log qϕ(S | Y) − log pψ (S)] Update ( ϕ, θ, σ2, ψ (b)) by gradient descent  
+
+> 26
+
+end  
+
+> 27
+
+return trained parameters and posterior family qϕ(S | Y)
+
+# 4 Experimental Study 
+
+4.1 Experimental perspective 
+
+The experiments are designed to answer two related questions. The first is whether the proposed source-wise switching-prior design can separate sources accurately under unsupervised training. The second is whether the internal switching structure learned by the priors is meaningfully related to the source dynamics rather than being a purely decorative latent mechanism. For this reason, the results are read 8Yuan-Hao Wei 
+
+Figure 1: Overall source-wise HMM-prior VAE framework. Each latent dimension is interpreted as one source candidate and is paired with its own adaptive switching HMM prior. from four complementary angles: convergence behavior, source waveform recovery, hidden-state recovery, and consistency between learned transition parameters and empirical transition usage. Figures 2–4 report the training traces of the three branches. Figure 5 compares the reconstructed latent sources with the ground truth. Figures 6 and 7 examine whether the inferred state paths track meaningful regime changes in the sources. Figure 8 then compares the learned transition matrices with empirical transition matrices computed from the inferred state sequences. Taken together, these figures allow the quality of separation and the quality of internal prior learning to be discussed jointly rather than in isolation. 
+
+4.2 Method 1: Gaussian-emission HMM prior 
+
+Figure 2 shows that the simplest switching-prior branch already trains stably. The total loss decreases quickly and then settles, while the per-source correlations rise toward values very close to one. This indi-cates that the model does not need state-dependent autoregression or flow flexibility to begin separating the sources effectively; the source-wise switching bias alone already provides a useful organizing force. An equally important observation concerns the prior parameters themselves. The state means and state variances move substantially during the earlier stages and then stabilize into separated regimes, while the transition matrices become strongly diagonal-dominant. This is the expected pattern if the model is genuinely learning persistent source-specific regimes rather than merely using the HMM layer as a redundant parametrization. The posterior variances also shrink and stabilize, suggesting that once the decoder and the source-wise priors become mutually compatible, the model requires less posterior uncertainty to explain the observations. From the standpoint of the paper’s main claim, Method 1 already illustrates the central mechanism well. The source estimates improve at the same time as the HMM parameters specialize. In other words, source recovery and prior adaptation are not two disconnected events. The prior is being learned while 
+
+9SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Figure 2: Training convergence of Method 1 (Gaussian-emission HMM prior). the sources are being separated, and the stabilization of different source-wise HMM parameters is part of the evidence that different latent dimensions are settling into different source roles. 
+
+4.3 Method 2: Markov-switching autoregressive prior 
+
+Figure 3 adds a second layer of structure: states are now distinguished not only by marginal level but also by their local temporal law. The optimization remains stable, and the source correlations again approach values extremely close to one. The main difference is that the internal parameter evolution becomes richer. The autoregressive coefficients, innovation scales, and state-dependent means continue adjusting for longer than the parameters of Method 1, which is natural because the model must now decide both 
+
+when states switch and how each state propagates local dynamics. This additional structure matters because many sources are not best distinguished by static amplitude statistics alone. Two regimes may occupy overlapping value ranges and still differ strongly in local persistence or trend. Method 2 is designed for exactly this situation, and the learned AR coefficients settling at clearly different values across states provide evidence that the model is indeed using state-dependent dynamics instead of collapsing back to a purely marginal HMM interpretation. For the narrative of this paper, Method 2 also sharpens the unsupervised-separation interpretation. The latent dimensions are not merely becoming different because the decoder finds it useful; they are becoming different because each dimension is repeatedly matched to a switching dynamic law whose parameters are also adapting. The separation process is therefore better described as a co-evolution of latent trajectories and source-specific temporal priors than as a plain reconstruction-driven decomposition. 
+
+4.4 Method 3: HMM state-flow prior 
+
+Figure 4 corresponds to the most expressive branch. It preserves source-wise Markov switching and state-dependent autoregression, but also equips each state with a flow-based innovation model. Even under this increased flexibility, the total loss still decreases reliably and the source correlations remain extremely 10 Yuan-Hao Wei 
+
+Figure 3: Training convergence of Method 2 (MSAR-HMM prior). high. This confirms that the source-wise switching-prior idea is compatible not only with simple HMMs but also with more expressive state-conditional distributions. The training traces also reveal a familiar trade-off. Because the branch has greater representational freedom, the internal parameters continue evolving for longer and can admit multiple plausible explana-tions of the same source waveform. This is especially visible in the state-flow parameters, whose flexibility can absorb local non-Gaussian variation that would otherwise need to be explained by cleaner state par-titioning. Consequently, source recovery can remain excellent even when hidden-state interpretability becomes less unique. This behavior is not a contradiction. It highlights an important distinction running through the paper: accurate source reconstruction and uniquely interpretable latent-state explanation are related but not identical goals. Method 3 leans more heavily toward expressive source modeling. The fact that it can still separate sources well under fully unsupervised training supports the generality of the framework, while the looser state identifiability underscores why switching-prior expressiveness should be discussed together with interpretability rather than only with reconstruction accuracy. 
+
+4.5 Source recovery across all three branches 
+
+Figure 5 compares the recovered source trajectories from all three branches. At the waveform level, all three methods perform strongly: the estimated trajectories nearly overlap with the true sources and the absolute correlations are all very close to one. This is the most direct evidence that the proposed source-wise HMM-prior VAE family functions effectively as an unsupervised source separator. The more interesting point is that the visual gap among the methods is smaller than the gap in their internal prior complexity. This means that, for the present data, once each latent dimension is equipped with its own structured switching prior, even the simplest branch already supplies a sufficiently strong inductive bias for accurate separation. The richer branches do not necessarily produce dramatically different waveforms because the baseline itself is already good. However, that should not be read as evidence that the three priors are interchangeable. Their difference lies in what kind of explanation they impose on the latent trajectories. Method 1 attributes 11 SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Figure 4: Training convergence of Method 3 (HMM state-flow prior). the sources mainly to switching marginal regimes. Method 2 attributes them to switching dynamical regimes. Method 3 allows more flexible non-Gaussian state-wise innovation structure. Thus, Figure 5 is best interpreted as validating the common separation principle, while the later figures explain how the three branches differ in internal temporal interpretation. 
+
+4.6 Hidden-state recovery 
+
+Figure 6 compares true and inferred hidden-state paths. This result is especially informative because it moves beyond source waveform recovery and asks whether the learned priors are capturing the intended regime structure. For Method 1, state recovery is reasonable but uneven across sources. This is expected because a Gaussian-emission HMM distinguishes states primarily through state-dependent marginal distributions. When two regimes occupy overlapping value ranges or differ more in local dynamics than in static am-plitude, state discrimination becomes harder. Even so, the inferred paths still often track the broad switching pattern of the true sources, which indicates that the source-wise HMM layer is not arbitrary. Method 2 generally improves the picture when the true source regimes differ by local linear dynamics. In such cases, state-dependent autoregression provides an extra cue that helps distinguish states that would otherwise look similar in amplitude alone. This is precisely where the added structure of Method 2 becomes most meaningful: it uses temporal evolution, not only instantaneous value, to decide which regime is active. Method 3 presents a more mixed result. Some sources can exhibit near-perfect waveform recovery while their inferred state sequence is less well aligned with the ground-truth state path. This is not sur-prising under a flexible state-flow prior. The model can distribute explanatory burden between switching structure and state-wise nonlinear transformations, so a unique discrete interpretation is no longer always necessary for high-quality source reconstruction. Another practical issue is HMM state-label ambiguity. Hidden states are identifiable only up to permutation, and different parameterizations may support very similar likelihoods. Therefore, imperfect 12 Yuan-Hao Wei 
+
+Figure 5: Recovered source signals for the three branches. state-sequence matching should not automatically be interpreted as model failure. Rather, it reflects the broader lesson that source recovery quality and state identifiability are distinct but interacting properties. 
+
+4.7 Local source–state overlay 
+
+Figure 7 offers a local view by plotting source trajectories together with their associated true and inferred state paths. This figure is useful because it shows where the inferred switching structure is being used. For Methods 1 and 2, many inferred state changes occur near visually meaningful changes in signal level or local temporal pattern. This supports the interpretation that the hidden states are responding to actual source structure rather than to arbitrary numerical fluctuations. Method 2 is especially inter-pretable in segments where local persistence changes, because the inferred states often align with switches in the local temporal law itself. For Method 3, the source fit remains strong, but the inferred state path can become denser or less visually synchronized with the true state partition. This again reflects the extra freedom of the state-flow branch. The model can explain local irregularities through the flow transformation rather than by reserving discrete states only for clean regime boundaries. Hence, the source path can be accurate even when the discrete state path is less transparently matched. The figure therefore reinforces one of the main conceptual messages of the paper: simpler switching priors may provide cleaner hidden-state explanations, whereas more expressive priors may trade some of that clarity for greater modeling flexibility, even when all of them remain effective separators. 
+
+4.8 Learned versus empirical transition structure 
+
+Figure 8 compares the learned transition matrices with empirical transition matrices computed from the inferred state sequences. The purpose is not to demand exact equality, but to check whether the learned source-wise priors are internally consistent with how the model actually uses its states. In most cases, the qualitative agreement is strong. Both the learned and empirical matrices are 13 SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Figure 6: Comparison between true and inferred hidden-state sequences. typically diagonal-dominant, indicating persistent regimes with relatively sparse switching. This is exactly the kind of source-wise regime organization the model is supposed to learn. The agreement therefore supports the view that the adaptive HMM priors are not merely being optimized numerically; they are shaping actual state usage in the inferred latent trajectories. Discrepancies are nonetheless expected. The learned transition matrix is a parameter of the prior model, whereas the empirical matrix is computed from one inferred hard state path, often after Viterbi-type decoding or posterior mode assignment. These two objects are related but not identical. They can differ because of posterior uncertainty, finite-sample variation, state-label permutation, and the fact that different hard state paths may be compatible with similar soft posterior structure. This distinction becomes more pronounced in expressive branches such as Method 3. When the prior can represent a source through several internally plausible state-flow combinations, one inferred state path may not reproduce the nominal transition parameters numerically even if both convey the same broad switching logic. For this reason, the figure is most informative when read qualitatively. Its main message is that the learned source-wise priors and the realized state usage largely point to the same type of regime structure. 
+
+4.9 Overall discussion 
+
+Taken together, the experiments support three conclusions. First, all three branches converge stably and recover the source waveforms accurately. This validates the main modeling premise of the paper: assigning each latent dimension its own adaptive switching prior is an effective unsupervised route to source separation. Second, the three branches differ mainly in how they explain the sources internally rather than in whether they can separate them at all. Third, increasing prior expressiveness does not automatically improve hidden-state interpretability; in some cases it weakens the uniqueness of the discrete explanation while preserving or even improving source recovery. This is an important observation for future work on identifiability and interpretable latent dynamics. 14 Yuan-Hao Wei 
+
+Figure 7: Local overlay of source reconstruction and hidden-state paths. 
+
+Figure 8: Learned and empirical transition matrices for all methods and sources. 
+
+# 5 Conclusion and Future Work 
+
+This paper proposed SAHMM-VAE, a source-wise adaptive HMM-prior variational autoencoder for un-supervised blind source separation. The defining idea is to treat each latent dimension as an individual source candidate and to couple it with its own adaptive switching prior. Under this design, the latent prior is no longer a passive regularizer shared across all dimensions. Instead, it becomes a source-specific structural force that co-evolves with the posterior trajectories and decoder during training. Within this common framework, we studied three progressively richer branches: a Gaussian-emission HMM prior, a Markov-switching autoregressive HMM prior, and an HMM state-flow prior. Across all three branches, experiments showed that optimizing the variational objective yields accurate source recovery and stable training. Just as importantly, the learned source-wise priors and hidden-state structures 15 SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+provide evidence that source separation is occurring together with prior adaptation rather than after it. As different latent dimensions settle into different prior parameters and different temporal organizations, the KL coupling between posterior and prior becomes part of the separation mechanism itself. The comparison among the three branches also clarifies a broader modeling trade-off. Simpler switch-ing priors may offer cleaner hidden-state interpretation, whereas more expressive state-wise priors can bet-ter absorb complex source variability but may reduce the uniqueness of the inferred regime explanation. This suggests that future structured-prior source models should be assessed not only by reconstruction quality or separation accuracy, but also by the transparency and identifiability of the latent temporal structure they induce. Several directions follow naturally from the present work. One is to study the identifiability of source-wise adaptive switching priors more formally, especially when different latent dimensions are governed by heterogeneous temporal laws. Another is to develop stronger constraints or regularizers that preserve the flexibility of expressive branches while improving state interpretability. It is also worthwhile to test the framework under more challenging nonlinear, noisy, or underdetermined settings. Finally, a deeper theoretical analysis of convergence, prior–posterior co-adaptation, and the conditions under which source-wise prior differentiation guarantees more robust separation would further strengthen the foundation of this research line. 16 Yuan-Hao Wei 
+
+# References 
+
+Burgess, C. P., Higgins, I., Pal, A., Matthey, L., Watters, N., Desjardins, G., and Lerchner, A. (2018). Understanding disentangling in β-vae. arXiv preprint arXiv:1804.03599 .Comon, P. (1994). Independent component analysis, a new concept? Signal Processing , 36(3):287–314. Ebbers, J., Heymann, J., Drude, L., Glarner, T., Haeb-Umbach, R., and Raj, B. (2017). Hidden markov model variational autoencoder for acoustic unit discovery. In Interspeech 2017 , pages 488–492. Ghahramani, Z. and Jordan, M. I. (1997). Factorial hidden markov models. Machine Learning , 29(2– 3):245–273. Glarner, T., Hanebrink, P., Ebbers, J., and Haeb-Umbach, R. (2018). Full bayesian hidden markov model variational autoencoder for acoustic unit discovery. In Interspeech 2018 , pages 2688–2692. H¨ alv¨ a, H. and Hyv¨ arinen, A. (2020). Hidden markov nonlinear ica: Unsupervised learning from non-stationary time series. In Proceedings of the 36th Conference on Uncertainty in Artificial Intelligence ,volume 124 of Proceedings of Machine Learning Research , pages 939–948. PMLR. Hyv¨ arinen, A. and Morioka, H. (2017). Nonlinear ica of temporally dependent stationary sources. In 
+
+Proceedings of the 20th International Conference on Artificial Intelligence and Statistics , volume 54 of 
+
+Proceedings of Machine Learning Research , pages 460–469. PMLR. Hyv¨ arinen, A. and Oja, E. (1997). A fast fixed-point algorithm for independent component analysis. 
+
+Neural Computation , 9(7):1483–1492. Hyv¨ arinen, A. and Oja, E. (2000). Independent component analysis: algorithms and applications. Neural Networks , 13(4–5):411–430. Hyv¨ arinen, A., Sasaki, H., and Turner, R. (2019). Nonlinear ica using auxiliary variables and generalized contrastive learning. In Proceedings of the 22nd International Conference on Artificial Intelligence and Statistics , volume 89 of Proceedings of Machine Learning Research , pages 859–868. PMLR. Khemakhem, I., Kingma, D. P., Monti, R. P., and Hyv¨ arinen, A. (2020). Variational autoencoders and nonlinear ica: A unifying framework. In Proceedings of the 23rd International Conference on Artificial Intelligence and Statistics , volume 108 of Proceedings of Machine Learning Research , pages 2207–2217. PMLR. Kingma, D. P. and Welling, M. (2014). Auto-encoding variational bayes. International Conference on Learning Representations (ICLR) .Reyes-Gomez, M. J., Raj, B., and Ellis, D. P. W. (2003). Multi-channel source separation by factorial hmms. In Proceedings of the 2003 IEEE International Conference on Acoustics, Speech, and Signal Processing , pages III–1000–III–1003. Wei, Y. et al. (2024a). Innovative blind source separation techniques combining gaussian process algo-rithms and variational autoencoders with applications in structural health monitoring. Wei, Y.-H., Deng, F.-H., Cui, L.-Y., and Sun, Y.-J. (2026). Ar-flow vae: A structured autoregres-sive flow prior variational autoencoder for unsupervised blind source separation. arXiv preprint arXiv:2603.14441 .Wei, Y.-H. and Sun, Y.-J. (2026). Pdgmm-vae: A variational autoencoder with adaptive per-dimension gaussian mixture model priors for nonlinear ica. arXiv preprint arXiv:2603.23547 .17 SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation 
+
+Wei, Y.-H., Sun, Y.-J., and Zhang, C. (2024b). Half-vae: An encoder-free vae to bypass explicit inverse mapping. arXiv preprint arXiv:2409.04140 .18
