@@ -6,47 +6,52 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-02
-- 运行时间：2026-04-02 19:40:14 UTC
+- 最新运行日期：2026-04-03
+- 运行时间：2026-04-03 20:11:18 UTC
 - 运行状态：成功
-- 本次总论文数：9
+- 本次总论文数：10
 - 精读区：3
-- 速读区：6
+- 速读区：7
 
 ### 今日简报（AI）
-今日聚焦多模态情感识别，深度解析 CLIP 动作单元提示与 3D 点云建模等 9
-- 详情：[/202604/02/README](/202604/02/README)
+今日聚焦多模态感知与情感识别，深度解析了 SURE 与 COMPASS 等 9.0 分前沿架构。
+重点关注如何通过不确定性感知推理优化对话情感识别，以及利用代理令牌实现全场景的高效模态融合。
+建议普通读者关注多模态对齐中的几何权衡与解耦先验技术，探索生成模型在复杂感知任务中的应用潜力。
+- 详情：[/202604/03/README](/202604/03/README)
 
 ### 精读区论文标签
-1. [CLIP-AUTT: Test-Time Personalization with Action Unit Prompting for Fine-Grained Video Emotion Recognition](/202604/02/2603.27999v2-clip-autt-test-time-personalization-with-action-unit-prompting-for-fine-grained-video-emotion-recognition)  
+1. [SURE: Synergistic Uncertainty-aware Reasoning for Multimodal Emotion Recognition in Conversations](/202604/03/2604.01916v1-sure-synergistic-uncertainty-aware-reasoning-for-multimodal-emotion-recognition-in-conversations)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：使用CLIP进行细粒度视频情感识别
-2. [Towards Emotion Recognition with 3D Pointclouds Obtained from Facial Expression Images](/202604/02/2603.27798v1-towards-emotion-recognition-with-3d-pointclouds-obtained-from-facial-expression-images)  
+   evidence：处理模态特定噪声的鲁棒多模态情感识别
+2. [COMPASS: Complete Multimodal Fusion via Proxy Tokens and Shared Spaces for Ubiquitous Sensing](/202604/03/2604.02056v1-compass-complete-multimodal-fusion-via-proxy-tokens-and-shared-spaces-for-ubiquitous-sensing)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：为缺失模态合成代理令牌以确保融合完整性
+3. [Human-Guided Reasoning with Large Language Models for Vietnamese Speech Emotion Recognition](/202604/03/2604.01711v1-human-guided-reasoning-with-large-language-models-for-vietnamese-speech-emotion-recognition)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：使用替代传感的脸部情感识别
-3. [Multicentric thrombus segmentation using an attention-based recurrent network with gradual modality dropout](/202604/02/2604.00817v1-multicentric-thrombus-segmentation-using-an-attention-based-recurrent-network-with-gradual-modality-dropout)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：针对频繁缺失序列的渐进式模态丢弃
+   evidence：带有辅助信号和推理的语音情感识别
 
 ### 速读区论文标签
-1. [Can Hierarchical Cross-Modal Fusion Predict Human Perception of AI Dubbed Content?](/202604/02/2603.28717v1-can-hierarchical-cross-modal-fusion-predict-human-perception-of-ai-dubbed-content)  
+1. [Dual-View Optical Flow for 4D Micro-Expression Recognition - A Multi-Stream Fusion Attention Approach](/202604/03/2603.26849v1-dual-view-optical-flow-for-4d-micro-expression-recognition---a-multi-stream-fusion-attention-approach)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：配音中情感对齐的多模态架构
-2. [Emotion Diffusion Classifier with Adaptive Margin Discrepancy Training for Facial Expression Recognition](/202604/02/2603.29578v1-emotion-diffusion-classifier-with-adaptive-margin-discrepancy-training-for-facial-expression-recognition)  
+   evidence：微表情识别与多流融合
+2. [The Geometry of Compromise: Unlocking Generative Capabilities via Controllable Modality Alignment](/202604/03/2604.00279v1-the-geometry-of-compromise-unlocking-generative-capabilities-via-controllable-modality-alignment)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：用于面部表情识别和对抗鲁棒性的生成式扩散模型
-3. [A Comprehensive Information-Decomposition Analysis of Large Vision-Language Models](/202604/02/2603.29676v1-a-comprehensive-information-decomposition-analysis-of-large-vision-language-models)  
+   evidence：模态间隙与跨模态互换性
+3. [Disentangled Deep Priors for Bayesian Inverse Problems](/202604/03/2604.02304v1-disentangled-deep-priors-for-bayesian-inverse-problems)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：将决策相关信息分解为冗余、唯一和协同组件
-4. [Disentangling to Re-couple: Resolving the Similarity-Controllability Paradox in Subject-Driven Text-to-Image Generation](/202604/02/2604.00849v1-disentangling-to-re-couple-resolving-the-similarity-controllability-paradox-in-subject-driven-text-to-image-generation)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：解耦并重新耦合视觉和文本信息
-5. [SAHMM-VAE: A Source-Wise Adaptive Hidden Markov Prior Variational Autoencoder for Unsupervised Blind Source Separation](/202604/02/2603.25776v1-sahmm-vae-a-source-wise-adaptive-hidden-markov-prior-variational-autoencoder-for-unsupervised-blind-source-separation)  
+   evidence：用于潜空间划分的解耦深度生成模型
+4. [Feeds Don't Tell the Whole Story: Measuring Online-Offline Emotion Alignment](/202604/03/2603.27782v1-feeds-dont-tell-the-whole-story-measuring-online-offline-emotion-alignment)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于分离的源自适应潜维度
-6. [Reflect to Inform: Boosting Multimodal Reasoning via Information-Gain-Driven Verification](/202604/02/2603.26348v1-reflect-to-inform-boosting-multimodal-reasoning-via-information-gain-driven-verification)  
+   evidence：用于文本和图像情感分析的多模态情感模块
+5. [Harmonized Tabular-Image Fusion via Gradient-Aligned Alternating Learning](/202604/03/2604.01579v1-harmonized-tabular-image-fusion-via-gradient-aligned-alternating-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：通过内省在无额外视觉输入的情况下进行推理
+   evidence：解耦多模态梯度并促进交互
+6. [Robust Embodied Perception in Dynamic Environments via Disentangled Weight Fusion](/202604/03/2604.01669v1-robust-embodied-perception-in-dynamic-environments-via-disentangled-weight-fusion)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：用于动态环境下鲁棒感知的解耦权重融合
+7. [SCALE: Semantic- and Confidence-Aware Conditional Variational Autoencoder for Zero-shot Skeleton-based Action Recognition](/202604/03/2604.02222v1-scale-semantic--and-confidence-aware-conditional-variational-autoencoder-for-zero-shot-skeleton-based-action-recognition)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：针对缺失骨架数据的条件变分自编码器
 
 
 <div class="dpr-home-promo-card">

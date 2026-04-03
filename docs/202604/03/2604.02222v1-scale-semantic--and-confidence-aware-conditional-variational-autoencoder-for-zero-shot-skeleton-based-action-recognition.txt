@@ -1,0 +1,439 @@
+Title: SCALE: Semantic- and Confidence-Aware Conditional Variational Autoencoder for Zero-shot Skeleton-based Action Recognition
+
+URL Source: https://arxiv.org/pdf/2604.02222v1
+
+Published Time: Fri, 03 Apr 2026 01:10:35 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# SCALE: Semantic- and Confidence-Aware Conditional Variational Autoencoder for Zero-shot Skeleton-based Action Recognition 
+
+Soroush Oraki 1, Feng Ding 1, and Jie Liang 2⋆ 
+
+> 1
+
+School of Engineering Science, Simon Fraser University, Burnaby, BC, Canada 
+
+{soa32,fda17}@sfu.ca  
+
+> 2
+
+School of Information Science and Technology, Eastern Institute of Technology, Ningbo, China 
+
+jliang@eitech.edu.cn 
+
+Abstract. Zero-shot skeleton-based action recognition (ZSAR) aims to recognize action classes without any training skeletons from those classes, relying instead on auxiliary semantics from text. Existing approaches fre-quently depend on explicit skeleton–text alignment, which can be brittle when action names underspecify fine-grained dynamics and when unseen classes are semantically confusable. We propose SCALE, a lightweight and deterministic Semantic- and Confidence-Aware Listwise Energy-based framework that formulates ZSAR as class-conditional energy ranking. SCALE builds a text-conditioned Conditional Variational Autoencoder where frozen text representations parameterize both the latent prior and the decoder, enabling likelihood-based evaluation for unseen classes with-out generating samples at test time. To separate competing hypotheses, we introduce a semantic- and confidence-aware listwise energy loss that emphasizes semantically similar hard negatives and incorporates pos-terior uncertainty to adapt decision margins and reweight ambiguous training instances. Additionally, we utilize a latent prototype contrast objective to align posterior means with text-derived latent prototypes, improving semantic organization and class separability without direct feature matching. Experiments on NTU-60 and NTU-120 datasets show that SCALE consistently improves over prior VAE- and alignment-based baselines while remaining competitive with diffusion-based methods. 
+
+Keywords: Skeleton-based Action Recognition · Zero-shot Learning ·
+
+Energy-based Conditional Generative Modeling 
+
+## 1 Introduction 
+
+Human action recognition (HAR) [23,24,44] aims to identify human activities from observed motion and has become a core capability for applications such as  
+
+> ⋆
+
+Corresponding author.  
+
+> arXiv:2604.02222v1 [cs.CV] 2 Apr 2026 2S. Oraki et al.
+
+surveillance [22,20,41], human computer interaction [14,16], and healthcare sys-tems [33,38]. While RGB videos have historically driven progress in HAR due to data availability, they also inherit substantial nuisance factors (background clut-ter, illumination, viewpoint changes) and raise privacy concerns. Motivated by advances in depth sensors and pose estimation [7], skeleton-based action recog-nition has emerged as an efficient alternative that represents human motion as compact 3D joint trajectories, offering robustness to appearance variations, lighting, and different camera angles, as well as improved privacy preservation. Despite strong supervised performance [46,9,5,12,8,4,34,6,49], fully super-vised skeleton-based models typically require exhaustive annotated datasets and often struggle to generalize beyond the closed set of training actions. This limita-tion is particularly restrictive in open-world settings, where new actions continu-ously appear and collecting labeled skeleton sequences for every class is impracti-cal. Zero-shot skeleton-based action recognition (ZSAR) [50,15,18,39,27,48,3,10] addresses this challenge by recognizing unseen action classes using auxiliary se-mantic information, commonly text descriptions derived from action labels. The central premise is that unseen actions share transferable motion primitives with seen ones, and that language can provide a semantic bridge for transferring knowledge. Recent ZSAR methods primarily focus on cross-modal alignment between skeleton features and text embeddings. Early efforts learn a shared embedding space or reduce distributional mismatch across modalities [18,39], while later approaches enrich semantics by exploiting linguistic structure or stronger lan-guage models [15,50,3]. More recent works propose diffusion-powered alignment to mitigate the modality gap at the cost of heavier training and stochastic, noisy inference [10]. Although effective, explicit alignment can remain fragile when label text only partially specifies the fine-grained dynamics that separate confusable actions, especially under challenging splits with substantial semantic ambiguity. In addition, generative ZSAR variants that model class-conditional feature distributions can reduce reliance on strict alignment, but they often lack an explicit, uncertainty-aware mechanism to discriminate among competing un-seen classes during inference. In this work, we propose SCALE, a lightweight and deterministic ZSAR framework that casts recognition as energy-based comparison. We build a class-conditional variational autoencoder (CVAE) [42] in which frozen text represen-tations parameterize both the latent prior and the decoder, enabling per-class likelihood evaluation for unseen actions without requiring unseen skeleton ex-amples. Inspired by [11,47,1,25], we define an energy function as the negative Evidence Lower Bound ( −ELBO) and introduce a listwise discrimination loss that aggregates negative classes with a semantic similarity bias to emphasize confusable negatives rather than treating all negatives uniformly. Crucially, we incorporate posterior uncertainty to adapt both (i) the decision margin and (ii) the loss contribution, inspired by uncertainty-aware and energy-based learning [21,2], so that ambiguous samples are not over-penalized while confident sam-ples enforce stricter separation. Finally, we add a latent prototype contrast term SCALE 3
+
+that aligns posterior means to text-derived latent prototypes, improving seman-tic organization of the latent space without requiring direct skeleton-text feature matching. Our contributions are summarized as follows: 
+
+– We present SCALE, a class-conditional CVAE-based ZSAR framework that performs skeleton-based zero-shot recognition by ranking ELBO-derived en-ergies over candidate unseen classes, avoiding iterative generation or test-time sampling. 
+
+– We introduce an uncertainty-aware, listwise energy discrimination objective that (i) emphasizes semantically similar hard negatives and (ii) leverages posterior uncertainty for adaptive margin relaxation and loss reweighting. 
+
+– We propose a latent prototype contrast loss that structures the latent space using text-derived prototypes, complementing ELBO-based modeling and improving class separability. 
+
+– We show our method’s strong performance on NTU-60 and NTU-120 across multiple SynSE [15] and PURLS [50] zero-shot splits, and provide ablations that validate the contribution of each component. 
+
+## 2 Related Work 
+
+2.1 Zero-shot Skeleton-based Action Recognition 
+
+Early ZSAR works learn shared pose–language spaces through metric or distri-butional alignment. [19] combines ST-GCN [46] pose features with word em-beddings and a relation module for unseen class compatibility. ReViSE [18] uses modality-specific autoencoders to reduce distributional mismatch. CADA-VAE [39] employs modality-specific VAEs to create a shared latent space via distribution-level matching and cross-modal reconstruction. Within this VAE-based family, SynSE [15] factorizes language by parts-of-speech and aligns struc-tured linguistic factors with skeleton representations. MSF [26] enriches seman-tics by combining action labels with dictionary-based and human-annotated de-scriptions. SA-DVAE [27] disentangles skeleton latents into semantically rele-vant and nuisance components, aligning only the relevant subspace. SMIE [48] maximizes mutual information between skeleton and text distributions while leveraging temporal evidence accumulation. To mitigate the semantic gap be-tween high-level action labels and fine-grained motion, PURLS [50] uses large language models to generate body-part-aware descriptions and aligns them via cross-attention. STAR [3] decomposes skeletons into predefined body groups with learnable textual prompts. BSZSL [29] augments inference with RGB se-mantic priors via multi-prompt guidance. More recently, generative inference has emerged as an alternative. TDSM [10] conditions a diffusion denoising process on text prompts and uses a triplet objective for discrimination. Most existing ZSAR methods rely on explicit skeleton-text alignment, which can be fragile when language semantics only partially reflect fine-grained motion patterns. VAE-based approaches model class-conditional feature distributions but often lack explicit discrimination mechanisms for competing unseen classes, 4 S. Oraki et al. 
+
+while diffusion-based methods improve robustness at the cost of heavy compu-tational overhead and stochastic inference. In contrast, our method formulates ZSAR as a deterministic, listwise comparison of class-conditional energies from a lightweight CVAE, enabling effective discrimination under semantic ambiguity without iterative generation or test-time sampling. 
+
+2.2 Energy-based and Uncertainty-aware Learning 
+
+Energy-based learning formulates prediction and inference as energy function minimization. [25] establishes energy-based learning as a unifying paradigm for classification, structured prediction, and ranking through margin-based, con-trastive, and likelihood-driven objectives. Modern methods extend these princi-ples to high-dimensional data and deep architectures. [11] shows that continuous energy-based models trained via maximum likelihood can scale to complex vi-sual domains using learned energy functions rather than explicit generators. Similarly, [47] parameterizes data likelihood with deterministic neural networks using score-matching to learn class-agnostic energy landscapes. Energy-based formulations have been explored beyond closed-set classifica-tion. [1] reinterprets classifier outputs as energy scores, showing that thresholding enables open-set recognition without prior access to unseen classes. In contin-ual learning, [28] formulates class prediction as a contrast over class-conditioned energies with a contrastive divergence objective maintaining separation between old and new classes. Uncertainty-aware learning quantifies predictive uncertainty to improve ro-bustness and calibration. [21] introduces a Bayesian framework jointly modeling aleatoric and epistemic uncertainty with uncertainty-dependent loss attenuation. [2] models class-conditional evidence through latent-space density estimation. [43] enforces low-confidence predictions on adversarial inputs to avoid overconfi-dent errors. Accordingly, we hypothesize that combining class-conditional energy modeling with uncertainty-aware margins and loss reweighting improves discrim-inability and robustness under semantic ambiguity. 
+
+## 3 Methods 
+
+3.1 Problem Definition 
+
+The task in zero-shot skeleton-based action recognition (ZSAR) is to recognize human actions whose classes are absent from the training skeleton data. Let 
+
+Ys and Yu denote the sets of seen and unseen action classes, respectively, with 
+
+Ys ∩ Y u = ∅. The training set consists of skeleton sequences annotated only with seen labels, 
+
+Dtrain = {(Xi, y i)}Ni=1 , yi ∈ Y s, (1) where each skeleton sequence Xi ∈ RT ×V ×M ×Cin contains T frames, V joints, 
+
+M persons, and Cin input channels. SCALE 5ℒ!"#$#                       
+
+> ℒ%&'()
+> −ELBO *
+> '+
+> CVAE
+> Skeletons
+> (×*×+×,,-
+> Class
+> Prompts
+> “ The Human
+> Action of
+> [ACTION] ”
+> Correct label
+> ”Walking ”
+> Wrong labels
+> (!per batch)
+> ”Throwin g”
+> Text
+> Conditioning
+> Projection
+> Text
+> Encoder
+> C
+> Skeleton
+> Encoder Encoder
+> -..|0/,20
+> CDecoder
+> 310/|.,20
+> 4+
+> 2
+> Sample
+> from
+> Distribution
+> 5.;'+,4+
+> 2
+> '3
+> 43
+> 2
+> 70/
+> Conditional
+> Prior
+> 3.|20
+> 80
+> ℎ0
+> Text to
+> Latent
+> Projection
+> L2
+> Normalization
+> ℒ$#$45 =−ELB O*+)6ℒ%&'() +)2ℒ!"#$#
+> C
+> : Frozen
+> : Concatenation
+> : Loss component
+> : Learned
+> :0/
+> 20
+> ;0
+> 20
+> 54$
+> .
+
+Fig. 1. Training pipeline of our proposed SCALE framework. 
+
+A pretrained skeleton encoder fs maps each sequence to a fixed-dimensional feature vector xs = fs(X) ∈ RDs . Each action class y is associated with a natural-language description dy , encoded by a frozen pretrained text encoder 
+
+ft. The encoder produces two complementary representations: (1) a sequence of token-level embeddings Hy ∈ RLy ×Dt , where each row corresponds to a token in the input text and Ly is the number of tokens, capturing fine-grained semantic information at the word level; and (2) a global representation hy ∈ RDt , typically obtained via pooling over the token sequence, which summarizes the holistic semantic meaning of the entire text prompt. While Hy preserves token-level structure and enables access to local semantic details, hy provides a compact, sequence-level semantic anchor. These text embeddings are available for both seen and unseen classes and serve as the only source of supervision for unseen actions. 
+
+3.2 Overview of our Proposed Framework 
+
+Our framework, shown in Fig. 1, builds upon a conditional variational autoen-coder (CVAE) [42] that models the distribution of skeleton features conditioned on class-level semantics. Rather than directly aligning skeleton and text fea-tures, we learn a shared latent representation where text descriptions parame-terize class-conditional priors and latent prototypes, while skeleton features are mapped through conditional encoding. The latent space is jointly shaped by generative consistency and semantic discrimination. To enhance discriminability and robustness, we augment the generative ob-jective with: (1) an energy-based loss contrasting positive and negative class hypotheses in ELBO space, and (2) a latent prototype contrast loss structuring the latent space according to text-derived class prototypes. 
+
+3.3 Skeleton and Text Feature Encoders 
+
+We adopt the pretrained Shift-GCN [5] model as the skeleton encoder backbone. Given an input skeleton sequence X ∈ RT ×V ×M ×Cin , the skeleton encoder fs6 S. Oraki et al. 
+
+generates a feature vector xs = fs(X) ∈ RDs . The encoder is pretrained on seen data using supervised classification objective and then frozen, serving purely as a feature extractor. For text encoding, we use class labels as textual input with a simple prompt 
+
+dy = {The Human Action of [ACTION] }, processed by the pretrained text en-coder of CLIP [37], ft, to ensure fair comparison with existing methods [50,3,27]. The encoder produces both token-level embeddings Hy and the global represen-tation hy , which is obtained by End-of-Text (EOT) pooling in CLIP’s architec-ture [37], as described in the problem definition. 
+
+3.4 Text Conditioning from Language Descriptions 
+
+Unlike approaches that directly align skeleton and text features [50,27], we use language information exclusively to parameterize class-conditional priors and latent prototypes. To bridge the gap between text feature space and latent vari-ables, we introduce a learnable text projection module fc that transforms text representations into a compact conditioning vector: 
+
+cy = fc(hy , H y ) = Concat(MLP( hy ), MLP(Pool( Hy ))) ∈ RDc , (2) where fc applies separate Multilayer Perceptrons (MLPs) to hy and average pooled Hy , then concatenates and transforms the results. Given cy , a conditional prior network predicts the parameters of a Gaussian distribution over the latent variable z:
+
+pθ (z | cy ) = N  z; μp(cy ), σ 2 
+
+> p
+
+(cy )I. (3) This prior defines a class-specific region in latent space and can be computed for unseen classes without requiring skeletons. 
+
+3.5 CVAE Framework 
+
+We utilize a CVAE to model the distribution of skeleton features. The inference network (encoder) approximates the posterior distribution over latent variables 
+
+z given the input skeleton feature xs and the class-specific condition cy :
+
+qϕ(z | xs, c y ) = N  z; μq (xs, c y ), σ 2 
+
+> q
+
+(xs, c y )I, (4) where the encoder is an MLP operating on the concatenation [xs; cy ]. The gen-erative network (decoder) reconstructs skeleton features: 
+
+pθ (xs | z, c y ) = N  xs; μd(z, c y ), σ 2
+
+> d
+
+(z, c y )I, (5) where a latent sample z is drawn from the posterior. SCALE 7
+
+3.6 Training Objectives 
+
+We optimize a composite objective combining generative reconstruction, energy-based discrimination, and latent prototype alignment. For a skeleton feature xs
+
+and class condition cy , the ELBO is: 
+
+ELBO( xs, c y ) = Eqϕ(z|xs,c y )
+
+ log pθ (xs | z, c y )−β D KL 
+
+ qϕ(z | xs, c y ) ∥ pθ (z | cy ),
+
+(6) where the first term encourages accurate reconstruction of skeleton features and the second term regularizes the approximate posterior toward the class-conditional prior. The hyperparameter β mitigates posterior collapse [17]. We minimize −ELBO + for positive skeleton-class pairs. 
+
+Energy-based Discrimination. While the ELBO measures how well a skele-ton feature is explained by a class-conditional model, it does not explicitly en-force separation between competing hypotheses. This becomes problematic in ZSAR, where multiple actions may exhibit similar skeletal dynamics and differ only in subtle motion cues. We, therefore, introduce an energy-based discrimina-tion objective that contrasts compatibility with the correct class against negative classes. We define energy as E(xs, c y ) = −ELBO( xs, c y ), so lower energy indicates higher compatibility. For a sample with positive class y+ and K negative classes 
+
+{y− 
+
+> j
+
+}Kj=1 within a batch, we aggregate negative energies using a similarity-biased soft maximum. Using normalized text embeddings ˆhy = hy /∥hy ∥2, we define semantic similarity sj = ˆh⊤ 
+
+> y+
+
+ˆhy−
+
+> j
+
+and compute: 
+
+˜Eneg (xs) = log 
+
+> K
+
+X
+
+> j=1
+
+exp  E(xs, c y−
+
+> j
+
+) + αs j
+
+, (7) where α > 0 controls semantic bias strength and increases the contribution of semantically similar negatives. We incorporate posterior uncertainty to adapt both margin and loss weight. For the diagonal Gaussian posterior qϕ(z | xs, c y+ ) = N (z; μq , diag( σ2 
+
+> q
+
+)) , we define uncertainty as the average posterior variance over all latent dimensions: 
+
+u(xs, c y+ ) = 1
+
+DzDzX
+
+> d=1
+
+σ2
+
+> q,d
+
+. (8) The energy gap is then: 
+
+∆(xs) = E(xs, c y+ ) − ˜Eneg (xs) + τ − βu u(xs, c y+ ), (9) where τ > 0 is a base margin and βu > 0 controls uncertainty-adaptive margin relaxation. 8 S. Oraki et al. !!                   
+
+> CVAE
+> Skeletons
+> "×$×%×&"#
+> Class
+> Prompts
+> “ The Human
+> Action of
+> [ACTION] ”
+> Text
+> Conditioning
+> Projection
+> Text
+> Encoder
+> C
+> Skeleton
+> Encoder Encoder
+> '$(|*%,,&
+> CDecoder
+> -'*%|(,,&
+> .!
+> (
+> Sample
+> from
+> Distribution
+> /(;!!,.!
+> (
+> !)
+> .)
+> (
+> 1*%
+> Conditional
+> Prior
+> -(|,&
+> 2&
+> ℎ&
+> !"=arg max
+> &∈+ELBO -%,/&
+> C
+> : Frozen
+> : Concatenation
+> : Learned
+> 4*%
+> ,&
+> 5&
+> (
+> Compare
+> ELBO
+> scores
+> +
+> max 9
+> :
+> Candidate
+> labels
+> ”Throwing”
+> ”Walking”
+> …
+
+Fig. 2. Inference pipeline of our proposed SCALE framework. 
+
+We compute the Semantic- and Confidence-Aware Listwise Energy (SCALE) 
+
+loss as: 
+
+LSCALE = exp   − γ u (xs, c y+ ) · log  1 + exp( ∆(xs)) , (10) where γ > 0 controls uncertainty-based reweighting. The factor exp  −γ u (xs, c y+ )
+
+downweights high-uncertainty samples, while the margin τ −βu u(xs, c y+ ) relaxes separation requirements for uncertain samples and enforces stricter margins for confident ones. 
+
+Latent Prototype Contrast. We impose semantic structure directly in latent space by treating the posterior mean μq (xs, c y+ ) ∈ RDz as the latent represen-tation. For each action class y, we define a latent prototype clat 
+
+y = g(hy ) ∈ RDz
+
+via a learnable MLP projection g(·). The contrastive loss is: 
+
+Lproto (xs, y +) = − log exp  sim( μq (xs, c y+ ), c lat 
+
+y+ )/λ P
+
+j exp  sim( μq (xs, c y+ ), c lat 
+
+j )/λ  , (11) where sim( ·, ·) is cosine similarity and λ > 0 is a temperature parameter. This complements ELBO-based regularization and encourages semantically organized latent space. 
+
+Overall Training Loss. The overall training objective is: 
+
+Ltotal = −ELBO + + λ1 · L SCALE + λ2 · L proto , (12) where λ1 > 0 and λ2 > 0 are hyperparameters that control the effect of the proposed loss components. 
+
+3.7 Inference 
+
+As shown in Fig. 2, at inference time, given a test skeleton sequence X, we extract its feature xs = fs(X) and consider candidate unseen classes Yu with text descriptions {dy }. For each candidate class y ∈ Y u, we process the text description through the frozen text encoder and map it to conditioning vector cy
+
+via fc. We then evaluate ELBO( xs, c y ) by computing the approximate posterior 
+
+qϕ(z | xs, c y ) and corresponding reconstruction and regularization terms, and predict the label as: 
+
+ˆy = arg max 
+
+y∈Y u ELBO( xs, c y ). (13) SCALE 9
+
+## 4 Experiments 
+
+4.1 Datasets NTU RGB+D [40]. The NTU-60 dataset consists of 56,880 skeleton sequences spanning 60 action classes, captured by depth sensors from 40 subjects un-der multiple camera viewpoints. Following benchmarks in [15,50], we evaluate SCALE under four [seen/unseen] splits: [55/5] and [48/12] in SynSE (mild zero-shot settings), and [40/20] and [30/30] in PURLS (more challenging scenarios). 
+
+NTU RGB+D 120 [30]. NTU-120 extends NTU-60 to 120 action categories with 114,480 sequences from 106 subjects across 155 viewpoints. We evaluate un-der four zero-shot splits: [110/10] and [96/24] in SynSE, and [80/40] and [60/60] in PURLS [15,50]. For all splits, skeleton sequences from unseen classes are ex-cluded during training, with textual descriptions serving as the only supervision for unseen classes at inference. 
+
+4.2 Experimental Setup 
+
+We implement SCALE using PyTorch [35] on a single NVIDIA RTX 4090 GPU. For skeleton feature extraction, we adopt Shift-GCN [5] as the skeleton encoder, pretrained on seen data using cross-entropy and then frozen. Features are ex-tracted from the layer preceding the classification head. For textual encoding, we employ the frozen CLIP [37] text encoder (ViT-B/32) with simple prompts based on class labels for fair comparison. We train our model using the AdamW [32] optimizer with learning rate 10 −4
+
+and weight decay 10 −3, with cosine learning rate scheduling [31]. Batch size is 256 for both training and testing. We adopt β cyclical annealing [13] to mitigate posterior collapse, using four cycles, each linearly increasing β from 0 to 1.0. The following hyperparameters are fixed across all experiments: semantic similarity weight α = 1 .0, uncertainty-adaptive margin coefficient βu = 0 .5, base margin τ = 1 .0, uncertainty reweighting factor γ = 2 .0, temperature parameter 
+
+λ = 0 .2, and loss weights λ1 = 1 .0 and λ2 = 0 .5. All MLP projection modules consist of a single hidden layer whose dimensionality is set to 1/4 of the input feature size. Concretely, the hidden dimension is set to 64 for skeleton feature projections, corresponding to the 256-dimensional skeleton feature vectors, and to 128 for text feature projections, corresponding to the 512-dimensional CLIP text embeddings. All hyperparameters are empirically selected via grid search. 
+
+4.3 Comparison with State-of-the-Art Methods 
+
+Table 1 reports top-1 accuracy comparisons with recent ZSAR methods on NTU-60 and NTU-120 under multiple [seen/unseen] splits, covering early embedding-based approaches, VAE-based generative models, and alignment-based frame-works. 10 S. Oraki et al.                                                                                              
+
+> Method Venue NTU-60 (Acc, %) NTU-120 (Acc, %) [55/5] [48/12] [40/20] [30/30] [110/10] [96/24] [80/40] [60/60] ReViSE [18] ICCV2017 53.9 17.5 24.3 14.8 55.0 32.4 19.5 8.3 JPoSE [45] ICCV2019 64.8 28.8 20.1 12.4 51.9 32.4 13.7 7.7 CADA-VAE [39] CVPR2019 76.8 29.0 16.2 11.5 59.5 35.8 10.6 5.7 SynSE [15] ICIP2021 75.8 33.3 19.9 12.0 62.7 38.7 13.6 7.7 SMIE [48] ACMM2023 78.0 40.2 --65.7 45.3 --SA-DVAE [27] ECCV2024 82.4 41.4 --68.8 46.1 --STAR [3] ACMM2024 81.4 45.1 --63.3 44.3 --PURLS [50] CVPR2024 79.2 41.0 31.0 23.5 72.0 52.0 28.4 19.6 TDSM [10] ICCV2025 86.5 56.0 36.1 25.9 74.2 65.1 37.0 27.2
+> SCALE (Ours) -84.5 50.0 35.5 27.7 73.6 54.9 32.1 23.5
+
+Table 1. Top-1 accuracy (%) comparison of ZSAR methods on the NTU-60 and NTU-120 datasets under multiple [seen/unseen] class splits under SynSE [15] and PURLS [50] benchmarks. Results in red denote the best performance, while those in blue indicate the second best and those in green indicate the third best. 
+
+SCALE achieves the second-best overall performance, consistently outper-forming all methods except TDSM [10] across both datasets and benchmarks. Compared to the third-best methods, SCALE achieves performance gains of 
+
+2.1% , 4.9% , 4.5% , and 4.2% on NTU-60 splits [55/5], [48/12], [40/20], and [30/30], respectively, and 1.6% , 2.9% , 3.7% , and 3.9% on NTU-120 splits [110/10], [96/24], [80/40], and [60/60], respectively. The performance gap widens under challenging splits with higher unseen class proportions, indicating that as se-mantic ambiguity increases, direct skeleton-text alignment becomes less effec-tive, while our class-conditional energy-based approach provides more robust discrimination. 
+
+Comparison with TDSM. TDSM [10] outperforms SCALE on 7 of 8 bench-marks, with SCALE achieving superior performance on NTU-60 [30/30]. How-ever, TDSM’s gains come at substantial computational cost, as quantified in Table 2. TDSM employs diffusion transformers [36] with 261 .21 M parameters (∼107 × more than SCALE’s 2.43 M) and requires 10 independent inference tri-als with averaging, multiplying effective inference time to 103 .14 ms per sample compared to SCALE’s 0.454 ms ( ∼227 × faster). Similarly, TDSM’s effective computational cost is 32 .03 GFLOPs (10 trials) compared to SCALE’s 0.002 
+
+GFLOPs ( ∼16,000 × more efficient). In contrast, SCALE performs deterministic single-pass inference via direct ELBO ranking, achieving within 2.0% of TDSM on 3 of 8 benchmarks with dramatically lower computational overhead, demon-strating superior efficiency-accuracy trade-offs. 
+
+4.4 Ablation Studies Effect of Loss Components. Table 3 shows the contribution of each loss component by progressively adding Lproto and LSCALE to the CVAE baseline. The −ELBO + baseline yields the weakest performance ( 78 .7% on NTU-60 [55/5], SCALE 11             
+
+> Method Parameters (M) GFLOPs Effective GFLOPs Inference Time (ms) Effective Inference Time (ms) TDSM [10] 261.21 3.203 32.03 †10.314 103.14 †
+> SCALE (Ours) 2.43 0.002 0.002 0.454 0.454
+> †TDSM averages over 10 inference trials.
+
+Table 2. Computational efficiency comparison between SCALE and TDSM. Inference time and GFLOPs are measured per sample.                             
+
+> Training Loss NTU-60 (Acc, %) NTU-120 (Acc, %) [55/5] [48/12] [110/10] [96/24]
+> −ELBO +78.7 43.3 65.1 47.1
+> −ELBO ++Lproto 81.1 ↑2.445.7 ↑2.469.0 ↑3.950.6 ↑3.5
+> −ELBO ++LSCALE 82.7 ↑4.046.6 ↑3.370.6 ↑5.552.2 ↑5.1
+> −ELBO ++LSCALE +Lproto 84.5 ↑5.850.0 ↑6.773.6 ↑8.554.9 ↑7.8
+
+Table 3. Ablation study on the effect of different loss components. Top-1 accuracy (%) is reported on NTU-60 and NTU-120 under SynSE [15] settings. 
+
+65 .1% on NTU-120 [110/10]). Adding Lproto improves performance by +2 .4% 
+
+and +3 .9% on these splits, while adding LSCALE yields larger gains of +4 .0% 
+
+and +5 .5% , indicating complementary benefits. The full SCALE loss achieves the best results ( 84 .5% and 73 .6% ), with improvements of +5 .8% and +8 .5% over the baseline, demonstrating that jointly enforcing semantic structure in latent space and uncertainty-aware listwise discrimination in ELBO space is crucial for robust ZSAR. 
+
+Effect of Semantic Similarity Bias. Table 4 shows the effect of semantic similarity bias parameter α. When α = 0 (equal negative contribution), per-formance drops to 83 .9% on NTU-60 [55/5] and 72 .9% on NTU-120 [110/10]. Increasing α to 1.0 improves performance by +0 .6% and +0 .7% , confirming that prioritizing semantically confusable negatives is beneficial. Further increases to 
+
+α = 2 .0 or 3.0 yield marginal gains or slight degradation, suggesting that overly large α overemphasizes a small subset of negatives and reduces generalization. The optimal α = 1 .0 provides the best balance between hard negative emphasis and stable optimization. 
+
+Effect of Uncertainty Modeling u(xs, c y ). Table 5 analyzes uncertainty modeling contributions by isolating margin relaxation ( βu) and loss reweight-ing ( γ). The baseline (fixed margin, no reweighting) achieves 83 .7% on NTU-60 [55/5] and 73 .1% on NTU-120 [110/10]. Uncertainty-adaptive margin only (βu = 0 .5, γ = 0 ) improves by +0 .6% and +0 .4% , with larger gains on challeng-ing splits ( +1 .2% and +1 .3% on [48/12] and [96/24]), indicating that relaxing margins for uncertain samples prevents over-penalization under high class am-biguity. Uncertainty-based reweighting only ( βu = 0 , γ = 2 .0) yields smaller improvements ( +0 .3% and +0 .2% ), reducing the influence of noisy samples. The 12 S. Oraki et al.                          
+
+> αNTU-60 (Acc, %) NTU-120 (Acc, %) [55/5] [48/12] [110/10] [96/24]
+> α= 0 83.9 49.6 72.9 54.3
+> α=1.084.5 ↑0.650.0 ↑0.473.6 ↑0.754.9 ↑0.6
+> α= 2 .084.3 ↑0.450.1 ↑0.573.5 ↑0.654.4 ↑0.1
+> α= 3 .084.4 ↑0.549.8 ↑0.273.3 ↑0.454.5 ↑0.2
+
+Table 4. Ablation study on the semantic similarity bias parameter α in the SCALE loss. Top-1 accuracy (%) is reported on NTU-60 and NTU-120 under SynSE [15] set-tings. Results in red denote the best performance.                               
+
+> Uncertainty Modeling βuγNTU-60 (Acc, %) NTU-120 (Acc, %) [55/5] [48/12] [110/10] [96/24] Fixed margin, No reweighting 0083.7 48.2 73.1 53.2 Uncertainty-adaptive margin only 0.5 084.3 ↑0.649.4 ↑1.273.5 ↑0.454.5 ↑1.3
+> Uncertainty-based reweighting only 02.0 84.0 ↑0.348.6 ↑0.473.3 ↑0.253.9 ↑0.7
+> Full LSCALE loss 0.5 2.0 84.5 ↑0.850.0 ↑1.873.6 ↑0.554.9 ↑1.7
+
+Table 5. Ablation study on uncertainty modeling in the SCALE loss. We analyze the individual and joint effects of uncertainty-adaptive margin relaxation (controlled by 
+
+βu) and uncertainty-based loss reweighting (controlled by γ). Results are shown on NTU-60 and NTU-120 under SynSE [15] splits. 
+
+full formulation ( βu = 0 .5, γ = 2 .0) produces the largest improvements ( +0 .8% 
+
+and +0 .5% , up to +1 .8% on [48/12]), demonstrating that both mechanisms are complementary and essential. 
+
+## 5 Conclusion 
+
+In this paper, we present SCALE, an uncertainty-aware energy-based framework for zero-shot skeleton-based action recognition that avoids explicit skeleton-text alignment. By modeling class-conditional skeleton feature distributions with a lightweight CVAE and casting recognition as a deterministic, listwise compar-ison of ELBO-derived energies, SCALE enables effective discrimination among unseen action classes using only textual descriptions. The proposed uncertainty-adaptive margin and loss reweighting leverage posterior variance to mitigate semantic ambiguity and noisy supervision, while latent prototype contrast fur-ther organizes the latent space according to class semantics. Extensive exper-iments on NTU-60 and NTU-120 under multiple zero-shot splits demonstrate that SCALE achieves the second-best overall performance, consistently out-performing prior VAE-based and alignment-based methods by substantial mar-gins (e.g., +4 .8% over SA-DVAE on NTU-120 [110/10], +4 .5% over PURLS on NTU-60 [40/20]), and remains highly competitive with computationally inten-sive diffusion-based approaches while offering deterministic single-pass inference and superior efficiency-accuracy trade-offs. 
+
+Acknowledgements This paper is supported by the Natural Sciences and Engi-neering Research Council of Canada (NSERC) under grant RGPIN-2020-04525. SCALE 13 
+
+## References 
+
+1. Al Rahhal, M.M., Bazi, Y., Al-Dayil, R., Alwadei, B.M., Ammour, N., Alajlan, N.: Energy-based learning for open-set classification in remote sensing imagery. International Journal of Remote Sensing 43 (15-16), 6027–6037 (2022) 2. Charpentier, B., Zügner, D., Günnemann, S.: Posterior network: Uncertainty esti-mation without ood samples via density-based pseudo-counts. Advances in neural information processing systems 33 , 1356–1367 (2020) 3. Chen, Y., Guo, J., He, T., Lu, X., Wang, L.: Fine-grained side information guided dual-prompts for zero-shot skeleton action recognition. In: Proceedings of the 32nd ACM International Conference on Multimedia. pp. 778–786 (2024) 4. Chen, Y., Zhang, Z., Yuan, C., Li, B., Deng, Y., Hu, W.: Channel-wise topology refinement graph convolution for skeleton-based action recognition. In: Proceedings of the IEEE/CVF International Conference on Computer Vision. pp. 13359–13368 (2021) 5. Cheng, K., Zhang, Y., He, X., Chen, W., Cheng, J., Lu, H.: Skeleton-based ac-tion recognition with shift graph convolutional network. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 183–192 (2020) 6. Chi, H.g., Ha, M.H., Chi, S., Lee, S.W., Huang, Q., Ramani, K.: Infogcn: Repre-sentation learning for human skeleton-based action recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 20186–20196 (June 2022) 7. Dibenedetto, G., Sotiropoulos, S., Polignano, M., Cavallo, G., Lops, P.: Comparing human pose estimation through deep learning approaches: An overview. Computer Vision and Image Understanding p. 104297 (2025) 8. Ding, F., Fu, H., Oraki, S., Liang, J.: Lstc-mda: A unified framework for long-short term temporal convolution and mixed data augmentation in skeleton-based action recognition. arXiv preprint arXiv:2509.14619 (2025) 9. Do, J., Kim, M.: Skateformer: skeletal-temporal transformer for human action recognition. In: European Conference on Computer Vision. pp. 401–420. Springer (2024) 10. Do, J., Kim, M.: Bridging the skeleton-text modality gap: Diffusion-powered modality alignment for zero-shot skeleton-based action recognition. In: Proceed-ings of the IEEE/CVF International Conference on Computer Vision (ICCV). pp. 12757–12768 (October 2025) 11. Du, Y., Mordatch, I.: Implicit generation and modeling with energy based models. Advances in neural information processing systems 32 (2019) 12. Duan, H., Zhao, Y., Chen, K., Lin, D., Dai, B.: Revisiting skeleton-based action recognition (2022) 13. Fu, H., Li, C., Liu, X., Gao, J., Celikyilmaz, A., Carin, L.: Cyclical annealing sched-ule: A simple approach to mitigating kl vanishing. arXiv preprint arXiv:1903.10145 (2019) 14. Gammulle, H., Ahmedt-Aristizabal, D., Denman, S., Tychsen-Smith, L., Petersson, L., Fookes, C.: Continuous human action recognition for human-machine interac-tion: a review. ACM Computing Surveys 55 (13s), 1–38 (2023) 15. Gupta, P., Sharma, D., Sarvadevabhatla, R.K.: Syntactically guided generative embeddings for zero-shot skeleton action recognition. In: 2021 IEEE International Conference on Image Processing (ICIP). pp. 439–443. IEEE (2021) 14 S. Oraki et al. 16. Haria, A., Subramanian, A., Asokkumar, N., Poddar, S., Nayak, J.S.: Hand gesture recognition for human computer interaction. Procedia computer science 115 , 367– 374 (2017) 17. Higgins, I., Matthey, L., Pal, A., Burgess, C., Glorot, X., Botvinick, M., Mohamed, S., Lerchner, A.: beta-vae: Learning basic visual concepts with a constrained vari-ational framework. In: International conference on learning representations (2017) 18. Hubert Tsai, Y.H., Huang, L.K., Salakhutdinov, R.: Learning robust visual-semantic embeddings. In: Proceedings of the IEEE International conference on Computer Vision. pp. 3571–3580 (2017) 19. Jasani, B., Mazagonwalla, A.: Skeleton based zero shot action recognition in joint pose-language semantic space. arXiv preprint arXiv:1911.11344 (2019) 20. Kamthe, U., Patil, C.: Suspicious activity recognition in video surveillance system. In: 2018 Fourth international conference on computing communication control and automation (ICCUBEA). pp. 1–6. IEEE (2018) 21. Kendall, A., Gal, Y.: What uncertainties do we need in bayesian deep learning for computer vision? Advances in neural information processing systems 30 (2017) 22. Khan, M.A., Javed, K., Khan, S.A., Saba, T., Habib, U., Khan, J.A., Abbasi, A.A.: Human action recognition using fusion of multiview and deep features: an application to video surveillance. Multimedia tools and applications 83 (5), 14885– 14911 (2024) 23. Kong, Y., Fu, Y.: Human action recognition and prediction: A survey. International Journal of Computer Vision 130 (5), 1366–1401 (2022) 24. Kumar, R., Kumar, S.: A survey on intelligent human action recognition tech-niques. Multimedia Tools and Applications 83 (17), 52653–52709 (2024) 25. LeCun, Y., Chopra, S., Hadsell, R., Ranzato, M., Huang, F., et al.: A tutorial on energy-based learning. Predicting structured data 1(0) (2006) 26. Li, M.Z., Jia, Z., Zhang, Z., Ma, Z., Wang, L.: Multi-semantic fusion model for gen-eralized zero-shot skeleton-based action recognition. In: International Conference on Image and Graphics. pp. 68–80. Springer (2023) 27. Li, S.W., Wei, Z.X., Chen, W.J., Yu, Y.H., Yang, C.Y., Hsu, J.Y.j.: Sa-dvae: Im-proving zero-shot skeleton-based action recognition by disentangled variational au-toencoders. In: European Conference on Computer Vision. pp. 447–462. Springer (2024) 28. Li, S., Du, Y., Van de Ven, G., Mordatch, I.: Energy-based models for continual learning. In: Conference on lifelong learning agents. pp. 1–22. PMLR (2022) 29. Liu, H., Niu, Y., Zeng, K., Liu, C., Hu, M., Song, Q.: Beyond-skeleton: Zero-shot skeleton action recognition enhanced by supplementary rgb visual information. Expert Systems with Applications 273 , 126814 (2025) 30. Liu, J., Shahroudy, A., Perez, M., Wang, G., Duan, L.Y., Kot, A.C.: Ntu rgb+d 120: A large-scale benchmark for 3d human activity understanding. IEEE Transactions on Pattern Analysis and Machine Intelligence 42 (10), 2684–2701 (Oct 2020) 31. Loshchilov, I., Hutter, F.: Sgdr: Stochastic gradient descent with warm restarts. arXiv preprint arXiv:1608.03983 (2016) 32. Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. arXiv preprint arXiv:1711.05101 (2017) 33. Ng, H.W., et al. : Method and system for privacy-preserving fall detection (2021), US Patent 11179064 34. Oraki, S., Zhuang, H., Liang, J.: Lortsar: Low-rank transformer for skeleton-based action recognition. In: International Symposium on Visual Computing. pp. 196– 207. Springer (2024) SCALE 15 35. Paszke, A., Gross, S., Massa, F., Lerer, A., Bradbury, J., Chanan, G., Killeen, T., Lin, Z., Gimelshein, N., Antiga, L., et al.: Pytorch: An imperative style, high-performance deep learning library. Advances in neural information processing sys-tems 32 (2019) 36. Peebles, W., Xie, S.: Scalable diffusion models with transformers. In: Proceedings of the IEEE/CVF international conference on computer vision. pp. 4195–4205 (2023) 37. Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., et al.: Learning transferable visual models from natural language supervision. In: International conference on machine learning. pp. 8748–8763. PmLR (2021) 38. Ramirez, H., Velastin, S.A., Meza, I., Fabregas, E., Makris, D., Farias, G.: Fall detection and activity recognition using human skeleton features. Ieee Access 9,33532–33542 (2021) 39. Schonfeld, E., Ebrahimi, S., Sinha, S., Darrell, T., Akata, Z.: Generalized zero-and few-shot learning via aligned variational autoencoders. In: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition. pp. 8247–8255 (2019) 40. Shahroudy, A., Liu, J., Ng, T.T., Wang, G.: Ntu rgb+ d: A large scale dataset for 3d human activity analysis. In: Proceedings of the IEEE conference on computer vision and pattern recognition. pp. 1010–1019 (2016) 41. Singh, R., Kushwaha, A.K.S., Srivastava, R.: Multi-view recognition system for hu-man activity based on multiple features for video surveillance system. Multimedia Tools and Applications 78 (12), 17165–17196 (2019) 42. Sohn, K., Lee, H., Yan, X.: Learning structured output representation using deep conditional generative models. Advances in neural information processing systems 
+
+28 (2015) 43. Stutz, D., Hein, M., Schiele, B.: Confidence-calibrated adversarial training: Gen-eralizing to unseen attacks. In: International conference on machine learning. pp. 9155–9166. PMLR (2020) 44. Wang, C., Yan, J.: A comprehensive survey of rgb-based and skeleton-based human action recognition. IEEE Access 11 , 53880–53898 (2023) 45. Wray, M., Larlus, D., Csurka, G., Damen, D.: Fine-grained action retrieval through multiple parts-of-speech embeddings. In: Proceedings of the IEEE/CVF interna-tional conference on computer vision. pp. 450–459 (2019) 46. Yan, S., Xiong, Y., Lin, D.: Spatial temporal graph convolutional networks for skeleton-based action recognition. In: Proceedings of the AAAI conference on ar-tificial intelligence. vol. 32 (2018) 47. Zhai, S., Cheng, Y., Lu, W., Zhang, Z.: Deep structured energy based models for anomaly detection. In: International conference on machine learning. pp. 1100– 1109. PMLR (2016) 48. Zhou, Y., Qiang, W., Rao, A., Lin, N., Su, B., Wang, J.: Zero-shot skeleton-based action recognition via mutual information estimation and maximization. In: Pro-ceedings of the 31st ACM international conference on multimedia. pp. 5302–5310 (2023) 49. Zhou, Y., Yan, X., Cheng, Z.Q., Yan, Y., Dai, Q., Hua, X.S.: Blockgcn: Redefine topology awareness for skeleton-based action recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 2049– 2058 (2024) 50. Zhu, A., Ke, Q., Gong, M., Bailey, J.: Part-aware unified representation of language and skeleton for zero-shot action recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 18761–18770 (2024)
