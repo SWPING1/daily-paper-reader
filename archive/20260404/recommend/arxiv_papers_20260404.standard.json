@@ -1,0 +1,290 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-04-04T19:28:29.629795+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 6,
+    "quick_skim_target": 11,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2604.01498v1",
+      "title": "Semantic Compensation via Adversarial Removal for Robust Zero-Shot ECG Diagnosis",
+      "abstract": "Recent ECG--language pretraining methods enable zero-shot diagnosis by aligning cardiac signals with clinical text, but they do not explicitly model robustness to partial observation and are typically studied under fully observed ECG settings. In practice, diagnostically critical leads or temporal segments may be missing due to electrode detachment, motion artifacts, or signal corruption, causing severe degradation of cross-modal semantic alignment. In this paper, we propose \\textbf{SCAR}, a robust ECG--language pretraining framework for \\textbf{S}emantic \\textbf{C}ompensation via \\textbf{A}dversarial \\textbf{R}emoval. SCAR improves robustness by explicitly training the model to remain semantically aligned with semantically critical missingness and to recover diagnostic meaning from the remaining visible evidence. Specifically, we introduce a differentiable adversarial masker to remove the most alignment-critical spatio-temporal ECG tokens during training, forcing the ECG encoder to learn representations that remain semantically aligned with clinical text even when primary diagnostic evidence is missing. Under such adversarial corruption, we equip the ECG encoder with a semantically supervised adaptive selector that learns to reweight the remaining visible tokens and compensate with secondary yet diagnostically informative morphological cues. To evaluate robustness beyond classification accuracy, we further introduce Counterfactual Missingness Resolution Score (CMRS), which quantifies how well feature preserve diagnostic semantics under missingness. Experiments on $6$ datasets show that SCAR consistently improves semantic robustness under joint lead and temporal missingness, with particularly clear advantages in harder cases where primary diagnostic evidence is unavailable, while also yielding stronger linear-probing transferability.",
+      "authors": [
+        "Hongjun Liu",
+        "Rujun Han",
+        "Leyu Zhou",
+        "Chao Yao"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM"
+      ],
+      "published": "2026-04-02T00:16:22+00:00",
+      "link": "https://arxiv.org/pdf/2604.01498v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "robustness to partial observation and missing critical leads",
+      "llm_evidence_cn": "对部分观测和缺失关键导联的鲁棒性",
+      "llm_evidence": "对部分观测和缺失关键导联的鲁棒性",
+      "canonical_evidence": "对部分观测和缺失关键导联的鲁棒性",
+      "llm_tldr_en": "Proposes SCAR to maintain semantic alignment in ECG-language models despite missing signal segments.",
+      "llm_tldr_cn": "提出 SCAR 框架，在心电信号片段缺失的情况下保持跨模态语义对齐。",
+      "llm_tldr": "提出 SCAR 框架，在心电信号片段缺失的情况下保持跨模态语义对齐。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2603.27488v1",
+      "title": "Variational Learning of Fractional Posteriors",
+      "abstract": "We introduce a novel one-parameter variational objective that lower bounds the data evidence and enables the estimation of approximate fractional posteriors. We extend this framework to hierarchical construction and Bayes posteriors, offering a versatile tool for probabilistic modelling. We demonstrate two cases where gradients can be obtained analytically and a simulation study on mixture models showing that our fractional posteriors can be used to achieve better calibration compared to posteriors from the conventional variational bound. When applied to variational autoencoders (VAEs), our approach attains higher evidence bounds and enables learning of high-performing approximate Bayes posteriors jointly with fractional posteriors. We show that VAEs trained with fractional posteriors produce decoders that are better aligned for generation from the prior.",
+      "authors": [
+        "Kian Ming A. Chai",
+        "Edwin V. Bonilla"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-03-29T02:55:35+00:00",
+      "link": "https://arxiv.org/pdf/2603.27488v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "variational learning of posteriors in VAEs",
+      "llm_evidence_cn": "VAE中后验概率的变分学习",
+      "llm_evidence": "VAE中后验概率的变分学习",
+      "canonical_evidence": "VAE中后验概率的变分学习",
+      "llm_tldr_en": "Introduces a variational objective for fractional posteriors in VAEs, relevant to generative modeling.",
+      "llm_tldr_cn": "为VAE引入一种分数后验的变分目标，与生成式建模和缺失数据处理相关。",
+      "llm_tldr": "为VAE引入一种分数后验的变分目标，与生成式建模和缺失数据处理相关。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2603.29410v1",
+      "title": "AGFT: Alignment-Guided Fine-Tuning for Zero-Shot Adversarial Robustness of Vision-Language Models",
+      "abstract": "Pre-trained vision-language models (VLMs) exhibit strong zero-shot generalization but remain vulnerable to adversarial perturbations. Existing classification-guided adversarial fine-tuning methods often disrupt pre-trained cross-modal alignment, weakening visual-textual correspondence and degrading zero-shot performance. In this paper, we propose an Alignment-Guided Fine-Tuning (AGFT) framework that enhances zero-shot adversarial robustness while preserving the cross-modal semantic structure. Unlike label-based methods that rely on hard labels and fail to maintain the relative relationships between image and text, AGFT leverages the probabilistic predictions of the original model for text-guided adversarial training, which aligns adversarial visual features with textual embeddings via soft alignment distributions, improving zero-shot adversarial robustness. To address structural discrepancies introduced by fine-tuning, we introduce a distribution consistency calibration mechanism that adjusts the robust model output to match a temperature-scaled version of the pre-trained model predictions. Extensive experiments across multiple zero-shot benchmarks demonstrate that AGFT outperforms state-of-the-art methods while significantly improving zero-shot adversarial robustness.",
+      "authors": [
+        "Yubo Cui",
+        "Xianchao Guan",
+        "Zijun Xiong",
+        "Zheng Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-03-31T08:17:27+00:00",
+      "link": "https://arxiv.org/pdf/2603.29410v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "preserving cross-modal semantic structure for adversarial robustness",
+      "llm_evidence_cn": "保持跨模态语义结构以实现对抗鲁棒性",
+      "llm_evidence": "保持跨模态语义结构以实现对抗鲁棒性",
+      "canonical_evidence": "保持跨模态语义结构以实现对抗鲁棒性",
+      "llm_tldr_en": "Enhances zero-shot adversarial robustness of VLMs while preserving pre-trained cross-modal alignment.",
+      "llm_tldr_cn": "在保持预训练跨模态对齐的同时，增强视觉语言模型的零样本对抗鲁棒性。",
+      "llm_tldr": "在保持预训练跨模态对齐的同时，增强视觉语言模型的零样本对抗鲁棒性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.00829v1",
+      "title": "LinguDistill: Recovering Linguistic Ability in Vision- Language Models via Selective Cross-Modal Distillation",
+      "abstract": "Adapting pretrained language models (LMs) into vision-language models (VLMs) can degrade their native linguistic capability due to representation shift and cross-modal interference introduced during multimodal adaptation. Such loss is difficult to recover, even with targeted task-specific fine-tuning using standard objectives. Prior recovery approaches typically introduce additional modules that act as intermediate alignment layers to maintain or isolate modality-specific subspaces, which increases architectural complexity, adds parameters at inference time, and limits flexibility across models and settings. We propose LinguDistill, an adapter-free distillation method that restores linguistic capability by utilizing the original frozen LM as a teacher. We overcome the key challenge of enabling vision-conditioned teacher supervision by introducing layer-wise KV-cache sharing, which exposes the teacher to the student's multimodal representations without modifying the architecture of either model. We then selectively distill the teacher's strong linguistic signal on language-intensive data to recover language capability, while preserving the student's visual grounding on multimodal tasks. As a result, LinguDistill recovers $\\sim$10% of the performance lost on language and knowledge benchmarks, while maintaining comparable performance on vision-heavy tasks. Our findings demonstrate that linguistic capability can be recovered without additional modules, providing an efficient and practical solution to modality-specific degradation in multimodal models.",
+      "authors": [
+        "Patrick Amadeus Irawan",
+        "Erland Hilman Fuadi",
+        "Shanu Kumar",
+        "Alham Fikri Aji",
+        "Yova Kementchedjhieva"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL"
+      ],
+      "published": "2026-04-01T12:38:27+00:00",
+      "link": "https://arxiv.org/pdf/2604.00829v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "isolate modality-specific subspaces and recover linguistic ability",
+      "llm_evidence_cn": "隔离模态特定子空间并恢复语言能力",
+      "llm_evidence": "隔离模态特定子空间并恢复语言能力",
+      "canonical_evidence": "隔离模态特定子空间并恢复语言能力",
+      "llm_tldr_en": "Proposes LinguDistill to recover linguistic capabilities in VLMs by isolating modality-specific subspaces.",
+      "llm_tldr_cn": "提出LinguDistill方法，通过隔离模态特定子空间来恢复视觉语言模型中的语言能力。",
+      "llm_tldr": "提出LinguDistill方法，通过隔离模态特定子空间来恢复视觉语言模型中的语言能力。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.01155v1",
+      "title": "FineLAP: Taming Heterogeneous Supervision for Fine-grained Language-Audio Pretraining",
+      "abstract": "Contrastively pretrained audio-language models (e.g., CLAP) excel at clip-level understanding but struggle with frame-level tasks. Existing extensions fail to exploit the varying granularity of real-world audio-text data, where massive clip-level textual descriptions coexist with limited frame-level annotations. This paper proposes Fine-grained Language-Audio Pretraining (FineLAP), a novel training paradigm that advances both clip- and frame-level alignment in CLAP with heterogeneous data. FineLAP introduces a dual-stream sigmoid loss with a cluster-based sampling strategy to jointly learn from clip- and frame-level supervision. To capture both global semantics and local details, FineLAP uses a decoupled audio projector on top of a self-supervised encoder. To alleviate the scarcity of temporally annotated data, we present FineLAP-100k, a large-scale synthetic SED dataset constructed through a scalable curation pipeline. Extensive experiments demonstrate that FineLAP achieves SOTA performance across multiple audio understanding tasks, including retrieval, classification, sound event detection, and text-to-audio grounding. Ablation studies further show that coarse- and fine-grained alignment are mutually beneficial, providing insights for building better audio-language models (ALMs).",
+      "authors": [
+        "Xiquan Li",
+        "Xuenan Xu",
+        "Ziyang Ma",
+        "Wenxi Chen",
+        "Haolin He",
+        "Qiuqiang Kong",
+        "Xie Chen"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-04-01T17:09:25+00:00",
+      "link": "https://arxiv.org/pdf/2604.01155v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decoupled audio projector for fine-grained alignment",
+      "llm_evidence_cn": "用于细粒度对齐的解耦音频投影器",
+      "llm_evidence": "用于细粒度对齐的解耦音频投影器",
+      "canonical_evidence": "用于细粒度对齐的解耦音频投影器",
+      "llm_tldr_en": "Proposes FineLAP for fine-grained language-audio pretraining using decoupled projectors and heterogeneous data.",
+      "llm_tldr_cn": "提出FineLAP，通过解耦投影器和异构数据实现细粒度的音视频预训练对齐。",
+      "llm_tldr": "提出FineLAP，通过解耦投影器和异构数据实现细粒度的音视频预训练对齐。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.01479v1",
+      "title": "UniRecGen: Unifying Multi-View 3D Reconstruction and Generation",
+      "abstract": "Sparse-view 3D modeling represents a fundamental tension between reconstruction fidelity and generative plausibility. While feed-forward reconstruction excels in efficiency and input alignment, it often lacks the global priors needed for structural completeness. Conversely, diffusion-based generation provides rich geometric details but struggles with multi-view consistency. We present UniRecGen, a unified framework that integrates these two paradigms into a single cooperative system. To overcome inherent conflicts in coordinate spaces, 3D representations, and training objectives, we align both models within a shared canonical space. We employ disentangled cooperative learning, which maintains stable training while enabling seamless collaboration during inference. Specifically, the reconstruction module is adapted to provide canonical geometric anchors, while the diffusion generator leverages latent-augmented conditioning to refine and complete the geometric structure. Experimental results demonstrate that UniRecGen achieves superior fidelity and robustness, outperforming existing methods in creating complete and consistent 3D models from sparse observations.",
+      "authors": [
+        "Zhisheng Huang",
+        "Jiahao Chen",
+        "Cheng Lin",
+        "Chenyu Hu",
+        "Hanzhuo Huang",
+        "Zhengming Yu",
+        "Mengfei Li",
+        "Yuheng Liu",
+        "Zekai Gu",
+        "Zibo Zhao",
+        "Yuan Liu",
+        "Xin Li",
+        "Wenping Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-01T23:35:40+00:00",
+      "link": "https://arxiv.org/pdf/2604.01479v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentangled cooperative learning for reconstruction and generation",
+      "llm_evidence_cn": "用于重建与生成的解耦协作学习",
+      "llm_evidence": "用于重建与生成的解耦协作学习",
+      "canonical_evidence": "用于重建与生成的解耦协作学习",
+      "llm_tldr_en": "Integrates 3D reconstruction and generation using disentangled learning in a shared canonical space.",
+      "llm_tldr_cn": "在共享规范空间中利用解耦学习整合 3D 重建与生成。",
+      "llm_tldr": "在共享规范空间中利用解耦学习整合 3D 重建与生成。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.01843v1",
+      "title": "Investigating Permutation-Invariant Discrete Representation Learning for Spatially Aligned Images",
+      "abstract": "Vector quantization approaches (VQ-VAE, VQ-GAN) learn discrete neural representations of images, but these representations are inherently position-dependent: codes are spatially arranged and contextually entangled, requiring autoregressive or diffusion-based priors to model their dependencies at sample time. In this work, we ask whether positional information is necessary for discrete representations of spatially aligned data. We propose the permutation-invariant vector-quantized autoencoder (PI-VQ), in which latent codes are constrained to carry no positional information. We find that this constraint encourages codes to capture global, semantic features, and enables direct interpolation between images without a learned prior. To address the reduced information capacity of permutation-invariant representations, we introduce matching quantization, a vector quantization algorithm based on optimal bipartite matching that increases effective bottleneck capacity by $3.5\\times$ relative to naive nearest-neighbour quantization. The compositional structure of the learned codes further enables interpolation-based sampling, allowing synthesis of novel images in a single forward pass. We evaluate PI-VQ on CelebA, CelebA-HQ and FFHQ, obtaining competitive precision, density and coverage metrics for images synthesised with our approach. We discuss the trade-offs inherent to position-free representations, including separability and interpretability of the latent codes, pointing to numerous directions for future work.",
+      "authors": [
+        "Jamie S. J. Stirling",
+        "Noura Al-Moubayed",
+        "Hubert P. H. Shum"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-04-02T09:56:59+00:00",
+      "link": "https://arxiv.org/pdf/2604.01843v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentangling positional information from semantic features",
+      "llm_evidence_cn": "将位置信息与语义特征解耦",
+      "llm_evidence": "将位置信息与语义特征解耦",
+      "canonical_evidence": "将位置信息与语义特征解耦",
+      "llm_tldr_en": "Proposes PI-VQ to learn permutation-invariant discrete representations that capture global semantic features.",
+      "llm_tldr_cn": "提出PI-VQ学习置换不变的离散表示，通过解耦位置信息捕捉全局语义特征。",
+      "llm_tldr": "提出PI-VQ学习置换不变的离散表示，通过解耦位置信息捕捉全局语义特征。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
