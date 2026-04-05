@@ -1,0 +1,806 @@
+Title: MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection
+
+URL Source: https://arxiv.org/pdf/2603.27928v1
+
+Published Time: Tue, 31 Mar 2026 01:48:09 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection 
+
+# Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+1 Institute of Information Engineering, Chinese Academy of Sciences 
+
+2School of Cyber Security, University of Chinese Academy of Sciences 
+
+3Hong Kong University of Science and Technology China 
+
+## Abstract 
+
+Social bots increasingly infiltrate online platforms through sophis-ticated disguises, threatening healthy information ecosystems. Ex-isting detection methods often rely on modality-specific cues or local contextual features, making them brittle when modalities are missing or inputs are incomplete. Moreover, most approaches as-sume similar train-test distributions, which limits their robustness to out-of-distribution (OOD) samples and emerging bot types. To address these challenges, we propose Multi-Granularity Sum-marization and Domain-Invariant Learning (MGDIL) , a uni-fied framework for robust social bot detection under domain shift. MGDIL first transforms heterogeneous signals into unified tex-tual representations through LLM-based multi-granularity sum-marization. Building on these representations, we design a col-laborative optimization framework that integrates task-oriented LLM instruction tuning with domain-invariant representation learn-ing. Specifically, task-oriented instruction tuning enhances the LLM’s ability to capture subtle semantic cues and implicit camou-flage patterns, while domain-adversarial learning and cross-domain contrastive learning are jointly employed to mitigate distribution shifts across datasets and time periods. Through this joint optimiza-tion, MGDIL learns stable and discriminative domain-invariant features, improving cross-domain social bot detection through better distribution alignment, stronger intra-class compactness, and clearer inter-class separation. The code is available at https: //github.com/QQQQQQBY/MGDIL. 
+
+## CCS Concepts 
+
+• Security and privacy → Intrusion/anomaly detection and mal-ware mitigation ; • Human-centered computing → Collaborative and social computing ; • Computing methodologies ;
+
+## Keywords 
+
+social bot detection, cross-domain generalization, domain-invariant learning, instruction tuning  
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> Conference acronym ’XX, Woodstock, NY
+> ©2018 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-1-4503-XXXX-X/2018/06 https://doi.org/XXXXXXX.XXXXXXX
+
+ACM Reference Format: 
+
+Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3. 2018. MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection. In Proceedings of Make sure to enter the correct conference title from your rights confirmation email (Conference acronym ’XX). ACM, New York, NY, USA, 17 pages. https: //doi.org/XXXXXXX.XXXXXXX 
+
+## 1 Introduction 
+
+As social media platforms have increasingly become important spaces for information dissemination, public expression, and opin-ion interaction, social bots have emerged as a persistent threat to authenticity, credibility, and stability of online information ecosys-tems [ 2 , 30 ]. Powered by automated operation, large-scale dissemi-nation, and increasingly sophisticated camouflage strategies, these bots can imitate legitimate users and amplify misleading or manip-ulative content at scale. Their tactics range from profile fabrication and behavioral mimicry to LLM- driven content generation [ 16 , 37 ], making reliable detection increasingly challenging. Detecting such bots is thus critical for safeguarding platform integrity and ensuring trustworthy online communication [15]. With the advancement of social bot detection research, both benchmark datasets [ 13 , 48 ] and detection methods have progressed substantially. Existing detection approaches have evolved from early feature engineering methods that relied on user metadata [20 , 50 ], behavioral statistics [ 4, 9 ], and textual features [ 10 , 46 ] to more comprehensive frameworks that exploit historical posting sequences [ 28 , 39 ], behavioral pattern mining [ 21 , 47 ], and relation-aware graph learning [ 12 , 25 ]. Meanwhile, the rapid development of LLMs has further increased the difficulty of detection by en-abling social bots to better mimic genuine users in both linguistic expression and behavioral presentation [ 29 , 38 ]. As a result, social bot detection can no longer be treated as a closed-set classification problem under a fixed data distribution; instead, it must operate in open and dynamic environments characterized by incomplete information and distribution shifts induced by data differences and temporal variation [43, 44]. Despite the substantial progress made in prior studies, two key challenges, as illustrated in Figure 1, remain insufficiently addressed. First, many existing methods are highly dependent on specific modalities and complete input fields, making them vulnerable when user information is missing or incomplete. For instance, methods such as BotRGCN [ 14 ] and BECE [ 40 ] rely on features extracted from user metadata, historical texts, and relational information, all of which may be partially unavailable in real-world scenarios. Second, current methods still show limited cross-domain general-ization. Most mainstream approaches are developed and evaluated           
+
+> arXiv:2603.27928v1 [cs.SI] 30 Mar 2026 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3Detect Models
+> 1Fragility to Incomplete Information 2Limited Cross-Domain Generalization
+> Dependence on Specific Modalities
+> User Profile Historical Texts Relational Graph
+> Real-World Incompleteness
+> Modality Gaps Sparse Relations
+> Training on Single Dataset
+> Stable performance within the same domain
+> Failure in New Domains
+> Dataset B New Topics Evolving Bots
+> Impromvent Direction
+> Robust to Incomplete Inputs
+
+# + Strong Cross-Domain Adaptation  
+
+> Missing Fields
+> Performance Drop Unstable Detection
+
+Figure 1: Two Core Challenges in Social Bot Detection. 
+
+primarily in in-domain settings, without explicitly accounting for distribution differences caused by dataset variation and temporal change. Consequently, their performance often deteriorates when deployed in new bot scenarios with shifted distributions. To address the above challenges, we propose Multi-Granularity Summarization and Domain-Invariant Learning (MGDIL) , a unified framework for robust cross-domain social bot detection. The key idea of MGDIL is to couple multi-granularity user informa-tion summarization with domain-invariant representation learning, so that the model can both handle heterogeneous and partially missing inputs and generalize more effectively across different data distributions. Specifically, MGDIL first transforms heterogeneous and potentially incomplete user information, including profile at-tributes, historical posts, and affective cues, into a unified structured textual representation through an LLM-based multi-granularity summarization mechanism. Based on this unified representation, we further develop a collaborative optimization framework that combines LLM instruction tuning with domain-invariant represen-tation learning to jointly enhance semantic modeling and robust-ness under distribution shift. In particular, task-oriented instruction tuning improves the LLM’s ability to capture fine-grained seman-tic cues and implicit camouflage patterns. To reduce cross-domain distribution shifts, we employ domain-adversarial learning with a gradient reversal layer (GRL), encouraging the encoder to suppress domain-specific signals while preserving class-discriminative fea-tures. In addition, we introduce the cross-domain contrastive learn-ing to improve intra-class compactness and inter-class separability across different domains, thereby learning stable and discriminative domain-invariant representations. The main contributions of our work are summarized as follows: 
+
+• Framework : We propose MGDIL , a unified framework for robust cross-domain social bot detection. By coupling multi-granularity summarization with domain-invariant represen-tation learning, MGDIL improves both robustness to partially missing user information and generalization across shifted data distributions. 
+
+• Method : We design a collaborative optimization scheme that integrates task-oriented LLM instruction tuning with domain-invariant representation learning. Specifically, in-struction tuning enhances the model’s ability to capture fine-grained semantic cues and implicit camouflage patterns, while domain-adversarial and contrastive learning help mit-igate cross-domain distribution shifts and promote stable, discriminative representations. 
+
+• Experiments : We construct a unified instruction-tuning dataset from 15 social bot detection datasets through multi-granularity summarization, train MGDIL on 13 datasets, and evaluate it on the remaining 2 datasets under distribution-shift settings. Extensive experiments demonstrate that MGDIL achieves strong and consistent improvements in cross-dataset generalization over competitive baselines. 
+
+## 2 Related Work 2.1 Conventional Social Bot Detection. 
+
+Existing social bot detection methods can be broadly grouped into three categories: 
+
+Feature-based methods. Early social bot detection studies mainly relied on feature engineering [ 45 ], extracting statistical signals from user metadata, profile information, and basic posting statistics [ 50 ]. These approaches typically used manually designed features together with traditional machine learning models to dis-tinguish bots from humans [ 42 ]. More recent studies have further incorporated neural architectures to improve representation learn-ing from profile-level inputs. For instance, DeeProBot [ 20 ] and TPBot[ 51 ] adopted a deep neural network specifically designed for user profile features to detect malicious accounts. 
+
+Behavior- and text-based methods. As social bots became in-creasingly adept at mimicking superficial profile characteristics [ 2 ], researchers shifted from profile-level features to richer behavioral modeling [ 36 , 39 ] and textual semantic analysis [ 28 ]. Cresci et al. [ 4, 5] pioneered DNA-inspired behavioral modeling, which repre-sents user actions as sequences to identify coordinated spambot groups. Meanwhile, text-based neural methods employed architec-tures such as BiLSTMs [ 24 , 46 ] and BERT [ 19 ] to capture semantic inconsistencies and linguistic patterns in users’ historical posts. 
+
+Graph-based methods. More recently, GNN-based approaches have become a dominant paradigm for social bot detection by lever-aging the relational structure of social networks [ 7, 8]. BotRGCN [ 14 ] applies relational graph convolution to model heterogeneous user interactions, while RGT [ 12 ] further captures relation hetero-geneity with graph transformers. Subsequent work has extended this direction by modeling dynamic interactions [ 21 ] and by jointly exploiting homophilic and heterophilic relations [25, 40]. 
+
+## 2.2 OOD Social Bot Detection 
+
+While conventional methods achieve high accuracy on intra-domain benchmarks, they frequently suffer severe performance drops when applied to unseen domains or new types of bots [ 11 ]. Social bot detection in the wild is inherently an OOD problem, driven by con-tinuous shifts in data distribution across different topics and time periods. To address the limitations of cross-domain generalization, researchers have begun exploring adaptive and robust learning strategies [ 44 ]. Recently, more advanced domain adaptation tech-niques have been introduced. For example, Song et al. [ 43 ] proposed MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+a self-supervised adaptive tuning approach explicitly designed for OOD social media bot detection, aiming to align feature spaces without requiring extensive target-domain labels. Similarly, Shi et al. [ 41 ] tackled the domain gap by proposing a multi-source graph domain adaptation approach (BotTrans) that leverages multiple source domains to alleviate network heterophily and selectively transfers task-relevant knowledge to target networks. However, existing OOD bot detection methods still largely rely on specific adaptation settings or modality assumptions, which may limit their robustness and generalizability in real-world scenarios with new types of bots and incomplete inputs. 
+
+## 3 Methodology 
+
+We propose MGDIL , a unified social bot detection framework that integrates multi-granularity summarization with domain-invariant learning, as illustrated in Figure 2. MGDIL first summarizes hetero-geneous user information at multiple granularities by integrating signals from user profiles, historical posts, and affective cues into structured textual inputs. On top of these inputs, we apply task-oriented LLM instruction tuning to enhance the model’s ability to capture fine-grained semantic cues and implicit bot camouflage patterns. To improve robustness under shifted distributions, we further introduce a domain-adversarial objective with a domain classifier and a gradient reversal layer (GRL), which encourages the encoder to reduce domain-specific information while preserving class-discriminative features. We also incorporate cross-domain contrastive learning to promote intra-class compactness and inter-class separation across domains. Finally, heterogeneous graph rep-resentation learning over social relations is integrated to enrich the model with structural relational cues. 
+
+## 3.1 Multi-Granularity Summarization 
+
+To address heterogeneity in field schemas and available modalities across data sources, we develop a multi-granularity summariza-tion module that converts user information into a unified textual format. The module operates at two levels: it renders structured profile attributes into a slot-based template and summarizes histor-ical post sequences into a compact multi-dimensional description. This unified representation enables consistent handling of missing fields and incomplete modalities across sources. Table 4 in Appen-dix A.1 summarizes the multimodal information available in each data source. The resulting unified format serves as the basis for subsequent LLM instruction tuning and domain-invariant learning. 
+
+Mapping user profile metadata into a readable slot-based template. Let the profile schema contain 𝐽 predefined fields. For user 𝑖 ∈ { 1, . . . , 𝑁 }, let 𝑣 𝑖,𝑗 denote the value of field 𝑓 𝑗 when it is available. Since missing fields are common in real-world settings, we introduce a binary availability indicator: 
+
+𝑚 𝑖,𝑗 =
+
+(
+
+1, if field 𝑓 𝑗 is available for user 𝑖, 
+
+0, otherwise. (1) For missing fields, we use a fixed placeholder value 𝑣 (miss ) (e.g., “unavailable” or “unknown”). The rendered value of field 𝑓 𝑗 for user 
+
+𝑖 is defined as 
+
+˜𝑣 𝑖,𝑗 =
+
+(
+
+𝑣 𝑖,𝑗 , 𝑚 𝑖,𝑗 = 1,𝑣 (miss ) , 𝑚 𝑖,𝑗 = 0. (2) Each field is then converted into a natural-language slot string through a rendering function 𝜎 𝑗 (·) :slot 𝑖,𝑗 = 𝜎 𝑗 ( ˜𝑣 𝑖,𝑗 ). (3) The final profile metadata text for user 𝑖 is obtained by concatenat-ing the slot strings in a predefined order: 
+
+T profile  
+
+> 𝑖
+
+=
+
+> 𝐽
+
+Ê
+
+> 𝑗 =1
+
+slot 𝑖,𝑗 , (4) where É denotes string concatenation. By explicitly marking miss-ing fields rather than silently omitting them, this design yields clearer and more consistent inputs for downstream models. Table 6 in Appendix A.2 provides detailed descriptions of each profile fields. 
+
+Multi-dimensional summaries of historical posts. Let the historical post sequence of user 𝑖 be denoted by 𝑃 𝑖 = (𝑝 𝑖, 1, . . . , 𝑝 𝑖,𝑇 𝑖 ),where 𝑝 𝑖,𝑡 is the text of the 𝑡 -th post and 𝑇 𝑖 is the number of his-torical posts associated with user 𝑖 . Based on 𝑃 𝑖 , we construct a multi-dimensional summary that captures the main semantic and expressive characteristics of the user’s posting behavior. Table 7 in Appendix A.2 provides detailed descriptions of the summary dimensions and their corresponding categories. We use LLMs (DeepSeek-V3.2 [ 26 ]) to summarize each user’s historical posts along five dimensions: content themes ( theme ), sentiment polarity ( sent ), emotional tone ( emo ), linguistic style (style ), and communicative function ( func ). Appendix A.3 provides detailed descriptions of the categories used in each dimension. We denote the structured summary for user 𝑖 as 
+
+𝑧 summ  
+
+> 𝑖
+
+=
+
+
+
+𝑧 theme  
+
+> 𝑖
+
+, 𝑧 sent  
+
+> 𝑖
+
+, 𝑧 emo  
+
+> 𝑖
+
+, 𝑧 style  
+
+> 𝑖
+
+, 𝑧 func 
+
+> 𝑖
+
+
+
+. (5) For each dimension 𝑐 ∈ { theme , sent , emo , style , func }, the LLM summarizes 𝑃 𝑖 with respect to a predefined category space Y𝑐 and outputs the categories that best characterize the user’s long-term posting behavior. The resulting fixed-format textual summary is written as: 
+
+T summ  
+
+> 𝑖
+
+= 𝑓 LLM (𝑃 𝑖 ; {Y 𝑐 }𝑐 ) , (6) where 𝑓 LLM (·) denotes the LLM-based summarization process under the category schema. 
+
+## 3.2 Domain-Invariant Representation Learning 
+
+Based on the unified textual representation constructed above, we further design an instruction-tuning module to fine-tune the LLM for learning more comprehensive and robust user representations. To improve the model’s robustness under domain shifts, we fur-ther incorporate domain adversarial training and cross-domain con-trastive learning for joint optimization, encouraging the learned rep-resentations to be both domain-invariant and class-discriminative. 
+
+LoRA-based Instruction Fine-Tuning. We concatenate the instruction prompt T instruction  
+
+> 𝑖
+
+, the profile text T profile  
+
+> 𝑖
+
+, and the multi-dimensional summary of historical posts T summ  
+
+> 𝑖
+
+into a unified instruction-formatted input: 
+
+T overall  
+
+> 𝑖
+
+= T instruction  
+
+> 𝑖
+
+⊕ T profile  
+
+> 𝑖
+
+⊕ T summ  
+
+> 𝑖
+
+. (7) We then employ Low-Rank Adaptation (LoRA) [ 23 ] to fine-tune the LLM under a joint optimization framework for domain-invariant learning. Appendix A.4 provides the instruction-formatted input used in this stage. Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3Profile Text Slot Mapping    
+
+> 𝒯 𝑖
+> 𝑝𝑟𝑜𝑓𝑖𝑙𝑒 =⨁j=1
+> Jslot j
+
+Unified Instruction Tuning Dataset       
+
+> 𝒯 𝑖 𝑜𝑣𝑒𝑟𝑎𝑙𝑙 =𝒯 𝑖 𝑖𝑛𝑠𝑡𝑟𝑢𝑐𝑡𝑖𝑜𝑛 ⊕𝒯 𝑖
+> 𝑝𝑟𝑜𝑓𝑖𝑙𝑒 ⊕𝒯 𝑖 𝑠𝑢𝑚𝑚
+
+Multi -Dimensional Summary    
+
+> 𝒯 𝑖 𝑠𝑢𝑚𝑚 =𝑓 𝐿𝐿𝑀 (𝑃 𝑖 ;{𝒴 𝑐 }𝑐 )
+
+SECTION 1:  Multi -Granularity  Summarization 
+
+Content Themes  Emotional Tone Sentiment Polarity  Linguistic Style  Communicative Function 
+
+SECTION 2:  Domain -Invariant 
+
+Representation Learning 
+
+> 𝒯 𝑖 𝑜𝑣𝑒𝑟𝑎𝑙𝑙
+
+Instruction 
+
+Tuning Dataset       
+
+> Base LLM
+> 𝑥 𝑖 =𝐸𝑛𝑐 𝐿𝐿𝑀 (𝒯 𝑖 𝑜𝑣𝑒𝑟𝑎𝑙𝑙 )ℎ𝑖 =𝑓 𝜃 (𝑥 𝑖 )
+
+Supervised Classifier    
+
+> ො𝑦 𝑖 =softmax 𝑐 𝜋 (ℎ𝑖 )
+
+Domain Discriminator     
+
+> Ƹ
+> 𝑝 𝑖 =softmax 𝑐 𝜓 (𝐺𝑅𝐿 𝜆 𝑔𝑟𝑙 (ℎ𝑖 ))
+
+Cross -Domain Contrastive      
+
+> 𝑢 𝑖 =𝑔 𝜙 (ℎ𝑖 )
+> 𝑔 𝜙 ℎ𝑖 2
+> GRL
+
+Classification Loss 
+
+ℒcls 
+
+Domain 
+
+Adversarial Loss 
+
+ℒadv 
+
+Supervised 
+
+Contrastive Loss 
+
+ℒcon 
+
+𝜆 𝑎𝑑𝑣 
+
+Total Objective      
+
+> ℒ=ℒcls
+> +𝜆 𝑎𝑑𝑣 ℒadv
+> +𝜆 𝑐𝑜𝑛 ℒcon
+
+# /
+
+Human vs. Bot 
+
+Graph Construction           
+
+> Graph ∶𝐺 =𝒱 ,ℰ,ℛ
+> Node Initialize :෠ℎ𝑣
+> 0=ℎ𝑣
+
+Relation -Aware Message Passing                   
+
+> Aggregation :𝑚 𝑣
+> (𝑙 )=σ𝑟 ∈ℛ𝐴𝐺𝐺 𝑟
+> 𝑙 ({𝑊 𝑟
+> 𝑙 ෠ℎ𝑢
+> 𝑙 |𝑢 𝜖 𝒩 𝑟 (𝑣 )})
+> Update :ℎ𝑣
+> (𝑙 +1)=𝑈𝑃𝐷 𝑙 (෠ℎ𝑣
+> 𝑙 ,𝑚 𝑣
+> (𝑙 ))
+
+Graph Supervised Training    
+
+> ො𝑦 𝑣 =softmax (𝑔 𝜋 (𝑧 𝑣 ))
+> Loss : ℒgcls
+> SECTION 3:
+
+Relation -aware 
+
+GNN for 
+
+Structural 
+
+Enhancement 
+
+Initialize Node Embedding 
+
+> MLP
+
+Figure 2: Overview of the MGDIL framework. MGDIL first summarizes user information into unified structured textual inputs, and then performs domain-invariant learning, and graph-based representation learning for robust social bot detection. 
+
+After instruction fine-tuning, we use the LLM to encode the unified input T overall  
+
+> 𝑖
+
+into a dense representation: 
+
+x𝑖 = 𝐸𝑛𝑐 LLM 
+
+
+
+T overall 
+
+> 𝑖
+
+
+
+, (8) which is then used as the initial representation for subsequent domain adversarial training and cross-domain contrastive learning. 
+
+Domain-adversarial training. To mitigate domain shift and encourage domain-invariant user representation learning, we fur-ther introduce a domain-adversarial training module. Given the LLM-encoded representation x𝑖 of user 𝑖 , we first project it into a latent space: 
+
+h𝑖 = 𝑓 𝜃 (x𝑖 ) ∈ R𝑑 , (9) where 𝑓 𝜃 (·) is an MLP parameterized by 𝜃 , and 𝑑 is the hidden dimension. Based on h𝑖 , we train a domain discriminator 𝑐 𝜓 (·) 
+
+to predict the domain label of each user. Assuming there are 𝑀 
+
+domains, the predicted domain distribution is defined as 
+
+ˆp𝑖 = softmax 
+
+
+
+𝑐 𝜓 
+
+
+
+GRL 𝜆 grl (h𝑖 )
+
+ 
+
+∈ R𝑀 , (10) where 𝜓 denotes the parameters of the domain discriminator, ˆp𝑖 
+
+is the predicted probability distribution over the 𝑀 domains, and 
+
+𝑑 𝑖 ∈ { 1, 2, . . . , 𝑀 } is the ground-truth domain label of user 𝑖 .To enable adversarial optimization, we insert a Gradient Reversal Layer (GRL) [ 17 ] between the encoder and the domain discriminator. The GRL acts as the identity function in the forward pass, while reversing the gradient during backpropagation: 
+
+GRL 𝜆 grl (𝑥 ) = 𝑥, (11) 
+
+𝜕 GRL 𝜆 grl (𝑥 )
+
+𝜕𝑥 = −𝜆 grl 𝐼, (12) where 𝜆 grl > 0 is the gradient reversal coefficient and 𝐼 is the identity matrix. This mechanism encourages the encoder to remove domain-specific signals while preserving task-relevant information. The domain-adversarial loss is defined as 
+
+Ladv = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+log 𝑝 𝜓 
+
+
+
+𝑑 𝑖 | GRL 𝜆 grl (h𝑖 )
+
+
+
+, (13) where 𝑝 𝜓 (𝑑 𝑖 | GRL 𝜆 grl (h𝑖 )) denotes the probability assigned by the discriminator to the ground-truth domain label 𝑑 𝑖 . Through adver-sarial optimization, the domain discriminator is trained to distin-guish samples from different domains, while the encoder is encour-aged to suppress domain-specific information in the learned rep-resentations, thereby promoting the learning of domain-invariant representations. 
+
+Cross-domain contrastive learning. To further enhance class-level semantic alignment across domains, we introduce a cross-domain contrastive learning objective that encourages representa-tions of users with the same class label to be closer across domains, while separating those with different class labels. Specifically, we attach a projection head 𝑔 𝜙 (·) to the latent rep-resentation and normalize the projected output: 
+
+u𝑖 = 𝑔 𝜙 (h𝑖 )∥𝑔 𝜙 (h𝑖 )∥ 2
+
+∈ R𝑟 , ∥u𝑖 ∥2 = 1, (14) where 𝑔 𝜙 (·) denotes the projection head parameterized by 𝜙 , and 𝑟 
+
+is the dimension of the projected representation. MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+For each anchor sample 𝑖 , we define a cross-domain positive set 
+
+P ( 𝑖 ) and a negative set N ( 𝑖 ) as 
+
+P ( 𝑖 ) = 𝑗 ∈ { 1, . . . , 𝑁 } \ { 𝑖 } : 𝑦 𝑗 = 𝑦 𝑖 , 𝑑 𝑗 ≠ 𝑑 𝑖 , (15) 
+
+N ( 𝑖 ) = 𝑗 ∈ { 1, . . . , 𝑁 } \ { 𝑖 } : 𝑦 𝑗 ≠ 𝑦 𝑖 , (16) where 𝑦 𝑖 is the class label of sample 𝑖 , and 𝑑 𝑖 is its domain label. Thus, P ( 𝑖 ) contains samples that share the same class label as the anchor but come from different domains, while N ( 𝑖 ) contains samples with different class labels. Let A = {𝑖 ∈ { 1, . . . , 𝑁 } : |P ( 𝑖 )| > 0}, denote the set of anchor samples that have at least one cross-domain positive sample. The cross-domain contrastive loss is defined as                     
+
+> Lcon =−1
+> | A | ∑︁ 𝑖 ∈A
+> 1
+> | P ( 𝑖 ) | ∑︁ 𝑝 ∈P ( 𝑖 )
+> log exp  u⊤
+> 𝑖 u𝑝 /𝜏 Í
+> 𝑎 ∈P ( 𝑖 )∪N ( 𝑖 )
+> exp  u⊤
+> 𝑖 u𝑎 /𝜏 ,(17)
+
+where 𝜏 > 0 is a temperature hyperparameter, and 1  
+
+> | P ( 𝑖 ) |
+
+averages over all positive samples associated with anchor 𝑖 . Minimizing 
+
+Lcon encourages class-consistent alignment across domains in the learned representation space. 
+
+Supervised classification network. To predict the account type across domains, we introduce a supervised classification mod-ule based on the learned user representation. Specifically, given the representation h𝑖 , the classifier produces the predicted probability distribution over the two account classes: 
+
+ˆy𝑖 = softmax (𝑐 𝜋 (h𝑖 )) ∈ R2, (18) where 𝑐 𝜋 (·) denotes the classifier parameterized by 𝜋 , and ˆy𝑖 =
+
+[ ˆ𝑦 𝑖, 0, ˆ𝑦 𝑖, 1] is the predicted probability vector for user 𝑖 .We adopt the standard cross-entropy loss to train the classifier: 
+
+Lcls = − 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+∑︁ 𝑘 ∈ { 0,1}
+
+1[𝑦 𝑖 = 𝑘 ] log ˆ 𝑦 𝑖,𝑘 , (19) where 𝑁 is the total number of training samples, 𝑦 𝑖 ∈ { 0, 1} is the ground-truth label of user 𝑖 , and ˆ𝑦 𝑖,𝑘 denotes the predicted probability that user 𝑖 belongs to class 𝑘 .
+
+Overall Optimization Objective. To jointly optimize the three learning objectives, we define the overall loss as 
+
+L = Lcls + 𝜆 adv Ladv + 𝜆 con Lcon , (20) where Lcls , Ladv , and Lcon denote the classification, domain-adversarial, and cross-domain contrastive losses, respectively. 𝜆 adv and 𝜆 con are hyperparameters that balance the contributions of the latter two objectives. This joint optimization encourages the learned repre-sentations to be both domain-invariant and class-discriminative. 
+
+## 3.3 Relation-aware GNN for Structural Enhancement 
+
+To further exploit relational signals when user relation information is available, we introduce a relation-aware graph neural network (GNN) module to enhance the user representations learned in the previous stage with structural context. Specifically, we construct a user relation graph 
+
+G = (V , E, R) , (21) where V is the set of user nodes, E is the set of edges, and R is the set of relation types. For each user node 𝑣 ∈ V , we initialize its node feature using the representation learned by the previous module: 
+
+ˆh(0) 
+
+> 𝑣
+
+= h𝑣 , (22) where h𝑣 ∈ R𝑑 denotes the semantic representation of user 𝑣 ob-tained from the preceding representation learning module. To incorporate structural dependencies among users, we apply a message-passing mechanism to refine node representations. At the 
+
+𝑙 -th layer, node 𝑣 aggregates information from its neighbors under different relation types: 
+
+m(𝑙 ) 
+
+> 𝑣
+
+=∑︁  
+
+> 𝑟 ∈ R
+
+AGG (𝑙 )
+
+> 𝑟
+
+n 
+
+W(𝑙 ) 
+
+> 𝑟
+
+ˆh(𝑙 ) 
+
+> 𝑢
+
+𝑢 ∈ N 𝑟 (𝑣 )
+
+o 
+
+, (23) where N𝑟 (𝑣 ) denotes the set of neighbors of node 𝑣 under rela-tion type 𝑟 , W(𝑙 ) 
+
+> 𝑟
+
+is a relation-specific transformation matrix, and 
+
+AGG (𝑙 ) 
+
+> 𝑟
+
+(·) is a relation-aware aggregation function, such as mean pooling, sum pooling, or attention-based aggregation. The node representation is then updated by combining the current node rep-resentation with the aggregated neighborhood message: 
+
+ˆh(𝑙 +1) 
+
+> 𝑣
+
+= UPD (𝑙 )  ˆh(𝑙 ) 
+
+> 𝑣
+
+, m(𝑙 )
+
+> 𝑣
+
+
+
+, (24) where UPD (𝑙 ) (·) denotes the node update function. After 𝐿 layers of propagation, the final graph-enhanced representation of user node 𝑣 is given by z𝑣 = ˆh(𝐿 ) 
+
+> 𝑣
+
+.The graph-enhanced representation z𝑣 is then used for down-stream account classification. Specifically, the predicted class distri-bution for user node 𝑣 is computed as 
+
+ˆy𝑣 = softmax (𝑔 𝜋 (z𝑣 )) ∈ R2, (25) where 𝑔 𝜋 (·) denotes the classifier parameterized by 𝜋 , and ˆy𝑣 =
+
+[ ˆ𝑦 𝑖, 0, ˆ𝑦 𝑖, 1] is the predicted probability vector for node 𝑣 . The graph-based classifier is optimized with the cross-entropy loss: 
+
+Lgcls = −
+
+> 𝑁
+
+∑︁ 
+
+> 𝑣 =1
+
+∑︁ 𝑘 ∈ { 0,1}
+
+1[𝑦 𝑣 = 𝑘 ] log ˆ 𝑦 𝑣,𝑘 , (26) where 𝑁 is the number of user nodes, 𝑦 𝑣 is the ground-truth label of node 𝑣 , and ˆ𝑦 𝑣,𝑘 is the probability that node 𝑣 belongs to class 𝑘 .
+
+## 4 Experiments 4.1 Experiment Setup 
+
+Datasets . We conduct experiments on 15 social bot detection datasets. As shown in Table 4, these datasets vary substantially in their an-notation protocols, bot categories, topical contexts, and degree of modality completeness. We use 13 earlier datasets for training and hold out the 2 most recent datasets for evaluation. To facilitate domain-invariant learning, we further group the source datasets into three temporal domains according to their release dates, and use these domains as coarse-grained supervision labels, as summa-rized in Table 5. Details of the preprocessing pipeline and temporal domain partitioning are provided in Appendix A.1. Finally, we con-vert all accounts into a unified instruction-tuning format. 
+
+Implementation. We fine-tune the Qwen2.5-1.5B backbone model using LoRA [ 23 ]. All experiments are conducted on four NVIDIA H800 GPUs, each with 80 GB of memory, under CUDA 12.8. To ensure the reliability of the experimental results, we repeat Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+Table 1: Main results on the merged dataset, TwiBot-2020, and Fox-2023. “MetaData” uses structured user profile metadata as input, while “Meta-Summary” uses both profile metadata and summarized user-history posts. Since only TwiBot-2020 provides user relation information for graph construction, GNN-based baselines are evaluated only on TwiBot-2020.                                                                                                                                                                                                                                                                                       
+
+> Method Merged Dataset Twibot-2020 Fox-2023 Accuracy Macro F1 Accuracy Macro F1 Accuracy Macro F1
+> ML Methods
+> Random Forest 56.43 ±1.20 56.35 ±1.25 60.42 ±1.43 60.37 ±1.45 24.85 ±1.34 23.43 ±1.48 SVM 54.37 ±0.30 54.04 ±0.28 57.29 ±0.26 56.96 ±0.28 31.24 ±0.60 30.92 ±0.55 Decision Tree 47.89 ±0.39 46.45 ±0.50 49.43 ±0.52 47.69 ±0.69 35.69 ±0.88 35.66 ±0.89 AdaBoost 65.93 ±0.17 64.04 ±0.16 70.78 ±0.13 68.47 ±0.11 27.49 ±0.53 26.73 ±0.59
+> NN Methods MLP 69.41 ±4.37 68.42 ±3.80 71.29 ±3.35 70.34 ±2.85 54.47 ±23.41 52.36 ±21.85 MLP + RoBERTa 69.58 ±4.51 60.96 ±9.49 67.98 ±5.06 60.66 ±9.85 82.21 ±1.68 53.34 ±7.33
+> GNN Methods BotRGCN ––60.07 ±3.85 56.08 ±10.64 ––RGT ––63.45 ±4.62 59.11 ±3.09 ––
+> OOD Methods BotRGCN + Tuning ––63.28 ±3.01 62.49 ±8.89 ––RGT + Tuning ––67.68 ±2.85 66.60 ±2.37 ––AdaBot ––64.40 ±0.90 74.20 ±0.80 ––
+> LLM Methods GPT-5.4-nano 46.60 ±0.05 46.34 ±0.05 47.51 ±0.07 47.13 ±0.09 39.53 ±0.37 39.38 ±0.38 Deepseek-V3.2 60.23 ±0.25 40.24 ±0.14 57.42 ±0.26 38.52 ±0.13 80.01 ±0.51 56.87 ±1.29
+> LoRA-Finetune MetaData 72.07 ±3.91 69.50 ±4.11 76.64 ±2.72 73.74 ±3.25 36.16 ±15.85 34.86 ±16.19 Meta-Summary 77.08 ±1.24 73.42 ±1.53 77.37 ±1.40 73.02 ±1.96 75.86 ±20.22 70.41 ±17.18
+> MGDIL MetaData 81.01 ±0.28 77.89 ±0.26 79.80 ±0.10 76.82 ±0.10 90.45 ±2.89 87.25 ±3.34 Meta-Summary 81.63 ±0.11 78.27 ±0.21 79.83 ±0.18 76.71 ±0.26 96.42 ±0.60 94.13 ±0.84
+
+each experiment using five different random seeds. Detailed hyper-parameter settings are provided in Table 8. Model performance is evaluated in terms of Accuracy (Acc) and Macro-F1. 
+
+Baselines. We compare the proposed MGDIL framework with representative baselines from six groups. Unless otherwise spec-ified, all baselines are trained on the 13 older datasets and evalu-ated on the 2 newer datasets. (1) Traditional machine learning methods (ML ), including Random Forest, SVM, Decision Tree, and AdaBoost [ 50 ]. (2) Neural network methods (NN ), including MLP and MLP+RoBERTa [ 27 , 38 ]. The MLP baseline uses the same metadata features as the ML baselines. For MLP+RoBERTa, meta-data features are encoded by an MLP, while each user’s historical posts are encoded by RoBERTa followed by mean pooling. Since historical posts are available only in Cresci-2015 and Cresci-2017, this baseline is trained on these two datasets only. (3) Graph-based neural methods (GNN ), including BotRGCN [ 14 ] and RGT [ 12 ], combine the constructed metadata features with RoBERTa-based text features. Because graph structure can only be constructed for Cresci-2015 [ 3], these methods are trained on Cresci-2015 and eval-uated on Twibot-2020 only. (4) Out-of-distribution methods 
+
+(OOD ), including Tuning [ 43 ] and AdaBot [ 44 ], are adopted as rep-resentative baselines for cross-domain social bot detection. Tuning is a plug-and-play test-time adaptation method that can be com-bined with different GNN backbones. More detailed descriptions of these methods are provided in Appendix A.6. (5) LLM-based methods (LLM ), including GPT-5.4-nano and Deepseek-v3.2 [ 26 ], are used to evaluate the effectiveness of prompting-based LLMs on this task. (6) LoRA-Finetune [22 ]. We further include a vanilla instruction-tuning baseline, to isolate the contribution of the pro-posed domain-invariant learning design. LoRA-Finetune uses the same instruction-tuning setting as MGDIL but removes the pro-posed domain-invariant learning components. 
+
+## 4.2 Main Results 
+
+We evaluate MGDIL on two target datasets under the cross-domain setting and compare it with the representative baselines introduced in Section 4.1. Table 1 summarizes the overall results. We draw the following observations: (1) Cross-domain social bot detection remains highly chal-lenging for existing baselines. Traditional ML methods perform poorly across all evaluation settings, especially on Fox-2023, where both Accuracy and Macro-F1 are extremely low. NN-based methods show moderate improvements over ML baselines in some cases, but remain unstable, as indicated by the large standard deviations of MLP and MLP+RoBERTa. GNN-based and OOD methods achieve relatively better results on TwiBot-2020, and OOD adaptation fur-ther improves performance; however, the gains remain limited and are restricted to the dataset with available graph structure. Overall, these results show that existing baselines still struggle to generalize effectively under substantial domain shifts. (2) Off-the-shelf LLMs and vanilla instruction tuning pro-vide stronger semantic modeling, but are still insufficient for robust cross-domain generalization. Directly prompted LLMs, including GPT-5.4-nano and Deepseek-V3.2, perform poorly on all target datasets, suggesting that off-the-shelf LLMs alone cannot effectively solve this task. In contrast, LoRA-Finetune consistently outperforms most conventional baselines on the merged dataset and TwiBot-2020, demonstrating the benefit of task-specific instruc-tion tuning. However, vanilla instruction tuning remains unstable under more severe distribution shifts. In particular, LoRA-Finetune MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Figure 3: Comparison Between Raw Historical Posts and Summarized Historical Posts. 
+
+(MetaData) performs poorly on Fox-2023, while LoRA-Finetune (Meta-Summary) shows very large standard deviations, indicating limited robustness without explicit domain-invariant learning. (3) MGDIL achieves the best overall performance and the strongest robustness across target datasets. MGDIL consistently delivers the strongest results among all compared methods across nearly all evaluation settings. On the merged dataset, it clearly outperforms the best LoRA-Finetune baseline in both Accuracy and Macro-F1. On the Twibot-20, both MGDIL variants also achieve the best overall performance, with Meta-Summary performing best in Accuracy and MetaData in Macro-F1. The most substantial improve-ment is observed on Fox-2023, where MGDIL markedly surpasses all baselines. Moreover, MGDIL exhibits much smaller standard deviations than competing methods, further demonstrating its ro-bustness under cross-domain evaluation. (4) Summary-based user representations are particularly beneficial under severe domain shifts. The Meta-Summary vari-ant generally outperforms the MetaData variant, especially on the merged dataset and Fox-2023, indicating that multi-granularity sum-maries capture more abstract and domain-robust user signals than metadata alone. This advantage becomes particularly evident when the target domain differs substantially from the source domains, as in Fox-2023. At the same time, MetaData remains competitive on TwiBot-2020 and even achieves the best Macro-F1, suggesting that structured metadata still provides useful complementary in-formation. Overall, summary-based representations offer stronger generalization, while metadata can still be beneficial in specific target domains. 
+
+## 4.3 Multi-Granularity Summarization Study 
+
+To evaluate the effectiveness of multi-granularity summarization of historical posts, we conduct an ablation study under three input settings, as shown in Figure 3: (1) metadata only ( Meta ), (2) meta-data combined with summarized historical posts ( MetaSumm ), and (3) metadata combined with raw historical posts ( MetaPosts ). The results show that directly using raw historical posts leads to worse performance than using summarized historical information. In some cases, incorporating raw posts even weakens the benefit of metadata features. A likely reason is that raw posting histories con-tain substantial noise, redundancy, and irrelevant content, which may obscure informative user-level patterns and make optimization more difficult. In contrast, multi-granularity summarization com-presses long posting histories into a more compact and informative representation, enabling the model to capture the most relevant signals for bot detection more effectively. Overall, these findings confirm that the summarization step plays an important role in improving detection performance. To analyze the temporal evolution of social bots across datasets from different time periods, we examine four datasets with histor-ical posting sequences, namely Cresci-2015, Cresci-2017, TwiBot-2020, and Fox-2023, from five dimensions: emotional tone, senti-ment polarity, linguistic style, content theme, and communicative function. Overall, social bots exhibit noticeable temporal variation and cross-dataset heterogeneity. In particular, bots in more recent datasets, especially Fox-2023, tend to be less calm, more emotion-ally intense, and more aggressive than those in earlier datasets (Figure 7b in Appendix B). Their linguistic styles also become more strategic and confrontational over time (Figure 9b in Appendix B), while their communicative functions shift more toward information dissemination and opinion guidance (Figure 11b in Appendix B). In addition, their sentiment tendencies (Figure 8b in Appendix B) and thematic distributions (Figure 10b in Appendix B) become increas-ingly polarized and concentrated. Taken together, these findings suggest that the historical posting behavior of social bots evolves substantially over time and varies markedly across datasets. More fine-grained analyses and visualizations of these five dimensions are provided in the supplementary material (Appendix B). 
+
+## 4.4 Domain-Invariant Learning Study 
+
+To evaluate the contribution of domain adversarial training and cross-domain contrastive learning, we conduct ablation studies by removing each module individually (‘W/O adversarial’ and ‘W/O Contrast’) and jointly (‘W/O Adv. & Con.’) while keeping all other settings unchanged. Table 2 shows that removing either module consistently degrades performance across all evaluation sets, in-dicating that both components contribute to the effectiveness of MGDIL. In particular, removing domain adversarial training re-sults in a larger degradation than removing contrastive learning, suggesting that it plays a more important role in promoting domain-invariant feature learning. Moreover, removing both modules leads to a further performance drop, demonstrating that the two com-ponents are complementary rather than redundant. Specifically, domain adversarial training mainly reduces domain-discriminative information, while cross-domain contrastive learning improves class-level alignment across domains. Together, they provide the strongest support for robust cross-domain social bot detection. 
+
+## 4.5 Heterogeneous Graph-based Study 
+
+To investigate whether MGDIL can improve graph-based social bot detection, we integrate the fine-tuned embeddings learned by MGDIL into two representative heterogeneous GNN models (En-hanced), BotRGCN [ 14 ] and RGT [ 12 ], and compare them with their original versions (Original). For the original GNN baselines, user representations are derived from metadata features encoded by an MLP and historical post features encoded by RoBERTa with mean pooling. For the MGDIL-enhanced variants, we replace these input features with the fine-tuned embeddings produced by MGDIL while Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+Table 2: Ablation study of the domain adversarial training and contrastive learning modules on the merged dataset, TwiBot-2020, and Fox-2023, with individual and joint removal results. Dataset Metric W/O Adv. & Con. W/O adversarial W/O Contrast MGDIL 
+
+Merged Accuracy (%) 78.91 ± 1.82 80.74 ± 1.06 81.29 ± 0.33 81.63 ± 0.11 
+
+Macro-F1 (%) 75.85 ± 1.69 76.18 ± 0.84 78.14 ± 0.22 78.27 ± 0.21 
+
+Twibot-2020 Accuracy (%) 77.07 ± 2.05 78.93 ± 1.11 79.27 ± 0.53 79.83 ± 0.18 
+
+Macro-F1 (%) 74.42 ± 1.89 75.74 ± 1.45 76.39 ± 0.44 76.71 ± 0.26 
+
+Fox-2023 Accuracy (%) 93.72 ± 1.61 95.08 ± 1.51 95.88 ± 0.83 96.42 ± 0.60 
+
+Macro-F1 (%) 89.37 ± 3.01 91.52 ± 2.84 93.60 ± 2.32 94.13 ± 0.84 Table 3: Performance comparison between the original GNN-based models and their MGDIL-enhanced variants, trained on Cresci-2015 and evaluated on TwiBot-2020. Model Metric Original Enhanced Gain 
+
+BotRGCN Accuracy (%) 60.07 ± 3.85 77.88 ± 1.83 ↑17.81 Macro-F1 (%) 56.08 ± 10.64 75.12 ± 1.59 ↑19.04 RGT Accuracy (%) 63.45 ± 4.62 79.64 ± 0.23 ↑16.19 Macro-F1 (%) 59.11 ± 3.09 76.69 ± 0.25 ↑17.58 keeping the GNN architectures unchanged. As shown in Table 3, MGDIL substantially improves both BotRGCN and RGT, indicating that it provides more transferable and robust user representations for graph-based bot detection under domain shift. Compared with the original metadata- and raw post-based features, which are more susceptible to dataset-specific bias, MGDIL embeddings better sup-port downstream GNNs in exploiting graph structure. Overall, these results demonstrate that MGDIL serves as an effective feature en-hancement framework for heterogeneous graph-based social bot detection in cross-domain settings. 
+
+## 4.6 Hyperparameter Analysis 
+
+To examine the effect of the two key loss weights, 𝜆 𝑎𝑑𝑣 and 𝜆 𝑐𝑜𝑛 , we vary one hyperparameter while fixing the other at 0.2, and report the resulting Accuracy and Macro-F1 in Figure 4. Overall, both hyperparameters achieve the best performance at moderate values, whereas excessively small or large weights lead to performance degradation. When varying 𝜆 𝑎𝑑𝑣 , the model performs best at 𝜆 𝑎𝑑𝑣 =
+
+0.2, achieving the highest Accuracy and Macro-F1. A similar trend is observed for 𝜆 𝑐𝑜𝑛 : performance remains strong when 𝜆 𝑐𝑜𝑛 is set to 0.1 or 0.2, but declines as the weight increases further. These results indicate that both domain-invariant learning and contrastive learning contribute positively to the model, but their effects need to be properly balanced. Overall, the analysis suggests that moderate loss weights lead to the most stable and effective performance, which motivates our choice of setting both 𝜆 𝑎𝑑𝑣 and 𝜆 𝑐𝑜𝑛 to 0.2 in the final model. 
+
+## 5 Conclusions 
+
+To alleviate the challenges of cross-domain generalization as well as missing fields and modalities in social bot detection, we propose 
+
+Figure 4: Hyperparameter analysis of 𝜆 𝑎𝑑𝑣 and 𝜆 𝑐𝑜𝑛 , where one loss weight is varied while the other is fixed at 0.2. 
+
+a robust cross-domain social bot detection method MGDIL that integrates multi-granularity summarization with domain-invariant representation learning. Specifically, we first filter historical so-cial bot detection datasets and extract relevant features, and then perform multi-dimensional summarization over users’ historical posting sequences to construct an instruction-tuning dataset for so-cial bot detection. During domain-invariant learning, we introduce domain-adversarial learning to reduce domain-specific information in the learned representations and improve feature alignment across domains through adversarial training, thereby learning more gener-alizable domain-invariant representations. On top of this, we further incorporate cross-domain contrastive learning to promote intra-class compactness and inter-class separation across domains. We train the model on 13 datasets and evaluate it on the 2 most recent datasets. Experimental results show that the proposed method out-performs a variety of baseline methods and existing cross-domain social bot detection approaches, demonstrating its effectiveness and superiority. 
+
+## References       
+
+> [1] Dimosthenis Antypas, Asahi Ushio, Jose Camacho-Collados, Vitor Silva, Leonardo Neves, and Francesco Barbieri. 2022. Twitter topic classification. In Proceedings of the 29th International Conference on Computational Linguistics . 3386–3400. [2] Stefano Cresci. 2020. A decade of social bot detection. Commun. ACM 63, 10 (2020), 72–83. [3] Stefano Cresci, Roberto Di Pietro, Marinella Petrocchi, Angelo Spognardi, and Maurizio Tesconi. 2015. Fame for sale: Efficient detection of fake Twitter followers.
+
+MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Decision Support Systems 80 (2015), 56–71. [4] Stefano Cresci, Roberto Di Pietro, Marinella Petrocchi, Angelo Spognardi, and Maurizio Tesconi. 2016. DNA-inspired online behavioral modeling and its appli-cation to spambot detection. IEEE Intelligent Systems 31, 5 (2016), 58–64. [5] Stefano Cresci, Roberto Di Pietro, Marinella Petrocchi, Angelo Spognardi, and Maurizio Tesconi. 2017. Social fingerprinting: detection of spambot groups through DNA-inspired behavioral modeling. IEEE Transactions on Dependable and Secure Computing 15, 4 (2017), 561–576. [6] Stefano Cresci, Fabrizio Lillo, Daniele Regoli, Serena Tardelli, and Maurizio Tesconi. 2018. FAKE: Evidence of spam and bot activity in stock microblogs on Twitter. In Proceedings of the international AAAI conference on web and social media , Vol. 12. [7] Daniel Marques Gomes de Morais and Luciano Antonio Digiampietri. 2021. Meth-ods and challenges in social bots detection: A systematic review. In Proceedings of the XVII Brazilian Symposium on Information Systems . 1–8. [8] Ashkan Dehghan, Kinga Siuta, Agata Skorupka, Akshat Dubey, Andrei Betlen, David Miller, Wei Xu, Bogumił Kamiński, and Paweł Prałat. 2023. Detecting bots in social-networks using node and structural embeddings. Journal of Big Data 
+
+10, 1 (2023), 119. [9] Edoardo Di Paolo, Marinella Petrocchi, and Angelo Spognardi. 2023. From online behaviours to images: A novel approach to social bot detection. In International Conference on Computational Science . Springer, 593–607. [10] David Dukic, Dominik Keca, and Dominik Stipic. 2020. Are You Human? Detect-ing Bots on Twitter Using BERT.. In DSAA . 631–636. [11] Zineb Ellaky, Faouzia Benabbou, and Sara Ouahabi. 2023. Systematic literature review of social media bots detection systems. Journal of King Saud University-Computer and Information Sciences 35, 5 (2023), 101551. [12] Shangbin Feng, Zhaoxuan Tan, Rui Li, and Minnan Luo. 2022. Heterogeneity-aware twitter bot detection with relational graph transformers. In Proceedings of the AAAI conference on artificial intelligence , Vol. 36. 3977–3985. [13] Shangbin Feng, Herun Wan, Ningnan Wang, Jundong Li, and Minnan Luo. 2021. Twibot-20: A comprehensive twitter bot detection benchmark. In Proceedings of the 30th ACM international conference on information & knowledge management .4485–4494. [14] Shangbin Feng, Herun Wan, Ningnan Wang, and Minnan Luo. 2021. BotRGCN: Twitter bot detection with relational graph convolutional networks. In Proceedings of the 2021 IEEE/ACM international conference on advances in social networks analysis and mining . 236–239. [15] Shangbin Feng, Herun Wan, Ningnan Wang, Zhaoxuan Tan, Minnan Luo, and Yulia Tsvetkov. 2024. What does the bot say? opportunities and risks of large language models in social media bot detection. arXiv preprint arXiv:2402.00371 
+
+(2024). [16] Emilio Ferrara. 2023. Social bot detection in the age of ChatGPT: Challenges and opportunities. First Monday (2023). [17] Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pascal Germain, Hugo Larochelle, François Laviolette, Mario March, and Victor Lempitsky. 2016. Domain-adversarial training of neural networks. Journal of machine learning research 17, 59 (2016), 1–35. [18] Zafar Gilani, Reza Farahbakhsh, Gareth Tyson, Liang Wang, and Jon Crowcroft. 2017. Of bots and humans (on twitter). In Proceedings of the 2017 IEEE/ACM international conference on advances in social networks analysis and mining 2017 .349–354. [19] Qinglang Guo, Haiyong Xie, Yangyang Li, Wen Ma, and Chao Zhang. 2021. Social bots detection via fusing bert and graph convolutional networks. Symmetry 14, 1 (2021), 30. [20] Kadhim Hayawi, Sujith Mathew, Neethu Venugopal, Mohammad M Masud, and Pin-Han Ho. 2022. DeeProBot: a hybrid deep neural network model for social bot detection based on user profile data. Social Network Analysis and Mining 12, 1 (2022), 43. [21] Buyun He, Yingguang Yang, Qi Wu, Hao Liu, Renyu Yang, Hao Peng, Xiang Wang, Yong Liao, and Pengyuan Zhou. 2024. Dynamicity-aware social bot detection with dynamic graph transformers. In Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence . 5844–5852. [22] Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Liang Wang, Weizhu Chen, et al . 2022. Lora: Low-rank adaptation of large language models. Iclr 1, 2 (2022), 3. [23] Binyuan Hui, Jian Yang, Zeyu Cui, Jiaxi Yang, Dayiheng Liu, Lei Zhang, Tianyu Liu, Jiajun Zhang, Bowen Yu, Keming Lu, et al . 2024. Qwen2. 5-coder technical report. arXiv preprint arXiv:2409.12186 (2024). [24] Sneha Kudugunta and Emilio Ferrara. 2018. Deep neural networks for bot detection. Information Sciences 467 (2018), 312–322. [25] Shilong Li, Boyu Qiao, Kun Li, Qianqian Lu, Meng Lin, and Wei Zhou. 2023. Multi-modal social bot detection: Learning homophilic and heterophilic connections adaptively. In Proceedings of the 31st ACM International Conference on Multimedia .3908–3916. [26] Aixin Liu, Aoxue Mei, Bangcai Lin, Bing Xue, Bingxuan Wang, Bingzheng Xu, Bochao Wu, Bowei Zhang, Chaofan Lin, Chen Dong, et al . 2025. Deepseek-v3. 2: Pushing the frontier of open large language models. arXiv preprint arXiv:2512.02556 (2025). [27] Yinhan Liu, Myle Ott, Naman Goyal, Jingfei Du, Mandar Joshi, Danqi Chen, Omer Levy, Mike Lewis, Luke Zettlemoyer, and Veselin Stoyanov. 2019. Roberta: A robustly optimized bert pretraining approach. arXiv preprint arXiv:1907.11692 
+
+(2019). [28] Yuhan Liu, Zhaoxuan Tan, Heng Wang, Shangbin Feng, Qinghua Zheng, and Minnan Luo. 2023. Botmoe: Twitter bot detection with community-aware mix-tures of modal-specific experts. In Proceedings of the 46th International ACM SIGIR conference on research and development in information retrieval . 485–495. [29] Yina Liu, Shuai Xu, Yicong Li, and Shuo Yu. 2025. Evolution of malicious social bot detection: From individual profiling to group analysis and beyond. Journal of Social Computing 6, 3 (2025), 258–284. [30] Salvador Lopez-Joya, Jose A Diaz-Garcia, M Dolores Ruiz, and Maria J Martin-Bautista. 2025. Dissecting a social bot powered by generative AI: anatomy, new trends and challenges. Social Network Analysis and Mining 15, 1 (2025), 7. [31] Michele Mazza, Stefano Cresci, Marco Avvenuti, Walter Quattrociocchi, and Maurizio Tesconi. 2019. Rtbust: Exploiting temporal patterns for botnet detection on twitter. In Proceedings of the 10th ACM conference on web science . 183–192. [32] Saif Mohammad, Felipe Bravo-Marquez, Mohammad Salameh, and Svetlana Kiritchenko. 2018. Semeval-2018 task 1: Affect in tweets. In Proceedings of the 12th international workshop on semantic evaluation . 1–17. [33] Mor Naaman, Jeffrey Boase, and Chih-Hui Lai. 2010. Is it really about me? Message content in social awareness streams. In Proceedings of the 2010 ACM conference on Computer supported cooperative work . 189–192. [34] Preslav Nakov, Alan Ritter, Sara Rosenthal, Fabrizio Sebastiani, and Veselin Stoyanov. 2016. SemEval-2016 task 4: Sentiment analysis in Twitter. In Proceedings of the 10th international workshop on semantic evaluation (semeval-2016) . 1–18. [35] Ellie Pavlick and Joel Tetreault. 2016. An empirical analysis of formality in online communication. Transactions of the association for computational linguistics 4(2016), 61–74. [36] Iacopo Pozzana and Emilio Ferrara. 2020. Measuring bot and human behavioral dynamics. Frontiers in Physics 8 (2020), 125. [37] Boyu Qiao, Kun Li, Wei Zhou, and Songlin Hu. 2025. Dynamic Simulation Framework for Disinformation Dissemination and Correction With Social Bots. 
+
+arXiv preprint arXiv:2507.16848 (2025). [38] Boyu Qiao, Kun Li, Wei Zhou, Shilong Li, Qianqian Lu, and Songlin Hu. 2025. BotSim: LLM-powered malicious social botnet simulation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 14377–14385. [39] Boyu Qiao, Kun Li, Wei Zhou, Zhou Yan, Shilong Li, and Songlin Hu. 2023. Social bot detection based on window strategy. In 2023 IEEE International Conference on Multimedia and Expo (ICME) . IEEE, 2201–2206. [40] Boyu Qiao, Wei Zhou, Kun Li, Shilong Li, and Songlin Hu. 2024. Dispelling the fake: Social bot detection based on edge confidence evaluation. IEEE Transactions on Neural Networks and Learning Systems 36, 4 (2024), 7302–7315. [41] Boshen Shi, Yongqing Wang, Fangda Guo, Jiangli Shao, Huawei Shen, and Xueqi Cheng. 2025. BotTrans: A Multi-source Graph Domain Adaptation Approach for Social Bot Detection. In Joint European Conference on Machine Learning and Knowledge Discovery in Databases . Springer, 228–243. [42] Kamaldeep Singh, Sharath Chandra Guntuku, Abhishek Thakur, and Chittaranjan Hota. 2014. Big data analytics framework for peer-to-peer botnet detection using random forests. Information Sciences 278 (2014), 488–497. [43] Yuxuan Song, Qiudan Li, Shu Wu, Zheng Xie, and Daniel Dajun Zeng. 2025. A self-supervised adaptive tuning approach for out-of-distribution social media bot detection. In Companion Proceedings of the ACM on Web Conference 2025 .1312–1315. [44] Hao Sun, Huailiang Peng, Yanan Cao, Qiong Dai, and Xu Bai. 2025. Adaptive Social Bot Detection through Bridging the Feature Bias Between Source and Target Users. In Proceedings of the 2025 International Conference on Multimedia Retrieval . 1228–1236. [45] Onur Varol, Clayton A Davis, Filippo Menczer, and Alessandro Flammini. 2018. Feature engineering for social bot detection. In Feature engineering for machine learning and data analytics . CRC Press, 311–334. [46] Feng Wei and Uyen Trang Nguyen. 2019. Twitter bot detection using bidirectional long short-term memory neural networks and word embeddings. In 2019 First IEEE International conference on trust, privacy and security in intelligent systems and applications (TPS-ISA) . IEEE, 101–109. [47] Jun Wu, Xuesong Ye, and Chengjie Mou. 2023. Botshape: A Novel Social Bots Detection Approach Via Behavioral Patterns. In 12th International Conference on Data Mining & Knowledge Management Process .[48] Kai-Cheng Yang and Filippo Menczer. 2023. Anatomy of an AI-powered malicious social botnet. arXiv preprint arXiv:2307.16336 (2023). [49] Kai-Cheng Yang, Onur Varol, Clayton A Davis, Emilio Ferrara, Alessandro Flam-mini, and Filippo Menczer. 2019. Arming the public with artificial intelligence to counter social bots. Human Behavior and Emerging Technologies 1, 1 (2019), 48–61. [50] Kai-Cheng Yang, Onur Varol, Pik-Mai Hui, and Filippo Menczer. 2020. Scalable and generalizable social bot detection through data selection. In Proceedings of the AAAI conference on artificial intelligence , Vol. 34. 1096–1103. Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3     
+
+> [51] Zhou Yang, Xingshu Chen, Haizhou Wang, Wenxian Wang, Zhenxiong Miao, and Tao Jiang. 2022. A new joint approach with temporal and profile information for social bot detection. Security and Communication Networks 2022, 1 (2022), 9119388. [52] Marcos Zampieri, Shervin Malmasi, Preslav Nakov, Sara Rosenthal, Noura Farra, and Ritesh Kumar. 2019. Semeval-2019 task 6: Identifying and categorizing offen-sive language in social media (offenseval). In Proceedings of the 13th international workshop on semantic evaluation . 75–86.
+
+## A Datasets A.1 Collection and Cleaning of Datasets 
+
+To ensure broad coverage of social bot behaviors and data conditions, we construct a unified instruction-tuning dataset from 15 social bot detection datasets. Specifically, we collect 14 datasets from the Bot Repository 1, including Cresci-2015 [ 3 ], Cresci-2017 [ 5], Gilani-2017 [ 18 ], Cresci-stock-2018 [ 6], Midterm-2018 [ 50 ], Botometer-Feedback-2019 [ 49 ], Botwiki-2019 [ 50 ], Celebrity-2019 [ 49 ], Cresci-RTbust-2019 [ 31 ], Political-bots-2019 [ 49 ], Pornbots-2019 [ 49 ], Vendor-purchased-2019 [ 49 ], Verified-2019 [ 50 ], and Twibot-2020 [ 13 ]. In addition, we include Fox-2023 [ 48 ], a recent dataset of AI/LLM-driven malicious social bots, to evaluate model robustness on more recent and shifted data distributions. Detailed dataset statistics are reported in Table 4. This dataset collection is consistent with the motivation of our work, which aims to address cross-dataset distribution shifts and temporal variation in social bot detection. 
+
+To provide coarse-grained domain supervision for domain-invariant learning, we assign domain labels according to temporal stages rather than treating each dataset as an inde-pendent domain. Specifically, datasets released in 2015–2017 are assigned to Domain 0, datasets from 2018 are assigned to Domain 1, and datasets from 2019 are assigned to Domain 2. We adopt this tem-poral grouping because the source datasets are highly imbalanced in size; assigning a separate domain label to each dataset would create many extremely small domains and may lead to unstable adversarial optimization. Moreover, grouping datasets by release period allows the model to capture coarse-grained temporal vari-ation in bot behavior and to learn more robust domain-invariant features across time. This design is also aligned with the goal of MGDIL, namely, to mitigate distribution shifts induced by dataset variation and temporal change. 
+
+To improve data quality and reduce training bias, we fur-ther standardize and preprocess all collected datasets before model training. After collecting the raw data, we convert all 15 datasets into a unified format. We use 13 earlier datasets for train-ing and reserve the 2 most recent datasets for evaluation under unseen distribution shifts. We then preprocess the data in two steps. First, we remove duplicated accounts that appear across datasets to reduce redundancy and avoid information leakage. Second, be-cause the original datasets are highly imbalanced in class size, we retain all human accounts and downsample bot accounts to con-struct a more balanced training set. After filtering, the final training distribution contains 29,478 human accounts and 29,480 bot ac-counts. Detailed filtered statistics are reported in Table 5. Overall, this preprocessing pipeline provides a cleaner and more balanced 
+
+> 1https://botometer.osome.iu.edu/bot-repository/datasets.html
+
+foundation for subsequent multi-granularity summarization and domain-invariant learning. 
+
+## A.2 Feature Extraction 
+
+Table 6 summarizes the profile-related features used in our study. Overall, we include 39 such features, comprising 13 original features and 26 derived features. Table 7 summarizes the posting-event-related features, which are represented as theme summaries . These summaries are generated by an LLM (DeepSeek-V3.2) from users’ historical posts. 
+
+## A.3 LLM-based Multi-dimensional Summarization of Historical Posts 
+
+To summarize a user’s posting behavior, we provide the user’s his-torical posts to LLMs and instruct it to generate a fixed-format, multi-dimensional summary. This summary covers five dimensions: content themes, sentiment polarity, emotional tone, linguistic style, and communicative function. The prompt template is shown in Fig-ure 5. For each dimension, the LLM assigns one to three categories to capture the most salient and recurring patterns in a user’s post-ing history. This multi-categories design is important because users often exhibit multiple topical interests, affective tendencies, stylistic patterns, and communicative roles over time, rather than fitting neatly into a single category on every dimension. We describe the five dimensions below. 
+
+Content Themes. To characterize users’ topical orientations, we adopt a thematic framework inspired by tweet-level topic clas-sification, particularly the taxonomy introduced in the TweetTopic dataset [ 1], and use it to summarize users’ posting histories. Specif-ically, we define eight content categories: Politics , Business , Enter-tainment , Lifestyle , Technology , Cryptocurrency , Sports , and Culture .Each user is assigned one to three categories corresponding to the most salient themes in their posting history. 
+
+Sentiment Polarity. To characterize the overall evaluative va-lence expressed in a user’s posts, we draw on prior work in affective analysis for social media [ 34 ]. We define four sentiment categories: 
+
+Positive , Neutral , Negative , and Mixed . These categories capture whether a user’s historical posts are predominantly favorable, neu-tral, unfavorable, or inconsistent in sentiment orientation. 
+
+Emotional Tone. To characterize the affective manner in which users express themselves, we build on prior work in affective com-puting and online aggression detection [ 32 ]. We define four emo-tional tone categories: CalmOrObjective , EmotionalNonHostile , Hos-tileOrAggressive , and MixedOrUnclear . These categories distinguish relatively factual or low-arousal discourse, emotional but non-hostile expression, aggressive or toxic language, and cases in which no stable dominant tone can be identified. 
+
+Linguistic Style. To characterize recurring patterns in the sur-face form of users’ writing, we draw on prior studies of formality and offensive language in social media, which show that online discourse varies systematically along dimensions such as informal-ity, formality, formulaicity, and aggression [ 35 , 52 ]. Based on this literature, we define four linguistic style categories: Casual , Formal ,
+
+MechanicalOrTemplateLike , and Aggressive .MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Table 4: Chronologically sorted summary of the datasets used in our study. 
+
+Dataset Size Profile Tweets Retweet Post Graph Annotation Human Bot Notes Cresci-2015 [3] 5,301 ✓ ✓ ✓ ✓ ✓ Purchased 1,950 3,351 Includes fake fan accounts purchased from online services, real accounts that passed CAPTCHA verification, and real accounts participating in the “elezioni2013” event in Italy. Cresci-2017 [5] 12,843 ✓ ✓ ✓ ✓ ✗ Manual annotation 3,474 9,369 Contains social spambots, traditional spambots, and fake followers; the human accounts are genuine users. Gilani-2017 [18] 2,652 ✓ ✗ ✗ ✗ ✗ Manually labeled 1,522 1,130 Accounts were divided into four groups by follower count to cover users with different levels of popularity. Cresci-stock-2018 [6] 25,987 ✓ ✗ ✗ ✗ ✗ Behavioral patterns 7,479 18,508 Consists of Twitter stock microblogging data; bots were identified by finding accounts with similar timelines. Midterm-2018 [50] 50,538 ✓ ✗ ✗ ✗ ✗ Manually identified 8,092 42,446 A bot detection dataset in the political domain, centered on the 2018 U.S. midterm elections. Botometer-Feedback-2019 [ 49 ] 529 ✓ ✗ ✗ ✗ ✗ Manually labeled 386 143 Contains accounts flagged through Botometer user feedback and then manually labeled. Botwiki-2019 [50] 704 ✓ ✗ ✗ ✗ ✗ Self-identified bots 0 704 Collected from the Botwiki.org archive of self-identified bots. Celebrity-2019 [49] 5,970 ✓ ✗ ✗ ✗ ✗ CNetS team 5,970 0 The “real celebrity accounts” collection gathered by the Botometer team was used as a human control sample during model training. Cresci-RTbust-2019 [31] 759 ✓ ✗ ✗ ✗ ✗ Manually labeled 368 391 Crawled from Italian retweets; contains coordinated retweet bots/botnets and human retweeters from the same stream. Political-bots-2019 [49] 62 ✓ ✗ ✗ ✗ ✗ Provided by Josh Emerson 0 62 The Bot Repository describes them as automated political accounts operated by @rzazula. Pronbots-2019 [49] 21,964 ✓ ✗ ✗ ✗ ✗ Shared by Andy Patel 0 21,964 A set of bots shared by Andy Patel and collected for study. Vendor-purchased-2019 [49] 1,088 ✓ ✗ ✗ ✗ ✗ Purchased 0 1,088 Researchers purchased fake followers from several companies. Verified-2019 [50] 2,000 ✓ ✗ ✗ ✗ ✗ Verified humans 2,000 0 A dataset consisting of verified (blue-check) Twitter accounts. Twibot-2020 [13] 11,826 ✓ ✓ ✓ ✓ ✓ Manual annotation 5,237 6,589 Users span four areas of interest and were manually labeled. Fox-2023 [48] 2,280 ✓ ✓ ✓ ✓ ✗ “As an AI language model . . . ” 1,140 1,140 Contains 1,140 AI/LLM-driven bot accounts and 1,140 human accounts from Twitter/X. 
+
+Table 5: Source and filtered statistics of the datasets used in our experiments. The 13 older datasets are used for training, while Twibot-2020 and Fox-2023 are used as the validation and test datasets. I abbreviate Cresci-stocj-18, Botometer-Feedback-2019, Cresci-RTbust-2019, Political-bots-2019 and Vendor-purchased-2019 as C-S-15, B-F-19, C-R-19, P-B-19, V-P-19 respectively. 
+
+Statistics Training Datasets Test Datasets Cresci-2015 Cresci-2017 Gilani-17 C-S-18 Midterm-18 B-F-19 Botwiki-19 Celebrity-19 C-R-19 P-B-19 Pornbots-19 V-P-19 Verified-19 Total Twibot-2020 Fox-23 Source Human 1,950 3,474 1,522 7,479 8,092 386 0 5,970 368 0 0 0 2,000 31,241 5,237 1,140 Source Bot 3,351 9,369 1,130 18,508 42,446 143 704 0 391 62 21,964 1,088 0 99,156 6,589 1,140 
+
+Source Total 5,301 12,843 2,652 25,987 50,538 529 704 5,970 759 62 21,964 1088 2,000 130,397 11,826 2,280 Filtered Human 1,950 3,471 1,249 6,171 8,056 380 0 5,901 340 0 0 0 1,960 29,478 4,754 285 Filtered Bot 3,351 5,910 307 2,027 12,115 39 198 0 101 18 5,104 310 0 29,480 6,569 1,140 
+
+Filtered Total 5,301 9,381 1,556 8,198 20,171 419 198 5,901 441 18 5,104 310 1,960 58,958 11,323 1,425 
+
+Domain ID 0 0 0 1 1 2 2 2 2 2 2 2 2 - - -
+
+Communicative Function. To characterize the primary com-municative roles of users’ posts, we build on the taxonomy pro-posed by Naaman et al. [ 33 ], which classifies Twitter messages by communicative intent. Adapting this framework to user-level summarization, we define eight communicative function categories: 
+
+InformationSharing , SelfPromotion , OpinionsOrComplaints , Random-StatementsOrThoughts , MeNow , QuestionsToFollowers , PresenceMain-tenance , and Anecdote .
+
+## A.4 Instruction Fine-tuning Format 
+
+Figure 6 shows an illustrative example from the instruction fine-tuning dataset, highlighting how the instruction-formatted training instances are constructed. 
+
+## A.5 Hyperparameter Introduction 
+
+In this section, we provide a detailed description of the hyperpa-rameter settings used in our experiments. Table 8 summarizes the values of all key hyperparameters, including those related to model training, optimization, and loss balancing. 
+
+## A.6 Baseline Introduction 
+
+Tuning. Tuning [ 43 ] is a self-supervised adaptive tuning method for OOD social bot detection. Instead of relying solely on a source-domain model, it performs test-time adaptation to improve robust-ness under distribution shifts in unseen domains. Specifically, it optimizes the model with a self-supervised contrastive objective during testing, enabling the learned representations to better align with target-domain data. 
+
+AdaBot. AdaBot [ 44 ] is an adaptive social bot detection method that aims to bridge the feature bias between source-domain and target-domain users. Motivated by the evolving nature of social media environments, it aligns user representations across domains in a unified feature space and further reduces residual cross-domain discrepancies, thereby improving detection performance on the target domain. 
+
+## B Multi-Dimensional Summarization Analysis 
+
+To provide an overall view of human–bot differences and cross-dataset variation in bot characteristics, we use heatmaps to compare Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+Figure 5: Prompt Template for LLM-based Multi-Dimensional Summarization 
+
+Prompt Template for LLM-based Multi-Dimensional Summarization 
+
+prompt = f""" You are a social media analyst. Based on the posts below, choose profile labels and output exactly ONE sentence in this format: "Regarding content themes, the user’s posts mainly revolve around [Politics / Business / Entertainment / Lifestyle /Technology / Cryptocurrency / Sports/ Culture]. The overall sentiment polarity is [Positive / Neutral / Negative / Mixed], with a dominant emotional tone of [CalmOrObjective / EmotionalNonHostile / HostileOrAggressive / MixedOrUnclear]. The text style is [Casual / Formal / MechanicalOrTemplateLike / Aggressive]. Functionally, the user appears to be engaged in [InformationSharing / SelfPromotion / OpinionsOrComplaints / RandomStatementsOrThoughts/ MeNow / QuestionsToFollowers /PresenceMaintenance / Anecdote]." Constraints: - For EACH bracket, choose 1–3 labels from the list in that bracket and copy them VERBATIM (case-sensitive). - If you choose multiple labels in a bracket, separate them with commas and NO spaces, e.g., [Casual,Formal]. - Do NOT invent new labels or use synonyms. - If more than 3 labels seem to apply, pick the 3 most frequent/representative ones. Output: - Return ONLY the final sentence in the exact format above, nothing else. User’s Posts: {posts_content} """ 
+
+Figure 6: An example instruction-tuning instance for social media account classification. 
+
+Instruction: 
+
+You are a social media account classification assistant. Please determine whether the given account is a human or a bot based on the provided account features. 
+
+Input: 
+
+Below is structured information about a social media account. Please determine whether this account is a human or a bot based on this information. 
+
+User ID: u87470 
+
+Account Basic Information: followers_count = 705; friends_count = 1249; ff_ratio = 0.56; statuses_count = 1568; favourites_count = 489; listed_count = 1; verified = false; protected = false; default_profile_image = false; default_profile = false; geo_enabled = false; lang_hint = it. 
+
+Profile Completeness Features: location_present = false; profile_banner_url_present = true; profile_use_background_image = true; profile_background_tile = false; time_zone_present = true; utc_offset_present = true. 
+
+Profile Text Statistics Features: desc_length = 52; emoji_count = 0; has_url_in_desc = false; has_mention_in_desc = false; has_hashtag_in_desc = false; has_email_in_desc = false; has_phone_in_desc = false; has_promo_keyword_in_desc = false; url_category_desc = []; has_url_in_bio = false; url_category_bio = []. 
+
+Name Features: name_length = 16; name_digit_ratio = 0.0; name_special_char_ratio = 0.0; screen_name_length = 7; screen_name_digit_ratio = 0.0; screen_name_underscore_ratio = 0.14; name_screen_name_similarity = 0.42. 
+
+Language and Geographic Features: lang_timezone_mismatch = false; location_generic_flag = false. 
+
+Description Text: l’ unico cane tanto figo da avere un account twitter. 
+
+Posts Events: [Multi-Dimensional Summary]: Regarding content themes, the user’s posts mainly revolve around Politics, Entertainment, and Lifestyle. The overall sentiment tendency is Neutral, with a dominant emotional tone of CalmOrObjective and EmotionalNonHostile. The text style is Casual. Functionally, the user appears to be engaged in OpinionsOrComplaints, RandomStatementsOrThoughts, and InformationSharing. 
+
+humans and bots in Cresci-2015, Twibot-2020, and Fox-2023, since Cresci-2017 does not include human historical posts. We further use bar charts to illustrate how bot characteristics vary across Cresci-2015, Cresci-2017, Twibot-2020, and Fox-2023 along five dimensions. As these comparisons are conducted on social bot detection datasets collected in different periods, they may not fully correspond to real-world temporal trends. Therefore, the analysis should be interpreted as a dataset-level comparative study. The following sections provide a more detailed analysis of both human–bot differences and cross-dataset variation among bots within each dimension. MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Table 6: Definitions of features used for user profile representation. 
+
+Category Profile Feature Derived/Original Explanation Profile Basic Information followers_count Original The number of followers following the account. friends_count Original The number of other accounts followed by the account. ff_ratio Derived The ratio between the number of followers and followings. statuses_count Original The total number of tweets posted by the account. favourites_count Original The total number of posts liked by the account. listed_count Original The number of times the account has been added to public lists by other users. verified Original Indicates whether the account is officially verified by the platform. protected Original Indicates whether the account’s posts are protected and visible only to approved followers. default_profile Original Indicates whether the account is still using the platform’s default profile settings or theme. default_profile_image Original Indicates whether the account is still using the platform’s default profile image. geo_enabled Original Indicates whether geographic location features are enabled for the account. lang_hint Derived The language type of the user’s description. Profile Text Statistics Features desc_length Derived The length of the profile description text. emoji_count Derived The number of emoji characters appearing in the profile description. has_url_in_desc Derived Indicates whether the profile description contains a URL. has_mention_in_desc Derived Indicates whether the profile description contains an @mention. has_hashtag_in_desc Derived Indicates whether the profile description contains a hashtag. has_email_in_desc Derived Indicates whether the profile description contains an email address. has_phone_in_desc Derived Indicates whether the profile description contains a phone number. has_promo_keyword_in_desc Derived Indicates whether the profile description contains promotional or marketing-related keywords. url_category_desc Derived The category or type assigned to the URL found in the profile description. has_url_in_bio Derived Indicates whether the profile includes an external URL in the bio section. url_category_bio Derived The category or type assigned to the URL provided in the profile bio. Name Features name_length Derived The character length of the account’s display name. name_digit_ratio Derived The proportion of numeric characters in the display name. name_special_char_ratio Derived The proportion of special characters in the display name. screen_name_length Derived The character length of the account’s screen name. screen_name_digit_ratio Derived The proportion of numeric characters in the screen name. screen_name_underscore_ratio Derived The proportion of underscore characters in the screen name. name_screen_name_similarity Derived The similarity score between the display name and the username. Profile Completeness Features location_present Derived Indicates whether the account has filled in the location field in its profile. profile_banner_url_present Derived Indicates whether the account has set a profile banner image. profile_use_background_image Original Indicates whether the account uses a background image as part of its profile appearance. time_zone_present Derived Indicates whether a time zone field is available in the account profile. profile_background_tile Original Indicates whether the profile background image is configured to repeat in a tiled manner. utc_offset_present Derived Indicates whether a UTC offset field is available in the account profile. Language and Geographic Features lang_timezone_mismatch Derived Indicates whether the account’s language-related signals are inconsistent with its time zone information. location_generic_flag Derived Indicates whether the profile location is generic, vague, or not a specific geographic place. Text Description Text Original The account’s profile description. 
+
+Table 7: Definitions of features used for multi-dimensional summarization of historical post sequences. 
+
+Category Historical Post Sequence Features Explanation content_theme The main themes covered in the user’s posts, such as Politics, Business, Entertainment, Lifestyle, Technology, Cryptocurrency, Sports, and Culture. sentiment_polarity The overall sentiment polarity of the user’s posts, categorized as Positive, Neutral, Mixed, or Negative. emotional_tone The dominant emotional tone expressed in the posts, such as CalmOrObjective, EmotionalNonHostile, HostileOrAggressive, or MixedOrUnclear. linguistic_style The writing style of the posts, such as Casual, Formal, MechanicalOrTemplateLike, or Aggressive. communicative_function The primary communicative purpose of the posts, such as InformationSharing, SelfPromotion, OpinionsOrComplaints, RandomStatementsOrThoughts, MeNow, QuestionsToFollowers, PresenceMaintenance, or Anecdote. 
+
+## B.1 Emotional Tone Analysis 
+
+The emotional tone differences between humans and bots are primarily manifested in bots being less calm and, partic-ularly in newer datasets, more likely to exhibit emotionally intense, aggressive, or ambiguous expression. As shown in Figure 7a, humans are generally more associated with CalmOrOb-jective tone, whereas bots more often exhibit emotionally charged or unclear expression. In Cresci-2015, the contrast between humans and bots is still limited, with only modest differences across tones. In Twibot-2020, bots begin to show a clearer increase in hostile ex-pression. The strongest divergence appears in Fox-2023, where bots are substantially less calm and more likely to display emotional, aggressive, and mixed tones than humans. Overall, these results suggest that emotional tone becomes a more discriminative signal in newer datasets, as bots shift away from calm expression toward more polarized and emotionally charged styles. 
+
+Across datasets, bot emotional tone appears to evolve from relatively restrained profiles in earlier datasets to more ag-gressive, ambiguous, and emotionally intense patterns in newer ones. As shown in Figure 7b, bots in the Cresci datasets are generally characterized by calmer and less hostile expression, indicating a relatively restrained emotional profile. Twibot-2020 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+Table 8: Main hyperparameter settings used in our experiments. Hyperparameter Value Description 
+
+Batch size 8 Batch size for both training and validation. validation Split 0.2 The proportion of the test dataset that is divided into the validation set. Max length 2048 Maximum input sequence length in tokens; longer inputs are truncated. Training epochs 5 Total number of training epochs. Learning rate 1 × 10 −4 Learning rate for the AdamW optimizer. Evaluation strategy Validation accuracy Model selection is based on validation accuracy. Number of classes 2 Number of target classes: bot and human .Domain classes 3 Number of temporal domains used for domain-invariant learning. 
+
+𝜆 grl 1.0 Upper bound of the gradient reversal coefficient; increased linearly from 0 to this value during training. 
+
+𝜆 domain 0.2 Weight of the domain adversarial training loss. 
+
+𝜆 contrast 0.2 Weight of the cross-domain contrastive learning loss. 
+
+𝜆 cls 1.0 Weight of the main classification loss. Seeds 42, 43, 44, 45, 46 Random Seeds.  
+
+> (a) Emotional Tone in Humans vs. Bots. (b) Emotional Tone in Bots.
+
+Figure 7: Comparison of emotional tone across bots and humans.  
+
+> (a) Sentiment tendency in Humans vs. Bots. (b) Sentiment tendency in Bots.
+
+Figure 8: Comparison of Sentiment tendency across bots and humans. 
+
+reflects a transitional stage, where bots remain partly calm but be-gin to show more hostility. Fox-2023 presents the most distinctive pattern, with bots showing the least calm tone and the strongest ten-dency toward emotional, aggressive, and mixed expression. Taken together, these cross-dataset differences suggest a temporal shift from restrained bot behavior to more polarized and emotionally intensified communication. MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+(a) Text Style in Humans vs. Bots. (b) Text Style in Bots. 
+
+Figure 9: Comparison of Text Style across bots and humans. 
+
+(a) Content themes in Humans vs. Bots. 
+
+(b) Content themes in Bots. 
+
+Figure 10: Comparison of content themes across bots and humans. 
+
+## B.2 Sentiment Polarity Analysis 
+
+The sentiment polarity differences between humans and bots becomes more pronounced in newer datasets, where humans are more often associated with positive and neutral senti-ment, while bots increasingly exhibit negative and mixed sentiment. As shown in Figure 8a, a consistent pattern in the newer datasets is that humans are more often associated with positive and neutral sentiment, whereas bots more frequently exhibit negative or mixed sentiment. This contrast is especially clear in Fox-2023 and is also evident in Twibot-2020. In contrast, Cresci-2015 shows a different distribution, where bots appear relatively more positive while humans are more neutral and negative. Overall, these results Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Boyu Qiao 1,2 , Yunman Chen 1,2 , Kun Li 1, Wei Zhou 1, Songlin Hu 1,2 , Yunya Song 3
+
+> (a) Communicative function in Humans vs. Bots.
+> (b) Communicative function in Bots.
+
+Figure 11: Comparison of communicative function across bots and humans. 
+
+suggest that sentiment polarity provides a useful signal for distin-guishing humans from bots, although its role varies across datasets and changes over time. 
+
+Across datasets, bot sentiment shifts from stable positive and neutral expression to more negative and mixed patterns 
+
+As shown in Figure 8b, bots in the earlier Cresci datasets are mainly characterized by neutral and positive sentiment, indicating rel-atively stable and restrained expression. Twibot-2020 reflects a transitional stage, with bots showing a stronger negative tendency. Fox-2023 presents the most distinctive pattern, where bots are less associated with positive or neutral sentiment and more likely to display mixed or negative sentiment. Taken together, these results suggest that bot sentiment has evolved from relatively stable emo-tional framing toward more polarized, ambiguous, and heteroge-neous expression. 
+
+## B.3 Linguistic Style Analysis 
+
+The linguistic style differences between humans and bots are limited in earlier datasets but become much clearer in newer datasets, where bots are more aggressive, more formal, and slightly more template-like than humans. As shown in Figure 9a, casual style dominates both humans and bots across datasets, in-dicating that informal expression remains the common baseline in social media. The more discriminative differences lie in aggression and formality. In Cresci-2015, stylistic differences between humans and bots are relatively modest, and bots appear more restrained overall. In contrast, Twibot-2020 and especially Fox-2023 show a clearer divergence, with bots displaying stronger aggression and, in some cases, greater formality than humans. MechanicalOrTemplate-Like style remains uncommon, but it is generally more associated with bots. 
+
+Across datasets, bot linguistic style shifts from relatively restrained and overwhelmingly casual patterns in earlier datasets to more diverse and confrontational in newer ones. 
+
+As shown in Figure 9b, bots in the earlier Cresci datasets are charac-terized mainly by casual language, with limited formality, template-like expression, and aggression. Twibot-2020 reflects a transitional stage, where bots remain largely casual but begin to show greater stylistic diversity and stronger aggression. Fox-2023 presents the clearest contrast, with bots combining casual presentation with the strongest aggressive tendency and a relatively higher degree of for-mality. Overall, these results suggest that newer bots are no longer MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+defined simply by informal or causal language, but increasingly adopt more strategic and confrontational stylistic patterns. 
+
+## B.4 Content Themes Analysis 
+
+The content theme differences between humans and bots widen in newer datasets, with bots focusing more on issue-specific topics and humans covering broader everyday inter-ests. As shown in Figure 10a, in Cresci-2015, bots are more asso-ciated with entertainment- and lifestyle-related content, whereas humans are more represented in politics, technology, and sports. Twibot-2020 shows a more balanced pattern, with considerable overlap between humans and bots despite some topical differences. In contrast, Fox-2023 exhibits the clearest separation: bots are strongly concentrated in cryptocurrency, politics, technology, and business, while humans are more associated with entertainment, lifestyle, sports, and culture. Overall, these results suggest that con-tent themes can provide useful discriminative signals, although their strength and direction vary across domains and time periods. 
+
+The communicative function differences between humans and bots become more pronounced in newer datasets, with bots leaning toward broadcast-style posting and humans re-taining more personal and relational communication. As shown in Figure 10b, bots in the earlier Cresci datasets are mainly associated with lifestyle, entertainment, and culture, reflecting rel-atively broad and socially embedded topical interests. Twibot-2020 represents a transitional stage, where bot themes become more diverse and less dominated by a few categories. Fox-2023 shows the most distinctive pattern, with bots concentrating much more strongly on cryptocurrency, politics, and technology, while lifestyle-, sports-, and culture-related themes become far less prominent. Taken together, these findings suggest that bot topical behavior evolves from broad social interests toward more strategic, polarized, and issue-centered thematic concentration. 
+
+## B.5 Communicative Functions Analysis 
+
+The communicative Function differences between humans and bots are modest in earlier datasets but become much more pronounced in newer datasets, where bots are increas-ingly concentrated on information delivery and statement-oriented posting, while humans retain more personal and relational uses of posting. As shown in Figure 11a, in Cresci-2015, humans are more associated with information sharing and opin-ion expression, whereas bots more often engage in self-promotion, presence maintenance, and other socially performative forms of posting. Twibot-2020 shows a more balanced pattern, with substan-tial overlap between humans and bots across several functions. In contrast, Fox-2023 presents the clearest separation, where bots are heavily concentrated in information sharing, opinion expression, and random statements, while humans remain more associated with self-presentation, social presence, and anecdotal expression. Overall, these results suggest that communicative functions provide a strong behavioral signal, especially in newer datasets where bots become more broadcast-oriented and less socially grounded. 
+
+Across datasets, bot communicative functions shift from relatively mixed and socially present behavior in earlier datasets to more concentrated, broadcast-oriented, and task-driven expressions in newer ones. As shown in Figure 11b, bots in the earlier Cresci datasets exhibit a relatively broad func-tional profile, combining socially present expression with some personal-update behavior. Twibot-2020 reflects a transitional stage, where information sharing becomes more prominent while func-tional diversity remains. Fox-2023 shows the clearest concentration, with bots dominated by information sharing and opinion expres-sion, whereas functions related to personal updates, interpersonal maintenance, and storytelling become marginal. Taken together, these findings suggest that newer bots are less oriented toward maintaining a social presence and more oriented toward message dissemination, amplification, and agenda-driven communication.

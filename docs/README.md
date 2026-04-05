@@ -6,41 +6,55 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-04
-- 运行时间：2026-04-04 19:29:40 UTC
+- 最新运行日期：2026-04-05
+- 运行时间：2026-04-05 19:45:34 UTC
 - 运行状态：成功
-- 本次总论文数：7
-- 精读区：1
-- 速读区：6
+- 本次总论文数：11
+- 精读区：2
+- 速读区：9
 
 ### 今日简报（AI）
-今日聚焦通过对抗消除实现鲁棒零样本心电图诊断的突破性研究，并探讨了视觉语言模型的防御与能力恢复。
-- 详情：[/202604/04/README](/202604/04/README)
+今日聚焦跨域社交机器人识别与脑部影像合成，深度解读 11 篇 AI 前沿进展。
+核心突破在于利用多粒度学习攻克社交机器人检测难题，并借助自注意力 GAN 提升医学影像合成精度。
+推荐关注 AI 在网络安全与智慧医疗领域的交叉应用，把握多模态特征融合的新趋势。
+- 详情：[/202604/05/README](/202604/05/README)
 
 ### 精读区论文标签
-1. [Semantic Compensation via Adversarial Removal for Robust Zero-Shot ECG Diagnosis](/202604/04/2604.01498v1-semantic-compensation-via-adversarial-removal-for-robust-zero-shot-ecg-diagnosis)  
+1. [MGDIL: Multi-Granularity Summarization and Domain-Invariant Learning for Cross-Domain Social Bot Detection](/202604/05/2603.27928v1-mgdil-multi-granularity-summarization-and-domain-invariant-learning-for-cross-domain-social-bot-detection)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：对部分观测和缺失关键导联的鲁棒性
+   evidence：当模态缺失或输入不完整时表现脆弱
+2. [Brain MR Image Synthesis with Multi-contrast Self-attention GAN](/202604/05/2604.00070v1-brain-mr-image-synthesis-with-multi-contrast-self-attention-gan)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：用于高保真缺失模态生成的生成式框架
 
 ### 速读区论文标签
-1. [Variational Learning of Fractional Posteriors](/202604/04/2603.27488v1-variational-learning-of-fractional-posteriors)  
+1. [DipGuava: Disentangling Personalized Gaussian Features for 3D Head Avatars from Monocular Video](/202604/05/2603.28003v1-dipguava-disentangling-personalized-gaussian-features-for-3d-head-avatars-from-monocular-video)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：将面部外观解耦为几何驱动和个性化组件
+2. [Validating Computational Markers of Depressive Behavior: Cross-Linguistic Speech-Based Depression Detection with Neurophysiological Validation](/202604/05/2604.01533v1-validating-computational-markers-of-depressive-behavior-cross-linguistic-speech-based-depression-detection-with-neurophysiological-validation)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：语音和EEG的多模态融合，用于跨情感效价的抑郁检测
+3. [Diff-KD: Diffusion-based Knowledge Distillation for Collaborative Perception under Corruptions](/202604/05/2604.02061v1-diff-kd-diffusion-based-knowledge-distillation-for-collaborative-perception-under-corruptions)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：基于扩散生成的特征修复
+4. [SegRGB-X: General RGB-X Semantic Segmentation Model](/202604/05/2603.28023v1-segrgb-x-general-rgb-x-semantic-segmentation-model)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：VAE中后验概率的变分学习
-2. [AGFT: Alignment-Guided Fine-Tuning for Zero-Shot Adversarial Robustness of Vision-Language Models](/202604/04/2603.29410v1-agft-alignment-guided-fine-tuning-for-zero-shot-adversarial-robustness-of-vision-language-models)  
+   evidence：通用任意模态语义分割框架
+5. [MMFace-DiT: A Dual-Stream Diffusion Transformer for High-Fidelity Multimodal Face Generation](/202604/05/2603.29029v1-mmface-dit-a-dual-stream-diffusion-transformer-for-high-fidelity-multimodal-face-generation)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：保持跨模态语义结构以实现对抗鲁棒性
-3. [LinguDistill: Recovering Linguistic Ability in Vision- Language Models via Selective Cross-Modal Distillation](/202604/04/2604.00829v1-lingudistill-recovering-linguistic-ability-in-vision--language-models-via-selective-cross-modal-distillation)  
+   evidence：冲突模态下的多模态融合
+6. [Robust Multimodal Safety via Conditional Decoding](/202604/05/2604.00310v1-robust-multimodal-safety-via-conditional-decoding)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：隔离模态特定子空间并恢复语言能力
-4. [FineLAP: Taming Heterogeneous Supervision for Fine-grained Language-Audio Pretraining](/202604/04/2604.01155v1-finelap-taming-heterogeneous-supervision-for-fine-grained-language-audio-pretraining)  
+   evidence：通过条件解码实现鲁棒的多模态安全，无需特定模态微调
+7. [EmoScene: A Dual-space Dataset for Controllable Affective Image Generation](/202604/05/2604.00933v1-emoscene-a-dual-space-dataset-for-controllable-affective-image-generation)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于细粒度对齐的解耦音频投影器
-5. [UniRecGen: Unifying Multi-View 3D Reconstruction and Generation](/202604/04/2604.01479v1-unirecgen-unifying-multi-view-3d-reconstruction-and-generation)  
+   evidence：情感图像生成与情感因子的统一表示
+8. [NearID: Identity Representation Learning via Near-identity Distractors](/202604/05/2604.01973v1-nearid-identity-representation-learning-via-near-identity-distractors)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于重建与生成的解耦协作学习
-6. [Investigating Permutation-Invariant Discrete Representation Learning for Spatially Aligned Images](/202604/04/2604.01843v1-investigating-permutation-invariant-discrete-representation-learning-for-spatially-aligned-images)  
+   evidence：将身份作为唯一的判别信号从背景上下文中分离出来
+9. [TRU: Targeted Reverse Update for Efficient Multimodal Recommendation Unlearning](/202604/05/2604.02183v1-tru-targeted-reverse-update-for-efficient-multimodal-recommendation-unlearning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：将位置信息与语义特征解耦
+   evidence：模态不平衡与特定分支的去学习
 
 
 <div class="dpr-home-promo-card">
