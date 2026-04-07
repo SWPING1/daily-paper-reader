@@ -1,0 +1,408 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-04-07T20:28:14.229545+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 8,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2604.03635v1",
+      "title": "A Generative Foundation Model for Multimodal Histopathology",
+      "abstract": "Accurate diagnosis and treatment of complex diseases require integrating histological, molecular, and clinical data, yet in practice these modalities are often incomplete owing to tissue scarcity, assay cost, and workflow constraints. Existing computational approaches attempt to impute missing modalities from available data but rely on task-specific models trained on narrow, single source-target pairs, limiting their generalizability. Here we introduce MuPD (Multimodal Pathology Diffusion), a generative foundation model that embeds hematoxylin and eosin (H&E)-stained histology, molecular RNA profiles, and clinical text into a shared latent space through a diffusion transformer with decoupled cross-modal attention. Pretrained on 100 million histology image patches, 1.6 million text-histology pairs, and 10.8 million RNA-histology pairs spanning 34 human organs, MuPD supports diverse cross-modal synthesis tasks with minimal or no task-specific fine-tuning. For text-conditioned and image-to-image generation, MuPD synthesizes histologically faithful tissue architectures, reducing Fréchet inception distance (FID) scores by 50% relative to domain-specific models and improving few-shot classification accuracy by up to 47% through synthetic data augmentation. For RNA-conditioned histology generation, MuPD reduces FID by 23% compared with the next-best method while preserving cell-type distributions across five cancer types. As a virtual stainer, MuPD translates H&E images to immunohistochemistry and multiplex immunofluorescence, improving average marker correlation by 37% over existing approaches. These results demonstrate that a single, unified generative model pretrained across heterogeneous pathology modalities can substantially outperform specialized alternatives, providing a scalable computational framework for multimodal histopathology.",
+      "authors": [
+        "Jinxi Xiang",
+        "Mingjie Li",
+        "Siyu Hou",
+        "Yijiang Chen",
+        "Xiangde Luo",
+        "Yuanfeng Ji",
+        "Xiang Zhou",
+        "Ehsan Adeli",
+        "Akshay Chaudhari",
+        "Curtis P. Langlotz",
+        "Kilian M. Pohl",
+        "Ruijiang Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-04-04T08:09:11+00:00",
+      "link": "https://arxiv.org/pdf/2604.03635v1",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "generative foundation model for imputing missing modalities",
+      "llm_evidence_cn": "用于填补缺失模态的生成式基础模型",
+      "llm_evidence": "用于填补缺失模态的生成式基础模型",
+      "canonical_evidence": "用于填补缺失模态的生成式基础模型",
+      "llm_tldr_en": "A diffusion-based generative model that imputes missing modalities in histopathology through a shared latent space.",
+      "llm_tldr_cn": "一种基于扩散的生成式模型，通过共享潜空间填补组织病理学中缺失的模态。",
+      "llm_tldr": "一种基于扩散的生成式模型，通过共享潜空间填补组织病理学中缺失的模态。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.04170v1",
+      "title": "Incomplete Multi-View Multi-Label Classification via Shared Codebook and Fused-Teacher Self-Distillation",
+      "abstract": "Although multi-view multi-label learning has been extensively studied, research on the dual-missing scenario, where both views and labels are incomplete, remains largely unexplored. Existing methods mainly rely on contrastive learning or information bottleneck theory to learn consistent representations under missing-view conditions, but loss-based alignment without explicit structural constraints limits the ability to capture stable and discriminative shared semantics. To address this issue, we introduce a more structured mechanism for consistent representation learning: we learn discrete consistent representations through a multi-view shared codebook and cross-view reconstruction, which naturally align different views within the limited shared codebook embeddings and reduce feature redundancy. At the decision level, we design a weight estimation method that evaluates the ability of each view to preserve label correlation structures, assigning weights accordingly to enhance the quality of the fused prediction. In addition, we introduce a fused-teacher self-distillation framework, where the fused prediction guides the training of view-specific classifiers and feeds the global knowledge back into the single-view branches, thereby enhancing the generalization ability of the model under missing-label conditions. The effectiveness of our proposed method is thoroughly demonstrated through extensive comparative experiments with advanced methods on five benchmark datasets. Code is available at https://github.com/xuy11/SCSD.",
+      "authors": [
+        "Xu Yan",
+        "Jun Yin",
+        "Shiliang Sun",
+        "Minghua Wan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-04-05T16:22:38+00:00",
+      "link": "https://arxiv.org/pdf/2604.04170v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "incomplete multi-view and cross-view reconstruction",
+      "llm_evidence_cn": "不完全多视图与跨视图重建",
+      "llm_evidence": "不完全多视图与跨视图重建",
+      "canonical_evidence": "不完全多视图与跨视图重建",
+      "llm_tldr_en": "Uses shared codebooks and reconstruction to align views in incomplete multi-view scenarios.",
+      "llm_tldr_cn": "利用共享代码本和重建技术在不完全多视图场景下实现视图对齐。",
+      "llm_tldr": "利用共享代码本和重建技术在不完全多视图场景下实现视图对齐。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.04297v1",
+      "title": "PanLUNA: An Efficient and Robust Query-Unified Multimodal Model for Edge Biosignal Intelligence",
+      "abstract": "Physiological foundation models (FMs) have shown promise for biosignal representation learning, yet most remain confined to a single modality such as EEG, ECG, or PPG, largely because paired multimodal datasets are scarce. In this paper, we present PanLUNA, a compact 5.4M-parameter pan-modal FM that jointly processes EEG, ECG, and PPG within a single shared encoder. Extending LUNA's channel-unification module, PanLUNA treats multimodal channels as entries in a unified query set augmented with sensor-type embeddings, enabling efficient cross-modal early fusion while remaining inherently robust to missing modalities at inference time. Despite its small footprint, PanLUNA matches or exceeds models up to 57$\\times$ larger: 81.21% balanced accuracy on TUAB abnormal EEG detection and state-of-the-art 0.7416 balanced accuracy on HMC multimodal sleep staging. Quantization-aware training with INT8 weights recovers $\\geq$96% of full-precision performance, and deployment on the GAP9 ultra-low-power RISC-V microcontroller for wearables achieves 325.6 ms latency and 18.8 mJ per 10-second, 12-lead ECG inference, and 1.206 s latency at 68.65 mJ for multimodal 5-channel sleep staging over 30-second epochs.",
+      "authors": [
+        "Marija Zelic",
+        "Anna Tegon",
+        "Yawei Li",
+        "Thorir Mar Ingolfsson",
+        "Luca Benini"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-04-05T22:35:42+00:00",
+      "link": "https://arxiv.org/pdf/2604.04297v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "inherently robust to missing modalities at inference time",
+      "llm_evidence_cn": "在推理时对缺失模态具有内在鲁棒性",
+      "llm_evidence": "在推理时对缺失模态具有内在鲁棒性",
+      "canonical_evidence": "在推理时对缺失模态具有内在鲁棒性",
+      "llm_tldr_en": "A compact pan-modal foundation model for biosignals that is robust to missing modalities via query unification.",
+      "llm_tldr_cn": "一种紧凑的生理信号基础模型，通过查询统一化实现对缺失模态的鲁棒性。",
+      "llm_tldr": "一种紧凑的生理信号基础模型，通过查询统一化实现对缺失模态的鲁棒性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.04614v1",
+      "title": "A Clinical Point Cloud Paradigm for In-Hospital Mortality Prediction from Multi-Level Incomplete Multimodal EHRs",
+      "abstract": "Deep learning-based modeling of multimodal Electronic Health Records (EHRs) has become an important approach for clinical diagnosis and risk prediction. However, due to diverse clinical workflows and privacy constraints, raw EHRs are inherently multi-level incomplete, including irregular sampling, missing modalities, and sparse labels. These issues cause temporal misalignment, modality imbalance, and limited supervision. Most existing multimodal methods assume relatively complete data, and even methods designed for incompleteness usually address only one or two of these issues in isolation. As a result, they often rely on rigid temporal/modal alignment or discard incomplete data, which may distort raw clinical semantics. To address this problem, we propose HealthPoint (HP), a unified clinical point cloud paradigm for multi-level incomplete EHRs. HP represents heterogeneous clinical events as points in a continuous 4D space defined by content, time, modality, and case. To model interactions between arbitrary point pairs, we introduce a Low-Rank Relational Attention mechanism that efficiently captures high-order dependencies across these four dimensions. We further develop a hierarchical interaction and sampling strategy to balance fine-grained modeling and computational efficiency. Built on this framework, HP enables flexible event-level interaction and fine-grained self-supervision, supporting robust modality recovery and effective use of unlabeled data. Experiments on large-scale EHR datasets for risk prediction show that HP consistently achieves state-of-the-art performance and strong robustness under varying degrees of incompleteness.",
+      "authors": [
+        "Bohao Li",
+        "Tao Zou",
+        "Junchen Ye",
+        "Yan Gong",
+        "Bowen Du"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-04-06T12:03:36+00:00",
+      "link": "https://arxiv.org/pdf/2604.04614v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses multi-level incomplete multimodal data including missing modalities",
+      "llm_evidence_cn": "处理包括缺失模态在内的多级不完整多模态数据",
+      "llm_evidence": "处理包括缺失模态在内的多级不完整多模态数据",
+      "canonical_evidence": "处理包括缺失模态在内的多级不完整多模态数据",
+      "llm_tldr_en": "Proposes a point cloud paradigm to handle missing modalities and irregular sampling in multimodal EHR data.",
+      "llm_tldr_cn": "提出一种点云范式，用于处理多模态电子健康档案中的缺失模态和不规则采样问题。",
+      "llm_tldr": "提出一种点云范式，用于处理多模态电子健康档案中的缺失模态和不规则采样问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.03650v1",
+      "title": "CAGMamba: Context-Aware Gated Cross-Modal Mamba Network for Multimodal Sentiment Analysis",
+      "abstract": "Multimodal Sentiment Analysis (MSA) requires effective modeling of cross-modal interactions and contextual dependencies while remaining computationally efficient. Existing fusion approaches predominantly rely on Transformer-based cross-modal attention, which incurs quadratic complexity with respect to sequence length and limits scalability. Moreover, contextual information from preceding utterances is often incorporated through concatenation or independent fusion, without explicit temporal modeling that captures sentiment evolution across dialogue turns. To address these limitations, we propose CAGMamba, a context-aware gated cross-modal Mamba framework for dialogue-based sentiment analysis. Specifically, we organize the contextual and the current-utterance features into a temporally ordered binary sequence, which provides Mamba with explicit temporal structure for modeling sentiment evolution. To further enable controllable cross-modal integration, we propose a Gated Cross-Modal Mamba Network (GCMN) that integrates cross-modal and unimodal paths via learnable gating to balance information fusion and modality preservation, and is trained with a three-branch multi-task objective over text, audio, and fused predictions. Experiments on three benchmark datasets demonstrate that CAGMamba achieves state-of-the-art or competitive results across multiple evaluation metrics. All codes are available at https://github.com/User2024-xj/CAGMamba.",
+      "authors": [
+        "Minghai Jiao",
+        "Jing Xiao",
+        "Peng Xiao",
+        "Ende Zhang",
+        "Shuang Kan",
+        "Wenyan Jiang",
+        "Jinyao Li",
+        "Yixian Liu",
+        "Haidong Xin"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-04-04T09:02:31+00:00",
+      "link": "https://arxiv.org/pdf/2604.03650v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal sentiment analysis and cross-modal interactions",
+      "llm_evidence_cn": "多模态情感分析与跨模态交互",
+      "llm_evidence": "多模态情感分析与跨模态交互",
+      "canonical_evidence": "多模态情感分析与跨模态交互",
+      "llm_tldr_en": "Proposes a context-aware Mamba framework for efficient multimodal sentiment analysis in dialogues.",
+      "llm_tldr_cn": "提出一种上下文感知的 Mamba 框架，用于对话中高效的多模态情感分析。",
+      "llm_tldr": "提出一种上下文感知的 Mamba 框架，用于对话中高效的多模态情感分析。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.03953v1",
+      "title": "Multimodal Structure Learning: Disentangling Shared and Specific Topology via Cross-Modal Graphical Lasso",
+      "abstract": "Learning interpretable multimodal representations inherently relies on uncovering the conditional dependencies between heterogeneous features. However, sparse graph estimation techniques, such as Graphical Lasso (GLasso), to visual-linguistic domains is severely bottlenecked by high-dimensional noise, modality misalignment, and the confounding of shared versus category-specific topologies. In this paper, we propose Cross-Modal Graphical Lasso (CM-GLasso) that overcomes these fundamental limitations. By coupling a novel text-visualization strategy with a unified vision-language encoder, we strictly align multimodal features into a shared latent space. We introduce a cross-attention distillation mechanism that condenses high-dimensional patches into explicit semantic nodes, naturally extracting spatial-aware cross-modal priors. Furthermore, we unify tailored GLasso estimation and Common-Specific Structure Learning (CSSL) into a joint objective optimized via the Alternating Direction Method of Multiplier (ADMM). This formulation guarantees the simultaneous disentanglement of invariant and class-specific precision matrices without multi-step error accumulation. Extensive experiments across eight benchmarks covering both natural and medical domains demonstrate that CM-GLasso establishes a new state-of-the-art in generative classification and dense semantic segmentation tasks.",
+      "authors": [
+        "Fei Wang",
+        "Yutong Zhang",
+        "Xiong Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-04-05T04:07:59+00:00",
+      "link": "https://arxiv.org/pdf/2604.03953v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "disentangling shared and specific topology in multimodal representations",
+      "llm_evidence_cn": "在多模态表示中解耦共享和特定拓扑结构",
+      "llm_evidence": "在多模态表示中解耦共享和特定拓扑结构",
+      "canonical_evidence": "在多模态表示中解耦共享和特定拓扑结构",
+      "llm_tldr_en": "Proposes CM-GLasso to disentangle shared and specific topologies for interpretable multimodal representations.",
+      "llm_tldr_cn": "提出CM-GLasso方法，通过解耦共享与特定拓扑结构来学习可解释的多模态表示。",
+      "llm_tldr": "提出CM-GLasso方法，通过解耦共享与特定拓扑结构来学习可解释的多模态表示。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2604.04175v1",
+      "title": "Uncertainty-Aware Foundation Models for Clinical Data",
+      "abstract": "Healthcare foundation models have largely followed paradigms from natural language processing and computer vision, emphasizing large scale pretraining and deterministic representations over heterogeneous clinical data. However, clinical observations are inherently incomplete, reflecting sparse, irregular, and modality dependent measurements of an underlying physiologic state. In this work, we propose a framework for uncertainty aware foundation modeling that represents each patient not as a point embedding, but as a distribution over plausible latent states. By learning set valued representations and enforcing consistency across partial views of the same patient, the model captures what is invariantly inferable while explicitly encoding epistemic uncertainty. We integrate this formulation with multimodal encoders and scalable self supervised objectives, combining reconstruction, contrastive alignment, and distributional regularization. Across diverse clinical tasks, our approach improves predictive performance, robustness under missing data, and uncertainty calibration relative to strong baselines. These results suggest that modeling what is not observed rather than only what is constitutes a critical inductive bias for healthcare foundation models.",
+      "authors": [
+        "Qian Zhou",
+        "Yuanyun Zhang",
+        "Shi Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-04-05T16:44:13+00:00",
+      "link": "https://arxiv.org/pdf/2604.04175v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Incomplete clinical observations and partial views",
+      "llm_evidence_cn": "不完整的临床观察与部分视图",
+      "llm_evidence": "不完整的临床观察与部分视图",
+      "canonical_evidence": "不完整的临床观察与部分视图",
+      "llm_tldr_en": "Develops uncertainty-aware foundation models to handle incomplete and sparse clinical multimodal data.",
+      "llm_tldr_cn": "开发不确定性感知基础模型，以处理不完整且稀疏的临床多模态数据。",
+      "llm_tldr": "开发不确定性感知基础模型，以处理不完整且稀疏的临床多模态数据。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2604.04160v1",
+      "title": "AffectSpeech: A Large-Scale Emotional Speech Dataset with Fine-Grained Textual Descriptions for Speech Emotion Captioning and Synthesis",
+      "abstract": "Emotion is essential in spoken communication, yet most existing frameworks in speech emotion modeling rely on predefined categories or low-dimensional continuous attributes, which offer limited expressive capacity. Recent advances in speech emotion captioning and synthesis have shown that textual descriptions provide a more flexible and interpretable alternative for representing affective characteristics in speech. However, progress in this direction is hindered by the lack of an emotional speech dataset aligned with reliable and fine-grained natural language annotations. To tackle this, we introduce AffectSpeech, a large-scale corpus of human-recorded speech enriched with structured descriptions for fine-grained emotion analysis and generation. Each utterance is characterized across six complementary dimensions, including sentiment polarity, open-vocabulary emotion captions, intensity level, prosodic attributes, prominent segments, and semantic content, enabling multi-granular modeling of vocal expression. To balance annotation quality and scalability, we adopt a human-LLM collaborative annotation pipeline that integrates algorithmic pre-labeling, multi-LLM description generation, and human-in-the-loop verification. Furthermore, these annotations are reformulated into diverse descriptive styles to enhance linguistic diversity and reduce stylistic bias in downstream modeling. Experimental results on speech emotion captioning and synthesis demonstrate that models trained on AffectSpeech consistently achieve superior performance across multiple evaluation settings.",
+      "authors": [
+        "Tianhua Qi",
+        "Wenming Zheng",
+        "Björn W. Schuller",
+        "Zhaojie Luo",
+        "Haizhou Li"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.SD",
+        "eess.SP"
+      ],
+      "published": "2026-04-05T16:03:12+00:00",
+      "link": "https://arxiv.org/pdf/2604.04160v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "large-scale emotional speech dataset for emotion captioning",
+      "llm_evidence_cn": "用于情感描述的大规模情感语音数据集",
+      "llm_evidence": "用于情感描述的大规模情感语音数据集",
+      "canonical_evidence": "用于情感描述的大规模情感语音数据集",
+      "llm_tldr_en": "Introduces AffectSpeech, a large-scale dataset for fine-grained speech emotion captioning and synthesis.",
+      "llm_tldr_cn": "引入AffectSpeech，一个用于细粒度语音情感描述和合成的大规模数据集。",
+      "llm_tldr": "引入AffectSpeech，一个用于细粒度语音情感描述和合成的大规模数据集。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.04780v1",
+      "title": "CLEAR: Unlocking Generative Potential for Degraded Image Understanding in Unified Multimodal Models",
+      "abstract": "Image degradation from blur, noise, compression, and poor illumination severely undermines multimodal understanding in real-world settings. Unified multimodal models that combine understanding and generation within a single architecture are a natural fit for this challenge, as their generative pathway can model the fine-grained visual structure that degradation destroys. Yet these models fail to leverage their own generative capacity on degraded inputs. We trace this disconnect to two compounding factors: existing training regimes never ask the model to invoke generation during reasoning, and the standard decode-reencode pathway does not support effective joint optimization. We present CLEAR, a framework that connects the two capabilities through three progressive steps: (1) supervised fine-tuning on a degradation-aware dataset to establish the generate-then-answer reasoning pattern; (2) a Latent Representation Bridge that replaces the decode-reencode detour with a direct, optimizable connection between generation and reasoning; (3) Interleaved GRPO, a reinforcement learning method that jointly optimizes text reasoning and visual generation under answer-correctness rewards. We construct MMD-Bench, covering three degradation severity levels across six standard multimodal benchmarks. Experiments show that CLEAR substantially improves robustness on degraded inputs while preserving clean-image performance. Our analysis further reveals that removing pixel-level reconstruction supervision leads to intermediate visual states with higher perceptual quality, suggesting that task-driven optimization and visual quality are naturally aligned.",
+      "authors": [
+        "Xiangzhao Hao",
+        "Zefeng Zhang",
+        "Zhenyu Zhang",
+        "Linhao Yu",
+        "Yao Chen",
+        "Yiqian Zhang",
+        "Haiyun Guo",
+        "Shuohuan Wang",
+        "Yu Sun"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-06T15:54:00+00:00",
+      "link": "https://arxiv.org/pdf/2604.04780v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Generative potential for degraded (incomplete) image understanding",
+      "llm_evidence_cn": "利用生成潜力处理退化（不完整）图像理解",
+      "llm_evidence": "利用生成潜力处理退化（不完整）图像理解",
+      "canonical_evidence": "利用生成潜力处理退化（不完整）图像理解",
+      "llm_tldr_en": "Leverages generative pathways to reconstruct and understand degraded visual inputs in multimodal models.",
+      "llm_tldr_cn": "利用生成路径重建并理解多模态模型中退化的视觉输入，提升鲁棒性。",
+      "llm_tldr": "利用生成路径重建并理解多模态模型中退化的视觉输入，提升鲁棒性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2604.04229v1",
+      "title": "Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning",
+      "abstract": "Learning aligned multimodal embeddings from weakly paired, label-free corpora is challenging: pipelines often provide only pre-extracted features, clips contain multiple events, and spurious co-occurrences. We propose HSC-MAE (Hierarchical Semantic Correlation-Aware Masked Autoencoder), a dual-path teacher-student framework that enforces semantic consistency across three complementary levels of representation - from coarse to fine: (i) global-level canonical-geometry correlation via DCCA, which aligns audio and visual embeddings within a shared modality-invariant subspace; (ii) local-level neighborhood-semantics correlation via teacher-mined soft top-k affinities, which preserves multi-positive relational structure among semantically similar instances; and (iii) sample-level conditional-sufficiency correlation via masked autoencoding, which ensures individual embeddings retain discriminative semantic content under partial observation. Concretely, a student MAE path is trained with masked feature reconstruction and affinity-weighted soft top-k InfoNCE; an EMA teacher operating on unmasked inputs via the CCA path supplies stable canonical geometry and soft positives. Learnable multi-task weights reconcile competing objectives, and an optional distillation loss transfers teacher geometry into the student. Experiments on AVE and VEGAS demonstrate substantial mAP improvements over strong unsupervised baselines, validating that HSC-MAE yields robust and well-structured audio-visual representations.",
+      "authors": [
+        "Donghuo Zeng",
+        "Hao Niu",
+        "Masato Taya"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.AI",
+        "cs.CV",
+        "cs.SD"
+      ],
+      "published": "2026-04-05T19:08:51+00:00",
+      "link": "https://arxiv.org/pdf/2604.04229v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Modality-invariant subspace and semantic consistency",
+      "llm_evidence_cn": "模态不变子空间与语义一致性",
+      "llm_evidence": "模态不变子空间与语义一致性",
+      "canonical_evidence": "模态不变子空间与语义一致性",
+      "llm_tldr_en": "Uses a masked autoencoder to align audio-visual embeddings in a shared modality-invariant subspace.",
+      "llm_tldr_cn": "采用掩码自编码器在共享的模态不变子空间中对齐视听嵌入，增强语义一致性。",
+      "llm_tldr": "采用掩码自编码器在共享的模态不变子空间中对齐视听嵌入，增强语义一致性。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

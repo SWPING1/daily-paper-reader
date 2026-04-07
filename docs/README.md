@@ -6,51 +6,52 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-06
-- 运行时间：2026-04-06 20:10:34 UTC
+- 最新运行日期：2026-04-07
+- 运行时间：2026-04-07 20:31:06 UTC
 - 运行状态：成功
 - 本次总论文数：10
-- 精读区：1
-- 速读区：9
+- 精读区：6
+- 速读区：4
 
 ### 今日简报（AI）
-今日聚焦多模态情感认知，深度解析了针对老年群体的 MECO 数据集及跨模态分割新架构。
-重点结论指出
-- 详情：[/202604/06/README](/202604/06/README)
+今日深度解析 10 篇 AI 论文，聚焦多模态病理生成模型与复杂多视图分类的重大突破。
+重点推荐评分 9.0 的病理学基础模型及共享码本分类技术，揭示了生成式 AI 在医疗诊断与数据补全中的核心价值。
+建议读者关注生成式模型如何提升退化图像理解及临床数据的不确定性感知，把握医疗 AI 的落地趋势。
+- 详情：[/202604/07/README](/202604/07/README)
 
 ### 精读区论文标签
-1. [MECO: A Multimodal Dataset for Emotion and Cognitive Understanding in Older Adults](/202604/06/2604.03050v1-meco-a-multimodal-dataset-for-emotion-and-cognitive-understanding-in-older-adults)  
+1. [A Generative Foundation Model for Multimodal Histopathology](/202604/07/2604.03635v1-a-generative-foundation-model-for-multimodal-histopathology)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：用于填补缺失模态的生成式基础模型
+2. [Incomplete Multi-View Multi-Label Classification via Shared Codebook and Fused-Teacher Self-Distillation](/202604/07/2604.04170v1-incomplete-multi-view-multi-label-classification-via-shared-codebook-and-fused-teacher-self-distillation)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：不完全多视图与跨视图重建
+3. [PanLUNA: An Efficient and Robust Query-Unified Multimodal Model for Edge Biosignal Intelligence](/202604/07/2604.04297v1-panluna-an-efficient-and-robust-query-unified-multimodal-model-for-edge-biosignal-intelligence)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：在推理时对缺失模态具有内在鲁棒性
+4. [A Clinical Point Cloud Paradigm for In-Hospital Mortality Prediction from Multi-Level Incomplete Multimodal EHRs](/202604/07/2604.04614v1-a-clinical-point-cloud-paradigm-for-in-hospital-mortality-prediction-from-multi-level-incomplete-multimodal-ehrs)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：处理包括缺失模态在内的多级不完整多模态数据
+5. [CAGMamba: Context-Aware Gated Cross-Modal Mamba Network for Multimodal Sentiment Analysis](/202604/07/2604.03650v1-cagmamba-context-aware-gated-cross-modal-mamba-network-for-multimodal-sentiment-analysis)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：用于老年人情感预测的多模态数据集
+   evidence：多模态情感分析与跨模态交互
+6. [Multimodal Structure Learning: Disentangling Shared and Specific Topology via Cross-Modal Graphical Lasso](/202604/07/2604.03953v1-multimodal-structure-learning-disentangling-shared-and-specific-topology-via-cross-modal-graphical-lasso)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：在多模态表示中解耦共享和特定拓扑结构
 
 ### 速读区论文标签
-1. [CrossWeaver: Cross-modal Weaving for Arbitrary-Modality Semantic Segmentation](/202604/06/2604.02948v1-crossweaver-cross-modal-weaving-for-arbitrary-modality-semantic-segmentation)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：适用于任意模态组合的多模态融合框架
-2. [Geometry-aware similarity metrics for neural representations on Riemannian and statistical manifolds](/202604/06/2603.28764v1-geometry-aware-similarity-metrics-for-neural-representations-on-riemannian-and-statistical-manifolds)  
+1. [Uncertainty-Aware Foundation Models for Clinical Data](/202604/07/2604.04175v1-uncertainty-aware-foundation-models-for-clinical-data)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：不完整的临床观察与部分视图
+2. [CLEAR: Unlocking Generative Potential for Degraded Image Understanding in Unified Multimodal Models](/202604/07/2604.04780v1-clear-unlocking-generative-potential-for-degraded-image-understanding-in-unified-multimodal-models)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：利用生成潜力处理退化（不完整）图像理解
+3. [AffectSpeech: A Large-Scale Emotional Speech Dataset with Fine-Grained Textual Descriptions for Speech Emotion Captioning and Synthesis](/202604/07/2604.04160v1-affectspeech-a-large-scale-emotional-speech-dataset-with-fine-grained-textual-descriptions-for-speech-emotion-captioning-and-synthesis)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：利用黎曼几何解耦深度网络中的神经计算特征
-3. [Emotion Entanglement and Bayesian Inference for Multi-Dimensional Emotion Understanding](/202604/06/2604.00819v1-emotion-entanglement-and-bayesian-inference-for-multi-dimensional-emotion-understanding)  
+   evidence：用于情感描述的大规模情感语音数据集
+4. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/07/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：多维情感理解与依赖关系
-4. [Multimodal Analysis of State-Funded News Coverage of the Israel-Hamas War on YouTube Shorts](/202604/06/2604.00994v1-multimodal-analysis-of-state-funded-news-coverage-of-the-israel-hamas-war-on-youtube-shorts)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：用于新闻报道情感分析的多模态流水线
-5. [UniRecGen: Unifying Multi-View 3D Reconstruction and Generation](/202604/06/2604.01479v2-unirecgen-unifying-multi-view-3d-reconstruction-and-generation)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：用于3D重建和生成的解耦协作学习
-6. [Variational Encoder--Multi-Decoder (VE-MD) for Privacy-by-functional-design (Group) Emotion Recognition](/202604/06/2604.02397v1-variational-encoder--multi-decoder-ve-md-for-privacy-by-functional-design-group-emotion-recognition)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：用于群体情感识别的变分编码器-多解码器
-7. [DeCo-DETR: Decoupled Cognition DETR for efficient Open-Vocabulary Object Detection](/202604/06/2604.02753v1-deco-detr-decoupled-cognition-detr-for-efficient-open-vocabulary-object-detection)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：用于多模态目标检测的解耦认知框架
-8. [User-Aware Conditional Generative Total Correlation Learning for Multi-Modal Recommendation](/202604/06/2604.03014v1-user-aware-conditional-generative-total-correlation-learning-for-multi-modal-recommendation)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：解耦模态不变的偏好驱动信号
-9. [Valence-Arousal Subspace in LLMs: Circular Emotion Geometry and Multi-Behavioral Control](/202604/06/2604.03147v1-valence-arousal-subspace-in-llms-circular-emotion-geometry-and-multi-behavioral-control)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：识别用于情感引导的效价-唤醒子空间
+   evidence：模态不变子空间与语义一致性
 
 
 <div class="dpr-home-promo-card">
