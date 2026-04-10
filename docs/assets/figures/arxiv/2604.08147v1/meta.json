@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.08147v1/fig-001.webp",
+      "caption": "Figure 2. Overall pipeline of our proposed framework. The model consists of two objective-specific forward passes: (1) the reconstruction branch (left) learns modality-specific generative representations by randomly masking both audio and visual patches and reconstructing them through separate decoders. (2) the contrastive branch (right) adopts a teacher-student scheme for cross-modal alignment under a lower masking ratio. The teacher model observes full, unmasked inputs and produces attention-based token priority cues to guide the student’s masking strategy. The student encodes the masked tokens, appends modality-specific global tokens (gv, ga), and aligns them via the InfoNCE-based contrastive loss Lcontra. An additional distillation loss Ldis encourages consistency between teacher and student global embeddings. The encoders in the reconstruction branch share weights with the student encoders in the contrastive branch. The final training objective combines all terms as Lall = λ1Lrec + λ2Ldis + λ3Lcontra.",
+      "page": 4,
+      "index": 1,
+      "width": 964,
+      "height": 564
+    }
+  ]
+}

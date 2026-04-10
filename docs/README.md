@@ -6,61 +6,58 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-09
-- 运行时间：2026-04-09 20:24:51 UTC
+- 最新运行日期：2026-04-10
+- 运行时间：2026-04-10 20:10:54 UTC
 - 运行状态：成功
-- 本次总论文数：13
-- 精读区：6
-- 速读区：7
+- 本次总论文数：12
+- 精读区：4
+- 速读区：8
 
 ### 今日简报（AI）
-今日深度解析 13 篇前沿论文，聚焦多模态学习在医疗预后与情感识别中攻克“数据缺失”难题的突破性进展。
-满分研究 PRIME 与新范式框架分别通过原型驱动预训练和“先评估后生成”策略，刷新了癌症生存预测与鲁棒情感分析的性能标杆。
-建议重点关注多模态模型在处理不完整电子病历及复杂情感动态建模中的实战应用价值。
-- 详情：[/202604/09/README](/202604/09/README)
+聚焦多模态鲁棒性突破，今日深度解析模态缺失下的情感分析与人体感知新范式。
+重点推荐“先评估后生成”与“净化再对齐”策略，通过知识蒸馏攻克了不完整数据下的多模态识别难题。
+建议关注多模态大模型在情感计算中的基准表现，优先掌握应对模态缺失的架构优化思路。
+- 详情：[/202604/10/README](/202604/10/README)
 
 ### 精读区论文标签
-1. [PRIME: Prototype-Driven Multimodal Pretraining for Cancer Prognosis with Missing Modalities](/202604/09/2604.04999v1-prime-prototype-driven-multimodal-pretraining-for-cancer-prognosis-with-missing-modalities)  
-   标签：评分：10.0/10、query:missing-modality
-   evidence：缺失感知的多模态预训练与潜空间语义插补
-2. [Evaluation Before Generation: A Paradigm for Robust Multimodal Sentiment Analysis with Missing Modalities](/202604/09/2604.05558v1-evaluation-before-generation-a-paradigm-for-robust-multimodal-sentiment-analysis-with-missing-modalities)  
+1. [Evaluation Before Generation: A Paradigm for Robust Multimodal Sentiment Analysis with Missing Modalities](/202604/10/2604.05558v1-evaluation-before-generation-a-paradigm-for-robust-multimodal-sentiment-analysis-with-missing-modalities)  
    标签：评分：10.0/10、query:missing-modality
    evidence：缺失模态下的鲁棒多模态情感分析
-3. [Purify-then-Align: Towards Robust Human Sensing under Modality Missing with Knowledge Distillation from Noisy Multimodal Teacher](/202604/09/2604.05584v1-purify-then-align-towards-robust-human-sensing-under-modality-missing-with-knowledge-distillation-from-noisy-multimodal-teacher)  
+2. [Purify-then-Align: Towards Robust Human Sensing under Modality Missing with Knowledge Distillation from Noisy Multimodal Teacher](/202604/10/2604.05584v1-purify-then-align-towards-robust-human-sensing-under-modality-missing-with-knowledge-distillation-from-noisy-multimodal-teacher)  
    标签：评分：10.0/10、query:missing-modality
-   evidence：模态缺失下的鲁棒人体感知与知识扩散
-4. [QA-MoE: Towards a Continuous Reliability Spectrum with Quality-Aware Mixture of Experts for Robust Multimodal Sentiment Analysis](/202604/09/2604.05704v1-qa-moe-towards-a-continuous-reliability-spectrum-with-quality-aware-mixture-of-experts-for-robust-multimodal-sentiment-analysis)  
-   标签：评分：10.0/10、query:missing-modality
-   evidence：模态缺失下的鲁棒多模态情感分析
-5. [QA-MoE: Towards a Continuous Reliability Spectrum with Quality-Aware Mixture of Experts for Robust Multimodal Sentiment Analysis](/202604/09/2604.05704v2-qa-moe-towards-a-continuous-reliability-spectrum-with-quality-aware-mixture-of-experts-for-robust-multimodal-sentiment-analysis)  
-   标签：评分：10.0/10、query:missing-modality
-   evidence：通过可靠性频谱解决多模态情感分析中的模态缺失问题
-6. [Purify-then-Align: Towards Robust Human Sensing under Modality Missing with Knowledge Distillation from Noisy Multimodal Teacher](/202604/09/2604.05584v2-purify-then-align-towards-robust-human-sensing-under-modality-missing-with-knowledge-distillation-from-noisy-multimodal-teacher)  
-   标签：评分：9.0/10、query:missing-modality
-   evidence：模态缺失下的鲁棒人体感知
+   evidence：模态缺失下的鲁棒人类感知
+3. [Semantic-Emotional Resonance Embedding: A Semi-Supervised Paradigm for Cross-Lingual Speech Emotion Recognition](/202604/10/2604.07417v1-semantic-emotional-resonance-embedding-a-semi-supervised-paradigm-for-cross-lingual-speech-emotion-recognition)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：跨语言语音情感识别
+4. [Semantic Noise Reduction via Teacher-Guided Dual-Path Audio-Visual Representation Learning](/202604/10/2604.08147v1-semantic-noise-reduction-via-teacher-guided-dual-path-audio-visual-representation-learning)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：在视听学习中解耦重建与对齐
 
 ### 速读区论文标签
-1. [A Clinical Point Cloud Paradigm for In-Hospital Mortality Prediction from Multi-Level Incomplete Multimodal EHRs](/202604/09/2604.04614v2-a-clinical-point-cloud-paradigm-for-in-hospital-mortality-prediction-from-multi-level-incomplete-multimodal-ehrs)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：对包括模态缺失在内的多级不完整多模态电子健康档案进行建模
-2. [LaScA: Language-Conditioned Scalable Modelling of Affective Dynamics](/202604/09/2604.07193v1-lasca-language-conditioned-scalable-modelling-of-affective-dynamics)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：利用面部和声学特征建模情感动态
-3. [CoLoRSMamba: Conditional LoRA-Steered Mamba for Supervised Multimodal Violence Detection](/202604/09/2604.03329v1-colorsmamba-conditional-lora-steered-mamba-for-supervised-multimodal-violence-detection)  
+1. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/10/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：多模态检测中对噪声或弱相关音频的鲁棒性
-4. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/09/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
+   evidence：在共享的模态不变子空间内对齐音视频嵌入
+2. [AICA-Bench: Holistically Examining the Capabilities of VLMs in Affective Image Content Analysis](/202604/10/2604.05900v1-aica-bench-holistically-examining-the-capabilities-of-vlms-in-affective-image-content-analysis)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：在共享的模态不变子空间中对齐嵌入
-5. [URMF: Uncertainty-aware Robust Multimodal Fusion for Multimodal Sarcasm Detection](/202604/09/2604.06728v1-urmf-uncertainty-aware-robust-multimodal-fusion-for-multimodal-sarcasm-detection)  
+   evidence：评估视觉语言模型的情感理解与推理能力
+3. [A-MBER: Affective Memory Benchmark for Emotion Recognition](/202604/10/2604.07017v1-a-mber-affective-memory-benchmark-for-emotion-recognition)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：在交互和融合过程中建模模态可靠性
-6. [PDMP: Rethinking Balanced Multimodal Learning via Performance-Dominant Modality Prioritization](/202604/09/2604.05773v1-pdmp-rethinking-balanced-multimodal-learning-via-performance-dominant-modality-prioritization)  
+   evidence：多模态情感识别基准
+4. [Symbiotic-MoE: Unlocking the Synergy between Generation and Understanding](/202604/10/2604.07753v1-symbiotic-moe-unlocking-the-synergy-between-generation-and-understanding)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：模态感知专家解耦
+5. [OmniJigsaw: Enhancing Omni-Modal Reasoning via Modality-Orchestrated Reordering](/202604/10/2604.08209v1-omnijigsaw-enhancing-omni-modal-reasoning-via-modality-orchestrated-reordering)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：用于跨模态集成的片段级模态掩码
+6. [Sheaf-Laplacian Obstruction and Projection Hardness for Cross-Modal Compatibility on a Modality-Independent Site](/202604/10/2604.07632v1-sheaf-laplacian-obstruction-and-projection-hardness-for-cross-modal-compatibility-on-a-modality-independent-site)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：平衡多模态学习与模态间的不平衡学习
-7. [Closing the Speech-Text Gap with Limited Audio for Effective Domain Adaptation in LLM-Based ASR](/202604/09/2604.06487v1-closing-the-speech-text-gap-with-limited-audio-for-effective-domain-adaptation-in-llm-based-asr)  
+   evidence：跨模态兼容性与对齐误差
+7. [Cross-Modal Emotion Transfer for Emotion Editing in Talking Face Video](/202604/10/2604.07786v1-cross-modal-emotion-transfer-for-emotion-editing-in-talking-face-video)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：利用有限音频数据缓解模态间隙
+   evidence：在情感语音中解耦情感和语言内容
+8. [EPIR: An Efficient Patch Tokenization, Integration and Representation Framework for Micro-expression Recognition](/202604/10/2604.08106v1-epir-an-efficient-patch-tokenization-integration-and-representation-framework-for-micro-expression-recognition)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：用于情感识别的微表情识别
 
 
 <div class="dpr-home-promo-card">
