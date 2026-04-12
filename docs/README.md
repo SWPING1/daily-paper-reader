@@ -6,38 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-11
-- 运行时间：2026-04-11 20:12:05 UTC
+- 最新运行日期：2026-04-12
+- 运行时间：2026-04-12 19:53:26 UTC
 - 运行状态：成功
-- 本次总论文数：5
+- 本次总论文数：3
 - 精读区：0
-- 速读区：5
+- 速读区：3
 
 ### 今日简报（AI）
-今日聚焦音视频表征学习与情感预测，探索掩码自编码器中的语义关联与降噪新路径。
-重点关注分层语义建模对无监督学习的提升，以及利用标注分布优化情感预测的创新思路。
-建议深入了解教师引导的双路径架构，以解决多模态交互中的语义噪声难题
-- 详情：[/202604/11/README](/202604/11/README)
+今日深入探索多模态感知前沿，涵盖跨模态伪造检测、扩散模型引导的视频检索及音视频表征学习。
+核心结论指出，挖掘跨模态共享的潜在伪造特征能有效超越表面伪影，显著提升检测的泛化能力。
+建议关注多模态融合技术在内容防伪与复杂场景检索中的落地潜力。
+- 详情：[/202604/12/README](/202604/12/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/11/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
+1. [Beyond Surface Artifacts: Capturing Shared Latent Forgery Knowledge Across Modalities](/202604/12/2604.07763v1-beyond-surface-artifacts-capturing-shared-latent-forgery-knowledge-across-modalities)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：模态不变子空间与音视频学习的掩码自编码器
-2. [Beyond the Mean: Modelling Annotation Distributions in Continuous Affect Prediction](/202604/11/2604.07198v1-beyond-the-mean-modelling-annotation-distributions-in-continuous-affect-prediction)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：连续情感预测与情感标注分布
-3. [Semantic Noise Reduction via Teacher-Guided Dual-Path Audio-Visual Representation Learning](/202604/11/2604.08147v1-semantic-noise-reduction-via-teacher-guided-dual-path-audio-visual-representation-learning)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：将重建和对齐解耦为独立的优化路径
-4. [When Modalities Remember: Continual Learning for Multimodal Knowledge Graphs](/202604/11/2604.02778v1-when-modalities-remember-continual-learning-for-multimodal-knowledge-graphs)  
+   evidence：多模态取证中针对未知暗模态的鲁棒性
+2. [Imagine Before Concentration: Diffusion-Guided Registers Enhance Partially Relevant Video Retrieval](/202604/12/2604.03653v1-imagine-before-concentration-diffusion-guided-registers-enhance-partially-relevant-video-retrieval)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：知识图中对新多模态信号的鲁棒性
-5. [OmniJigsaw: Enhancing Omni-Modal Reasoning via Modality-Orchestrated Reordering](/202604/11/2604.08209v1-omnijigsaw-enhancing-omni-modal-reasoning-via-modality-orchestrated-reordering)  
+   evidence：用于不完整全局上下文感知的扩散引导寄存器
+3. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/12/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：片段级模态掩码与跨模态集成
+   evidence：模态不变子空间对齐与层次化语义关联
 
 
 <div class="dpr-home-promo-card">
