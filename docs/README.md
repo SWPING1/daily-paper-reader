@@ -6,32 +6,47 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-12
-- 运行时间：2026-04-12 19:53:26 UTC
+- 最新运行日期：2026-04-13
+- 运行时间：2026-04-13 20:35:28 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：0
-- 速读区：3
+- 本次总论文数：9
+- 精读区：1
+- 速读区：8
 
 ### 今日简报（AI）
-今日深入探索多模态感知前沿，涵盖跨模态伪造检测、扩散模型引导的视频检索及音视频表征学习。
-核心结论指出，挖掘跨模态共享的潜在伪造特征能有效超越表面伪影，显著提升检测的泛化能力。
-建议关注多模态融合技术在内容防伪与复杂场景检索中的落地潜力。
-- 详情：[/202604/12/README](/202604/12/README)
+今日精选 9 篇多模态论文，深度解析边缘端高效推理与跨模态表征学习的前沿突破。
+- 详情：[/202604/13/README](/202604/13/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Modality-Aware Zero-Shot Pruning and Sparse Attention for Efficient Multimodal Edge Inference](/202604/13/2604.08971v1-modality-aware-zero-shot-pruning-and-sparse-attention-for-efficient-multimodal-edge-inference)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：在不可预测的传感器掉线情况下实现鲁棒的多模态感知
 
 ### 速读区论文标签
-1. [Beyond Surface Artifacts: Capturing Shared Latent Forgery Knowledge Across Modalities](/202604/12/2604.07763v1-beyond-surface-artifacts-capturing-shared-latent-forgery-knowledge-across-modalities)  
+1. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/13/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：多模态取证中针对未知暗模态的鲁棒性
-2. [Imagine Before Concentration: Diffusion-Guided Registers Enhance Partially Relevant Video Retrieval](/202604/12/2604.03653v1-imagine-before-concentration-diffusion-guided-registers-enhance-partially-relevant-video-retrieval)  
+   evidence：在共享的模态不变子空间内对齐音频和视觉嵌入
+2. [Unified Multimodal Uncertain Inference](/202604/13/2604.08701v1-unified-multimodal-uncertain-inference)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：基于任何模态或组合的前提进行多模态推理
+3. [M-IDoL: Information Decomposition for Modality-Specific and Diverse Representation Learning in Medical Foundation Model](/202604/13/2604.08936v1-m-idol-information-decomposition-for-modality-specific-and-diverse-representation-learning-in-medical-foundation-model)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：模态特定表示学习的信息分解
+4. [The Indra Representation Hypothesis for Multimodal Alignment](/202604/13/2604.04496v1-the-indra-representation-hypothesis-for-multimodal-alignment)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于不完整全局上下文感知的扩散引导寄存器
-3. [Hierarchical Semantic Correlation-Aware Masked Autoencoder for Unsupervised Audio-Visual Representation Learning](/202604/12/2604.04229v1-hierarchical-semantic-correlation-aware-masked-autoencoder-for-unsupervised-audio-visual-representation-learning)  
+   evidence：多模态对齐与跨模态共享关系结构
+5. [SemEval-2026 Task 3: Dimensional Aspect-Based Sentiment Analysis (DimABSA)](/202604/13/2604.07066v1-semeval-2026-task-3-dimensional-aspect-based-sentiment-analysis-dimabsa)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：模态不变子空间对齐与层次化语义关联
+   evidence：维度情感分析与情感建模
+6. [Latent Structure of Affective Representations in Large Language Models](/202604/13/2604.07382v1-latent-structure-of-affective-representations-in-large-language-models)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：情感表示的潜层结构与情感处理
+7. [A Systematic Framework for Tabular Data Disentanglement](/202604/13/2604.07940v1-a-systematic-framework-for-tabular-data-disentanglement)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：数据解耦表示的系统框架
+8. [DialogueSidon: Recovering Full-Duplex Dialogue Tracks from In-the-Wild Dialogue Audio](/202604/13/2604.09344v1-dialoguesidon-recovering-full-duplex-dialogue-tracks-from-in-the-wild-dialogue-audio)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：从退化的混合信号中恢复说话人潜层表示
 
 
 <div class="dpr-home-promo-card">
