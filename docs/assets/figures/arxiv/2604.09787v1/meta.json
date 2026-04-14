@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-001.webp",
+      "caption": "Figure 1: Counterfactual Reconstruction Framework. The model learns to disentangle intrinsic galaxy properties from instrument systematics by reconstructing an anchor image via a dual-encoder architecture and conditional flow matching. Training uses data triplets consisting of: an anchor observation (signal s from instrument i), an instrument-augmented observation (same source s, a different instrument i′), and a physics-augmented observation (a different source s′, same instrument i). The physics encoder extracts latents from the instrument-augmented pair to capture invariant physical features, while the instrument encoder processes the physics-augmented observation to isolate measurement artifacts. These latent variables jointly condition the flow-matching decoder. Crucially, the anchor image is never fed into the encoders; it is used only as a target for the flow-matching loss, forcing the model to generate the reconstruction counterfactually.",
+      "page": 2,
+      "index": 1,
+      "width": 822,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-002.webp",
+      "caption": "Figure 4: Latent Space Disentanglement. UMAP projections of the physics (left) and instrument (right) latent spaces. Orange and blue points represent HSC and Legacy images, respectively. Matched markers (△, ×, □, ◦) denote cross-survey pairs of the same galaxy. In the physics space, the encoders produce overlapping distributions where cross-survey pairs are mapped to similar coordinates. In contrast, the instrument space shows a clean separation between surveys and pairs, confirming that this space captures survey-specific features rather than intrinsic galaxy properties.",
+      "page": 7,
+      "index": 2,
+      "width": 822,
+      "height": 332
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-003.webp",
+      "caption": "Figure 3: Left: Pixel-wise Z-score distribution of generated posterior samples relative to groundtruth target images, across all pixels and held-out galaxies. For each pixel, x is the true value for a given pixel, x̂ is the predicted one, E[x̂] is the posterior sample mean over pixels and galaxies and std(x̂) is the posterior sample standard deviation. Both HSC-anchored and Legacy-anchored reconstructions closely approximate a standard normal distribution, indicating that the posterior mean is approximately unbiased, the posterior variance captures the true prediction error, and that the residual uncertainty is approximately Gaussian. The standard deviations slightly above unity indicate mild overconfidence, more pronounced for HSC-anchored reconstructions, consistent with the greater ambiguity in generating higher-resolution images from lower-resolution conditioning. Right: R2 for galaxy ellipticity from a ResNet trained on real HSC images, evaluated on real versus counterfactual HSC images. Near-identical performance shows that existing HSC pipelines can be readily applied to Legacy images through our counterfactual model, extending HSC-quality analysis across the full Legacy footprint.",
+      "page": 7,
+      "index": 3,
+      "width": 645,
+      "height": 251
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-004.webp",
+      "caption": "Table 4: Instrumental and observational parameters used for downstream regression evaluation of the instrument latent space. All quantities vary spatially across each survey’s footprint.",
+      "page": 18,
+      "index": 4,
+      "width": 820,
+      "height": 609
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-005.webp",
+      "caption": "Figure 5: Probing Latent Disentanglement via Downstream Regression. We report R2 scores for the prediction of physics-related properties (left) and instrumental properties (right) on four sets of representations: our physics encoder latents (blue), the instrument encoder latents (red), AION-1 embeddings which treat each survey as an independent modality (green), and a randomly initialized ResNet-18 of the same architecture as our encoders (hatched black). We distinguish physics-related properties (gray shading) and instrument properties, which are grouped by survey: Legacy (blue) and HSC (orange). For the instrument properties we add the performance of a ResNet based model trained directly to predict HSC instrument properties from Legacy images and viceversa (purple). The asymmetry between the two panels demonstrates that our architecture successfully separates physics-invariant information from instrument-dependent systematics.",
+      "page": 8,
+      "index": 5,
+      "width": 790,
+      "height": 394
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-006.webp",
+      "caption": "Figure 7: Spatial Structure Preservation. Power spectrum (left) and autocorrelation (right) per band for ground-truth and generated images. Each plot shows the true value (blue), the posterior mean from 32 generated samples (orange dashed line), and the 1σ posterior standard deviation (orange shaded region). Strong agreement across spatial frequencies and pixel separation (lag) distances indicates that the model captures realistic morphological structure and noise properties, rather than producing pixel-level artifacts, which would manifest as excess high-frequency power, or overly-smoothed outputs, which would appear as a deficit.",
+      "page": 19,
+      "index": 6,
+      "width": 822,
+      "height": 725
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-007.webp",
+      "caption": "Table 3: Physical parameters used for downstream regression evaluation of the physics latent space.",
+      "page": 17,
+      "index": 7,
+      "width": 822,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-008.webp",
+      "caption": "Table 2: Training configuration and hyperparameters.",
+      "page": 17,
+      "index": 8,
+      "width": 468,
+      "height": 436
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-009.webp",
+      "caption": "Figure 6: Instrument-Invariant Nearest-Neighbor Search. We evaluate the disentangled latent spaces by performing nearest neighbor retrieval using paired HSC and Legacy observations as queries. Physics Space Retrieval: For both queries, the corresponding pair from the alternate survey is identified as the top-1 neighbor (red). Additional top-ranked neighbors are physically similar galaxies from a mixture of both instruments (yellow indicates a cross-instrument NN). Instrument Space Retrieval: In contrast, neighbors retrieved in the instrument space show similar noise characteristics, independent of the underlying galactic signal.",
+      "page": 9,
+      "index": 9,
+      "width": 829,
+      "height": 237
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-010.webp",
+      "caption": "Figure 2: Multi-instrument Galaxy Reconstructions. Columns 1–2 (Input Conditioning): The target galaxy observed via an alternate instrument (input to the physics encoder) and a set of up to five different galaxies imaged by the target instrument (input to the instrument encoder). Column 3 (Ground Truth): The original anchor (target) image, withheld from the encoders. Columns 4–5 (Posterior Samples): Independent samples generated by the flow-matching decoder, demonstrating the model’s ability to capture noise and uncertainty. Column 6 (Empirical Mean): The pixel-wise mean of the generated posterior samples, showing the recovered structural features of the galaxy.",
+      "page": 5,
+      "index": 10,
+      "width": 829,
+      "height": 284
+    },
+    {
+      "url": "assets/figures/arxiv/2604.09787v1/fig-011.webp",
+      "caption": "Table 1: Model architecture parameters for the conditional flow matching model with dual ResNet18 encoders.",
+      "page": 16,
+      "index": 11,
+      "width": 684,
+      "height": 413
+    }
+  ]
+}
