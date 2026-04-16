@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-001.webp",
+      "caption": "Fig. 1. Paradigm comparison of joint AU and FE learning. (a): conventional multi-task learning (MTL) on homogeneous datasets achieves bidirectional gains but suffers from high annotation cost and limited generalization. (b): predominant unidirectional transfer (AU→FE) on heterogeneous datasets, where mismatched annotation paradigms and semantic granularity hinder reverse learning and introduce distribution bias from lab-controlled AU data. (c): our method enables adaptive bidirectional learning by explicitly modeling AU↔FE relationships via textual mediation in a shared semantic space, improving scalability and generalization under heterogeneous data.",
+      "page": 1,
+      "index": 1,
+      "width": 529,
+      "height": 322
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-002.webp",
+      "caption": "Fig. 6. Visualization of the input facial frame sequences. The left side shows samples from the DFER task. The right side shows samples from the AU detection task. Each subfigure presents an overlay of the original face frame and the attention heatmap. Warmer colors indicate regions with higher responses. The attention maps are computed from the multi-head self-attention of the CLIP-ViT-B/16 visual encoder using the attention rollout method [80]. From top to bottom, the attention overlays correspond to STL, Baseline, and SSM, respectively. Compared with STL, Baseline attends to more facial regions. Compared with Baseline, SSM shows denser and more spatially organized responses across frames.",
+      "page": 11,
+      "index": 2,
+      "width": 1072,
+      "height": 580
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-003.webp",
+      "caption": "Fig. 7. The upper part shows the weight matrix activation maps from AUs to facial expressions on DISFA and DFEW(fd5). From left to right, the three matrices correspond to the initial matrix, the matrix learned from random initialization, and the matrix learned from prior-based initialization. The lower part shows the corresponding weight matrices from facial expressions to AUs.",
+      "page": 11,
+      "index": 3,
+      "width": 1074,
+      "height": 433
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-004.webp",
+      "caption": "TABLE I F1 SCORES OVER 12 AUS ON THE BP4D DATASET, USING JOINT LEARNING BASED ON THE DFEW DATASET. THE BEST RESULTS ARE HIGHLIGHTED IN BOLD, AND THE SECOND-BEST UNDERLINED. STL REFERS TO THE SINGLE-TASK COUNTERPART.",
+      "page": 7,
+      "index": 4,
+      "width": 1076,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-005.webp",
+      "caption": "TABLE II F1 SCORES OVER 8 AUS ON THE DISFA DATASET, USING JOINT LEARNING BASED ON THE DFEW DATASET. THE BEST RESULTS ARE HIGHLIGHTED IN BOLD, AND THE SECOND-BEST UNDERLINED. STL REFERS TO THE SINGLE-TASK COUNTERPART.",
+      "page": 7,
+      "index": 5,
+      "width": 872,
+      "height": 349
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-006.webp",
+      "caption": "TABLE III COMPARISON WITH STATE-OF-THE-ART METHODS ON DFEW, FERV39K, AND MAFW. UAR: UNWEIGHTED AVERAGE RECALL; WAR: WEIGHTED AVERAGE RECALL. USING JOINT LEARNING BASED ON THE BP4D DATASET. THE BEST RESULTS ARE HIGHLIGHTED IN BOLD, AND THE SECOND-BEST UNDERLINED. STL REFERS TO THE SINGLE-TASK COUNTERPART.",
+      "page": 8,
+      "index": 6,
+      "width": 844,
+      "height": 537
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-007.webp",
+      "caption": "TABLE IV DETAILED COMPARISON OF ACCURACY ACROSS VARIOUS EMOTION CATEGORIES ON DFEW. THE BEST RESULTS ARE HIGHLIGHTED IN BOLD, AND THE SECOND-BEST UNDERLINED.",
+      "page": 8,
+      "index": 7,
+      "width": 840,
+      "height": 255
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-008.webp",
+      "caption": "Fig. 3. Our Baseline model for learning dynamic AUs and FEs jointly. A shared CLIP vision encoder with MoE layers first extracts frame-wise features from FE or AU videos. Then, these features are fed into two Transformer-based temporal models, Φexp(·) and Φau(·), for task-specific temporal modeling. The DFER branch aggregates sequential features into a clip-level representation Zexp. In contrast, the AU branch performs temporal interaction among the input frames and selects the temporally enhanced feature of the center frame as the AU representation Zau. Finally, Zexp and Zau are fed into independent linear heads for classification. This Baseline model corresponds to the visual backbone in Fig. 2.",
+      "page": 4,
+      "index": 8,
+      "width": 526,
+      "height": 237
+    },
+    {
+      "url": "assets/figures/arxiv/2604.10541v1/fig-009.webp",
+      "caption": "TABLE XI SUMMARY OF RESULTS ACROSS DIFFERENT DATASET COMBINATIONS. FOR DATASETS WITH VARYING NUMBERS OF FOLDS, WE ADOPT A CARTESIAN-PRODUCT-BASED COMBINATION STRATEGY FOR EXHAUSTIVE TRAINING, THEREBY MINIMIZING THE RANDOMNESS INTRODUCED BY SPECIFIC DATASET PAIRINGS. BP4D AND DISFA: F1 SCORE. FERV39K, DFEW, AND MAFW: UAR/WAR.",
+      "page": 12,
+      "index": 9,
+      "width": 1076,
+      "height": 238
+    }
+  ]
+}
