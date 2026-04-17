@@ -1,0 +1,622 @@
+Title: Breaking the Generator Barrier: Disentangled Representation for Generalizable AI-Text Detection
+
+URL Source: https://arxiv.org/pdf/2604.13692v1
+
+Published Time: Thu, 16 Apr 2026 00:53:55 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# Breaking the Generator Barrier: Disentangled Representation for Generalizable AI-Text Detection 
+
+Xiao Pu, Zepeng Cheng, Lin Yuan, Yu Wu, Xiuli Bi *
+
+Chongqing University of Posts and Telecommunications, China 
+
+puxiao@cqupt.edu.cn,chengzepenv@gmail.com yuanlin@cqupt.edu.cn,wuyu@cqupt.edu.cn,bixl@cqupt.edu.cn 
+
+Abstract 
+
+As large language models (LLMs) generate text that increasingly resembles human writing, the subtle cues that distinguish AI-generated con-tent from human-written content become in-creasingly challenging to capture. Reliance on generator-specific artifacts is inherently un-stable, since new models emerge rapidly and reduce the robustness of such shortcuts. This generalizes unseen generators as a central and challenging problem for AI-text detection. To tackle this challenge, we propose a progres-sively structured framework that disentangles AI-detection semantics from generator-aware artifacts. This is achieved through a compact latent encoding that encourages semantic min-imality, followed by perturbation-based reg-ularization to reduce residual entanglement, and finally a discriminative adaptation stage that aligns representations with task objec-tives. Experiments on MAGE benchmark, cov-ering 20 representative LLMs across 7 cate-gories, demonstrate consistent improvements over state-of-the-art methods, achieving up to 24.2% accuracy gain and 26.2% F1 im-provement. Notably, performance continues to improve as the diversity of training gen-erators increases, confirming strong scalabil-ity and generalization in open-set scenarios. Our source code will be publicly available at 
+
+https://github.com/PuXiao06/DRGD. 
+
+1 Introduction 
+
+The rapid proliferation of large language models (LLMs) has resulted in a surge of AI-generated text (AIGT) across news media, social platforms, and academic domains. While this development offers new opportunities, it has also raised increas-ing concerns regarding misinformation (Pu et al., 2025; Wei et al., 2025; Hu et al., 2024), manipu-lation (Guan et al., 2024; Shao et al., 2023), and authorship integrity (Silva et al., 2024; Vasilatos          
+
+> *Corresponding author 84 89 94 99 104 109 114 119 124 129
+> 66
+> 69
+> 72
+> 75
+> 78
+> 81
+> 84
+> Ours
+> BERT
+> NAACL'19
+> PECOLA
+> ACL'24
+> SCRN
+> ACL'24
+> IT:CLUST
+> ACL'22
+
+Time per batch (ms)    
+
+> ACC (%)
+> # Generators in training
+> 2345
+
+Figure 1: Comparison with competitive approaches. On the unseen OPT generators, our method achieves the best balance between accuracy and efficiency, and its advantage grows with training generator diversity. 
+
+et al., 2023). These concerns have made detecting AI-generated text a pressing task in trustworthy AI and content regulation, especially amid rapidly emerging unseen LLMs. Although recent advances in AIGT detection have shown promising results under closed-world settings where training and test samples share the same generator (Wang et al., 2025; Liu et al., 2024b), these methods fail to generalize to pre-viously unseen generators, resulting in substantial performance degradation. This issue is especially pronounced in real-world settings, where novel LLMs are continuously emerging. While prior ef-forts have explored cross-domain generalization through adversarial (Huang et al., 2024) or con-trastive learning (Liu et al., 2024b), they tend to treat generator shift as a subset of domain shift and often overlook its distinct challenges. Recent stud-ies (Wu et al., 2025; Guo et al., 2024; Li et al., 2024; Wang et al., 2024) have shown that shifts across generators introduce unique semantic, syntactic, and stylistic variations, resulting in generalization 
+
+> arXiv:2604.13692v1 [cs.CL] 15 Apr 2026
+
+gaps beyond the scope of domain-centric solutions. To address the core challenge of generalization to unseen LLM-based generators, we propose a progressively structured framework that disentan-gles AI-detection semantics from generator-aware artifacts. The goal is to isolate task-relevant sig-nals by suppressing entangled generator bias. The process begins with a dual-bottleneck design that enforces compactness and minimality in the latent space, encouraging essential task-focused represen-tations. Building on this, cross-view regularization disrupts residual correlations and promotes inde-pendence among factors. Finally, a discriminator-guided adaptation stage further consolidates the separation by refining each representation stream against task-specific objectives and suppressing residual leakage across branches. This progres-sive pipeline incrementally purifies AI-detection semantics while filtering out generator-aware noise, yielding representations that generalize more effec-tively across diverse LLMs. In summary, our contributions are as follows: • We address the challenge of AIGT detection on unseen LLMs by learning task-focused representations that isolate AI-detection cues from generator-aware artifacts, enabling stronger generalization in open-set scenarios. • Our solution follows a progressive design: it begins with dual-bottleneck encoding to en-courage semantic compactness, applies cross-view regularization to disrupt entangled fac-tors, and finalizes with discriminative-guided adaptation that sharpens task alignment and reinforces representational separation. • Experiments on 20 representative LLMs demonstrate consistent improvements over state-of-the-art methods, with increasingly larger gains under diverse generator settings, validating the effectiveness and generalizabil-ity of our approach (see Figure 1). 
+
+2 Related Work 
+
+2.1 AI-generated Text Detection 
+
+With the widespread adoption of large language models (LLMs) such as GPT-3 (Brown et al., 2020), GPT-4 (Achiam et al., 2023), and Claude (An-thropic, 2026), detecting AIGT has become a cen-tral task in trustworthy NLP. Existing detection methods can be categorized into four main groups. Statistic-based approaches (Zhou et al., 2025; Shi et al., 2024; Su et al., 2023; Gehrmann et al., 2019) rely on entropy, perplexity, or curvature-based signals to distinguish human-written text from machine-generated outputs. Watermark-based methods (Liu et al., 2024a; Kirchenbauer et al., 2023) inject identifiable patterns into the gen-eration process to facilitate detection. Classifier-based techniques (Liu et al., 2024b; Hu et al., 2023; Shnarch et al., 2022; Uchendu et al., 2020) typi-cally fine-tune pretrained models such as RoBERTa or BERT, often incorporating adversarial or con-trastive objectives. Retrieval-based approaches (Krishna et al., 2023) match text against known generator outputs via semantic similarity. Although many existing approaches achieve strong performance in closed-world settings, where training and test data originate from the same gen-erator, they often fail to generalize to previously unseen generators. Recent benchmarks such as MAGE (Li et al., 2024) and M4 (Wang et al., 2024) have systematically exposed such weaknesses, re-vealing substantial performance drops under gener-ator shifts. These findings underscore the need for open-set detectors that explicitly model generator-aware variations. 
+
+2.2 Beyond Domain Generalization: Generator-Aware Challenges 
+
+To improve robustness under distribution shifts, several studies have explored domain generaliza-tion (DG) techniques, which were initially de-veloped for cross-topic or cross-genre transfer in NLP and vision. These methods aim to learn domain-invariant features through adversarial train-ing (Tuck and Verma, 2026; Li et al., 2025; Ganin et al., 2016), feature alignment (Li et al., 2018), or data augmentation (Li et al., 2022; Peng et al., 2018). Motivated by their effectiveness, DG strate-gies have been adapted for AI text detection (Liu et al., 2024b; Huang et al., 2024), showing modest gains on certain unseen generators. However, most DG-based approaches implicitly assume that generator shift resembles domain shift. Studies such as MAGE (Li et al., 2024) reveal that generator-aware variation introduces unique stylis-tic and semantic artifacts that differ qualitatively from conventional domain differences. Additional findings (Chen et al., 2025; Wang et al., 2024; Jiang et al., 2023) show that generators vary not only in syntax or topical preference, but also in prompt interpretation and semantics, factors that standard 𝑫 𝒈 
+
+> 𝑫 𝒂
+> 𝑫 𝒈
+
+𝑬 
+
+> 𝑬 𝒂
+> 𝑬 𝒈
+> Inference
+> 𝑫 𝒂
+
+𝑬 𝑬 𝒂     
+
+> 1st Stage: CV Regularization
+> 𝑫 𝒂
+> DB Encoding
+> Various
+> Gen.
+> AI
+> Human
+
+𝑎 
+
+𝑔       
+
+> 2nd stage
+> 1st stage AI/human
+> Features
+> Gen.
+> Features
+> 2nd Stage: DG Adaptation
+
+𝑎 
+
+𝑔 Figure 2: Overview of the proposed framework. The model enhances generalization to unseen generators by enforcing semantic disentanglement between AI-detection and generator-aware features. It integrates compact dual-bottleneck (DB) encoding, cross-view (CV) regularization, and discriminator-guided (DG) adaptation into a cohesive disentanglement-enhancing pipeline. 
+
+domain-invariant methods fail to disentangle. These limitations highlight the need for ap-proaches that transcend conventional domain gen-eralization by explicitly modeling generator-aware semantics. Unlike prior one-shot learning meth-ods that implicitly subsume generator variation un-der general domain shifts, our approach progres-sively disentangles detection-relevant semantics from generator-aware artifacts, enabling robust and interpretable generalization to unseen LLMs. 
+
+3 Methodology 
+
+We propose a progressively structured framework for detecting AIGT from unseen generators by learning task-specific representations that disentan-gle AI-detection semantics from generator-aware patterns. The framework begins with a dual-bottleneck encoding that encourages compact and factorized representations by minimizing shared redundancy. A cross-view regularization then dis-rupts residual entanglement across branches, en-hancing representational independence. Finally, discriminative adaptation refines each branch us-ing dedicated pre-trained discriminators, aligning each with its target objective while suppressing in-terference from the opposite one. Together, these components form a cohesive pipeline that enhances semantic purity and significantly improves gener-alization across diverse generative sources. The overall architecture is shown in Figure 2. 
+
+3.1 Problem Setup 
+
+We address the task of detecting whether a given text sample is AI-generated, even when the gen-erator that produced it has not been observed dur-ing training. Each training instance is denoted as 
+
+X = {(xi, y i, s i)}Ni=1 , where xi is a text sample, 
+
+yi ∈ { 0, 1} is the source label (human or AI) and si
+
+denotes the generator identity (e.g., GPT, LLaMA). This formulation enables the model to learn both AI-detection cues and generator-aware variations that are useful for open-set generalization. 
+
+3.2 Dual-Bottleneck Encoding 
+
+To improve generalization under distribution shifts from unseen LLM-based generators, we propose a dual-bottleneck encoding module that disentan-gles AI-detection semantics from generator-aware artifacts. This is achieved by enforcing compact, task-aligned latent representations guided by the information bottleneck (IB) principle. The IB objective encourages latent features z to retain information about the target label y while discarding irrelevant input variations: min  −
+
+I(z; y) + βI (x; z), where β balances prediction fidelity and compression. In practice, this translates into a prediction loss (approximating −I(z; y))combined with a KL regularization term (approxi-mating I(x; z)). Concretely, we implement two parallel encoder branches: Ea for AI-detection semantics and Eg
+
+for generator-aware cues. Given an input xi, we first obtain a contextual embedding hi from a pre-trained BERT [CLS] token. This is projected into intermediate vectors e(a) 
+
+> i
+
+and e(g) 
+
+> i
+
+via MLPs, which parameterize diagonal-Gaussian posteriors: 
+
+q(ai | e(a) 
+
+> i
+
+) = N
+
+
+
+μ(a) 
+
+> i
+
+, diag  (σ(a) 
+
+> i
+
+)2
+
+, (1) where μ(a) 
+
+> i
+
+and σ(a) 
+
+> i
+
+are computed via separate linear layers, with softplus activation applied to the variance to ensure positivity. An analogous operation is applied to obtain the generator-aware posterior q(gi | e(g) 
+
+> i
+
+).To enable differentiable sampling during train-ing, we draw K samples using the reparameteriza-tion trick (Kingma and Welling, 2013): 
+
+a(K) 
+
+> i
+
+= μ(a) 
+
+> i
+
++ σ(a) 
+
+> i
+
+⊙ ϵ(K), ϵ(K) ∼ N (0 , I),
+
+(2) where ⊙ denotes element-wise multiplication. Then we average the prediction losses across K
+
+Monte Carlo samples for stability. At inference time, the latent feature is taken as the posterior mean: ai = μ(a) 
+
+> i
+
+. The same sampling and mean-inference strategy is applied to derive the latent representation gi.To enforce compactness and disentanglement, we introduce learnable priors p(a) and p(g) for each branch, which is initialized as a standard Gaus-sian N (0 , I) and optionally updated during train-ing. We then apply KL regularization as follows: 
+
+LDB = DKL 
+
+
+
+q(ai | e(a) 
+
+> i
+
+) ∥ p(a)
+
+
+
++ DKL 
+
+
+
+q(gi | e(g) 
+
+> i
+
+) ∥ p(g)
+
+
+
+. (3) This regularization encourages latent representa-tions ai and gi to align with task-agnostic pri-ors, minimizing redundancy while promoting task-specific compression. This dual-bottleneck design enforces semantic compression and separation at the feature level, providing a solid foundation for subsequent reg-ularization and adaptation modules to operate on disentangled, robust representations. 
+
+3.3 Cross-View Regularization 
+
+While the dual-bottleneck encoding encourages se-mantic decoupling, residual entanglement may still persist due to implicit correlations and shared lin-guistic patterns across generators. To further sep-arate AI-detection and generator-aware semantics, we introduce a cross-view regularization mech-anism that explicitly perturbs each representa-tion with signals from its complementary branch, thereby promoting representational independence. For each input xi, we sample another instance 
+
+xj̸ = xi (xj is a human or AI sample) within the batch and perturb the AI-detection feature ai us-ing the generator-aware representation gj . The perturbed output ˜ai is computed as: 
+
+˜ai = γ · ai + (1 − γ) · ϕ(gj , ai), (4) where γ ∼ U (0 .5, 1) controls the interpolation, and 
+
+ϕ(·, ·) transfers the statistics style of gi to aj :
+
+ϕ(gi, aj ) = aj − μ(aj )
+
+σ(aj ) · σ(gi) + μ(gi), (5) with μ(·) and σ(·) denoting mean and standard deviation over features. A symmetric operation is applied to perturb ˜gi using aj
+
+To further mitigate asymmetry, where AI-generated samples are more susceptible to mis-classifications, we apply additional cross-branch perturbations exclusively to AI-generated samples, producing augmented variant ˜a(aug ) 
+
+> i
+
+. We then ap-ply a dual-branch prediction loss with additional regularization terms on the augmented samples: 
+
+Lreg = −E
+
+
+
+log D(yi)
+
+> a
+
+ ˜ai
+
+ + log D(si)
+
+> g
+
+ ˜gi
+
+
+
+− 1
+
+|B (aug ) 
+
+> AI
+
+|
+
+X
+
+> i∈B (aug )
+> AI
+
+log D(yi)
+
+> a
+
+ ˜a(aug )
+
+> i
+
+, (6) where D(k)(·) denotes the predicted probability of class k and B(aug ) 
+
+> AI
+
+is the set of augmented samples. By disrupting residual cross-branch dependen-cies and injecting controlled semantic noise, the perturbation-enhanced regularization encourages structurally independent representations, ultimately enhancing robustness to unseen generator shifts. 
+
+3.4 Discriminative-Guided Adaptation 
+
+Despite the earlier regularization, residual overlaps between branches may persist due to shared cues. To further enforce disentanglement, we introduce a discriminative-guided adaptation stage. Specifically, we freeze the parameters of the AI-detection discriminator Da and the generator-aware discriminator Dg, both pre-trained on perturbed representations to encode robust task semantics. For clean representations, each branch encoder is Categories MAGE Corpus (Li et al., 2024) FLAN-T5 GPT LLaMA OPT GLM BigScience EleutherAI                  
+
+> LLMs included
+> small/base/large xl/xxl davinci-002/003 gpt-turbo-3.5 6B/13B 30B/65B 2.7B/6.7B iml-1.3B/30B 130B Bloom-7B GPT-J-6B GPT-NeoX-20B AI 9,000 13,800 9,000 9,000 9,100 8,900 9,000 Human 9,000 13,800 9,000 9,000 9,100 8,900 9,000
+
+Table 1: Number of AI-generated and human-written samples across datasets. Balanced sampling is applied to categories with multiple LLMs so that each category contains a comparable number of samples, resulting in 20 representative models overall.                                                                                   
+
+> Algorithm 1: Structured Disentanglement Framework Input: encoder E, bottleneck encoders Ea,Eg,discriminators Da,Dg, weight factor β, training set X
+> Output: optimized encoders and discriminators 1for each training epoch do
+> 2for each mini-batch B={xi, y i, s i}Ni=1 do
+> 3Stage I: Encoding and Regularization
+> 4hi=E(xi)
+> 5e(a)
+> i←MLP (a)(hi),e(g)
+> i←MLP (g)(hi)
+> 6q(ai|e(a)
+> i),q(gi|e(g)
+> i)←Compute posteriors 6p(a),p(g)←Learnable priors 7Compute DB loss LDB via Eq. 3 8˜ai,˜gi,˜a(aug )
+> i←Apply regularization 9Compute discriminative loss Lreg via Eq. 6 10 Compute 1st-stage loss: Lstage1 =βLDB +Lreg
+> 11 Update E,Ea,Eg,Da,Dgw.r.t. Lstage1
+> 12 Stage II: Discriminative-Guided Adaptation
+> 13 Freeze Da,Dg
+> 14 ai,gi←pure features 15 Compute 2nd-stage loss Ladapt via Eq. 7 16 Update Ea,Egw.r.t. Ladapt
+
+updated under two complementary constraints: (i) when passed into its own discriminator, the repre-sentation should be correctly classified, ensuring task alignment; (ii) when passed through a gradient reversal layer (GRL) into the opposite discrimina-tor, the representation is encouraged to be misclas-sified, forcing the encoder to remove any informa-tion exploitable by the other branch. Formally, the adaptation loss integrates both objectives: 
+
+Ladapt = −E
+
+
+
+log D(yi) 
+
+> a
+
+(ai) + log D(yi)
+
+> a
+
+ G(gi)
+
++ log D(si) 
+
+> g
+
+(gi) + log D(si)
+
+> g
+
+ G(ai)
+
+, (7) where G(·) denotes the GRL operation. This setup ensures each encoder fits its own semantics while eliminating cross-branch cues. By refining en-coders under frozen discriminators with clean in-puts, this stage yields more invariant, disentangled, and generalizable representations. The complete procedure, including loss definitions and optimiza-tion steps, is summarized in Algorithm 1. 
+
+4 Experiments 
+
+4.1 Experimental Details Datasets. We adopt MAGE benchmark (Li et al., 2024) to comprehensively evaluate cross-generator generalization in AIGT detection. The original dataset consists of 27 LLMs grouped into 7 cat-egories. To prioritize generalization over redun-dancy, we remove highly similar variants of the same categories, thereby obtaining a subset of 20 representative models. For category with a single model, the entire set is retained, whereas for those with multiple sub-models, we apply balanced ran-dom sampling to ensure comparable sizes. As sum-marized in Table 1, the final dataset spans diverse generator families (e.g., GPT, LLaMA, FLAN-T5), thereby providing a broad and challenging testbed for cross-generator evaluation. 
+
+Competitive Methods. To evaluate general-ization on unseen generators, we compare with SOTA methods in two categories: training-based and zero-shot. Training-based methods include PECOLA (Liu et al., 2024b) and SCRN (Huang et al., 2024), which add input noise or regulariza-tion to improve stability, and IT:CLUST (Shnarch et al., 2022), which exploits clustering for interme-diate supervision and domain adaptation. Zero-shot methods include Fast-DetectGPT (Bao et al., 2024) and GLTR (Gehrmann et al., 2019), relying on pre-trained LM statistics, and MCP (Zhu et al., 2025), which uses conformal prediction to calibrate thresh-olds and control the false positive rate. We also report BERT (Devlin et al., 2019) as an encoder-only baseline. These methods provide baselines for evaluating robustness and generalization. 
+
+Implementation Details. We use the Adam op-Accuracy (%) / F1-Measure LLM Categories FLAN-T5 GPT LLaMA OPT GLM BigScience EleutherAI                                                                       
+
+> Zero-shot methods
+> GLTR ACL’19 56.9 / 52.4 71.8 / 71.5 75.1 / 75.8 75.1 / 77.3 77.8 / 78.2 86.6 / 86.4 80.2 / 80.0 Fast-DetectGPT ICLR’24 57.3 / 74.9 70.0 / 82.5 73.4 / 79.8 74.6 / 76.1 69.9 / 72.8 79.3 / 84.2 77.0 / 82.9 MCP ACL’25 58.6 / 76.3 72.1 / 84.4 75.9 / 81.5 77.4 / 78.3 74.7 / 75.2 86.2 / 86.5 83.7 / 84.4
+> Training-based methods
+> BERT NAACL’19 60.9 / 52.6 78.6 / 77.5 83.1 / 85.4 82.1 / 84.2 92.4 / 92.8 96.4 / 95.7 96.7 / 95.9 IT:CLUST ACL’22 58.7 / 57.5 63.1 / 61.0 71.3 / 70.4 72.1 / 74.7 75.7 / 77.1 85.4 / 87.9 82.5 / 81.8 PECOLA ACL’24 65.1 / 65.5 81.1 / 80.3 84.6 / 84.5 83.5 / 83.4 78.3 / 77.8 87.6 / 86.7 83.9 / 84.5 SCRN ACL’24 59.6 / 58.7 69.0 / 67.8 75.0 / 73.3 81.3 / 79.2 71.8 / 67.7 87.8 / 87.1 90.6 / 90.0
+> Ours 68.9 /64.1 82.7 /82.6 88.0 /88.5 89.1 /88.3 94.1 /93.9 96.7 /96.4 97.2 /97.8
+
+Table 2: Cross-generator generalization results on seven LLM categories from the MAGE benchmark under the leave-one-generator-out protocol. Zero-shot and training-based methods are compared against our approach, which yields consistent gains across all held-out generators. 
+
+timizer with a learning rate of 2 × 10 −5 and a batch size of 16 across all experiments. During the DB-based encoding stage, each latent variable is sam-pled 5 times per instance to estimate expectations. Both the AIGT and generator discrimination heads employ a dropout rate of 0.5 to mitigate overfitting. The loss balancing coefficient β, which controls the trade-off between the DB regularization and the discriminative objective in both stages, is set to 
+
+5 × 10 −6. All experiments are conducted on two NVIDIA GeForce RTX 3090 GPUs. 
+
+4.2 Overall Performance 4.2.1 Main Results on Cross-Generator Generalization 
+
+We evaluate our method under the leave-one-generator-out setting, training on 6 generator cate-gories and testing on the held-out one. As shown in Table 2, accuracies vary widely from 60% to 98%, reflecting substantial variation in cross-generator difficulty. Across this range, our model consis-tently outperforms all competitive methods, achiev-ing up to 24.2% accuracy improvement over Fast-DetectGPT on unseen GLM set. The gains are par-ticularly notable under large distributional shifts. For instance, on the challenging unseen FLAN-T5 our approach improves accuracy by 8.0% over BERT, while on the high-performing EleutherAI, it yields 0.5%. These results highlight that our disen-tanglement design enables robust cross-generator generalization, particularly under large distribu-tional shifts between train/test generators.                                                  
+
+> Model Accuracy (%) / F1-Measure
+> N= 2 N= 3 N= 4 N= 5
+> OPT Test BERT NAACL’19 72.8/72.2 73.1/69.9 76.7/74.9 78.1/76.1 IT:CLUST ACL’22 69.4/67.7 68.4/69.8 70.1/68.1 68.4/68.1 PECOLA ACL’24 70.1/68.1 76.8/75.5 80.5/80.0 81.1/80.9 SCRN ACL’24 69.2/68.3 70.7/67.4 72.5/69.9 76.1/75.9
+> Ours 73.1/74.7 73.9/75.1 80.5/80.4 83.2/82.3
+> FLAN-T5 Test BERT NAACL’19 51.2/50.2 52.9/51.1 55.0/53.9 58.1/57.8 IT:CLUST ACL’22 53.1/53.7 54.4/53.1 54.2/53.0 53.6/52.2 PECOLA ACL’24 56.7 /56.3 54.2/50.2 57.4/57.1 61.3/60.1 SCRN ACL’24 53.6/52.1 54.1/53.2 56.8/55.9 57.8/57.4
+> Ours 54.7/52.6 57.0/55.1 61.1/58.4 64.5/62.4
+
+Table 3: Cross-generator generalization on OPT and FLAN-T5. Models are trained with N categories under a fixed training size of 12,000 samples and evaluated on an unseen LLM category. 
+
+4.2.2 Effect of Training Generator Diversity 
+
+To examine the effect of training diversity on cross-generator generalization, we hold out OPT and FLAN-T5 as test categories while training on sub-sets of the remaining 5 families. For each setting, we fix the training size at 12,000 instances and vary the number of training generators N ∈ { 2, 3, 4, 5},distributing samples evenly across the selected cat-egories to control for data volume. As shown in Table 3, our method consistently benefits from in-creased diversity and demonstrates stronger scala-bility than recent alternatives. In the unseen OPT detection scenario, under low-diversity training (N = 2 ), the margin over the strongest method is minimal (0.3% over BERT), but under high-diversity training ( N = 5 ) it expands substantially (b1) + Decouple (b2) + DB (b4) + Adaptation (b3) + Regular.                                  
+
+> (a) BERT Baseline
+> Gen. collapse
+> Unseen mixed
+> Gen. remains weak
+> AI -human split
+> Generator emerges
+> Noise filtered, compact
+> Gen. reinforced
+> Smooth, robust
+> Generator -invariant
+> incl. unseen samples
+> AI -human split
+> Overfit
+> Gen. invariance
+> Robust boundary
+> Generalization starts
+> Boundary clear
+> Generalization aligns
+> Intra -Compact
+> (b) AI -detection
+> representation
+> (c) Generator -aware
+> representation
+> (c1) +Decouple (c2) +DB(c3) +Regular. (c4) +Adaptation
+
+Figure 3: Progressive t-SNE visualization of disentangled feature spaces. The BERT baseline (a) collapses, with unseen samples (red) mixed into training clusters (blue/purple). After decoupling, the AI-detection (b) and generator-aware (c) branches begin to separate (b1/c1), but generalization remains unstable and generator-sensitive. With DB encoding (b2/c2), semantic noise is reduced, yielding more compact clusters. Cross-view regularization (b3/c3) smooths boundaries and enhances robustness. Finally, discriminator-guided adaptation (b4/c4) yields clear human–AI separation in the detection branch and generator-invariant alignment in the auxiliary branch. 
+
+(5.1% over BERT). These findings confirm that training diversity, rather than training volume, is the key driver for learning invariant features and achieving robust cross-generator generalization. 
+
+4.3 Generalization via Progressive Cumulative Design 
+
+We visualize the evolution of latent features as mod-ules are progressively added. Models are trained on GPT and BigScience categories and evaluated on the unseen FLAN-T5 one, with t-SNE projec-tions shown in Figure 3. The BERT encoder pro-duces entangled and poorly aligned representations, while each additional module: decoupling, DB en-coding, cross-view regularization, and adaptation incrementally enhances compactness, robustness, and ultimately cross-generator generalization. 
+
+4.4 Robustness under Adversarial Attacks 
+
+We evaluate robustness under two types of adversar-ial attacks on the unseen OPT category, including word-level perturbations and model-aware adver-sarial attacks, as summarized in Table 4. Under word-level perturbations (deletion, insertion, swap, and replacement), our method consistently outper-forms BERT and SCRN, exhibiting a smaller per-formance drop from clean inputs, especially un-der deletion. Furthermore, measured by attack success rate (ASR), our approach is significantly                                                 
+
+> Word-level Perturbations
+> Metric Accuracy (%) / F1-Measure Model BERT SCRN Ours Original 82.1 / 84.2 81.3 / 79.2 89.1 /88.3
+> Delete 68.8 / 72.6 67.6 / 64.9 80.0 /79.9
+> Swap 66.9 / 64.2 62.6 / 59.9 66.5 / 69.9
+> Insert 66.9 / 65.1 62.6 / 60.9 67.5 /70.6
+> Replace 66.4 / 65.3 63.5 / 66.9 74.5 /75.6
+> Average 67.3 / 66.8 64.1 / 63.2 72.1 /74.0 Adversarial Attacks (ASR ↓)
+> Model BERT SCRN Ours PWWS 30.7 27.4 27.2
+> TextFooler 61.5 58.7 54.5
+> Deep-Word-Bug 46.1 30.9 22.4
+
+Table 4: Robustness comparison under two types of attacks on the unseen OPT category. Word-level per-turbation are evaluated using accuracy and F1 scores, while adversarial attacks are reported by attack success rate (ASR). Lower ASR indicates stronger robustness. 
+
+more resilient to model-aware attacks (PWW (Ren et al., 2019), TextFooler (Jin et al., 2020), and Deep-Word-Bug (Gao et al., 2018)) compared to the highly vulnerable BERT baseline. These find-ings confirm that disentangled, generator-invariant representations effectively improve model robust-ness against diverse adversarial manipulations un-der cross-generator shifts. human /AI / Various Generators              
+
+> Color by
+> Human -AI
+> labels
+> (b) DB-based encoder (a) MLP -based encoder
+> Color by
+> Gen era tor
+> labels Compact Clusters
+> (bias filtered)
+> Divided clusters
+> (bias remains)
+> Separated
+> but bias
+> Separated ,
+> bias reduced
+
+Figure 4: T-SNE visualizations of AI-detection features 
+
+a from MLP and DB encoders. With human-AI coloring (top), the encoders separate authenticity. With genera-tor coloring (bottom), MLP features split into distinct generator clusters, while DB suppresses generator bias, yielding compact, generator-invariant representations. 
+
+4.5 Analysis of Core Modules 
+
+To gain deeper insights into generalization, we study how individual modules influence the rep-resentation space along three dimensions: disentan-glement, robustness, and compactness. 
+
+4.5.1 Filtering Generator Bias via Bottlenecked Encoding 
+
+To assess the contribution of the DB encoding module, we compare the AI-detection represen-tations a learned by a conventional MLP encoder and our DB encoder, both trained on GPT, Big-Science, and FLAN-T5 sets. As shown in Figure 4, both models successfully separate human from AI texts, but the MLP encoder exhibits clear genera-tor bias with divided clusters. In contrast, our DB encoder mitigates such bias, yielding compact and generator-invariant features that support invariant feature learning and substantially enhance cross-generator generalization. Additionally, the com-plementary analysis of the representations learned by the generator-aware branch g is detailed in Ap-pendix A.4. 
+
+4.5.2 Enhancing Robustness via Cross-View Regularization 
+
+To evaluate the robustness benefits of the cross-view regularization module, we inject two types of noise into the AI-detection features: (1) generator-aware perturbations simulating stylistic interfer-ence, and (2) Gaussian noise introducing unstruc-tured variation. We compare the performance of (a) Generator -aware Noise Attack (b) Gaussian Noise Attack                          
+
+> Our ACC Our F1BERT ACC BERT F1
+> ∆=17 .72%
+> ∆=16 .07%
+> 67
+> ∆=46 .18%
+> 2
+> ∆=29 .54%
+> ∆=42 .08%
+> ∆=24 .2% ∆=16 .51%
+> ∆=17 .98%
+> 911
+> GPT BigScience
+
+Figure 5: Robustness under generator-aware and Gaus-sian perturbations. Perturbation-based regularization enhances our method’s resilience, maintaining superior accuracy over the BERT baseline in both structured and random noise settings. w/o adaptation 
+
+(b) AI -detection (a) Generator -aware 
+
+Ours   
+
+> MTC
+> CT Q90
+> 50
+> 50
+> 10
+> 30
+> MTC
+> CT Q90
+> 50
+> 50
+> 10
+> 30
+
+Figure 6: Intra-class compactness with vs. without adaptation. Adaptation consistently improves feature compactness across tasks, yielding lower dispersion metrics and more task-aligned representations. 
+
+model variants under both noise conditions. As shown in Figure 5, our model consistently main-tains significantly higher classification accuracy, with improvements of up to 46.18% (on GPT) un-der generator-style perturbations and 17.98% (on BigScience) under Gaussian noise. These results confirm that cross-view regularization enhances ro-bustness by reducing sensitivity to both structured and unstructured perturbations, thereby improving generalization under distributional shifts. 
+
+4.5.3 Improving Compactness via Adaptation 
+
+To evaluate the impact of the discriminator-guided adaptation stage, we analyze intra-class compact-ness of the learned features. Specifically, we com-pute three metrics: MeanToCenter, Covariance Trace, and 90th Percentile Pairwise Distance, on AI-detection and generator-aware representations extracted from GPT category. As shown in Fig-Components Accuracy (%) / F1-Measure BERT Disen. DB Regular. Adapt. FLAN-T5 OPT                         
+
+> ✓60.9 / 52.6 82.1 / 84.2
+> ✓✓62.0 / 53.3 83.7 / 83.5
+> ✓✓✓65.2 / 60.2 87.1 / 86.0
+> ✓✓✓✓66.8 / 63.8 88.3 / 87.4
+> ✓✓✓✓✓68.9 /64.1 89.1 /88.3
+
+Table 5: Incremental ablation results on two unseen LLM categories. 
+
+ure 6, models trained with the adaptation module consistently exhibit lower values across all metrics, indicating tighter clustering and reduced semantic noise. These findings suggest that the adaptation module facilitates alignment, leading to more com-pact and discriminative feature structures, thereby enhance model generalization. 
+
+4.6 Ablation Study 
+
+We conduct an incremental ablation study on the FLAN-T5 and OPT as the held-out evaluation cat-egory set (see Table 5). For each test case, the model is trained on the remaining 6 categories and evaluated on the selected one to measure general-ization. Adding DB-based encoding provides the largest gain by filtering generator noise and clarify-ing semantics. Cross-view regularization improves robustness by stabilizing representations under per-turbations, and discriminator-guided adaptation fur-ther refines decision boundaries for compact, task-aligned features. Overall, each module contributes additive improvements, with DB-based encoding as the most influential. 
+
+5 Conclusion 
+
+We propose a structured disentanglement frame-work for detecting AIGT content from unseen gen-erators, tackling distribution shifts and stylistic ar-tifacts. By combining DB-based encoding, cross-view regularization, and discriminator-guided adap-tation, our method suppresses generator-aware noise and improves generalization. Extensive experiments demonstrate state-of-the-art cross-generator performance, highlighting the scalability of disentanglement for AIGT detection. 
+
+Limitations 
+
+While our framework achieves strong cross-generator generalization, several limitations remain. One concern lies in interpretability: although fea-ture visualizations provide some intuition, the spe-cific linguistic or structural cues driving detection decisions are not yet fully understood. Another is-sue is sensitivity to hyperparameter choices, which may require careful tuning to maintain stable per-formance across settings. In addition, robustness against adaptive or adversarial attacks has not been systematically examined, and strengthening this aspect would be essential for reliable deployment in real-world applications. 
+
+Acknowledgements 
+
+This work was supported partly by the Na-tional Natural Science Foundation of China (62402073, 62403093, U22A2096 and 62221005) and the Science and Technology Research Pro-gram of Chongqing Municipal Education Com-mission (KJQN202300619, KJQN202300606 and KJQN202400650). 
+
+References 
+
+Josh Achiam and 1 others. 2023. Gpt-4 technical report. 
+
+arXiv preprint arXiv:2303.08774 .Anthropic. 2026. Introducing Claude Sonnet 4.6: Our fastest, smartest model is now available for all. https://www.anthropic.com/news/ claude-sonnet-4-6 .Guangsheng Bao, Yanbin Zhao, Zhiyang Teng, Linyi Yang, and Yue Zhang. 2024. Fast-detectgpt: Effi-cient zero-shot detection of machine-generated text via conditional probability curvature. In The Twelfth International Conference on Learning Representa-tions. 
+
+Tom Brown, Benjamin Mann, Nick Ryder, Melanie Subbiah, Jared D Kaplan, Prafulla Dhariwal, Arvind Neelakantan, Pranav Shyam, Girish Sastry, Amanda Askell, and 1 others. 2020. Language models are few-shot learners. Advances in neural information processing systems , 33:1877–1901. Jiaqi Chen, Xiaoye Zhu, Tianyang Liu, Ying Chen, Chen Xinhui, Yiwen Yuan, Chak Tou Leong, Zuchao Li, Long Tang, Lei Zhang, and 1 others. 2025. Imi-tate before detect: Aligning machine stylistic prefer-ence for machine-revised text detection. In Proceed-ings of the AAAI Conference on Artificial Intelligence ,volume 39, pages 23559–23567. Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. 2019. Bert: Pre-training of deep bidirectional transformers for language understand-ing. In Proceedings of the 2019 Conference of the North American Chapter of the Association for Com-putational Linguistics: Human Language Technolo-gies , pages 4171–4186. Association for Computa-tional Linguistics. Yaroslav Ganin, Evgeniya Ustinova, Hana Ajakan, Pas-cal Germain, Hugo Larochelle, François Laviolette, Mario March, and Victor Lempitsky. 2016. Domain-adversarial training of neural networks. Journal of machine learning research , 17(59):1–35. Ji Gao, Jack Lanchantin, Mary Lou Soffa, and Yanjun Qi. 2018. Black-box generation of adversarial text sequences to evade deep learning classifiers. In 2018 IEEE Security and Privacy Workshops (SPW) , pages 50–56. IEEE. Sebastian Gehrmann and 1 others. 2019. Gltr: Statis-tical detection and visualization of generated text. 
+
+In Proceedings of the 57th Annual Meeting ofthe Association for Computational Linguistics: System Demonstrations. , pages 111–116. Jiazhi Guan, Yi Zhao, Zhuoer Xu, Changhua Meng, Ke Xu, and Youjian Zhao. 2024. Adversarial robust safeguard for evading deep facial manipulation. In 
+
+Proceedings of the AAAI Conference on Artificial Intelligence , volume 38, pages 118–126. Hanxi Guo, Siyuan Cheng, Xiaolong Jin, Zhuo Zhang, Kaiyuan Zhang, Guanhong Tao, Guangyu Shen, and Xiangyu Zhang. 2024. Biscope: Ai-generated text detection by checking memorization of preceding tokens. Advances in Neural Information Processing Systems , 37:104065–104090. Beizhe Hu, Qiang Sheng, Juan Cao, Yuhui Shi, Yang Li, Danding Wang, and Peng Qi. 2024. Bad actor, good advisor: Exploring the role of large language models in fake news detection. In Proceedings of the AAAI conference on artificial intelligence , volume 38, pages 22105–22113. Xiaomeng Hu and 1 others. 2023. Radar: Robust ai-text detection via adversarial learning. Advances in neural information processing systems , 36:15077– 15095. Guanhua Huang, Yuchen Zhang, Zhe Li, Yongjian You, Mingze Wang, and Zhouwang Yang. 2024. Are ai-generated text detectors robust to adversarial pertur-bations? Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics .Zhiwei Jiang, Tianyi Gao, Yafeng Yin, Meng Liu, Hua Yu, Zifeng Cheng, and Qing Gu. 2023. Improving do-main generalization for prompt-aware essay scoring via disentangled representation learning. In Proceed-ings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 12456–12470. Di Jin, Zhijing Jin, Joey Tianyi Zhou, and Peter Szolovits. 2020. Is bert really robust? a strong base-line for natural language attack on text classification and entailment. In Proceedings of the AAAI con-ference on artificial intelligence , volume 34, pages 8018–8025. Diederik P Kingma and Max Welling. 2013. Auto-encoding variational bayes. arXiv preprint arXiv:1312.6114 .John Kirchenbauer, Jonas Geiping, Yuxin Wen, Jonathan Katz, Ian Miers, and Tom Goldstein. 2023. A watermark for large language models. In Inter-national Conference on Machine Learning , pages 17061–17084. PMLR. Kalpesh Krishna, Yixiao Song, Marzena Karpinska, John Wieting, and Mohit Iyyer. 2023. Paraphras-ing evades detectors of ai-generated text, but retrieval is an effective defense. Advances in Neural Informa-tion Processing Systems , 36:27469–27500. Xiaotong Li, Yongxing Dai, Yixiao Ge, Jun Liu, Ying Shan, and LINGYU DUAN. 2022. Uncertainty mod-eling for out-of-distribution generalization. In Inter-national Conference on Learning Representations .Ya Li, Mingming Gong, Xinmei Tian, Tongliang Liu, and Dacheng Tao. 2018. Domain generalization via conditional invariant representations. In Proceed-ings of the AAAI conference on artificial intelligence ,volume 32. Yafu Li, Qintong Li, Leyang Cui, Wei Bi, Zhilin Wang, Longyue Wang, Linyi Yang, Shuming Shi, and Yue Zhang. 2024. MAGE: Machine-generated text de-tection in the wild. In Proceedings of the 62nd An-nual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 36–53, Bangkok, Thailand. Association for Computational Linguistics. Yuanfan Li, Zhaohan Zhang, Chengzhengxu Li, Chao Shen, and Xiaoming Liu. 2025. Iron sharpens iron: Defending against attacks in machine-generated text detection with adversarial training. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 3091–3113. Aiwei Liu, Leyi Pan, Xuming Hu, Shuang Li, Lijie Wen, Irwin King, and Philip S. Yu. 2024a. An unforge-able publicly verifiable watermark for large language models. In The Twelfth International Conference on Learning Representations .Shengchao Liu, Xiaoming Liu, Yichen Wang, Zehua Cheng, Chengzhengxu Li, Zhaohan Zhang, Yu Lan, and Chao Shen. 2024b. Does detectgpt fully utilize perturbation? bridging selective perturbation to fine-tuned contrastive learning detector would be better. 
+
+Proceedings of the 62nd Annual Meeting of the Asso-ciation for Computational Linguistics .Xue Bin Peng, Marcin Andrychowicz, Wojciech Zaremba, and Pieter Abbeel. 2018. Sim-to-real trans-fer of robotic control with dynamics randomization. In 2018 IEEE international conference on robotics and automation (ICRA) , pages 3803–3810. IEEE. Xiao Pu, Hao Wu, Xiuli Bi, Yu Wu, and Xinbo Gao. 2025. Dear: Disentangled event-agnostic representa-tion learning for early fake news detection. Transac-tions of the Association for Computational Linguis-tics , 13:343–356. Shuhuai Ren, Yihe Deng, Kun He, and Wanxiang Che. 2019. Generating natural language adversarial ex-amples through probability weighted word saliency. In Proceedings of the 57th annual meeting of the as-sociation for computational linguistics , pages 1085– 1097. Rui Shao and 1 others. 2023. Detecting and grounding multi-modal media manipulation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6904–6913. Yuhui Shi, Qiang Sheng, Juan Cao, Hao Mi, Beizhe Hu, and Danding Wang. 2024. Ten words only still help: Improving black-box ai-generated text detection via proxy-guided efficient re-sampling. Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence (IJCAI-24) .Eyal Shnarch, Ariel Gera, Alon Halfon, Lena Dankin, Leshem Choshen, Ranit Aharonov, and Noam Slonim. 2022. Cluster & tune: Boost cold start per-formance in text classification. In Annual Meeting of the Association for Computational Linguistics. , page 7639–7653. Kanishka Silva, Ingo Frommholz, Burcu Can, Frédéric Blain, Raheem Sarwar, and Laura Ugolini. 2024. Forged-gan-bert: Authorship attribution for llm-generated forged novels. In Proceedings of the 18th Conference of the European Chapter of the Associa-tion for Computational Linguistics: Student Research Workshop , pages 325–337. Association for Computa-tional Linguistics. Jinyan Su, Terry Yue Zhuo, Di Wang, and Preslav Nakov. 2023. DetectLLM: Leveraging log rank information for zero-shot detection of machine-generated text. In The 2023 Conference on Empirical Methods in Natural Language Processing .Bryan E Tuck and Rakesh M Verma. 2026. Guided perturbation sensitivity (gps): Detecting adversarial text via embedding stability and word importance. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 40, pages 26019–26027. Adaku Uchendu, Thai Le, Kai Shu, and Dongwon Lee. 2020. Authorship attribution for neural text gener-ation. In Proceedings of the 2020 conference on empirical methods in natural language processing (EMNLP) , pages 8384–8395. Christoforos Vasilatos, Manaar Alam, Talal Rahwan, Yasir Zaki, and Michail Maniatakos. 2023. Howkgpt: Investigating the detection of chatgpt-generated uni-versity student homework through context-aware per-plexity analysis. arXiv preprint arXiv:2305.18226 .Yuxia Wang, Jonibek Mansurov, Petar Ivanov, Jinyan Su, Artem Shelmanov, Akim Tsvigun, Chenxi White-house, Osama Mohammed Afzal, Tarek Mahmoud, Toru Sasaki, Thomas Arnold, Alham Fikri Aji, Nizar Habash, Iryna Gurevych, and Preslav Nakov. 2024. M4: Multi-generator, Multi-domain, and Multi-lingual Black-Box Machine-Generated Text Detec-tion. In Proceedings of the 18th Conference of the European Chapter of the Association for Computa-tional Linguistics (Volume 1: Long Papers) , pages 1369–1407, St. Julian’s, Malta. Association for Com-putational Linguistics. Zhenhua Wang and 1 others. 2025. A novel benford’s law-driven approach for detecting machine-generated text. ACM Transactions on Information Systems .Wenjie Wei, Yanyue Zhang, Jinyan Li, Panfei Liu, and Deyu Zhou. 2025. Cross-domain fake news detection based on dual-granularity adversarial training. In 
+
+Proceedings of the 31st International Conference on Computational Linguistics , pages 9407–9417. Junchao Wu, Shu Yang, Runzhe Zhan, Yulin Yuan, Lidia Sam Chao, and Derek Fai Wong. 2025. Asurvey on llm-generated text detection: Necessity, methods, and future directions. Computational Lin-guistics , 51(1):275–338. Hongyi Zhou, Jin Zhu, Pingfan Su, Kai Ye, Ying Yang, Shakeel AOB Gavioli-Akilagun, and Chengchun Shi. 2025. Adadetectgpt: Adaptive detection of llm-generated text with statistical guarantees. The 39th Conference on Neural Information Processing Sys-tems .Xiaowei Zhu, Yubing Ren, Yanan Cao, Xixun Lin, Fang Fang, and Yangxi Li. 2025. Reliably bounding false positives: A zero-shot machine-generated text detec-tion framework via multiscaled conformal prediction. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 12298–12319. 
+
+A Appendix 
+
+A.1 Data Preprocessing 
+
+We adopt the pre-processed dataset from the MAGE benchmark (Li et al., 2024), which pro-vides both generator categories and domain labels. To ensure consistency with the original distribution, we perform balanced sampling for each category by aligning with the proportions of both genera-tor and domain labels. This design controls for domain effects and encourages the model to learn generalization across generators rather than being confounded by domain-specific biases. For clar-ity and to avoid redundancy, we exclude several highly similar models, including T0-11B, T0-3B, OPT-1.3B, OPT-125M, OPT-13B, OPT-30B, and OPT-350M. Accuracy (%) / F1-Measure LLM Categories FLAN-T5 GPT LLaMA OPT GLM BigScience EleutherAI BERT NAACL’19 70.5 / 66.5 83.9 / 82.7 87.4 / 88.5 86.5 / 87.3 93.1 / 93.9 98.1 / 97.3 98.0 / 97.1 PECOLA ACL’24 75.5 / 75.8 85.6 / 85.1 88.9 / 88.7 88.5 / 88.3 80.9 / 80.2 90.4 / 89.6 86.7 / 87.4 SCRN ACL’24 69.1 / 68.5 74.6 / 73.7 79.7 / 78.3 85.6 / 83.9 73.4 / 70.2 89.5 / 89.1 92.1 / 91.8                     
+
+> Ours 77.4 /77.1 86.9 /87.4 91.7 /90.1 93.8 /92.4 95.7 /94.6 98.7 / 96.1 98.3 /98.9
+
+Table 6: Performance comparison across seven LLM generator families on the full original MEGA dataset.                          
+
+> Metric Accuracy (%) / F1-Measure Model BERT SCRN Ours GPT-4 52.8 / 51.0 51.6 / 50.9 61.8 /65.4
+> GPT-5 61.0 / 61.6 53.8 / 52.2 68.7 /70.1
+> Claude-sonnet-4-5 51.6 / 56.6 52.9 / 52.1 57.1 /60.5
+> DeepSeek-R1 63.3 / 69.7 55.4 / 53.2 71.0 /69.8
+
+Table 7: Performance comparison among BERT, SCRN, and our method on the GPT-4 OOD split in MAGE (AI: 762, Human: 800), along with ∼800 manually collected samples from GPT-5, Claude, and DeepSeek. 
+
+To validate the effectiveness and robustness of this data preprocessing strategy, we conduct ad-ditional evaluations on both the original MAGE dataset and more recent large-scale generators. 
+
+A.1.1 Evaluation on Original MEGA dataset 
+
+To further verify that our results are not an artifact of re-sampling or generator filtering, we also report results on the full original MAGE splits under the standard 6-vs-1 evaluation protocol (Table 6). Con-sistent performance trends are observed across both settings. Due to the inclusion of additional highly similar generators in the original split, certain cate-gories achieve slightly higher absolute scores. Nev-ertheless, our method consistently outperforms the baselines, demonstrating its general robustness ap-plicability across different data distributions and generator configurations. 
+
+A.1.2 Evaluation on Latest SOTA Generators 
+
+We further evaluate unseen-generator generaliza-tion on an out-of-distribution (OOD) split in-volving recent large-scale models, including the GPT-4 OOD split from MAGE and manually col-lected samples from GPT-5, Claude-sonnet-4-5, and DeepSeek-R1, unseen during training (Table 7). As shown in the table, both BERT and SCRN ex-hibit noticeable performance degradation on these advanced generators. In contrast, our method con-sistently achieves higher accuracy and F1 scores across all models, indicating more stable general-             
+
+> Section Train Test 4.2.1 Main Results (Table 2) Leave-One-Generator-Out 4.2.2 Diversity (Table 3) BigScience GPT LLaMA GLM EleutherAI OPT FLAN-T5 4.3 Progress Gen. (Fig. 3) BigScience GPT FLAN-T5 4.4.1 Bias Filter (Fig. 4) A.5 Bias Filter (Fig. 8) BigScience GPT FLAN-T5 -4.4.2 Robustness (Fig. 5) BigScience GPT -4.4.3 Compactness (Fig. 6) GPT -4.5 Ablation Study (Table 5) BigScience GPT LLaMA GLM EleutherAI FLAN-T5 OPT A.1.1 Eval. on Original Dataset (Table 6) Leave-One-Generator-Out A.1.2 Eval. on OOD Dataset (Table 7) MAGE OOD i
+> A.3 Adver. Attacks (Table 4)
+> S
+> i̸=jTest iOPT A.4 Generalization (Fig. 7)
+> S
+> i̸=jTest i
+> OPT FLAN-T5 LLaMA
+
+Table 8: Overview of training and testing setups across different experiments. 
+
+ization under increasing model scale and genera-tion quality. This suggests that disentangled rep-resentations capture generator-invariant cues that remain effective for emerging LLMs. 
+
+A.2 Overview of Training and Testing Setups 
+
+Table 8 summarizes the training and testing setups used across all experiments. For each section, we specify the generator categories included in the training set and those held out for testing. In partic-ular, Section 4.2.1 adopts a leave-one-generator-out protocol, while subsequent experiments examine generalization under varying generator diversity, (a) BERT output (b) AI -detection 𝒂 (c) Generator -aware 𝐠 
+
+> LLa
+> +
+> T5
+> OPT
+> LLa
+> +
+> OPT
+> T5
+> OPT
+> +
+> T5
+> LLa
+
+Figure 7: T-SNE visualizations across LLaMA, OPT, and FLAN-T5. Training (blue/purple) and held-out (red) generators are shown, with dark/light shades for AI/human texts. (a) Baseline BERT entangles features on unseen generators. Conversely, our framework yields (b) tighter human–AI separation with mitigated gener-ator bias in the AI-detection branch, and (c) explicit isolation of generator-specific features in the generator-aware branch. 
+
+progressive training scenarios, robustness to bias and adversarial perturbations, and ablation analy-ses. This overview facilitates a clear understand-ing of how different experimental objectives are mapped to corresponding train–test splits, thereby providing a unified and consistent evaluation proto-col across all settings. 
+
+A.3 Generalization Gains from Feature Disentanglement 
+
+To assess cross-generator generalization, we con-duct a leave-one-generator-out analysis on three MAGE categories (LLaMA, OPT, FLAN-T5). In each run, models are trained on two generators and tested on the remaining unseen one, with represen-tation distributions visualized via t-SNE (Figure 7). As shown in panel (a), BERT features separate hu-man and AI samples on seen generators but fail to generalize to the unseen one, where generator en-tanglement persists. With disentanglement, the AI-detection branch (panel b) enlarges the human–AI margin while suppressing generator bias, and the generator-aware branch (panel c) captures gener-ator distinctions explicitly. These results demon-strate that disentanglement isolates task-relevant semantics from generator artifacts, leading to im-proved cross-generator generalization. human /AI / Various Generators             
+
+> Color by
+> Human -AI
+> labels
+> (b) DBencoder (a) MLP encoder
+> Color by
+> Gen era tor
+> labels
+> Compact AI/human
+> (bias filtered)
+> Divided AI/human
+> (bias remains)
+> Separated
+> but bias
+> Separated
+> bias reduced
+
+Figure 8: MLP vs. DB encoder representations of generator-aware branch g. With Human–AI coloring (top), both separate distinct generators, but MLP re-tains human-AI bias while DB filters it. With generator coloring (bottom), MLP forms divided human and AI samples, whereas DB suppresses bias and yields com-pact, generator-aware clusters. 
+
+A.4 Further Analysis on Bottlenecked Encoding 
+
+Complementing the AI-detection analysis, we fur-ther examine the generator-aware branch. Figure 8 shows t-SNE visualizations of these representa-tions under the same setup (GPT, BigScience, and FLAN-T5). In the MLP baseline, generator-aware features entangle with authenticity cues, implic-itly encoding AI-vs-human distinctions. In con-trast, our DB encoding yields clearer generator separation while suppressing unintended authen-ticity leakage. This confirms our disentanglement framework not only produces generator-invariant AI-detection features, but also enforces semantic purity in the generator-aware branch, strengthening overall robustness to unseen generators.

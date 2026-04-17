@@ -1,0 +1,452 @@
+Title: Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs
+
+URL Source: https://arxiv.org/pdf/2604.14520v1
+
+Published Time: Fri, 17 Apr 2026 00:26:26 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs 
+
+## Ziyang Luo 
+
+Northwestern Polytechnical University Xi’an, Shaanxi, China 
+
+## Nian Liu 
+
+Northwestern Polytechnical University Xi’an, Shaanxi, China 
+
+## Junwei Han 
+
+Northwestern Polytechnical University Xi’an, Shaanxi, China 
+
+## Abstract 
+
+Omni-modal Large Language Models (Omni-MLLMs) promise a unified integration of diverse sensory streams. However, recent evaluations reveal a critical performance paradox: unimodal base-lines frequently outperform joint multimodal inference. We trace this perceptual fragility to the static fusion topologies universally employed by current models, identifying two structural pathologies: positional bias in sequential inputs and alignment traps in inter-leaved formats, which systematically distort attention regardless of task semantics. To resolve this functional rigidity, we propose Chain of Modality (CoM), an agentic framework that transitions multi-modal fusion from passive concatenation to dynamic orchestration. CoM adaptively orchestrates input topologies, switching among parallel, sequential, and interleaved pathways to neutralize struc-tural biases. Furthermore, CoM bifurcates cognitive execution into two task-aligned pathways: a streamlined “Direct-Decide” path for direct perception and a structured “Reason-Decide” path for analyt-ical auditing. Operating in either a training-free or a data-efficient SFT setting, CoM achieves robust and consistent generalization across diverse benchmarks. 
+
+## CCS Concepts 
+
+• Computing methodologies → Scene understanding .
+
+## Keywords 
+
+Omni-modal Large Language Models, Multi-modal Reasoning, Agen-tic Inference, Topological Orchestration, Hallucination Mitigation 
+
+## 1 Introduction 
+
+The emergence of Omni-modal Large Language Models (Omni-MLLMs) proposes a unified cognitive framework capable of seam-lessly integrating audio, text, and video [ 1, 17 , 28 , 29 ]. However, despite their massive scaling and sophisticated reasoning capabil-ities, a critical dissonance has surfaced: their foundational omni-fusion remains surprisingly brittle. Empirical observations, such as those from the AVHBench hallucination benchmark [ 24 ], reveal a counter-intuitive paradox where unimodal baselines frequently outperform joint multimodal inference. This degradation suggests that current fusion paradigms suffer from systemic flaws, intro-ducing interference rather than synergistic alignment even both modalities are informative. Existing literature has predominantly sought to alleviate this multimodal interference through two divergent paths: (1) Special-ized Models [ 6 , 12 , 35 ] achieve localized gains via heavy fine-tuning but sacrifice generalization; (2) Generalist Omni-MLLMs [ 8 , 16 , 25 ]prioritize complex reasoning chains with complex tools but neglect Question  
+
+> Audio Video
+> Answer
+> Question
+> ...
+> Video1 Audio1...
+> Answer
+> Audio
+> Image+
+> Audio
+> Video+A
+> udio
+
+...      
+
+> Sequential
+> Interleave
+> Parallel
+> Q：What are the
+> men doing? Choose minimal
+> modalities and format
+> Answer
+> Reason Answer
+> easy or
+> difficult?
+> (a) Existing Sequential Input Format Omni-MLLMs
+> (b) Existing Interleave Input Format Omni-MLLMs
+> (c)Chain-of-modalities: Dynamic modalities and sequence
+> Modality Bias
+> Alignment Trap
+> Pipa+Guitar
+> Only Pipa
+> There are
+> two sounding
+> instrument Only rely
+> on Visual
+> Accordion
+> Engineer
+> Sound
+> The audio and
+> video is align
+> Intuitive Path
+> Reasoning
+> Path
+> Q: How many musical instruments were heard throughout the video?
+> Q: Are the contexts of audio and visual content matching?
+> PLANNER
+> REASONER
+> DECIDER
+
+Figure 1: Comparison of Omni-modal inference paradigms. (a) Sequential formats suffer from modality bias, where domi-nant visual features often hijack the model’s final prediction. (b) Interleaved formats fall into the alignment trap, coercing the model into hallucinating semantic consistency between discordant signals. (c) Our CoM framework enables dynamic orchestration, adaptively configuring modality sets, topolo-gies, and cognitive depth based on task complexity. 
+
+perceptual fidelity. While post-hoc hallucination mitigation strate-gies (e.g., DPO or RL [ 2, 3, 13 , 23 , 36 ]) merely treat the symptoms, leaving the architectural inability to adaptively process heteroge-neous information unaddressed. In this work, we trace the root of this functional rigidity to the static fusion topologies universally employed by current Omni-MLLMs. Through systematic empirical analysis, we identify two distinct structural pathologies dictated by input formats. First, for 
+
+sequential inputs (e.g., Audio → Visual) [ 1, 4, 21 ], the visual dominance is largely an artifact of positional bias. Permuting the input order causes drastic shifts in attention and performance, prov-ing the model relies on structural proximity rather than semantic content. Second, to bridge temporal gaps, models often adopt in-terleaved formats [28 , 29 ]. However, we find this introduces an alignment trap: the enforced physical adjacency of cross-modal tokens coerces the model into hallucinating semantic consistency, leading to elevated false-positive matching rates even when signals are discordant. Overcoming this static inertia requires a paradigm shift from pas-sive joint fusion to dynamic orchestration. To this end, we propose the Chain of Modality (CoM) framework. Unlike conventional pipelines, CoM treats modality selection and interaction as modular building blocks, forming an explicit chain that governs how infor-mation flows across modalities. Specifically, a Planner adaptively  
+
+> arXiv:2604.14520v1 [cs.CV] 16 Apr 2026 Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Trovato et al.
+
+Table 1: Comparison between unimodal and multimodal set-tings on unimodal-sufficient and multi-informative tasks. Columns shaded in blue represent audio-centric tasks, and gray columns represent visual-centric tasks.                               
+
+> Method Unimodal-Sufficient Multimodal-Informative Qwen2.5-3B Qwen2.5-7B Qwen2.5-7B Qwen2.5-3B
+> Loc Comp Loc Comp Count Count Count Count Audio 37.39 39.28 51.92 49.32 56.34 43.86 44.15 42.11 Visual 71.76 31.90 83.02 41.41 69.22 71.76 74.14 71.26 Audio+Visual 70.76 32.08 82.71 45.2 62.49 70.76 70.11 70.84
+
+constructs a task-specific modality chain, selecting a sequence of modality-conditioned execution units. Each unit defines both the ac-tive modality and its interaction topology, including Parallel blocks (for independent evidence auditing), Sequential anchors (for causal grounding), and Interleaved sequences (for fine-grained temporal synchronization). Building upon this chain, the framework further adapts its reasoning depth to match task semantics. For complex analytical queries, CoM activates a “Plan-Reason-Decide” (PRD) pathway, where modality-specific evidence is first analyzed and then synthesized into a grounded decision. For intuitive queries, CoM shortens the chain to a streamlined “Plan-Decide” (PD) path-way, bypassing generative reasoning to preserve perceptual fidelity. This bifurcation is governed by the constructed modality chain, ensuring that reasoning is invoked only when cross-modal interac-tions are necessary. For intuitive tasks, our training-free paradigm achieves gains by dynamic modality chain. For analytical tasks requiring transitive logic, we introduce a data-efficient SFT strategy on Music-AVQA. Extensive experiments demonstrate that our approach consistently matches or outperforms specialized models on fine-grained music perception benchmarks (Music-AVQA [ 15 ]), open-domain scenarios (AV-Odyssey [ 7], DailyOmni [ 39 ], OmniBench [ 18 ], WorldSense [ 10 ], AV-Counting [ 23 ]), and cross-modal hallucinations (AVH-Bench [24]). Our contributions are summarized as follows: (1) We system-atically diagnose the perceptual degradation in Omni-MLLMs, re-vealing that static topologies induce two severe artifacts: positional bias in sequential inputs and alignment traps in interleaved inputs. (2) We propose Chain of Modality (CoM), which formulates mul-timodal inference as a dynamically constructed modality chain. Each chain consists of modality-conditioned units with explicit interaction topologies (Parallel, Sequential, Interleaved), organizing information flow into either Plan-Decide or Plan-Reason-Decide for robust reasoning and preserving perceptual fidelity. (3) Our frame-work achieves superior generalization across diverse open-domain benchmarks by synergizing a training-free pathway for intuitive tasks with data-efficient SFT for challenging analytical reasoning. 
+
+## 2 Related Work 
+
+Omni-modal Question Answering. Omni-modal Question An-swering serves as a primary testbed for assessing multi-modal ca-pabilities. Early benchmarks, such as AVQA [ 31 ] and Music-AVQA [ 15 , 20 ], primarily focused on domain-specific spatio-temporal alignment. With the emergence of Omni-MLLMs, the evaluation landscape has evolved toward increasingly challenging, open-ended scenarios that demand a holistic integration of multimodal capabil-ities, as evidenced by benchmarks such as AV-Odyssey [ 7], World-Sense [ 10 ], Omni-Bench [ 18 ], DailyOmni [ 39 ], AVHBench [ 24 ], AV-Counting [ 23 ], IntentBench [ 32 ], and CMM [ 14 ]. To succeed in these rigorous evaluation environments, models must seamlessly couple fine-grained perceptual fidelity with broad cognitive gen-eralization. Unfortunately, current approaches frequently force a stark trade-off between the two. Specialized models (e.g., Crab [ 6], QA-TIGER [ 12 ], CAT [ 34 , 35 ]) excel on fixed perception benchmarks but severely lack generalizability across broader omni-perception tasks. Conversely, recent large-scale reasoning models ThinkOmni [8 ] (e.g., DeepSeek [ 19 ] and Qwen3 [ 30 ]) prioritize high-level logic, yet their foundational omni-perception abilities remain brittle. In this work, we bridge this gap by explicitly reconfiguring topological relationships to fortify the fundamental perceptual capability of generalist models. 
+
+Omni-modal Large Language Models. Leading proprietary sys-tems, such as GPT-4o [ 11 ] and Gemini-2.5 Pro [ 5], have demon-strated unprecedented capabilities in real-time cross-modal arbitra-tion and reasoning, setting the de facto standard for omni-modal assistants. Parallel to these proprietary advancements, the open-source community has made significant strides in democratization, with foundational models such as the Qwen-Omni series [ 28 , 29 ], Baichuan-Omni [ 17 ], VideoLLaMA 2 [ 4], OmniVinci [ 33 ], Ola [ 21 ], and Ming-Flash-Omni [ 1], pushing the boundaries of unified rep-resentation. Despite their impressive scaling, these frameworks universally rely on a rigid “one-size-fits-all” fusion topology, which remains invariant regardless of the query’s cognitive demand. This structural rigidity inevitably leads to proximity bias and modality conflicts. While recent efforts attempt to suppress these hallucina-tions via DPO or RL [ 2, 3, 13 , 23 , 36 ], they largely treat the symptom rather than the disease, failing to investigate why these hallucina-tions emerge from the fusion process itself. We identify this static topology as the root cause and propose the Chain-of-Modality framework, which dynamically re-orchestrates information flow. 
+
+## 3 Fusion Challenges in Omni-MLLMs 
+
+Current Omni-MLLMs passively concatenate modalities, assuming shared self-attention can automatically prioritize relevant signals [1 , 17 , 28 , 29 , 33 ]. However, benchmarks like AVHBench [ 24 ] reveal a performance paradox where unimodal baselines frequently out-perform joint multimodal inference, leaving the underlying causes of this degradation poorly understood. 
+
+## 3.1 The Performance Paradox in Uni-modal and Multi-modal 
+
+To systematically examine the phenomenon highlighted by AVH-Bench [ 24 ], we categorize queries into two groups: unimodal-sufficient and multi-informative. For unimodal-sufficient queries, the answer can be derived entirely from a single modality (e.g., “What is the instrument to the left of the saxophone?” for vision, or “Is the pi-ano playing longer than the flute?” for audio). In multi-informative scenarios, both modalities contain relevant information, yet one modality provides substantially more deterministic cues (e.g., vi-sual counting to disambiguate ambiguous acoustic signals). Notably, this setting differs from complement-informative queries, where Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Table 2: Analysis of modality conflict in complement-informative tasks. We focus on scenarios where audio and visual predictions disagree (A ≠V). AlignA/V measures the consistency between the joint model and unimodal baselines. ErrorA/V identifies “blind trust” failures: it records the percentage of cases where the joint model follows the incorrect modality despite the other modality providing the correct answer.                                    
+
+> Method Music-AVQA OmniBench
+> A≠VAlignA AlignV ErrorA ErrorV A≠VAlignA AlignV ErrorA ErrorV Qwen2.5-Omni-7B 77.23% 17.17% 62.04% 10.31% 41.78% 73.97% 14.51% 18.42% 2.80% 3.90% Ola-7B 63.79% 6.29% 45.92% 1.85% 3.98% 59.98% 11.47% 11.03% 2.89% 4.20%
+
+both modalities are jointly required to derive the correct answer (discussed in Section 3.2). As shown in Table 1, for Qwen2.5-Omni-3B and 7B [ 28 ], uni-modal baselines consistently outperform joint multimodal infer-ence in uni-sufficient settings. This suggests that the additional modality, rather than being effectively suppressed, may introduce interference during reasoning. We refer to this phenomenon as 
+
+modality redundancy , where extraneous signals correlate with degraded performance. However, redundancy alone does not fully account for the observations in multi-informative scenarios. Even when the additional modality provides complementary and poten-tially beneficial cues, incorporating it can still lead to performance degradation relative to the stronger unimodal baseline (see the Multimodal-Informative columns in Table 1). This indicates that the issue extends beyond the mere presence of redundant informa-tion and may involve deeper challenges in cross-modal interaction. 
+
+## 3.2 The Deep Cause: Conflict Resolution under Modality Disagreement 
+
+To further analyze the performance drop observed in multi informa-tive settings, we examine model behavior under explicit modality disagreement. We define a modality conflict scenario as cases within complement informative queries where the answer from the audio-only and visual-only baselines disagree (A ≠V). Since complement-informative tasks require joint reasoning over both modalities, such disagreement provides a natural testbed for evalu-ating how the multimodal model arbitrates cross-modal evidence. As shown in Table 2, modality disagreement occurs frequently across both Music-AVQA [ 15 ] and DailyOmni [ 39 ]. Under these conflict scenarios, the joint model exhibits a consistent preference toward the visual modality, with alignment to visual predictions (AlignV) exceeding alignment to audio predictions (AlignA). To assess whether this tendency reflects rational reliability weighting or systematic bias, we further isolate asymmetric correctness cases: instances where the joint model follows one modality while that modality is incorrect and the other modality is correct. We observe a higher proportion of such visual-aligned errors (ErrorV > ErrorA), indicating that visual dominance persists even when visual evi-dence is misleading. These results suggest that multimodal fusion does not consistently resolve cross-modal disagreement based on semantic reliability, but instead exhibits a systematic visual-leaning preference under conflict conditions. To investigate whether this behavior is reflected in internal repre-sentations, we visualize the layer-wise attention distribution under a sequential input arrangement from Music-AVQA dataset (Audio 
+
+→ Visual). As shown in Figure 2(a) and (b), while higher visual atten-tion in visual-centric tasks is expected, a similar dominance pattern emerges even in audio-centric tasks. In deeper layers, attention to visual tokens remains comparable to, or even exceeds, attention to audio tokens regardless of task type. Figure 2(c) further supports this observation by showing that the average modality attention ratio remains relatively stable across different task categories. This indicates limited adaptive redistribution of attention according to semantic requirements, suggesting a degree of functional rigidity in modality allocation. 
+
+## 3.3 The Root of Bias: Positional Artifacts versus Semantic Allocation 
+
+We further investigate whether the observed visual dominance arises from intrinsic model properties or from artifacts introduced by input ordering. We hypothesize that the sequential input struc-ture [4, 21] may induce a positional bias due to the recency effect in attention. To evaluate this, we perform a permutation experi-ment by reversing the default order (Audio → Visual) to (Visual 
+
+→ Audio). As shown in Table 3, this simple reordering leads to no-ticeable performance variations across tasks. If modality allocation were purely driven by semantic relevance, predictions would be expected to remain largely invariant under such permutation. Con-sistent with this hypothesis, Figure 2(d) shows substantial shifts in layer-wise attention distribution when the input order is reversed, particularly in middle layers. These results suggest that modality dominance is partially influenced by token proximity to the tex-tual query, indicating sensitivity to positional structure rather than purely semantic reasoning. Given this positional sensitivity, an interleaved input strategy 
+
+(e.g., 𝐴 1, 𝑉 1, 𝐴 2, 𝑉 2, . . . ) appears to be a plausible alternative. This format, which separates the entire audio and video streams into sub-blocks and concatenates them alternately, is widely adopted in recent Omni-MLLMs to alleviate long-range dependency issues [ 28 , 29 ]. However, our analysis suggests that interleaving intro-duces a different structural effect. We evaluate both sequential and interleaved formats on the AV-Matching task from AVHBench [ 24 ], which requires verifying semantic consistency between audio and video streams. As shown in Figure 2(e), accuracy decreases as the number of interleaved segments increases. Moreover, the inter-leaved configuration exhibits a substantially higher “Yes" response rate compared to the sequential format, despite lower overall accu-racy. This pattern indicates that physical adjacency between audio and visual tokens may implicitly encourage the model to infer cross-modal consistency. We refer to this phenomenon as an alignment Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Trovato et al. 
+
+Table 3: Model performance on Music-AVQA, Omni-Bench and DailyOmni with different modality sequences for Qwen-Omni2.5-3B [28], 7B [28], and Ola-7B [21].                                                      
+
+> Method Music-AVQA OmniBench DailyOmni Exist Count Loc Comp Temp All All
+> 3B 7B 3B 7B 3B 7B 3B 7B 3B 7B Ola Qweb Ola Qwen Audio →Visual 49.2 58.0 63.0 68.4 30.2 40.9 22.8 46.9 35.3 36.6 27.5 25.9 41.5 47.3 Visual →Audio 55.0 49.0 61.3 63.2 23.2 33.8 25.0 46.9 38.8 38.1 32.3 26.3 42.2 47.8
+
+(a) Attention for different layer (Visual-based task) 
+
+(b) Attention for different layer (Audio-based task) 
+
+(c) Attention for fix layerers for different task 
+
+(d) Attention with sequence change (e) Interleaved v.s. Sequential 
+
+Figure 2: Empirical analysis of modality bias and functional rigidity in Qwen-Omni. (a,b) Layer-wise modality attention trajectories for visual-centric and audio-centric tasks, respectively. (c) Cross-task comparison of average attention scores aggregated across shallow, middle, and deep layers. (d) Sequence sensitivity analysis showing shifts in attention ratios when the modality input order is permuted. (e) Impact of input topology on accuracy and “Yes” response rates across varying interleaved densities against a 15-frame sequential baseline. Here, audio-, visual-, and cross-modal tasks represent queries that rely on auditory cues, visual cues, or joint audio-visual evidence, respectively. trap , where structural proximity biases the model toward assuming semantic correspondence. Overall, our analysis suggests that static input structures can in-duce distinct reasoning biases. Sequential inputs are susceptible to positional dominance effects, and interleaved inputs may increase alignment-oriented biases. These observations imply that no single fixed input topology is universally optimal. Instead, effective multi-modal reasoning may require mechanisms that adaptively organize information flow based on task semantics rather than relying solely on predefined structural layouts. 
+
+## 4 Methodology 
+
+Our empirical analysis reveals two structural limitations of static multimodal fusion: positional sensitivity that induces modality dominance, and topology-dependent alignment bias. Both issues originate from treating multimodal inputs as passively concate-nated sequences, without conditioning information flow on query semantics. To address these limitations, we propose a dynamic in-ference framework termed Chain-of-Modality (CoM). CoM treats the Omni-MLLM as an active agent that re-orchestrates its infor-mation flow according to the cognitive complexity of the query. 
+
+Please note that CoM re-orchestrates a single Omni-MLLM backbone into three sequential cognitive roles through spe-cialized system prompting, maintaining logical consistency within a unified parameter space. 
+
+## 4.1 Agentic Dynamic Inference Architecture 
+
+Drawing inspiration from agentic workflows [ 22 , 26 , 37 ], we pro-pose a multi-stage architecture designed to overcome the functional rigidity of conventional Omni-MLLMs. Unlike standard models that process all inputs through a fixed fusion layer, our framework recon-figures a single Omni-MLLM backbone into three distinct cognitive roles: Planner, Reasoner, and Decider , which are activated se-quentially or selectively depending on task complexity. The Planner serves as the primary cognitive gatekeeper, responsible for decom-posing the user query to identify minimal sufficient modalities and determine the optimal topological arrangement, choosing among 
+
+Parallel , Sequential , or Interleaved formats. Building upon this struc-tural blueprint, the Reasoner is triggered exclusively for complex analytical tasks to execute perceptual auditing through the adap-tive execution pathways established by the Planner. Finally, the Decider acts as the definitive arbitration unit: for intuitive tasks, Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Q1: Is the car making sound in the audio? 
+
+> Q2: How many musical instruments were heard
+> throughout the video?
+> Q3: What are the men doing?
+> Q4: Where is the first sounding instrument?
+
+PLANNER    
+
+> Minimal
+> Modality-Select
+> Only Audio
+> Image+
+> Audio
+> Video+
+> Audio
+> Task-Type
+> Audio-centric Visual-centric
+> Cross-Modal Temporal-centric
+> Modality
+> Sequence
+> Sequential
+> Interleave Parallel
+> Select
+
+... 
+
+REASONER    
+
+> Q1: Audio-centric
+> Q2: C ross-modal
+> Q3: C ross-modal
+> Q4: Temporal-centric
+> only audio
+> audio
+> video
+> audio image
+> video1 video2 audio1 audio2
+> PARALLEL
+> PARALLEL
+> SEQUENTIAL
+> INTERLEAVE
+
+DECIDER 
+
+Question List  
+
+> Believe on Audio or Video
+> Relate on Audio and Video
+> binary-choice
+> multiple-choice
+> fixed-vocabulary
+> NO
+> B
+> LEFT
+> Answer Question
+> Decide
+> <Audio>There is no car sound in the
+> audio. The audio contains the sound of
+> a ...<\Audio>
+> <Audio>About 0:01, a clearly ukelele
+> can hear, after that..<\Audio>
+> <Audio> Four letters circle or hoop ring?
+> Damn it ring! <\Audio> <Image> Based on
+> audio , it seems that they play a cross-
+> word puzzle,here is a man in jeans...
+> <Video> The video shows a man playing a
+> guitar on the left side of the
+> frame...<\Video><Audio>The audio track
+> clearly indicates that the guitar begins
+> playing immediately...<\Audio>
+
+Reason Path Intuitive Path 
+
+> Choose Think Path
+> <Video> The video shows two musicians.
+> The musician on the left is ...<\Video>
+
+Figure 3: Architecture of the CoM framework. Our model reconfigures a single Omni-MLLM backbone into three distinct cognitive roles: Planner, Reasoner, and Decider. For each query, the Planner first determines the optimal modality topology and cognitive pathway. For intuitive tasks, the model routes the organized modalities directly to the Decider for response generation. For complex analytical tasks, the Reasoner executes modality-specific evidence auditing, followed by the Decider to synthesize logical rationales into a grounded final response. 
+
+it directly generates a response based on the structured modali-ties provided by the Planner, whereas for analytical scenarios, it synthesizes the textual rationales from the Reasoner to ensure the final response is grounded in logical consensus. Formally, let 𝑓 𝜃 
+
+denote the unified Omni-MLLM backbone. We reconfigure 𝑓 𝜃 into three distinct cognitive roles by providing different system prompts: 
+
+𝑝 𝑝𝑙𝑎𝑛 (for Planner), 𝑝 𝑟𝑒𝑎𝑠𝑜𝑛 (for Reasoner), and 𝑝 𝑑𝑒𝑐𝑖𝑑𝑒 (for Decider). The overall architecture is illustrated in Figure 3. 
+
+4.1.1 Adaptive Modality Planning. The Modality Planning stage serves as the cognitive control center, addressing the “task-agnostic” fusion bottleneck. Given a user query 𝑸 , the Planner’s objective is to prune redundant information and establish a strategic en-try point for inference. Formally, let the available modality set be 
+
+M = {𝑨 , 𝑽 , 𝑰 }, where 𝑨 denotes the audio stream, 𝑽 represents the temporal video sequence, and 𝑰 consists of frames for fine-grained recognition. The LLM-based 𝑝 𝑝𝑙𝑎𝑛 implements a mapping function: 
+
+𝑓 𝜃 (𝑸 , 𝑝 𝑝𝑙𝑎𝑛 ) → (T , P, SMmin , F ) , (1) where T ∈ { Audio-, Visual-, Temporal-centric, Cross-modal } is the task category, P ∈ { Intuitive, Analytical } is the cognitive path-way, determining whether to trigger reasoning stage, SMmin =
+
+(𝑚 1, 𝑚 2, . . . , 𝑚 min ) is the ordered sequence of minimal sufficient modalities, which simultaneously defines both the modality se-lection M𝑚𝑖𝑛 and their physical arrangement, and F ∈ { Parallel 
+
+, Sequential , Interleaved } denotes the input format. The Planner operationalizes task categorization by mapping query intent to specific topological requirements. Specifically, for queries demanding fine-grained temporal alignment (Temporal-centric tasks), the Planner constructs an interleaved sequence (𝐴 1, 𝑉 1,𝐴 2, 𝑉 2, . . . ), where the concatenation of audio segments [𝐴 1; 𝐴 2; . . . ]
+
+reconstructs the original audio stream 𝑨 . This interleaved structure enables the model to capture instantaneous cross-modal correla-tions, which are critical for tasks such as comparing rhythmic pat-terns or detecting transient actions. Moreover, for tasks where evi-dence is relatively independent (Audio- or Visual-centric queries), the Planner adopts a parallel topology, isolating each modality into separate blocks. This independent processing prevents the alignment trap by mitigating the risk of hallucinating cross-modal relationships based solely on temporal or spatial proximity (e.g., confirming object existence without interference from unrelated audio cues). Finally, for tasks with hierarchical dependencies (Cross-modal reasoning), the Planner enforces a sequential topology to establish a causal chain of inference. In this format, one modality serves as a foundational anchor, such as performing visual local-ization, before subsequent streams are integrated for downstream reasoning, such as auditory grounding dependent on spatial con-text. Through this task-aware planning, the model transitions from a passive aggregator of multimodal inputs to an active perceiver, dynamically modulating its internal attention and processing order to align with the cognitive structure inherent in the query. In cases where the Planner produces an invalid topological configuration, the system defaults to the Audio → Visual sequential order to ensure robust inference. 
+
+4.1.2 Topology-Aware Reasoning and Decision. Guided by the strate-gic blueprint from the Planner, the agent follows a task-adaptive Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Trovato et al. 
+
+Table 4: Comprehensive performance comparison on intuitive tasks. Comparison of CoM framework against representative models across five diverse benchmarks with three architectures in training-free setting. Models marked with * are evaluated using our own evaluation scripts. All results are reported in accuracy (%). 
+
+Method Music-AVQA AVHBench OmniBench DailyOmni WorldSense 
+
+Audio Visual Audio-Visual A-Hal V-Hal 
+
+Generalist Models 
+
+One-LLM - - - 53.7 44.3 - - 22.8 VideoLLaMa2 - - - 50.1 50.2 - 35.2 25.4 
+
+Specialist Models 
+
+EchoInk* 78.8 82.3 63.9 72.4 68.3 46.8 54.0 39.3 HumanOmniV2* 75.0 84.0 63.7 81.7 73.6 43.0 51.1 40.5 Omni-R1* 77.0 79.7 60.4 75.8 65.8 47.6 54.3 39.7 
+
+Training-free Models 
+
+ThinkOmni 55.8 63.7 50.4 34.1 46.2 43.6 59.5 33.4 
+
+Qwen-Omni-7B 77.9 82.2 62.9 73.2 66.8 46.5 54.8 39.2 
+
++CoM 78.8 +0.9 85.8 +3.6 63.7 +0.8 78.2 +5.0 79.7 +12.9 49.4 +2.9 55.4 +0.6 41.9 +2.7 
+
+Ola-7B 69.6 72.5 55.6 54.2 71.3 40.2 52.3 41.1 
+
++CoM 69.3 -0.3 72.9 +0.4 56.5 +0.9 62.6 +8.4 73.8 +2.5 42.4 +2.2 53.4 +1.1 40.0 -1.1 
+
+Qwen-Omni-3B 75.7 83.6 59.7 77.8 62.2 42.0 53.8 39.1 
+
++CoM 75.7 +0.0 84.3 +0.7 61.6 +1.9 73.5 -4.3 80.5 +18.3 43.8 +1.8 56.1 +2.3 40.7 +1.6 
+
+execution pathway. For intuitive tasks P = Intuitive , the model trig-gers a streamlined “Direct-Decide” flow (Plan-Decide), mapping the organized modalities directly to a response to maintain perceptual fi-delity. Conversely, for complex analytical tasks P = Analytical , the model engages a “Reason-Decide” process (Plan-Reason-Decide): the Reasoner first executes modality-specific evidence auditing, after which the Decider synthesizes the resulting logical rationales into a grounded final response. 
+
+Phase 1: Analytical Reasoning. In this phase, the Reasoner ex-tracts evidence from the minimal modality set Mmin following the planned topology F and execution order SMmin . The resulting per-ceptual rationales are denoted as R = {𝑟 1, 𝑟 2, . . . , 𝑟 min }. We use [· ; ·] 
+
+to denote modality concatenation and ⊕ to denote text concatena-tion. For sequential topology ( F = Sequential ) that tasks involving transitive logic (e.g., spatial-to-audio grounding), all modalities are concatenated in the planned order SMmin = (𝑚 1, . . . , 𝑚 min ):
+
+𝑟 𝑡𝑜𝑡𝑎𝑙 = 𝑓 𝜃 ([ 𝑚 1; 𝑚 2; . . . ; 𝑚 min ; 𝑸 ; 𝑝 𝑟𝑒𝑎𝑠𝑜𝑛 ]) , (2) where 𝑟 𝑡𝑜𝑡𝑎𝑙 are concatenated in the order generated by the Rea-soner. Here, the causal attention mechanism ensures that reasoning over 𝑚 min is conditioned on the preceding evidence {𝑚 1, . . . , 𝑚 min −1 }.For parallel topology ( F = Parallel ), each modality is processed independently: 
+
+𝑟 𝑚 𝑛 = 𝑓 𝜃 ([ 𝑚 𝑛 ; 𝑸 ; 𝑝 𝑟𝑒𝑎𝑠𝑜𝑛 ]) , ∀𝑚 𝑛 ∈ M 𝑚𝑖𝑛 . (3) The total rationale is then aggregated as: 
+
+𝑟 𝑡𝑜𝑡𝑎𝑙 = 𝑟 𝑚 1 ⊕ 𝑟 𝑚 2 · · · ⊕ 𝑟 𝑚 min . (4) This guarantees that reasoning for each modality is unaffected by others. For interleaved topology ( F = Interleaved ), the model processes a fine-grained interleaved sequence for temporal-centric queries, : 
+
+𝑟 𝑡𝑜𝑡𝑎𝑙 = 𝑓 𝜃 ([ Interleave (𝑨 , 𝑽 ); 𝑸 ; 𝑝 𝑟𝑒𝑎𝑠𝑜𝑛 ]) , (5) where Interleave (𝑨 , 𝑽 ) = (𝐴 1, 𝑉 1, 𝐴 2, 𝑉 2, . . . ) captures instantaneous cross-modal correlations, essential for comparing rhythmic patterns or transient actions. 
+
+Phase 2: Decoupled Decision. In this final stage, the Decider acts as an arbiter to map structured information to a final answer 
+
+𝒚 . To ensure cognitive efficiency and logical grounding, the in-put to the Decider is dynamically determined by the cognitive pathway P selected in the Planning stage. For intuitive mapping (P = Intuitive), the Decider performs a fast mapping: 
+
+𝒚 = 𝑓 𝜃 ([ 𝑚 1; 𝑚 2; . . . ; 𝑚 min ; 𝑸 ; 𝑝 𝑑𝑒𝑐𝑖𝑑𝑒 ]) , (6) where [𝑚 1; 𝑚 2; . . . ; 𝑚 min ] represents the structured modalities ar-ranged by the Planner. This path preserves the model’s founda-tional perceptual acuity and avoids unnecessary reasoning noise. For evidence-anchored decision ( P = Analytical ), which requires deep logical attribution, we physically isolate the Decider from raw sensory embeddings and instead feed it the perceptual rationales 
+
+𝑟 𝑡𝑜𝑡𝑎𝑙 generated in Phase 1: 
+
+𝒚 = 𝑓 𝜃 (𝑟 𝑡𝑜𝑡𝑎𝑙 ⊕ 𝑸 ⊕ 𝑝 𝑑𝑒𝑐𝑖𝑑𝑒 ). (7) By treating rationales as fixed textual tokens, we force the model to perform evidence-to-option mapping via logical synthesis. This decoupled arbitration ensures the final answer is strictly grounded in audited evidence rather than implicit positional biases. 
+
+## 5 Experiment 5.1 Experimental Settings 
+
+Evaluation Benchmarks. We evaluate our framework across seven representative benchmarks covering diverse knowledge domains, input formats, and modalities: Music-AVQA [ 31 ], AV-Odyssey [7 ], 
+
+OmniBench [ 18 ], DailyOmni [ 39 ], AV-Counting [ 23 ], World-Sense [10], and AVHBench [24]. Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+Table 5: Performance comparison on analytical reasoning tasks. We contrast the Plan-Decide (PD) and dynamically activated Plan-Reason-Decide (PRD) pathways of CoM.                      
+
+> Method Train Format AV-Odyssey AV-Counting
+> Direct-Decide mode
+> Echolnk RL 31.1 22.7 Omni-R1 RL 31.2 22.0 HumanOmniV2 RL 30.3 19.6
+> Qwen2.5-Omni-7B -24.4 21.5
+> +CoM(PD) SFT 27.0 23.6
+> +CoM(PRD) SFT 31.6 +7.2 26.9 +5.4
+
+Implementation Details. Our evaluation follows a two-stage par-adigm: (1) Training-free Setting: We first utilize a specifically de-signed planner prompt to determine the optimal modality selection and topological arrangement. In the Decide stage, the final response is generated using a standardized prompt identical to the single-step instruction employed in all baseline evaluations. This protocol ensures that performance gains are derived strictly from topological orchestration rather than prompt engineering. (2) Lightweight Cali-bration: To activate analytical mastery for challenging benchmarks, we conduct a lightweight calibration stage. We utilize Gemini-2.5-Pro to synthesize 4,745 high-fidelity reasoning trajectories that strictly follow the “Plan-Reason-Decide” protocol, covering the Au-dio, Visual, and Audio-Visual subsets of Music-AVQA [ 15 ] ( ∼15% of the training split). We employ LoRA with a rank of 16, training for one epoch to enable the model to internalize the structured auditing protocol. For all experiments, we set the decoding temperature to 
+
+𝑇 = 0 and fix the random seed to ensure deterministic results and minimize stochastic noise. 
+
+## 5.2 Comparison with State-of-the-Art Methods 
+
+We evaluate the CoM framework across a broad cognitive spectrum, ranging from intuitive perceptual queries to complex analytical tasks. For intuitive benchmarks, where answers can be directly mapped through fast perceptual retrieval, we employ the training-free Plan-Decide pathway. To establish rigorous baselines, we fol-low [ 8] in utilizing sequential formats as baselines for OmniBench [18 ], DailyOmni [ 39 ], and WorldSense [ 10 ], while adopting general interleaved structures for Music-AVQA [ 15 ] and AVHBench [ 24 ](which are not included in [ 8]). As shown in Table 4, CoM achieves consistent, across-the-board gains over the vanilla Qwen2.5-Omni-7B [ 28 ] baseline. When benchmarked against leading generalists [ 4, 9], specialized models fine-tuned also on Qwen2.5-Omni-7B [ 27 , 32 , 38 ] and training-free frameworks like ThinkOmni [ 8 ], our architecture-driven approach rivals or surpasses models optimized through heavy RL or data-intensive SFT. This result underscores a critical insight: optimizing the physical orchestration of modalities is as vital as complex training designs for unlocking the zero-shot potential of Omni-MLLMs. For difficult analytical tasks, the model autonomously esca-lates its cognitive depth by activating the Plan-Reason-Decide structure. As summarized in Table 5, despite the sparse training signal, CoM rivals or even surpasses specialized models optimized on full-scale datasets or via intensive Reinforcement Learning. This remarkable efficiency suggests that Omni-MLLMs already possess 
+
+Table 6: Ablation study of input topology on diverse bench-marks.                                
+
+> Method Music-AVQA AVHBench DailyOmni AVA-V A-Hal V-Hal
+> Sequential Format 77.2 82.0 63.4 75.2 69.9 54.8 Parallel Format 74.5 85.4 64.8 83.7 72.8 43.7 Interleaved Format 77.9 82.2 62.9 73.2 66.8 55.5 CoM 78.8 85.8 63.7 78.2 79.7 55.4
+
+Table 7: Performance comparison across different prompt templates.                      
+
+> Method Music-AVQA AVHBench DailyOmni AVA-V A-Hal V-Hal
+> Think prompt 69.9 77.0 53.0 67.9 63.8 55.8
+> Think prompt+CoM 74.5 79.9 58.6 71.7 80.7 56.1
+> multiple-choice prompt 78.6 82.2 64.7 22.7 57.9 44.1
+> multiple-choice prompt+CoM 78.0 86.3 65.5 28.9 76.1 47.3
+
+latent analytical capabilities that remain dormant during standard direct-mapping. The PRD structure acts as a structural catalyst to activate these capabilities, confirming that for complex multimodal reasoning, the synergy between architectural depth and data ef-ficiency is also critical. Detailed qualitative traces illustrating the transition from perception to reasoning are provided in Figure 4. 
+
+## 5.3 Ablation Study 
+
+5.3.1 Ablation on Input Topology. To validate our topology-aware reasoning mechanism, we evaluate the model under fixed topo-logical constraints: parallel, sequential, and interleaved in a zero-shot setting (Table 6) on Qwen2.5-Omni-7B [ 28 ]. The results re-veal a distinct task-topology synergy: the parallel format excels in unimodal-dominant queries by isolating modality-specific noise (in AVHBench), and the interleaved format is more effective for spatio-temporal tasks requiring synchronization (in DailyOmni). For complex multimodal reasoning, such as the Audio-Visual tasks in Music-AVQA, the sequential format demonstrates more stable performance compared to the interleaved approach. These find-ings confirm that no universally optimal input format exists for all scenarios. Consequently, our CoM mechanism, which adaptively selects the optimal pathway for each instance, consistently delivers the most robust overall performance. 
+
+5.3.2 Robustness to Prompt Templates. To evaluate the stability of the CoM framework, we analyze its sensitivity to prompt variations. We first evaluate two prevalent prompt paradigms: the thinking-answer mode (incorporating structured rationales) and the direct-answer mode (utilizing an alternative multiple-choice template adapted from AVATAR [ 13 ]). As summarized in Table 7, our dy-namic routing mechanism almost outperforms all fixed topological baselines across both templates. This consistency underscores that the performance gains of CoM are driven by fundamental structural optimization rather than idiosyncratic prompt engineering. 
+
+5.3.3 Impact of Select Frames. We further investigate the impact of frame sampling rates by varying the number of selected frames from 5 to 20 on the DailyOmni [ 39 ] and V-Hal subset from AVHBench Conference acronym ’XX, June 03–05, 2018, Woodstock, NY Trovato et al. Image 1 Image 2 Image 3      
+
+> Image 4
+> PLANNER REASONER DECIDER
+> Audio
+> Question
+> <Audio> Audio 1 contains a continuous, melodic guitar sound.
+> The music is characterized by a steady rhythm and harmonic
+> structure typical of acoustic or electric guitar playing. There are no
+> other instruments audible in the audio
+> clip. </Audio><Image> Image 1 shows a person playing an
+> electric guitar. Image 2 depicts a large organ with intricate details.
+> Image 3 displays a Zildjian cymbal. Image 4 shows a close-up of a
+> trombone. Based on the question, we need to identify which
+> instrument best represents the guitar sound heard in the audio. The
+> image that shows a guitar (Image 1) is the most relevant visual
+> representation of the instrument played in the audio. </Image>
+> <decision>
+> <action>PROVIDE_FINAL_ANSWER</action>
+> </decision>
+> <selected_answer>the first
+> image</selected_answer>
+> <final_confidence>1.0</final_confidence>
+> <rationale>The question asks which instrument best
+> represents the audio, and based on the provided
+> images, the first image shows a person playing an
+> electric guitar, which is likely the source of the audio
+> in the clip.</rationale>
+> Which instrument represented in
+> images below do you think best
+> represents audio [audio1]? [img1]
+> [img2] [img3] [img4] .
+> <question_analysis>.<cognitive_mode> ANALYTI
+> CAL </cognitive_mode>.<question_type> Cross-
+> modal </question_type>.<core_task>Determine
+> which instrument from the images best represents
+> the audio
+> sound.</core_task>.<strategy> SEQUENTIAL </str
+> ategy>.</question_analysis><execution_plan> .1)
+> Audio - Why: To identify the specific sound
+> characteristics that need to be matched with an
+> instrument. 2) Image - Why: To visually identify
+> the instruments present in the images and compare
+> them to the audio characteristics identified in step
+> 1.</execution_plan>
+
+Figure 4: An example of the CoM agentic workflow: from task decomposition (Planner) and evidence-based auditing (Reasoner) to grounded decision-making (Decider), enabling systematic cross-modal reasoning. (a) DailyOmni dataset (b) AVHBench(V hal) dataset 
+
+Figure 5: Ablation on visual sampling density. We compare our CoM framework against the fixed-topology baseline across varying frame counts on DailyOmni and AVHBench. 
+
+[ 24 ] dataset. As illustrated in Figure 5, while absolute performance fluctuates slightly with sampling density, CoM maintains a stable margin over all baseline configurations. For AVHBench, the per-formance remains invariant to the number of visual frames. This reveals that the model autonomously identifies audio as the primary source of truth for these hallucination-detection tasks, effectively pruning visual inputs regardless of frame density. In stark contrast, the fixed-topology baseline exhibits a severe, monotonic degrada-tion as visual granularity increases. This downward trend provides compelling evidence for the alignment trap phenomenon discussed in Section 3.3. For DailyOmni, the performance gains are most pro-nounced at lower sampling densities (e.g., 5 to 10 frames), where the structural alignment provided by our Planner is critical for resolving sparse visual evidence. Notably, CoM with only 5 frames (54.97%) already surpasses the standard baseline utilizing 15 frames (54.80%), effectively achieving superior accuracy while reducing the visual token count by 66%, which crossover result underscores the compute-efficiency of our framework. 
+
+5.3.4 Generalization and Scalability Analysis. To verify that the efficacy of CoM is not an architecture-specific artifact, we evaluate our framework across fundamentally different MLLM designs and parameter scales. We extend CoM to Ola-7B [ 21 ], a model built on a fundamentally sequential input paradigm. To ensure a controlled comparison, we establish the sequential Video → Audio sequence as the default baseline. Despite this structural divergence, CoM achieves stable improvements across most benchmarks (Table 4). However, we observe that the gains on Ola-7B are relatively mod-est compared to the Qwen series. We attribute this to two primary factors: (1) Architectural Constraints: Ola’s implementation lacks 
+
+Table 8: Inference Speed Comparison. Prefill time: Time-to-First-Token, Generate time: per-token generation latency. 
+
+Method Model Size AVHBench OmniBench 
+
+Prefill Generate Prefill Generate Qwen-Omni-7B 7B 0.282 0.350 0.089 0.682 
+
++CoM 7B 0.099 0.097 0.098 0.763 
+
+native support for interleaved modality tokens, thereby restrict-ing the Planner’s optimization space to a choice between parallel and sequential formats; (2) Inherent Perceptual Weakness: we ob-serve that performance gains are notably lower on audio-centric tasks. Our internal diagnostics reveal that Ola-7B exhibits a severely constrained auditory representation (shown in Appendix). Further-more, we assess the scalability of CoM on the Qwen2.5-Omni-3B [ 28 ], adopting the same baseline protocols as Qwen2.5-Omni-7B. The results lead to identical conclusions: the benefits of cognitive planning do not diminish as parameter scale changes. However, the gains on the 3B model are relatively modest as they are occasionally constrained by its limited instruction-following capacity, which triggers a fallback to default sequences when complex orchestration fails. 
+
+## 5.4 Inference Efficiency Analysis 
+
+To evaluate the computational overhead of our inference process, we compare the latency of CoM against the vanilla Qwen2.5-Omni-7B as shown in Table 8. Latency measurements were conducted on a single vGPU, averaged over 100 randomly selected samples from AVHBench [ 24 ] and OmniBench [ 18 ] with similar prompt and frames number. We specifically report the prefill time (Time-to-First-Token) and the generate time (per-token generation latency). As shown in Table 8, CoM achieves a competitive balance between reasoning depth and execution speed. Notably, in scenarios where the Planner identifies redundant modalities, CoM executes modality pruning, effectively reducing the computational footprint compared to the vanilla model, which must attend to the full sensory stream. Furthermore, the initial planning phase is strictly restricted to the textual modality. Given the sparse nature of text tokens relative to high-density multimodal embeddings, this initial pass introduces significantly lower computational overhead compared to the full multimodal decoding stage. Chain of Modality: From Static Fusion to Dynamic Orchestration in Omni-MLLMs Conference acronym ’XX, June 03–05, 2018, Woodstock, NY 
+
+## 6 Conclusion 
+
+In this work, we proposed Chain of Modality (CoM) to resolve the structural pathologies of static fusion, specifically positional bias and alignment traps. By dynamically orchestrating modality selection and topology while adaptively routing queries through either a streamlined “Plan-Decide” or a structured “Plan-Reason-Decide” pathway, CoM aligns both information flow and cognitive depth with task complexity. Extensive evaluations across seven benchmarks and model scales demonstrate its superior robustness and efficiency. 
+
+## References 
+
+[1] Inclusion AI, Biao Gong, Cheng Zou, Chuanyang Zheng, Chunluan Zhou, Canxi-ang Yan, Chunxiang Jin, Chunjie Shen, Dandan Zheng, Fudong Wang, et al . 2025. Ming-Omni: A Unified Multimodal Model for Perception and Generation. arXiv preprint arXiv:2506.09344 (2025). [2] Junzhe Chen, Tianshu Zhang, Shiyu Huang, Yuwei Niu, Chao Sun, Rongzhou Zhang, Guanyu Zhou, Lijie Wen, and Xuming Hu. 2025. OmniDPO: A Preference Optimization Framework to Address Omni-Modal Hallucination. arXiv preprint arXiv:2509.00723 (2025). [3] Zhangquan Chen, Jiale Tao, Ruihuang Li, Yihao Hu, Ruitao Chen, Zhantao Yang, Xinlei Yu, Haodong Jing, Manyuan Zhang, Shuai Shao, et al . 2026. OmniVideo-R1: Reinforcing Audio-visual Reasoning with Query Intention and Modality Attention. arXiv preprint arXiv:2602.05847 (2026). [4] Zesen Cheng, Sicong Leng, Hang Zhang, Yifei Xin, Xin Li, Guanzheng Chen, Yongxin Zhu, Wenqi Zhang, Ziyang Luo, Deli Zhao, et al . 2024. Videollama 2: Advancing spatial-temporal modeling and audio understanding in video-llms. 
+
+arXiv preprint arXiv:2406.07476 (2024). [5] Gheorghe Comanici, Eric Bieber, Mike Schaekermann, Ice Pasupat, Noveen Sachdeva, Inderjit Dhillon, Marcel Blistein, Ori Ram, Dan Zhang, Evan Rosen, et al . 2025. Gemini 2.5: Pushing the frontier with advanced reasoning, multi-modality, long context, and next generation agentic capabilities. arXiv preprint arXiv:2507.06261 (2025). [6] Henghui Du, Guangyao Li, Chang Zhou, Chunjie Zhang, Alan Zhao, and Di Hu. 2025. Crab: A unified audio-visual scene understanding model with explicit coop-eration. In Proceedings of the Computer Vision and Pattern Recognition Conference .18804–18814. [7] Kaixiong Gong, Kaituo Feng, Bohao Li, Yibing Wang, Mofan Cheng, Shijia Yang, Jiaming Han, Benyou Wang, Yutong Bai, Zhuoran Yang, et al . 2024. AV-Odyssey Bench: Can Your Multimodal LLMs Really Understand Audio-Visual Information? 
+
+arXiv preprint arXiv:2412.02611 (2024). [8] Yiran Guan, Sifan Tu, Dingkang Liang, Linghao Zhu, Jianzhong Ju, Zhenbo Luo, Jian Luan, Yuliang Liu, and Xiang Bai. 2026. ThinkOmni: Lifting Textual Reasoning to Omni-modal Scenarios via Guidance Decoding. arXiv preprint arXiv:2602.23306 (2026). [9] Jiaming Han, Kaixiong Gong, Yiyuan Zhang, Jiaqi Wang, Kaipeng Zhang, Dahua Lin, Yu Qiao, Peng Gao, and Xiangyu Yue. 2024. Onellm: One framework to align all modalities with language. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 26584–26595. [10] Jack Hong, Shilin Yan, Jiayin Cai, Xiaolong Jiang, Yao Hu, and Weidi Xie. 2025. Worldsense: Evaluating real-world omnimodal understanding for multimodal llms. arXiv preprint arXiv:2502.04326 (2025). [11] Aaron Hurst, Adam Lerer, Adam P Goucher, Adam Perelman, Aditya Ramesh, Aidan Clark, AJ Ostrow, Akila Welihinda, Alan Hayes, Alec Radford, et al . 2024. Gpt-4o system card. arXiv preprint arXiv:2410.21276 (2024). [12] Hongyeob Kim, Inyoung Jung, Dayoon Suh, Youjia Zhang, Sangmin Lee, and Sungeun Hong. 2025. Question-Aware Gaussian Experts for Audio-Visual Ques-tion Answering. In Proceedings of the Computer Vision and Pattern Recognition Conference . 13681–13690. [13] Yogesh Kulkarni and Pooyan Fazli. 2025. Avatar: Reinforcement learning to see, hear, and reason over video. arXiv preprint arXiv:2508.03100 (2025). [14] Sicong Leng, Yun Xing, Zesen Cheng, Yang Zhou, Hang Zhang, Xin Li, Deli Zhao, Shijian Lu, Chunyan Miao, and Lidong Bing. 2024. The curse of multi-modalities: Evaluating hallucinations of large multimodal models across language, visual, and audio. arXiv preprint arXiv:2410.12787 (2024). [15] Guangyao Li, Yake Wei, Yapeng Tian, Chenliang Xu, Ji-Rong Wen, and Di Hu. 2022. Learning to answer questions in dynamic audio-visual scenarios. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 19108–19118. [16] Xiaoxi Li, Wenxiang Jiao, Jiarui Jin, Shijian Wang, Guanting Dong, Jiajie Jin, Hao Wang, Yinuo Wang, Ji-Rong Wen, Yuan Lu, et al . 2026. OmniGAIA: Towards Native Omni-Modal AI Agents. arXiv preprint arXiv:2602.22897 (2026). [17] Yadong Li, Jun Liu, Tao Zhang, Song Chen, Tianpeng Li, Zehuan Li, Lijun Liu, Lingfeng Ming, Guosheng Dong, Da Pan, et al . 2025. Baichuan-omni-1.5 technical report. arXiv preprint arXiv:2501.15368 (2025). [18] Yizhi Li, Ge Zhang, Yinghao Ma, Ruibin Yuan, Kang Zhu, Hangyu Guo, Yiming Liang, Jiaheng Liu, Zekun Wang, Jian Yang, et al . 2024. Omnibench: Towards the future of universal omni-language models. arXiv preprint arXiv:2409.15272 
+
+(2024). [19] Aixin Liu, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu, Chengda Lu, Cheng-gang Zhao, Chengqi Deng, Chenyu Zhang, Chong Ruan, et al . 2024. Deepseek-v3 technical report. arXiv preprint arXiv:2412.19437 (2024). [20] Xiulong Liu, Zhikang Dong, and Peng Zhang. 2024. Tackling data bias in music-avqa: Crafting a balanced dataset for unbiased question-answering. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision . 4478–4487. [21] Zuyan Liu, Yuhao Dong, Jiahui Wang, Ziwei Liu, Winston Hu, Jiwen Lu, and Yongming Rao. 2025. Ola: Pushing the frontiers of omni-modal language model. 
+
+arXiv preprint arXiv:2502.04328 (2025). [22] Ziyu Liu, Yuhang Zang, Yushan Zou, Zijian Liang, Xiaoyi Dong, Yuhang Cao, Haodong Duan, Dahua Lin, and Jiaqi Wang. 2025. Visual Agentic Reinforcement Fine-Tuning. arXiv preprint arXiv:2505.14246 (2025). [23] Lidong Lu, Guo Chen, Zhiqi Li, Yicheng Liu, and Tong Lu. 2025. AV-Reasoner: Improving and Benchmarking Clue-Grounded Audio-Visual Counting for MLLMs. 
+
+arXiv preprint arXiv:2506.05328 (2025). [24] Kim Sung-Bin, Oh Hyun-Bin, JungMok Lee, Arda Senocak, Joon Son Chung, and Tae-Hyun Oh. 2024. Avhbench: A cross-modal hallucination benchmark for audio-visual large language models. arXiv preprint arXiv:2410.18325 (2024). [25] Keda Tao, Kele Shao, Bohan Yu, Weiqiang Wang, Huan Wang, et al . 2025. OmniZip: Audio-Guided Dynamic Token Compression for Fast Omnimodal Large Language Models. arXiv preprint arXiv:2511.14582 (2025). [26] Shulin Tian, Ruiqi Wang, Hongming Guo, Penghao Wu, Yuhao Dong, Xiuying Wang, Jingkang Yang, Hao Zhang, Hongyuan Zhu, and Ziwei Liu. 2025. Ego-R1: Chain-of-Tool-Thought for Ultra-Long Egocentric Video Reasoning. arXiv preprint arXiv:2506.13654 (2025). [27] Zhenghao Xing, Xiaowei Hu, Chi-Wing Fu, Wenhai Wang, Jifeng Dai, and Pheng-Ann Heng. 2025. Echoink-r1: Exploring audio-visual reasoning in multimodal llms via reinforcement learning. arXiv preprint arXiv:2505.04623 (2025). [28] Jin Xu, Zhifang Guo, Jinzheng He, Hangrui Hu, Ting He, Shuai Bai, Keqin Chen, Jialin Wang, Yang Fan, Kai Dang, et al . 2025. Qwen2. 5-omni technical report. 
+
+arXiv preprint arXiv:2503.20215 (2025). [29] Jin Xu, Zhifang Guo, Hangrui Hu, Yunfei Chu, Xiong Wang, Jinzheng He, Yuxuan Wang, Xian Shi, Ting He, Xinfa Zhu, et al . 2025. Qwen3-omni technical report. 
+
+arXiv preprint arXiv:2509.17765 (2025). [30] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al . 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388 (2025). [31] Pinci Yang, Xin Wang, Xuguang Duan, Hong Chen, Runze Hou, Cong Jin, and Wenwu Zhu. 2022. Avqa: A dataset for audio-visual question answering on videos. In Proceedings of the 30th ACM international conference on multimedia .3480–3491. [32] Qize Yang, Shimin Yao, Weixuan Chen, Shenghao Fu, Detao Bai, Jiaxing Zhao, Boyuan Sun, Bowen Yin, Xihan Wei, and Jingren Zhou. 2025. Humanomniv2: From understanding to omni-modal reasoning with context. arXiv preprint arXiv:2506.21277 (2025). [33] Hanrong Ye, Chao-Han Huck Yang, Arushi Goel, Wei Huang, Ligeng Zhu, Yuan-hang Su, Sean Lin, An-Chieh Cheng, Zhen Wan, Jinchuan Tian, et al . 2025. OmniVinci: Enhancing Architecture and Data for Omni-Modal Understanding LLM. arXiv preprint arXiv:2510.15870 (2025). [34] Qilang Ye, Zitong Yu, Rui Shao, Yawen Cui, Xiangui Kang, Xin Liu, Philip Torr, and Xiaochun Cao. 2025. Cat+: Investigating and enhancing audio-visual under-standing in large language models. IEEE Transactions on Pattern Analysis and Machine Intelligence (2025). [35] Qilang Ye, Zitong Yu, Rui Shao, Xinyu Xie, Philip Torr, and Xiaochun Cao. 2024. Cat: Enhancing multimodal large language model to answer questions in dynamic audio-visual scenarios. In European Conference on Computer Vision . Springer, 146– 164. [36] Qilang Ye, Wei Zeng, Meng Liu, Jie Zhang, Yupeng Hu, Zitong Yu, and Yu Zhou. 2025. When Eyes and Ears Disagree: Can MLLMs Discern Audio-Visual Confu-sion? arXiv preprint arXiv:2511.10059 (2025). [37] Ziwei Zheng, Michael Yang, Jack Hong, Chenxiao Zhao, Guohai Xu, Le Yang, Chao Shen, and Xing Yu. 2025. DeepEyes: Incentivizing" Thinking with Images" via Reinforcement Learning. arXiv preprint arXiv:2505.14362 (2025). [38] Hao Zhong, Muzhi Zhu, Zongze Du, Zheng Huang, Canyu Zhao, Mingyu Liu, Wen Wang, Hao Chen, and Chunhua Shen. 2025. Omni-r1: Reinforcement learning for omnimodal reasoning via two-system collaboration. arXiv preprint arXiv:2505.20256 (2025). [39] Ziwei Zhou, Rui Wang, and Zuxuan Wu. 2025. Daily-omni: Towards audio-visual reasoning with temporal alignment across modalities. arXiv preprint arXiv:2505.17862 (2025).

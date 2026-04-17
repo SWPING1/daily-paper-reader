@@ -1,0 +1,4765 @@
+Title: Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing
+
+URL Source: https://arxiv.org/pdf/2604.13218v1
+
+Published Time: Thu, 16 Apr 2026 00:07:28 GMT
+
+Number of Pages: 49
+
+Markdown Content:
+# Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Danru Xu Sébastien Lachapelle Sara Magliacane 
+
+University of Amsterdam Samsung AI Lab, Montreal Saarland University & University of Amsterdam 
+
+## Abstract 
+
+Causal representation learning (CRL) aims to identify the underlying latent variables from high-dimensional observations, even when variables are dependent with each other. We study this problem for latent variables that follow a potentially degenerate Gaussian mix-ture distribution and that are only observed through the transformation via a piecewise affine mixing function. We provide a series of progressively stronger identifiability results for this challenging setting in which the proba-bility density functions are ill-defined because of the potential degeneracy. For identifiability up to permutation and scaling, we leverage a sparsity regularization on the learned repre-sentation. Based on our theoretical results, we propose a two-stage method to estimate the la-tent variables by enforcing sparsity and Gaus-sianity in the learned representations. Exper-iments on synthetic and image data highlight our method’s effectiveness in recovering the ground-truth latent variables. 
+
+## 1 INTRODUCTION 
+
+Recovering latent variables from high-dimensional ob-servations, such as images, videos, or text, is essential for building reliable and interpretable models (Ben-gio et al., 2013). While traditional approaches, e.g., (nonlinear) ICA (Comon, 1994; Hyvärinen, 2013; Hy-varinen and Morioka, 2016, 2017), identify independent or conditionally independent variables, in many real-world settings latent variables often exhibit complex dependencies, e.g., because they are causally related. 
+
+Proceedings of the 29 th International Conference on Arti-ficial Intelligence and Statistics (AISTATS) 2026, Tangier, Morocco. PMLR: Volume 300. Copyright 2026 by the au-thor(s). 
+
+Causal representation learning (CRL) (Schölkopf et al., 2021) aims to identify latent variables with arbitrary dependencies from observations. Many CRL works consider additional data or information to identify causal variables, e.g., interventions (Brehmer et al., 2022; Lippe et al., 2022; Varici et al., 2023; von Kügel-gen et al., 2023; Buchholz et al., 2023; Zhang et al., 2023; Ahuja et al., 2023a), actions or temporal struc-ture (Lippe et al., 2023; Lachapelle et al., 2022, 2024), multi-view structures (von Kügelgen et al., 2021; Ahuja et al., 2023b; Yao et al., 2024; Morioka and Hyvärinen, 2024), grouping of observations by sparsity patterns (Xu et al., 2024), hierarchical structures (Kong et al., 2023, 2024) or conditions on the causal graphs (Zhang et al., 2024; Dong et al., 2024; Song et al., 2024). In our case, we do not assume any additional data or information besides the observations, but we instead consider a set of parametric assumptions on the latent variables Z and mixing function f through which we get the observation X = f (Z). In particular, we focus on latent variables that follow a mixture of Gaussian distributions with a piecewise affine mixing function. Similarly to us, Kivva et al. (2022) studies the iden-tifiability of non-degenerate Gaussian Mixture Model (GMM) latent variables with piecewise affine mixing, but to achieve element-wise identifiability they require that all pairs of latent variables must be conditionally independent given an (unobserved) auxiliary variable. We achieve the same identifiability result without re-quiring this auxiliary variable, while extending the setting to latent variables that follow a potentially degenerate Gaussian Mixture Model (pdGMM), i.e., a GMM in which the components can be potentially degenerate Gaussians, but we instead require a spar-sity assumption. This is inspired by the success of sparse (low-rank, i.e., degenerate) representations. In particular, in many real-world settings, mixtures of low-dimensional subspaces provide a more accurate model than full-rank representations (Buchanan et al., 2025). We provide a series of progressively stronger identifi-
+
+> arXiv:2604.13218v1 [stat.ML] 14 Apr 2026 Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing
+
+ability results under reasonable assumptions in this challenging setting, in which the probability density functions are ill-defined and hence previous results can-not be applied. As a final step, we leverage a sparsity regularization on the learned representation, inspired by multi-task learning (Lachapelle et al., 2023a) and partially observable CRL (Xu et al., 2024) to prove identifiability up to permutation, scaling and transla-tion, i.e., that we learn a disentangled representation of the latent variables. We highlight our contributions: 
+
+• We provide an identifiability result for pdGMMs, showing that the full distribution can be uniquely identified from an open subset that intersects the support of every component (Thm. 3.2). This is a critical step in our other results, but is also of independent interest due to its proof strategy; 
+
+• We introduce a series of identifiability results for recovering latent variables that follow a pdGMMs distribution from observations (Thm. 3.5, 3.7, 3.9), showing that under progressively stronger assumptions, latent variables can be recovered up to (i) affine transformation within components (ATwC), (ii) global affine transformation (AT), and finally, (iii) permutation and scaling (PS), without interventions or supervision; 
+
+• Finally, we propose a two-stage algorithm that implements these theoretical results and evaluate it on numerical and image datasets. 
+
+## 2 PROBLEM SETTING AND BACKGROUND 
+
+We consider a setting with latent random variables Z =(Z1, ..., Z n) ∈ Z ⊆ Rn that have arbitrary dependences with each other. Given only a set of observations 
+
+X ∈ X ⊆ Rd generated by an unknown mixing function 
+
+f : Z → X , our goal is to recover the latent variables 
+
+Z. In general, we cannot fully recover these latent variables, but we can identify them up to an equivalence class. We first summarize two types of identifiability presented in previous work (Comon, 1994; Khemakhem et al., 2020; Kivva et al., 2022; Lachapelle et al., 2023a). 
+
+Definition 2.1. Given an observation X = f (Z), a learned representation g(X) identifies Z up to permuta-tion and scaling (PS) when there exists a permutation matrix P and an invertible diagonal matrix D such that g(X) = P D Z almost surely. A weaker notion of identifiability is up to a global affine transformation (AT) , which instead means that there exists a global in-vertible affine transformation h such that g(X) = h(Z)
+
+almost surely. In this paper, we assume that the observations X are generated by an injective continuous piecewise affine mixing function f (Def. B.12). We also assume that Z
+
+follows a potentially degenerate Gaussian mixture model 
+
+(pdGMM) with unknown parameters, i.e., a Gaussian mixture model that explicitly allows for degenerate components (with singular covariance matrices). Gaus-sian Mixture Models (GMM) are a popular method in clustering. While the standard definition also allows for degenerate components, in practice there is often the assumption that the components are not degenerate. Since in this paper we focus on this setting, we make this choice explicit by slightly modifying their name and defining them as follows: 
+
+Definition 2.2. A variable Z follows a potentially degenerate Gaussian mixture model (pdGMM) if its distribution is P = ∑Jj=1 λj N (μj , Σj ), where for each component j ∈ [J] the mean is μj ∈ Rn and the covariance matrix is Σj ∈ Rn×n, such that determinant 
+
+|Σj | ≥ 0. We assume that the weights λj > 0 and 
+
+∑Jj=1 λj = 1 . If each component is distinct, i.e., for every i̸ = j ∈ [J] we have (μi, Σi)̸ = ( μj , Σj ), then we say that the pdGMM is in a reduced form .Other works have already studied latent variables that follow a non-degenerate GMM distribution and consid-ered the problem of identifying these variables from observation. In particular, Kivva et al. (2022) provide the identifiability up to AT of non-degenerate GMMs latent variables with piecewise linear mixing functions. For a stronger notion of identifiability, identifiability up to PS, Kivva et al. (2022) require that all pairs of latent variables must be conditionally independent given an auxiliary variable U , which is an assumption we will not make. Crucially, these results rely on the analyticity 
+
+of the probability density function (pdf) of Gaussian distributions, which does not hold for degenerate Gaus-sians, since their pdf is no longer well-defined. This means we cannot apply these results directly. In this challenging setting, we instead leverage re-sults from a different line of work focusing on sparsity (Lachapelle et al., 2023a; Xu et al., 2024) to prove the identifiability up to PS and a constant transla-tion for piecewise affine mixing functions. Lachapelle et al. (2023a) focus on multi-task learning with sparse task-specific predictors, while Xu et al. (2024) focus on partially observable causal representation learning settings, where each observation only captures a small number of “active” latent variables. While these works focus on sparsity, their motivation is related to our choice to allow for potential degenerate representa-tions, since sparse (i.e., low-rank) representations can be seen as representations in which some of the com-ponents are degenerate. In many real-world settings we have (nearly)degenerate structures, such as high collinearity or strong dependencies among features, or intrinsically low-rank manifolds. This is typical for Danru Xu, Sébastien Lachapelle, Sara Magliacane X1
+
+> −3
+> −2
+> −10123
+> X2
+> −3
+> −2
+> −10123
+> X3
+> −2.0
+> −1.5
+> −1.0
+> −0.50.00.51.01.52.0
+> Component 1 support (z=0 plane) Component 2 support (line) Open set E
+
+Figure 1: Example of a 3-dimensional pdGMM with 2 components: a rank-2 component with support rep-resented by the yellow plane, and a rank-1 component with support represented by the red line. Knowing the distribution on the open set E (in brown), intersecting both components, is sufficient to identify the pdGMM. high-dimensional data that require large numbers of sparse features such as language models (Cunningham et al., 2024; Gao et al., 2025; Marks et al., 2025). 
+
+## 3 IDENTIFIABILITY OF PDGMMS 
+
+In this section, we provide a series of theoretical results that prove progressively stronger notions of identifia-bility for latent variables following a potentially degen-erate Gaussian Mixture Model (pdGMM) distribution with a piecewise affine mixing function. We provide all proofs in Section B. As a first step, we focus on the case in which the pdGMM variables are observed and prove that if two pdGMM variables have the same distribution on an open set, then they have the same distribution over all of Rn, i.e., they are identified . The intuition is illustrated in the example in Fig. 1. In addition to being of independent interest, this result is an important step for our other results. 
+
+3.1 Identifiability from an open subset 
+
+Identifiability results for (pd)GMMs from the whole domain are well-established (Yakowitz and Spragins, 1968), proving that if two (pd)GMMs are the same on their domain, then they have the same components and weights up to a permutation. These results include the potentially degenerate case. On the other hand, in our quest to prove the identifiability of latent variables 
+
+that follow a pdGMM only from observations, we need an identifiability result for observed pdGMMs on a 
+
+subdomain , and more precisely, an open subset. We highlight this result in this subsection, because it is of independent interest beyond the CRL setting. Since we cannot rely on equality of pdfs because of potential degeneracy, we first need a definition of when two distributions are considered equal on a subdomain. 
+
+Definition 3.1. Let μ : F → [0 , 1] and μ′ : F → [0 , 1] 
+
+be the probability measures induced by X and X′,respectively, where F is the Borel sigma-algebra over 
+
+Rn. Given a subset E ∈ F , we define the restriction of μ to E, denoted by μE : F → [0 , 1] , as μE (A) := 
+
+μ(A ∩ E), ∀A ∈ F . We say that X and X′ are equal in distribution over a subdomain E, denoted as X d
+
+= X′
+
+on E, when μE = μ′ 
+
+> E
+
+.We show that the equality of two pdGMMs on an open subset of Rn that intersects the support of every Gaussian component in a pdGMM implies the equality of pdGMMs on the whole domain. 
+
+Theorem 3.2 (Identifiability of pdGMMs from open set) . Consider two pdGMMs in Rn in reduced form, 
+
+X ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and X′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+),
+
+(1) 
+
+where rank (Σj ) > 0, ∀j ∈ [J] and rank (Σ′ 
+
+> j
+
+) > 0, ∀j ∈
+
+[J′]. Let Xj be the supports of N (μj , Σj ). If there ex-ists an open set E such that for all j ∈ [J], Xj ∩ E̸ = ∅
+
+and X d
+
+= X′ on E, then X d
+
+= X′ on the whole domain, 
+
+J = J′, and there exists a permutation π : [ J] → [J′]
+
+such that (λj , μj , Σj ) = ( λ′
+
+> π(j)
+
+, μ′
+
+> π(j)
+
+, Σ′
+
+> π(j)
+
+).
+
+We provide the proof in App. B.1 and describe a proof sketch here. The main challenge is the ill-defined pdf of pdGMMs. Kivva et al. (2022) provides similar re-sults for non-degenerate GMM, but their proof strategy relies on the analyticity of the pdf. However, in the degenerate case, the density does not exist on Rn, so their proof cannot be applied. We overcome this is-sue by projecting a pdGMM in Rn into a sequence of lower-dimensional spaces Rk, where k ∈ [n], such that each degenerate Gaussian component becomes non-degenerate in at least one image space. This enables us to apply classical identifiability results to recover the parameters of Gaussian components grouped by their ranks (Yakowitz and Spragins, 1968; Kivva et al., 2022). To make this strategy work, the projections must sat-isfy two key properties. First, they must preserve the rank of each component’s covariance matrix, thereby maintaining the intrinsic structure and information of the components. Second, a single projection is insuffi-cient to fully recover the parameters of a pdGMM from lower-dimensional spaces; instead, a sufficiently rich set of rank-preserving projections is required to capture all distinguishable parameterizations. We therefore choose to work with a dense subset of the space of projections, and prove that such set of projections always exists. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+3.2 Identifiability of latent pdGMMs 
+
+In this section, we introduce our main results (Thm. 3.5, 3.7, and 3.9), which form a set of increasingly stronger assumptions on the distribution of Z, each yielding a correspondingly stronger identifiability. As a first step we introduce a weak notion of identifiability for mixture-based latent variables (i.e., the distribution is a mixture of multiple components), identifiability up to affine transformations within components (ATwC) .This notion resembles the identifiability up to an affine transformation (AT) from literature, but it provides even less guarantees, since the recovered variables iden-tify the ground truth latent variables only up to an affine function h within the support of each compo-nent, but without any guarantee that h is affine across all components, thus sacrificing the interpretability of the learned representations. We provide Example E.3 to illustrate the difference between ATwC and AT .Formally, we define identifiability up to ATwC as: 
+
+Definition 3.3. The ground truth mixture-based rep-resentation vector Z is said to be identified up to affine transformations within components (ATwC) by a learned representation vector g(X) when there exists an invertible transformation h, such that g(X) = h(Z)
+
+almost surely and h is affine on each Zj , where Zj is the support of j-th component. To prove identifiability up to ATwC, we introduce a genericity condition on pdGMMs. We consider pdG-MMs for which the supports of components with the same rank k may overlap, but there is at least one com-mon point in the intersection where the components can be distinguished, i.e., their projections onto the non-degenerate subspace do not have the same norm. This rules out special cases where two components are geometrically indistinguishable in their overlapping re-gion, which we prove in App. E.2 is a measure zero set in the parameter space under consideration. Intu-itively, this means that this assumption only rules out highly symmetric or finetuned cases. We formalize it as follows: 
+
+Assumption 3.4 (Genericity of pdGMMs) . Consider a pdGMM in reduced form Z ∼ ∑Jj=1 λj N (μj , Σj ).Let Jk := {j ∈ [J] : rank (Σj ) = k)} be the indices of the components with rank k. For any k ≤ n and any subset J 0 
+
+> k
+
+⊆ J k, suppose that the intersection of the supports of the components Zj is non-empty, i.e., 
+
+∩j∈J 0 
+
+> k
+
+Zj̸ = ∅. We assume there exists at least one point z0 ∈ ∩ j∈J 0 
+
+> k
+
+Zj s.t. the Mahalanobis distance 1
+
+of z0 to the distributions of any two distinct Gaussian         
+
+> 1Mahalanobis distance of a point z0from a distribu-tion N(μj,Σj)is
+
+√           
+
+> (z0−μj)TΣ−1
+> j(z0−μj). When Σjis singular, we use the Moore-Penrose inverse for Σ−1
+> j
+
+components i, j ∈ J 0 
+
+> k
+
+is not the same. Based on Ass. 3.4, we show that we can learn a pdGMM representation up to ATwC with a perfect reconstruc-tion and enforcing Gaussianity on representations. 
+
+Theorem 3.5 (Identifiability up to ATwC of pdGMM latent variables) . Assume that Z is a pdGMM and the observation X = f (Z) follows the data-generating process in Sec. 2 for an injective continuous piecewise affine mixing function f , and Z satisfies Ass. 3.4. Let 
+
+g : X → Rn be an invertible continuous piecewise affine function and ˆf : Rn → Rd be an invertible piecewise affine function onto its image. If both conditions hold, 
+
+E
+
+∥∥∥X − ˆf (g(X)) 
+
+∥∥∥22
+
+= 0 , and (2) 
+
+g(X) ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (3) 
+
+for appropriate values of μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+(in reduced form), then J’=J and Z is identified by g(X) up to affine transfor-mation within components, i.e., g ◦ f is an invertible affine function on Zj , j ∈ [J].
+
+We provide a proof in App. B.2.1. While Thm 3.5 obtains the identifiability up to ATwC, this result does not guarantee that there is a single global affine trans-formation h such that g(X) = h(Z) for all components supports. To achieve this stronger identifiability, the identifiability up to AT, we need an additional condi-tion on Z. The following assumption requires that the supports of all components intersect at at least one point z0 and that each of these subspaces is spanned by a subset of a shared global basis. 
+
+Assumption 3.6 (Common basis and translation vec-tor) . Let Z1, . . . , ZJ ⊆ Rn be affine spaces such that there exists z0 ∈ ⋂Jj=1 Zj . We assume there exists a basis of Rn, denoted by {z1, . . . , zn}, such that for all 
+
+j ∈ [J], there exists Kj ⊆ [n] s.t. {zk | k ∈ K j } is a basis for the vector space Zj − z0.This assumption always holds for non-degenerate com-ponents. For degenerate components, a violation can happen because the components are not intersecting, or if their individual bases do not form a global shared basis. In App. E.3 we discuss a concrete scenario in which this assumption holds, where only a subset of latent variables are “active” in each observation sample, e.g., they are captured in an image, while others are “inactive”, i.e., they are masked by a constant. In this setting, the intersection of the supports is the vector of all the constant values for each variable, which will form a well-defined global shared basis. If this assump-tion only holds for a subset of components, then we can achieve identifiability up to AT for this subset, while Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+for the rest can only achieve identifiability up to ATwC using the previous result. We provide an example to show the necessity of this assumption in App. E.3 and use it to achieve identifiability up to AT: 
+
+Theorem 3.7 (Identifiability up to AT of pdGMM latent variables) . We assume the same conditions as Thm. 3.5, and that the supports of components 
+
+Z1, . . . , ZJ satisfy the common basis assumption (Ass. 3.6), then the representation g(X) identifies Z
+
+up to a single global affine transformation across com-ponents, i.e., g ◦ f is affine on all of Z.
+
+We provide a proof in App. B.2.2. Identifiability up to an affine transformation ( AT ) still allows for ar-bitrary mixing of dimensions through general affine transformations. In many applications, we prefer repre-sentations where individual dimensions have separate and interpretable meanings. This motivates us to move to identifiability up to permutation and scaling (PS). Permutation and scaling are fundamental indetermina-cies that typically cannot be solved without supervision or auxiliary information (Hyvärinen et al., 2024). To get this stronger result, we require a stricter assumption on Z.
+
+Assumption 3.8. Let Z1, . . . , ZJ ⊆ Rn be the sup-ports of the components of Z. We assume: 
+
+• [Common Standard Basis] For all j ∈ [J], each 
+
+Zj is a vector space, and there exists an index set 
+
+Kj ⊆ [n] such that {ek | k ∈ K j } forms a basis for 
+
+Zj , where {e1, . . . , en} denotes the standard basis of Rn (one-hot vectors). 
+
+• [Sufficient Support Basis Index Variability] For every i ∈ [n], the union of the support index sets 
+
+Kj that do not include i covers all other standard basis directions: 
+
+⋃  
+
+> j∈[J]|i / ∈K j
+
+Kj = [ n] \ { i}.
+
+This setting is consistent with the sparsity principle proposed by Xu et al. (2024), which shows that by enforcing sparsity of the transformed variables (as ex-pressed in Eq. 4), the corresponding transformation is an element-wise affine function. The Common Stan-dard Basis assumption is a special case of the earlier Common Basis Assumption (Ass. 3.6) where the global basis is fixed to the standard basis and zero translation vector is applied. This implies that the realizations of Z
+
+will have some coordinates equal to 0 with probability greater than zero. For example, assuming n = 3 with 
+
+K1 = {1} and K2 = {2, 3}, we have that samples from the component j = 1 will have the form (z1, 0, 0) and samples from the component j = 2 will have the form 
+
+(0 , z2, z3). In other words, the realizations of Z are sparse, with nonzero coordinates given by Kj .The Sufficient Support Basis Index Variability was originally proposed by Lachapelle et al. (2023a) in the context of sparse multitask learning. Here, we adapt it into our context and use it to avoid cases in which certain latent variables are always degenerate together across all components, since then we would not be able to disentangle them from the observations. As we show in App. E.5, even if this assumption does not hold strictly in a setting, our framework still supports a weaker form of identifiability: block-wise identifia-bility, which allows disentanglement across blocks of latent variables, even if variables within each block may remain entangled. This relaxation still enables meaningful interpretability and structure in learned representations. We can now prove our final theoretical result that shows when we can disentangle, or identify pdGMM latent variables up to PS. 
+
+Theorem 3.9 (Identifiability up to PS of pdGMM latent variables) . We assume the same conditions as Thm. 3.5 and that the supports of components 
+
+Z1, . . . , ZJ satisfy Ass. 3.8. If the following holds: 
+
+E ∥g(X)∥0 ≤ E ∥Z∥0 , (4) 
+
+where ∥·∥ 0 means L0 norm, then the representation 
+
+g(X) identifies Z up to PST, i.e., g ◦f is a permutation combined with an element-wise linear transformation on Z.
+
+We provide a proof in App. B.2.3. Interestingly, a spe-cial case of this result also solves an open question in previous work on partially observed causal representa-tion learning (CRL) (Xu et al., 2024). In that setting the identifiability results required that the component index j is observed for each observation (that is the group index), which is a strong assumption. Modelling this partially observable CRL problem with mixture models allows one to consider settings in which we do not know how to group the observations, i.e., a more realistic partially observable CRL setting. 
+
+## 4 IMPLEMENTATION 
+
+We implement our theoretical results in two stages: the identifiability up to AT in Thm. 3.7 serves as a prerequisite for achieving the identifiability up to PS in Thm. 3.9. In the first stage, we use an autoen-coder structure to estimate the latent variables directly from observations {xi}i∈[N ] by minimizing the recon-struction error (Eq. 2), where gψ1 and ˆfθ1 denote the encoder and decoder, respectively. To prevent the latent codes from drifting arbitrarily and keep them clustered around the Gaussian prior, we include the L2
+
+norm in the loss function. According to Thm. 3.7, the representations learned in this stage correspond to an Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+affine transformation of the ground truth latent vari-ables. In the second stage, we freeze the autoencoder model trained in the first stage and apply a second, inner autoencoder with affine transformations, where 
+
+gψ2 and ˆfθ2 denote the affine encoder and decoder. Following Xu et al. (2024), we approximate the spar-sity constraint in Eq. 4 of Thm. 3.9 by replacing the non-differentiable L0 norm with the differentiable L1
+
+norm except at zero. As the ground truth sparsity level is not known, we use a tunable hyperparameter 
+
+ϵ to control it (we provide sensitivity analysis of ϵ in App. D.5). Combined with the reconstruction loss, this encourages the model to converge to an appropriate sparsity level. To solve the optimization problem, we use Cooper (Gallego-Posada and Ramirez, 2022), a Lagrangian-based optimization toolkit. The two-stage problems are solved using Adam (Kingma and Ba, 2015) and extra-gradient variant (Gidel et al., 2019). 
+
+Stage 1: min 
+
+> (θ1,ψ 1)
+
+1
+
+N
+
+∑ 
+
+> i∈[N]
+
+∥∥∥xi − ˆfθ1 (gψ1 (xi)) 
+
+∥∥∥22
+
++ (5) 
+
+log (p(gψ1 (xi); 0, I )) 
+
+Stage 2: min 
+
+> (θ2,ψ 2)
+
+1
+
+N
+
+∑ 
+
+> i∈[N]
+
+∥∥∥˜xi − ˆfθ2 (gψ2 (˜ xi)) 
+
+∥∥∥22
+
+(6) subject to: 1
+
+N
+
+∑ 
+
+> i∈[N]
+
+∥∥gψ2 (˜ xi)∥∥1 ≤ ϵ, 
+
+where ˜xi := gψ1 (xi). We provide all details in App. C. 
+
+## 5 Experimental results 
+
+Numerical Experiments Setup. We generate sim-ulations with variations in the underlying causal model, the rank of Gaussian components, and mixing func-tion f . We average results for each setup over 5 ran-dom seeds. We consider n = {5, 10 , 20 , 40 } latent vari-ables Z. For each experiment, we sample a directed acyclic graph D from an Erdös-Rényi (ER)-k model with k ∈ { 0, 1, 2, 3}, where each ER-k graph contains 
+
+n · k directed edges. In particular, ER-0 corresponds to an empty graph, which implies independent latent variables. Given D, we simulate a linear Gaussian Struc-tural Causal Model where edge weights are sampled uniformly from [−1, −0.2] ∪ [0 .2, 1] , and standard Gaus-sian noise is added at each node. To simulate pdGMMs, we define the number of mixture components J = 5 n
+
+and introduce the ratio of non-degenerate dimensions 
+
+ρ ∈ { 1var , 50% , 75% }, where 1var indicates only one non-degenerate dimension, and 50% or 75% are the proportion of non-degenerate dimensions relative to n.Then, we randomly sample J different ρn -hot vectors to define a set of basis index sets Kj , which determines the subspace (i.e., the support) where the component has non-degenerate variance. For dimensions not in 
+
+Kj (i.e., those with a 0 in the multi-hot vector), we set their value to the corresponding entry in a predefined translation vector z0. To further show the different results for Ass. 3.6 and Ass. 3.8, we vary the translation vector z0 = μ + δ · σ, where μ, σ ∈ Rn are the mean and standard deviation of Z, and δ ∈ { 0, 1, 2, 3}. In addition, we apply a n×n rotation matrix on Z, param-eterized by a rotation angle θ ∈ { 0◦, 15 ◦, 30 ◦, 45 ◦}, to control the deviations from standard basis. ll settings satisfy Ass. 3.6, which means we can always achieve identifiability up to AT, but Ass. 3.8 is only satisfied in the setting with δ = 0 and θ = 0 , and thus we expect identifiability up to PS to only be possible there. To simulate the observed variables X, we apply an invertible piecewise affine mixing function f to the latent variables Z. We parameterize f by a multi-layer perceptron (MLP) with m ∈ { 3, 10 , 20 } hidden layers, (m − 1) Leaky-ReLU activation functions (with slope α ∼ Unif (0 .5, 1.5) ) and a final affine layer. The number of layers m is a proxy for the non-linearity and complexity of the mixing function; the larger the m,the more complex the transformation from Z to X.
+
+Results for Stage 1 (Thm. 3.7). For the encoder 
+
+gψ1 and the decoder ˆfθ1 in the first stage, we employ 5-layer MLPs configured with [50 , 100 , 100 , 50] ×n units per layer, where n is the number of latent variables. Each layer uses Leaky-ReLU activations, except for the final one. Batch normalization is applied to control the norm of gψ1 (X). To validate the identifiability up to AT presented in Thm. 3.7, the metric we use is the R2 of the linear regression model with Z as explanatory variable and gψ1 (X) as response. A high 
+
+R2 indicates that the ground truth latent variables can be linearly mapped to the learned representation with low error, consistent with our identifiability result. We show the average R2 over five random seeds in Tab. 1. Our method remains robust with large n, dense causal graph k, varying translation vectors z0(δ) and basis direction θ. Performance decreases slightly only with increased nonlinearity ( m) and lower proportions of nondegenerate variables ( ρ). This is expected: higher nonlinearity increases the complexity of achieving affine identifiability, while lower ρ allows greater flexibility in how representations are distributed in Rn, making it more challenging to enforce Gaussianity. However, a high R2 does not imply disentanglement. Following prior work (Khemakhem et al., 2020; Kivva et al., 2022), we also evaluate identifiability up to PS via 
+
+Mean Correlation Coefficient (MCC), a metric detailed in App. D.1. Across all row groups, we observe that, as expected, Stage 1 alone does not identify the latent variables up to PS accurately, as reflected by the low MCC values reported in the third right column of Danru Xu, Sébastien Lachapelle, Sara Magliacane                                                                                                                                                                                   
+
+> nkmρδθR2↑
+> Stage1
+> MCC
+> Stage1
+> MCC ↑
+> Stage2
+> MCC ↑
+> VaDE
+> 51 10 50% 000.93 0.75 0.96 0.45
+> 10 1 10 50% 000.94 0.56 0.97 0.32
+> 20 1 10 50% 000.93 0.46 0.92 0.23
+> 40 1 10 50% 000.94 0.37 0.94 0.25 10 010 50% 000.94 0.51 0.97 0.33 10 110 50% 000.94 0.56 0.97 0.32 10 210 50% 000.93 0.58 0.95 0.31 10 310 50% 000.92 0.56 0.91 0.27 10 1 350% 000.99 0.50 0.96 0.33 10 1 10 50% 000.94 0.56 0.97 0.32 10 1 20 50% 000.88 0.50 0.93 0.35 10 1 10 1 var 000.75 0.46 0.45 0.28 10 1 10 50% 000.94 0.56 0.97 0.32 10 1 10 75% 000.95 0.57 0.93 0.31 10 1 10 50% 000.94 0.56 0.97 0.32 10 1 10 50% 100.95 0.59 0.88 0.30 10 1 10 50% 200.96 0.59 0.61 0.27 10 1 10 50% 300.96 0.58 0.49 0.28 10 1 10 50% 000.94 0.56 0.97 0.32 10 1 10 50% 015 0.93 0.58 0.83 0.32 10 1 10 50% 030 0.93 0.57 0.60 0.31 10 1 10 50% 045 0.93 0.57 0.62 0.32
+
+Table 1: Results for the numerical experiments. The bold font highlights the parameters that vary in each block. R2(Stage 1) shows identifiability up to AT after Stage 1 MCC (Stage 1) reflects the necessity of sparsity to achieve identifiability up to PS; MCC (Stage 2) presents the identifiability up to PS after Stage 2; 
+
+MCC (VaDE) reports the results of Kivva et al. (2022). Full results with Std. Dev. are in Tab. 3. Tab. 1. This motivates us to move to Stage 2. 
+
+Results for Stage 2 (Thm. 3.9). For the affine encoder gψ2 and the decoder ˆfθ2 in the second stage, we employ 7-layer MLPs configured with 
+
+[10 , 50 , 50 , 50 , 50 , 10] × n units per layer, where n is the number of latent variables. Batch normalization is ap-plied to control the norm of gψ2 (X). Since we generate a sufficient number of basis indices, our representation should be able to have a one-to-one correspondence with the ground truth latent variables. The last two columns of Tab. 1 reports the average MCC scores for our method and VaDE (Kivva et al., 2022). This is a misspecified setting for VaDE, because VaDE requires non-degeneracy of the data, but we report the results nevertheless as a baseline, and show that as expected we outperform it in all settings. The results indicate consistently good performance across a range of n, k,and m. However, the overall performance is influenced by the quality of representations from Stage 1, with a noticeable decrease under a low nondegeneracy ratio ρ.This is expected, since large translation vectors z0(δ)
+
+and non-standard basis ( θ) violate Ass. 3.8. 
+
+Ablations. We provide an evaluation on independent latent variables in App. D.3, showing comparable re-sults, and an empirical complexity analysis in App. D.4, showing that we can scale our method up to n = 50 
+
+and partially to n = 100 variables. This is in line with other CRL works, which mostly focus on 10 − 20 
+
+latent variables. On the other hand, the inference time increases exponentially with the number of latents. In App. D.5 we report a sensitivity analysis on our hyper-parameters, in particular the sparsity level, which we set to ϵ = 0 .01 for the main experiments, and the learn-ing rate, which we set to lr = 1 e − 4. In App. D.6 we report an ablation on the sparsity constraint, showing its importance for the second stage. We also compare with a related method (Xu et al., 2024) that requires additional information (i.e., knowing the label of the component) and show that with the same information, our method provides comparable results. For complete-ness, we also provide results in App. D.7 with a setting that is fair to the baseline VaDE (Kivva et al., 2022), where we generate the latent with a non-degenerate GMM, showing that our method outperforms VaDE even in these settings. Similarly to other work in CRL, our theoretical results assume that we know the ground truth n, but empirically our method performs well even if we overestimate it, as shown in App. D.8. As an additional measure of the accuracy of our reconstruc-tion, in App. D.9 we evaluate the Structural Hamming Distance (SHD) of the causal graph that we learn with a standard causal discovery method, PC (Spirtes et al., 2000), on our recovered latent variables, showing that the SHD is only slightly worse than the SHD for the ground truth variables. 
+
+Settings when the assumptions are violated. In App. E we discuss the intuition, implications and prac-tical applicability of our assumptions, providing also ablations for their violations. In particular, in App. E.1 we show empirically that our method is often still robust in a misspecified setting, i.e., when the variables are not Gaussian (but instead they follow and exponential or Gumbel distribution) or the mixing function is not piecewise affine (but instead is a smooth Leaky-ReLU or sigmoid). On the other hand, we do need all other assumptions. We provide evaluation showing the neces-sity of Ass. 3.4 (genericity of pdGMMs) in App. E.2, showing that when it does not hold the results are much worse. Similarly, results are much worse when Ass. 3.6 does not hold, so there does not exists a unique shared basis for all Gaussian components. To show a violation of this, we generate the data with a mixture of two different bases: a standard basis and one with rotations, and provide results in App. E.3, showing the necessity of this assumption. Table 1 already shows vi-olations of Ass. 3.8a when δ (the masking value) and θIdentifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8                            
+
+> b1b2b3b4
+> 0.99 0.98 000000000.96 0.95 000000000.98 0.98 000000000.87 0.79
+> 0.00.20.40.60.8
+
+Figure 2: R2 of the linear regression between ball posi-tions b1, . . . , b 4 and learned representations ˆz1, . . . , ˆz8.We use two variables for each (x, y ) position. (the rotation of the standard basis) are non-zero, show-casing a decrease in performance when the assumption does not hold. When we have violations of Ass. 3.8b, we can still achieve block-identifiability, as discussed and shown empirically in App. E.5. 
+
+Image dataset: Multiple Balls. To show po-tential applications of our approach in partially ob-servable causal representation learning, we evaluate our method on an image dataset from Ahuja et al. (2022); Xu et al. (2024), which consists of b moving balls rendered in a 2D space, as shown in App. D.10. The latent causal variables correspond to the (x, y )
+
+positions of each ball, which are modeled as Gaus-sian. We focus on a fixed position setting, where the balls usually move freely within the frame but occasionally remain stationary at unknown fixed po-sitions. When a ball is stationary, the correspond-ing latent dimensions are degenerate. We generate datasets with varying numbers of balls: b = 2 , 4, 6.The (x, y ) coordinates of each ball i ∈ [b] are sam-pled independently from a truncated 2-dimensional normal distribution N (μi, Σi) bounded within the square (0 .05 , 0.95) 2, where μi ∼ Unif (0 .3, 0.7) 2, and 
+
+Σi = ((0 .01 , 0.00)(0 .00 , 0.01)) . To avoid the high ratio of occlusion, we use rejection sampling to sample μi
+
+to ensure the Euclidean distance between any pair of 
+
+μi values is at least 0.2. Each ball has a probability 
+
+p = 0 .1 to be at a fixed position μi.Before we train the model described in Sec. 4, we pre-train a CNN model to reduce the input image di-mension from 64 × 64 to a vector of size 16 b × 1. More details about the network architecture are provided in App. D.10. Instead of a fixed-size training dataset, we generate images online until convergence. Since the variables describing the x and y position of the same ball are always degenerate together, they cannot be disentangled in our method (as sufficient variability in Ass. 3.8 does not hold). To evaluate the perfor-mance, we perform regression from each representation separately to the corresponding ground-truth position pairs, as illustrated in Fig. 2. The results show that the position of each ball can be recovered through pairs of representations, which is consistent with our theoretical results. Additional results are in App. D.10. 
+
+## 6 RELATED WORK 
+
+Our work is inspired by previous work in nonlinear inde-pendent component analysis (ICA), causal representa-tion learning (CRL) and sparsity-based methods. ICA (Comon, 1994; Hyvärinen, 2013) is a seminal approach that identifies latent variables under the assumption that the latent variables are independent and that the mixing function is linear. In the non-linear ICA set-ting, Hyvarinen and Morioka (2016, 2017) reformulate this standard ICA independence assumption as condi-tional independence given observed auxiliary variables. Khemakhem et al. (2020) show the identifiability of the VAE model with a conditionally independent prior. Willetts and Paige (2021) show that the auxilliary vari-ables can be unobservable and learned; however, this still requires the conditional independence assumption. Causal representation learning (CRL) extends (non-linear) ICA to the case in which latent variables have causal relations between them and hence arbitrary de-pendencies. Our approach fits in this line of work. Many CRL works consider additional data or infor-mation to identify causal variables, e.g., interventions (Brehmer et al., 2022; Lippe et al., 2022; Varici et al., 2023; von Kügelgen et al., 2023; Buchholz et al., 2023; Zhang et al., 2023; Ahuja et al., 2023a), actions or tem-poral structure (Lippe et al., 2023; Lachapelle et al., 2022, 2024), multi-view settings (von Kügelgen et al., 2021; Ahuja et al., 2023b; Yao et al., 2024; Morioka and Hyvärinen, 2024), multiple environments (Liu et al., 2024), grouping of observations by sparsity patterns (Xu et al., 2024), hierarchical structures (Kong et al., 2023, 2024) or conditions on causal graphs (Zhang et al., 2024; Dong et al., 2024; Song et al., 2024). In our case, we do not assume any additional data or information besides the observations, but instead con-sider parametric assumptions on the latent variables and mixing function. Similarly to us, Kivva et al. (2022) studies the identifiability of non-degenerate GMM la-tents with piecewise affine mixing. For PS identifiabil-ity, they require that all pairs of latent variables must be conditionally independent given an auxiliary vari-able. Other works consider restrictions on the mixing function, e.g., Squires et al. (2023); Bing et al. (2024) assume a linear mixing function, Ahuja et al. (2023a) assumes a finite-degree polynomial and either indepen-dent supports or perfect interventions, and Lachapelle et al. (2023b) assumes an additive mixing function. Our results do not require conditional independence, independent support or interventions and allow mix-ing functions composed of an infinite number of affine pieces, allowing the potential possibility to approximate Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+any nonlinear functions up to an arbitrary precision. Our focus on low-rank representations is also inspired by prior work that leverages sparsity in (causal) repre-sentation learning, e.g., structural sparsity in Jacobians of nonlinear mixing functions (Zheng et al., 2022; Zheng and Zhang, 2023), sparsity constraints on affine mixing (Ng et al., 2023), sparsity on causal graphs (Zhang et al., 2024; Song et al., 2024), sparse decoders (Moran et al., 2022) and sparsity task-specific predictors (Lachapelle et al., 2023a; Fumero et al., 2023). For time-series data, Lachapelle et al. (2022, 2024) propose sparse actions and sparse temporal dependencies, while Li et al. (2025) introduce latent process sparsity, referring to sparse connections between latents both within and across time. Differently from these approaches, which impose sparsity on the model structure or latent interactions, we are enforcing sparsity of the representation itself .This aligns with prior work (Tonolini et al., 2020), as well as classical methods sparse component analysis 
+
+(Gribonval and Lesage, 2006), and sparse dictionary learning (Mairal et al., 2009). Most works show em-pirical success on benchmark tasks and do not provide guarantees for identifiability, which is our main fo-cus. Moran et al. (2022) focuses on independent latent variables, while Hu and Huang (2023) studies the iden-tifiability of dictionary learning, but they assume affine mixing . Instead, we focus on piecewise-affine mixing 
+
+for dependent latent variables. 
+
+## 7 CONCLUSIONS AND LIMITATIONS 
+
+In this work, we focus on identifying pdGMM latent variables with piecewise affine mixing functions. We first show that the entire pdGMM can be identified via an open set. This result is a critical step for a series of increasingly stronger identifiability results, ul-timately proving identifiability up to permutation and element-wise transformations, i.e. completely disen-tangled representations. While our experiments vali-date our results, there are still several limitations. As discussed in App. E, some of our assumptions might not hold in some settings, potentially leading to par-tial or no theoretical guarantees. In particular, the Gaussian assumption for mixture components may not hold, so extending our approach to other parametric models is an exciting avenue for future research. Fi-nally, although our method encourages Gaussianity on representations, ensuring this in practice remains challenging. 
+
+Acknowledgements 
+
+We thank the anonymous reviewers for their helpful and constructive comments. The research of DX and SM was supported by the Air Force Office of Scientific Research under award number FA8655-22-1-7155. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the United States Air Force. We also thank SURF for the support in using the Dutch National Supercomputer Snellius. 
+
+References 
+
+Yoshua Bengio, Aaron Courville, and Pascal Vincent. Representation learning: A review and new perspec-tives. IEEE transactions on pattern analysis and machine intelligence , 35(8):1798–1828, 2013. P. Comon. Independent component analysis, a new concept? Signal Processing , 1994. Aapo Hyvärinen. Independent component analysis: recent advances. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engi-neering Sciences , 371(1984):20110534, 2013. Aapo Hyvarinen and Hiroshi Morioka. Unsupervised feature extraction by time-contrastive learning and nonlinear ica. Advances in neural information pro-cessing systems , 29, 2016. Aapo Hyvarinen and Hiroshi Morioka. Nonlinear ica of temporally dependent stationary sources. In Ar-tificial Intelligence and Statistics , pages 460–469. PMLR, 2017. Bernhard Schölkopf, Francesco Locatello, Stefan Bauer, Nan Rosemary Ke, Nal Kalchbrenner, Anirudh Goyal, and Yoshua Bengio. Toward causal repre-sentation learning. Proceedings of the IEEE , 109(5): 612–634, 2021. Johann Brehmer, Pim De Haan, Phillip Lippe, and Taco S Cohen. Weakly supervised causal represen-tation learning. Advances in Neural Information Processing Systems , 35:38319–38331, 2022. Phillip Lippe, Sara Magliacane, Sindy Löwe, Yuki M Asano, Taco Cohen, and Stratis Gavves. Citris: Causal identifiability from temporal intervened se-quences. In International Conference on Machine Learning , pages 13557–13603. PMLR, 2022. Burak Varici, Emre Acarturk, Karthikeyan Shan-mugam, Abhishek Kumar, and Ali Tajer. Score-based causal representation learning with interven-tions. Causal Representation Learning Workshop at NeurIPS 2023 , 2023. Julius von Kügelgen, Michel Besserve, Wendong Liang, Luigi Gresele, Armin Kekić, Elias Bareinboim, David M Blei, and Bernhard Schölkopf. Nonpara-metric identifiability of causal representations from unknown interventions. In Advances in Neural In-formation Processing 36 , 2023. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Simon Buchholz, Goutham Rajendran, Elan Rosenfeld, Bryon Aragam, Bernhard Schölkopf, and Pradeep Ravikumar. Learning linear causal representations from interventions under general nonlinear mixing. In 
+
+Advances in Neural Information Processing Systems ,2023. Jiaqi Zhang, Kristjan Greenewald, Chandler Squires, Akash Srivastava, Karthikeyan Shanmugam, and Caroline Uhler. Identifiability guarantees for causal disentanglement from soft interventions. In Advances in Neural Information Processing Systems , 2023. Kartik Ahuja, Divyat Mahajan, Yixin Wang, and Yoshua Bengio. Interventional causal representation learning. In International Conference on Machine Learning , pages 372–407. PMLR, 2023a. Phillip Lippe, Sara Magliacane, Sindy Löwe, Yuki M Asano, Taco Cohen, and Efstratios Gavves. Biscuit: Causal representation learning from binary interac-tions. Proceedings of the Thirty-Ninth Conference on Uncertainty in Artificial Intelligence , 2023. Sébastien Lachapelle, Pau Rodriguez, Yash Sharma, Katie E Everett, Rémi Le Priol, Alexandre Lacoste, and Simon Lacoste-Julien. Disentanglement via mechanism sparsity regularization: A new principle for nonlinear ica. In Conference on Causal Learning and Reasoning , pages 428–484. PMLR, 2022. Sébastien Lachapelle, Pau Rodríguez López, Yash Sharma, Katie Everett, Rémi Le Priol, Alexandre Lacoste, and Simon Lacoste-Julien. Nonparamet-ric partial disentanglement via mechanism sparsity: Sparse actions, interventions and sparse temporal dependencies, 2024. Julius von Kügelgen, Yash Sharma, Luigi Gre-sele, Wieland Brendel, Bernhard Schölkopf, Michel Besserve, and Francesco Locatello. Self-supervised learning with data augmentations provably isolates content from style. Advances in neural information processing systems , 34:16451–16467, 2021. Kartik Ahuja, Amin Mansouri, and Yixin Wang. Multi-domain causal representation learning via weak dis-tributional invariances. In Causal Representation Learning Workshop at NeurIPS 2023 , 2023b. Dingling Yao, Danru Xu, Sébastien Lachapelle, Sara Magliacane, Perouz Taslakian, Georg Martius, Julius von Kügelgen, and Francesco Locatello. Multi-view causal representation learning with partial observ-ability. International Conference on Learning Repre-sentations , 2024. Hiroshi Morioka and Aapo Hyvärinen. Causal repre-sentation learning made identifiable by grouping of observational variables. International Conference on Machine Learning , 2024. Danru Xu, Dingling Yao, Sébastien Lachapelle, Per-ouz Taslakian, Julius von Kügelgen, Francesco Lo-catello, and Sara Magliacane. A sparsity principle for partially observable causal representation learn-ing. International Conference on Machine Learning ,2024. Lingjing Kong, Biwei Huang, Feng Xie, Eric Xing, Yue-jie Chi, and Kun Zhang. Identification of nonlinear latent hierarchical models. Advances in Neural In-formation Processing Systems , 36:2010–2032, 2023. Lingjing Kong, Guangyi Chen, Biwei Huang, Eric P. Xing, Yuejie Chi, and Kun Zhang. Learning discrete concepts in latent hierarchical models. Advances in Neural Information Processing Systems , 2024. Kun Zhang, Shaoan Xie, Ignavier Ng, and Yujia Zheng. Causal representation learning from multiple distri-butions: A general setting. International Conference on Machine Learning , 2024. Xinshuai Dong, Ignavier Ng, Biwei Huang, Yuewen Sun, Songyao Jin, Roberto Legaspi, Peter Spirtes, and Kun Zhang. On the parameter identifiability of partially observed linear causal models. In The Thirty-eighth Annual Conference on Neural Informa-tion Processing Systems , 2024. Xiangchen Song, Zijian Li, Guangyi Chen, Yujia Zheng, Yewen Fan, Xinshuai Dong, and Kun Zhang. Causal temporal representation learning with nonstationary sparse transition. In The Thirty-eighth Annual Con-ference on Neural Information Processing Systems ,2024. Bohdan Kivva, Goutham Rajendran, Pradeep Raviku-mar, and Bryon Aragam. Identifiability of deep generative models without auxiliary information. Ad-vances in Neural Information Processing Systems , 35: 15687–15701, 2022. Sam Buchanan, Druv Pai, Peng Wang, and Yi Ma. 
+
+Learning Deep Representations of Data Distri-butions . Online, August 2025. https://ma-lab-berkeley.github.io/deep-representation-learning-book/. Sébastien Lachapelle, Tristan Deleu, Divyat Mahajan, Ioannis Mitliagkas, Yoshua Bengio, Simon Lacoste-Julien, and Quentin Bertrand. Synergies between disentanglement and sparsity: Generalization and identifiability in multi-task learning. In International Conference on Machine Learning , pages 18171–18206. PMLR, 2023a. Ilyes Khemakhem, Diederik Kingma, Ricardo Monti, and Aapo Hyvarinen. Variational autoencoders and nonlinear ica: A unifying framework. In Inter-national Conference on Artificial Intelligence and Statistics , pages 2207–2217. PMLR, 2020. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey. Sparse autoen-coders find highly interpretable features in language models. International Conference on Learning Rep-resentations , 2024. Leo Gao, Tom Dupré la Tour, Henk Tillman, Gabriel Goh, Rajan Troll, Alec Radford, Ilya Sutskever, Jan Leike, and Jeffrey Wu. Scaling and evaluating sparse autoencoders. International Conference on Learning Representations , 2025. Samuel Marks, Can Rager, Eric J Michaud, Yonatan Belinkov, David Bau, and Aaron Mueller. Sparse fea-ture circuits: Discovering and editing interpretable causal graphs in language models. International Conference on Learning Representations , 2025. Sidney J Yakowitz and John D Spragins. On the iden-tifiability of finite mixtures. The Annals of Mathe-matical Statistics , 39(1):209–214, 1968. Aapo Hyvärinen, Ilyes Khemakhem, and Ricardo Monti. Identifiability of latent-variable and structural-equation models: from linear to nonlinear. Annals of the Institute of Statistical Mathematics , 76(1):1–33, 2024. Jose Gallego-Posada and Juan Ramirez. Cooper: a toolkit for lagrangian-based constrained optimiza-tion, 2022. Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In Yoshua Bengio and Yann LeCun, editors, International Conference on Learning Representations , 2015. Gauthier Gidel, Hugo Berard, Gaëtan Vignoud, Pascal Vincent, and Simon Lacoste-Julien. A variational inequality perspective on generative adversarial net-works. International Conference on Learning Repre-sentations , 2019. Peter Spirtes, Clark N Glymour, and Richard Scheines. 
+
+Causation, prediction, and search . MIT press, 2000. Kartik Ahuja, Jason S Hartford, and Yoshua Ben-gio. Weakly supervised representation learning with sparse perturbations. Advances in Neural Informa-tion Processing Systems , 35:15516–15528, 2022. Matthew Willetts and Brooks Paige. I don’t need u: Identifiable non-linear ica without side information. 
+
+arXiv preprint arXiv:2106.05238 , 2021. Yuhang Liu, Zhen Zhang, Dong Gong, Mingming Gong, Biwei Huang, Anton van den Hengel, Kun Zhang, and Javen Qinfeng Shi. Identifiable latent polyno-mial causal models through the lens of change. In 
+
+The Twelfth International Conference on Learning Representations , 2024. Chandler Squires, Anna Seigal, Salil Bhate, and Car-oline Uhler. Linear causal disentanglement via in-terventions. In 40th International Conference on Machine Learning , 2023. Simon Bing, Urmi Ninad, Jonas Wahl, and Jakob Runge. Identifying linearly-mixed causal representa-tions from multi-node interventions. In Causal Learn-ing and Reasoning , pages 843–867. PMLR, 2024. S. Lachapelle, D. Mahajan, I. Mitliagkas, and S. Lacoste-Julien. Additive decoders for latent vari-ables identification and cartesian-product extrapola-tion. In Advances in Neural Information Processing Systems , 2023b. Yujia Zheng, Ignavier Ng, and Kun Zhang. On the identifiability of nonlinear ica: Sparsity and beyond. 
+
+Advances in Neural Information Processing Systems ,35:16411–16422, 2022. Yujia Zheng and Kun Zhang. Generalizing nonlinear ica beyond structural sparsity. Advances in Neu-ral Information Processing Systems , 36:13326–13355, 2023. Ignavier Ng, Yujia Zheng, Xinshuai Dong, and Kun Zhang. On the identifiability of sparse ica without assuming non-gaussianity. Advances in Neural Infor-mation Processing Systems , 36, 2023. G Moran, D Sridhar, Y Wang, and D Blei. Identi-fiable deep generative models via sparse decoding. 
+
+Transactions on machine learning research , 2022. Marco Fumero, Florian Wenzel, Luca Zancato, Alessan-dro Achille, Emanuele Rodolà, Stefano Soatto, Bern-hard Schölkopf, and Francesco Locatello. Leveraging sparse and shared feature activations for disentan-gled representation learning. In Thirty-seventh Con-ference on Neural Information Processing Systems ,2023. Zijian Li, Yifan Shen, Kaitao Zheng, Ruichu Cai, Xi-angchen Song, Mingming Gong, Guangyi Chen, and Kun Zhang. On the identification of temporal causal representation with instantaneous dependence. In 
+
+The Thirteenth International Conference on Learning Representations , 2025. Francesco Tonolini, Bjørn Sand Jensen, and Roder-ick Murray-Smith. Variational sparse coding. In 
+
+Uncertainty in Artificial Intelligence , pages 690–700. PMLR, 2020. Rémi Gribonval and Sylvain Lesage. A survey of sparse component analysis for blind source separa-tion: principles, perspectives, and new challenges. In ESANN’06 proceedings-14th European Symposium on Artificial Neural Networks , pages 323–330. d-side publi., 2006. J. Mairal, F. Bach, J. Ponce, and G. Sapiro. Online dictionary learning for sparse coding. In Proceed-ings of the 26th annual international conference on machine learning , pages 689–696, 2009. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Jingzhou Hu and Kejun Huang. Global identifiability of $\ell_1$-based dictionary learning via matrix vol-ume optimization. In Thirty-seventh Conference on Neural Information Processing Systems , 2023. Richard Caron and Tim Traynor. The zero set of a polynomial. WSMR Report , pages 05–02, 2005. Joachim Bona-Pellissier, François Bachoc, and François Malgouyres. Parameter identifiability of a deep feed-forward relu neural network. Machine Learning , 112 (11):4431–4493, 2023. J. R. Munkres. Topology . Prentice Hall, Inc., 2 edition, 2000. Xun Zheng, Bryon Aragam, Pradeep K Ravikumar, and Eric P Xing. Dags with no tears: Continuous optimization for structure learning. Advances in neural information processing systems , 31, 2018. BS Mityagin. The zero set of a real analytic function. 
+
+Mathematical Notes , 107(3):529–530, 2020. Identifiability of potentially degenerate Gaussian Mixture Models with piecewise affine mixing: Supplementary Materials 
+
+## A Notation 
+
+Throughout this paper, we adopt the following conventions for mathematical notation: We use lowercase italic letters such as x to denote scalars, bold lowercase letters such as x to denote deterministic vectors, bold uppercase letters such as X to denote random vectors, and uppercase italic letters such as X to denote matrices, and calligraphic uppercase letters such as X to denote sets (e.g., a set of inputs or a domain). We list all specific notations in the following table: 
+
+Symbol Description 
+
+Z Causal latent variables 
+
+X Observations 
+
+f Mixing function 
+
+n Latent space dimension 
+
+d Observation space dimension 
+
+J Number of components in mixture models 
+
+Z Support of pdGMM latent 
+
+Zj Support of j-th component of pdGMM latent 
+
+X Support of observation 
+
+Kj Basis index for j-th component 
+
+z0 Translation vector 
+
+## B Proofs 
+
+Our work focuses on Gaussian Mixture Models (GMMs), which are frequently used in machine learning models and possess a number of nice theoretical properties like closure under affine transformation etc. Before presenting our main results, we recall one of the fundamental properties of GMMs, stated in Theorem B.2, which will serve as a recurring tool in our derivations. This theorem builds a one-to-one correspondence-commonly referred to as 
+
+identifiability of distributions between the probability measure and the parameterization of a GMM. Notably, this property holds even when the mixture includes potentially degenerate components (i.e., components with singular covariance matrices), which we refer to as potentially degenerate GMMs (pdGMMs). To proceed, we begin by reporting again the formal definition of pdGMM in a reduced form, i.e., with distinct components. Note that N (μ, Σ) stands for the Gaussian probability measure associated to parameters μ, Σ.
+
+Definition B.1. A variable Z follows a potentially degenerate Gaussian mixture model (pdGMM) if its distribution is P = ∑Jj=1 λj N (μj , Σj ), where for each component j ∈ [J] the mean is μj ∈ Rn and the covariance matrix is Σj ∈ Rn×n, such that determinant |Σj | ≥ 0. We assume that the weights λj > 0 and ∑Jj=1 λj = 1 . If each component is distinct, i.e., for every i̸ = j ∈ [J] we have (μi, Σi)̸ = ( μj , Σj ), then we say that the pdGMM is in a reduced form .We now report a classic result on the identifiability of Gaussian Mixture Models (GMMs) on the whole domain by Yakowitz and Spragins (1968). While this result holds also for pdGMMs, it only proves identifiability when two GMMs are equal in distribution on the whole domain, while in this paper we will focus on identifiability from an open subset of the domain. 
+
+Theorem B.2 (Identifiable Gaussian Mixture Models - Proposition 2 in Yakowitz and Spragins (1968)) . Consider Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+a pair of finite GMMs (in reduced form) in Rn,
+
+P =
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and P ′ =
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+) . (7) 
+
+we have that P = P ′ if and only if the number of mixture components are the same, i.e., J = J′, and for some permutation π for all j ∈ [J] the mixture components have the same parameters, i.e., λj = λπ(j) and 
+
+(μj , Σj ) = ( μ′
+
+> π(j)
+
+, Σ′
+
+> π(j)
+
+).
+
+B.1 Identifiability of pdGMMs from an open subset 
+
+In this section, we address the following question: Can a potentially degenerate Gaussian Mixture Model (pdGMM) be identified using only information from an open subset of its domain? 
+
+Inspired by Kivva et al. (2022), which show that a non-degenerate GMM (so a GMM with |Σj | > 0 for all j) can be uniquely identified from its restriction to a single open subset of the domain (Theorem B.4), we show that a similar identifiability result also holds for pdGMMs (Theorem 3.2). However, the extension from GMMs to pdGMMs is nontrivial. The main challenge arises from the fact that the proof technique in Kivva et al. (2022) critically relies on the analyticity of the probability density function (w.r.t. the Lebesgue measure) of a non-degenerate Gaussian mixture. However, mixtures of degenerate Gaussians do not have a density function, which means this strategy cannot be applied. This necessitates the development of a new proof strategy to overcome the lack of density function. As a first step, we introduce a formal definition of equivalence in distribution over a constrained subdomain. 
+
+Definition B.3. Let μ : F → [0 , 1] and μ′ : F → [0 , 1] be the probability measures induced by X and X′,respectively, where F is the Borel sigma-algebra over Rn. Given a subset E ∈ F , we define the restriction of μ to 
+
+E, denoted by μE : F → [0 , 1] , as μE (A) := μ(A ∩ E), ∀A ∈ F . We say that X and X′ are equal in distribution over a subdomain E, denoted as X d
+
+= X′ on E, when μE = μ′ 
+
+> E
+
+.We then recall the results from Kivva et al. (2022), which show that for non-degenerate GMMs, we can identify them via an open subdomain. 
+
+Theorem B.4 (Identifiability of non-degenerate GMMs from open set (Kivva et al., 2022)) . Consider a pair of finite non-degenerate GMMs in Rn in reduced form, 
+
+X ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and X′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (8) 
+
+where | det (Σj )| > 0, ∀j ∈ [J] and | det (Σ′ 
+
+> j
+
+)| > 0, ∀j ∈ [J′]. If X d
+
+= X′ on E, where E ⊆ Rn is an open set, then, 
+
+X d
+
+= X′.
+
+Next, we focus on extending these results to pdGMMs, which we will formalize in the following theorem. 
+
+Theorem 3.2 (Identifiability of pdGMMs from open set) . Consider two pdGMMs in Rn in reduced form, 
+
+X ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and X′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (1) 
+
+where rank (Σj ) > 0, ∀j ∈ [J] and rank (Σ′ 
+
+> j
+
+) > 0, ∀j ∈ [J′]. Let Xj be the supports of N (μj , Σj ). If there exists an open set E such that for all j ∈ [J], Xj ∩ E̸ = ∅ and X d
+
+= X′ on E, then X d
+
+= X′ on the whole domain, J = J′,and there exists a permutation π : [ J] → [J′] such that (λj , μj , Σj ) = ( λ′
+
+> π(j)
+
+, μ′
+
+> π(j)
+
+, Σ′
+
+> π(j)
+
+).
+
+As previously mentioned, proving the above theorem is challenging because, in the degenerate case, the probability density function no longer exists, making the techniques used in Kivva et al. (2022) inapplicable. To overcome this difficulty, we first provide a weaker result, Theorem B.5, which is requiring all supports intersect at one point at least, as a middle step to get Theorem 3.2. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Theorem B.5 (Identifiability of pdGMMs from open set with common intersection) . Under the same conditions as Theorem 3.2, and further assuming that there exists a point z0, such that z0 ∈ ∩ j∈[J]Xj , then, the same results stated in Theorem 3.2 hold. 
+
+To prove Theorem B.5, we build upon four key technical lemmas that we introduce and prove below. We now provide a brief overview of our proof strategy. The core idea is to project a pdGMM in Rn into a sequence of lower-dimensional spaces Rk, where k ∈ [n]. Intuitively, the projection serves to “resolve” the degeneracy by embedding each low-rank component into a subspace where it appears non-degenerate, thus enabling the application of classical identifiability arguments in Theorem B.4. To make this strategy work, the projections must satisfy two key properties. First, to ensure that no critical information is lost during projection (intuitively, the intrinsic structure of the component is retained under projection), the rank of the covariance matrix for the targeted Gaussian component must be preserved. Second, a single projection is insufficient to fully recover the parameters of a pdGMM; instead, we require a sufficiently rich set of rank-preserving projections to capture all distinguishable parameterizations. The existence of such a family of rank-preserving mappings is guaranteed by Lemma B.6. 
+
+Lemma B.6. Suppose a positive semi-definite and symmetric matrix Σ ∈ Rn×n has rank k ≤ n. Let 
+
+B := {A ∈ Rn×m : rank (AT ΣA) = k}, (9) 
+
+where k ≤ m ≤ n. Then, we have that i) the Lebesgue measure of its complement Bc, denoted by L(Bc) is zero, and ii) B is open. Proof. The fact that rank (AΣAT ) = k means there exists at least one k × k submatrix with full rank k. Consider the sets 
+
+AI,J := {A ∈ Rn×m : det(( AT ΣA)I,J ) = 0 } (10) which are the sets of matrices such that AΣj AT has a submatrix with index sets I, J ⊆ [m] with |I| = |J| that is full rank. Then the complement of B, denoted as Bc, can be rewritten as 
+
+Bc = ∩{I,J ⊆[m]: |I|=|J|=k}AI,J . (11) This implies L(Bc) ≤ L (AI,J ), ∀(I, J ) ∈ { I, J ⊆ [n] : |I| = |J| = k}. Therefore, if we can find one AI,J which is measure zero, Bc has Lebesgue measure zero as well. Note that det (( AT ΣA)I,J ) is a polynomial in Ai,j , where i ∈ I, j ∈ J are individual row and column indices. This is because det is a polynomial and (AT ΣA)I,J is a polynomial and thus composition of polynomials is a polynomial. Additionally, AI,J is the set of the roots of this polynomial. By Caron and Traynor (2005), a polynomial from Rn to R is either zero everywhere or non-zero almost everywhere. In our context, it means if the polynomial det (( AT ΣA)I,J ) is not zero everywhere, then it is nonzero almost everywhere, i.e. its roots AI,J has zero Lebesgue measure in Rn×m. Thus, all we need to show is that the polynomial det (( AT ΣA)I,J ) is not always zero. In other words, we must find a A0 ∈ Rn×m, such that for one pair I, J , det (( AT ΣA)I,J )̸ = 0 . Then in the following, we show how to construct such a A0.Since rank (Σ) = k, there exists an invertible k × k submatrix ΣI,J . Let ˜I := [ e1 · · · em] ∈ Rn×m where the vectors ek are the elements of the standard basis of Rn (one-hot vector). Notice that 
+
+(˜IT Σ˜I)I,J = ( ˜IT )I, ·Σ˜I·,J = ( ˜I·,I )T Σ˜I·,J = ΣI,J . (12) So we found index sets I, J ⊆ [m] with |I| = |J| = k and a matrix A0 := ˜I ∈ Rn×m such that 
+
+det(( AT 
+
+> 0
+
+ΣA0)I,J ) = det(( ˜IT Σ˜I)I,J ) = det( ΣI,J )̸ = 0 ,
+
+as desired. Hence, the polynomial function p(A) := det (( AT ΣA)I,J ) is not everywhere zero and thus, by Caron and Traynor (2005), it is nonzero almost everywhere. In other words, AI,J has zero Lebesgue measure. We can conclude that 
+
+Bc has zero Lebesgue measure. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+We now show that B is open. Take the complement set on Equation (11), we have 
+
+B = ∪{I,J ⊆[n]: |I|=|J|=k}AcI,J , (13) 
+
+AcI,J = {A ∈ Rn×m : det(( AT ΣA)[I,J ])̸ = 0 }. (14) Since det (( AT ΣA)[I,J ]) is a continuous function and AcI,J is the preimage of open set R\{ 0}, AcI,J is open as well. As the union of finite open sets, we can conclude B is open. The following lemma will be useful many times in what follows. For a probability measure μ and a function f ,
+
+f (μ) designates the pushforward of μ under f . The pushforward measure is defined as f (μ)( E) := μ(f −1(E)) . We recall that as defined in Def. B.3, μE is a restriction of μ to E.
+
+Lemma B.7. Let μ : F(n) → R be a measure on F(n), the Borel sigma-algebra of Rn. Let f : Rn → Rm be an injective function for any set E ∈ F (n), we have f (μE ) = f (μ)f (E).Proof. Take an arbitrary set B ∈ F (m), the Borel sigma-algebra over Rm. We have 
+
+f (μE )( B) = μE (f −1(B)) = μ(f −1(B) ∩ E) (15) Since f is injective, we have that E = f −1(f (E)) . This means 
+
+f (μE )( B) = μ(f −1(B) ∩ f −1(f (E))) (16) 
+
+= μ(f −1(B ∩ f (E))) (17) 
+
+= f (μ)( B ∩ f (E)) (18) 
+
+= f (μ)f (E)(B) , (19) where the second equality uses the general fact that taking the preimage preserves intersections. The next lemma is a slightly different version from the one showed above where the function is required to be injective only on the support of the measure μ.
+
+Lemma B.8. Let μ : F(n) → R be a measure on F(n), the Borel sigma-algebra of Rn. Let X ⊆ Rn be the support of μ, and let f : Rn → Rm be such that its restriction to X is injective, then for any set E ∈ F (n), we have 
+
+f (μE ) = f (μ)f (E∩X ).Proof. Take an arbitrary set B ∈ F (m), the Borel sigma-algebra over Rm. We have 
+
+f (μE )( B) = μE (f −1(B)) (20) 
+
+= μ(f −1(B) ∩ E) (21) 
+
+= μ(f −1(B) ∩ E ∩ X ) + μ(f −1(B) ∩ E ∩ X c) (22) 
+
+= μ(f −1(B) ∩ (E ∩ X )) , (23) where the last equality used the fact that μ(X c) = 0 . Since f is injective on X and (E ∩ X ) ⊆ X , we have that 
+
+(E ∩ X ) = f −1(f (E ∩ X )) ∩ X . This means 
+
+f (μE )( B) = μ(f −1(B) ∩ f −1(f (E ∩ X )) ∩ X ) (24) 
+
+= μ(f −1(B) ∩ f −1(f (E ∩ X )) ∩ X ) + μ(f −1(B) ∩ f −1(f (E ∩ X )) ∩ X c)
+
+︸ ︷︷ ︸
+
+> =0
+
+(25) 
+
+= μ(f −1(B) ∩ f −1(f (E ∩ X ))) (26) 
+
+= μ(f −1(B ∩ f (E ∩ X ))) (27) 
+
+= f (μ)( B ∩ f (E ∩ X )) (28) 
+
+= f (μ)f (E∩X )(B) , (29) where the second equality uses the fact that μ(X c) = 0 and fourth equality uses the general fact that taking the preimage preserves intersections. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+The previous two lemmas show that the injectivity can ensure the exchange order of pushforward and restricted measures. In the following lemma, we show that the rank-preserving projections are injective on the domain we are interested in, and hence we can apply these lemmas. 
+
+Lemma B.9. For A ∈ Rn×m, where m ≤ n, if rank (Σ) = rank (AT ΣA) = k ≤ m, then, AT is injective on 
+
+col (Σ) + μ, ∀μ ∈ Rn.Proof. Since rank (AT ΣA) ≤ rank (AT Σ), we get k ≤ rank (AT Σ) ≤ m. Now we consider the null space for AT Σ
+
+and Σ.First, we know dim (null (AT Σ)) ∈ [n − m, n − k] and dim (null (Σ)) = n − k. Second, ∀x ∈ Rn, if Σx = 0 , then 
+
+AT Σx = 0 . This means null (Σ) ⊆ null (AT Σ). Combined with the first point, we can get dim (null (AT Σ)) = n−k.Since both of them are affine subspaces with the same dimension and one is the subset of the other, we get 
+
+null (Σ) = null (AT Σ). This means 
+
+∀y ∈ Rn, if AT Σy = 0 ⇒ Σy = 0 (30) Denote x := Σy ∈ col (Σ), then we have 
+
+∀x ∈ col (Σ), if AT x = 0 ⇒ x = 0 . (31) Now consider two distinct points x1, x 2 ∈ col (Σ) + μ. As x1 − x2 ∈ col (Σ) but not equal to 0, by Equation (31), we have 
+
+AT (x1 − x2)̸ = 0 ⇒ AT x1̸ = AT x2, (32) which means AT is injective on col (Σ) + μ.In the following lemma, we show that only the components with well-defined density can be equal to each other, and the same for the components without density. Intuitively, we can group the Gaussian components by rank and analyze each group separately. To discuss the existence of well-defined density, we recall the Radon-Nikodym theorem: informally, if measure μ is absolutely continuous with respect to measure L, denoted as μ ≪ L , then there exists a density function of μ w.r.t. L. In other words, μ ≪ L means for any set A, if L(A) = 0 , then 
+
+μ(A) = 0 .
+
+Lemma B.10. Let μ, ˜μ, λ, ˜λ be nonnegative finite measures on a common measure space such that 
+
+μ + λ = ˜ μ + ˜λ. (33) 
+
+Let Λ and ˜Λ be the supports of λ and ˜λ, respectively. If there is a third measure L over the same space such that (i) μ, ˜μ ≪ L , and (ii) L(Λ) = L(˜Λ) = 0 , then μ = ˜ μ and λ = ˜λ.Proof. First, we rewrite the equation equivalently as: 
+
+μ − ˜μ = ˜λ − λ. (34) Let B be an arbitrary measurable set. We have 
+
+(μ − ˜μ)( B) = ( ˜λ − λ)( B) (35) 
+
+= ( ˜λ − λ)( B ∩ (Λ ∪ ˜Λ)) + ( ˜λ − λ)( B ∩ (Λ ∪ ˜Λ) c) (36) Since B ∩ (Λ ∪ ˜Λ)c has no overlap with the support of neither λ nor ˜λ, we have ( ˜λ − λ)( B ∩ (Λ ∪ ˜Λ)c) = 0 . This means 
+
+(μ − ˜μ)( B) = ( ˜λ − λ)( B ∩ (Λ ∪ ˜Λ)) (37) 
+
+= ( μ − ˜μ)( B ∩ (Λ ∪ ˜Λ)) (38) 
+
+= μ(B ∩ (Λ ∪ ˜Λ)) − ˜μ(B ∩ (Λ ∪ ˜Λ)) , (39) Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+where the second equality holds by Equation (34). Note that 
+
+L(B ∩ (Λ ∪ ˜Λ)) ≤ L (Λ ∪ ˜Λ)) ≤ L (Λ) + L(˜Λ) = 0 ,
+
+which means L(B ∩ (Λ ∪ ˜Λ)) = 0 . Since μ, ˜μ ≪ L , we must have μ(B ∩ (Λ ∪ ˜Λ)) = ˜μ(B ∩ (Λ ∪ ˜Λ)) = 0 . This combined with Equation (36) implies (μ − ˜μ)( B) = 0 , i.e. μ(B) = ˜μ(B). This is true for any B, thus μ = ˜μ.Plugging this last fact into Equation (34) yields, ˜λ = λ.Now we are ready to prove our intermediate result, Theorem B.5, that proves the identifiability of pdGMMs from an open set with a common intersection. 
+
+Theorem B.5 (Identifiability of pdGMMs from open set with common intersection) . Under the same conditions as Theorem 3.2, and further assuming that there exists a point z0, such that z0 ∈ ∩ j∈[J]Xj , then, the same results stated in Theorem 3.2 hold. Proof. Let kj := rank (Σj ) and k′ 
+
+> j
+
+:= rank (Σ′ 
+
+> j
+
+). W.l.o.g., suppose that the components in each of the two pdGMM are ordered by rank in a decreasing fashion, i.e., k1 ≥ k2 ≥ ... ≥ kJ , k′ 
+
+> 1
+
+≥ k′ 
+
+> 2
+
+≥ ... ≥ k′ 
+
+> J′
+
+and that the rank of the first component of the first pdGMM X is larger or equal to the rank of the first component of the second pdGMM X′, i.e., k1 ≥ k′
+
+> 1
+
+.We define 
+
+Sk := {j ∈ [J] : kj ≤ k} (40) as the index set of all components in the first pdGMM X, which have rank lower than or equal to k. Similarly we define the same index set for X′ as 
+
+S′ 
+
+> k
+
+:= {j ∈ [J′] : k′ 
+
+> j
+
+≤ k}. (41) We define the set of linear mappings that preserve the rank for the component j of X′ as 
+
+Bk,j := {A ∈ Rn×k | rank (AT Σj A) = kj }. (42) We now define the intersection of all the rank-preserving matrices for the components that have rank lower than or equal to k as 
+
+Bk := ∩{j∈S k }Bk,j . (43) Similarly for X′, we define 
+
+B′ 
+
+> k
+
+:= ∩{j∈S ′ 
+
+> k}
+
+B′ 
+
+> k,j
+
+with B′ 
+
+> k,j
+
+:= {A ∈ Rn×k | rank (AT Σ′ 
+
+> j
+
+A) = k′ 
+
+> j
+
+}. (44) 
+
+Bk and B′ 
+
+> k
+
+involve the linear mappings that preserve the ranks for the components with rank no larger than k.Furthermore, to ensure the components in X are still different from each other after mapping, we first consider a pair of components in X and define 
+
+Ck,i,j := {A ∈ Rn×k | AT (μi − μj )̸ = 0 or AT (Σi − Σj )A̸ = 0}, (45) and then go through all possible pairs and define 
+
+Ck := ∩{i̸=j∈S k :ki,k j =k}Ck,i,j . (46) Similarly for X′, we define 
+
+C′ 
+
+> k
+
+:= ∩{i̸=j∈S ′  
+
+> k:k′
+> i,k ′
+> j=k}
+
+C′ 
+
+> k,i,j
+
+(47) with C′ 
+
+> k,i,j
+
+:= {A ∈ Rn×k | AT (μ′ 
+
+> i
+
+− μ′ 
+
+> j
+
+)̸ = 0 or AT (Σ′ 
+
+> i
+
+− Σ′ 
+
+> j
+
+)A̸ = 0}. (48) Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+We now analyze the set Ak ⊆ Rn×k where k > 0. Define 
+
+Ak := Bk ∩ B ′ 
+
+> k
+
+∩ C k ∩ C ′
+
+> k
+
+. (49) We will show that i) Rn×k\A k has Lebesgue measure zero, and ii) A is an open set in Rn×k. We analyze each of the components Let L be the Lebesgue measure. For Bk, by Lemma B.6, we know L(Bck,j ) = 0 for all j ∈ [J]. Thus, we have 
+
+0 ≤ L (Bck) = L(∪j∈S k Bck,j ) ≤ ∑
+
+> j∈S k
+
+L(Bck,j ) = 0 (50) which of course implies L(Bck) = 0 . Next, from Lemma B.6, we also know Bk,j is open for all j ∈ [J]. As Bk is the finite intersection of Bk,j ’s, we know Bk is open as well. We can apply the same arguments and obtain i) 
+
+L(B′ck ) = 0 , and ii) B′ 
+
+> k
+
+is an open set. For Ck,i,j , we separate it into two cases: 
+
+Ck,i,j = Cμk,i,j ∪ C σk,i.j , (51) where Cμk,i,j := {A ∈ Rn×k | AT (μi − μj )̸ = 0}, (52) and Cσk,i,j := {A ∈ Rn×k | AT (Σi − Σj )A̸ = 0}. (53) If μi̸ = μj , AT (μi − μj ) can be regarded as m polynomial functions of A from Rn to R, i.e. 
+
+AT (μi − μj ) = 
+
+
+
+AT
+
+> ·1
+
+(μi − μj )
+
+AT
+
+> ·2
+
+(μi − μj )
+
+...
+
+AT
+
+> ·k
+
+(μi − μj )
+
+ . (54) Each A·i(μi − μj ), i ∈ [k] is not zero everywhere as (μi − μj )̸ = 0. By Caron and Traynor (2005), a polynomial from Rn to R is either zero everywhere or non-zero almost everywhere. Apply to our functions, it means they are all nonzero almost everywhere. Denote the zero set as Oμ and we know L(Oμ) = 0 . Since these polynomial functions all share the same coefficients, we have 
+
+(Cμk,i,j )c = Oμ × · · · × O μ
+
+︸ ︷︷ ︸
+
+> m
+
+= Omμ , (55) which means 
+
+L(( Cμk,i,j )c) = L(Omμ ) = L(Oμ)m = 0 . (56) If Σi̸ = Σj , then consider the diagonal elements of AT (Σi − Σj )A as n polynomial functions of A, denote as 
+
+pii := AT 
+
+> ·i
+
+(Σi − Σj )A·i, ∀i ∈ [m]. Since Σi − Σj̸ = 0, pii is not zero everywhere. By Caron and Traynor (2005), they are all nonzero almost everywhere. Denote the zero set as Oσ and we know L(Oσ ) = 0 . Since they are only the diagonal elements, we have 
+
+(Cσk,i,j )c ⊆ O mσ ⇒ 0 ≤ L (( Cσk,i,j )c) ≤ L (Omσ ) = L(Oσ )m = 0 , (57) which means L(( Cσk,i,j )c) = 0 .By Equation (51), we have 
+
+Cck,i,j = ( Cμk,i,j )c ∩ (Cσk,i,j )c. (58) As we assume, X is in reduced form, which means μi̸ = μj or Σi̸ = Σj . This implies at least one of (Cμij )c and 
+
+(Cσij )c is Lebesgue measure zero. Then, as the intersection of these two sets, we have L(Ccij ) = 0 . Since the union of measure zero sets is measure zero, we have L(Cc) = 0 .Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Since AT (μi − μj ) is continuous function and (Cμk,i,j ) is the preimage of open set Rk\{ 0}, then (Cμk,i,j ) is open. Similarly, we have (Cσk,i,j ) is open as well. As the union of two open sets, Ck,i,j is also open. Then as the finite intersection of Ck,i,j , we obtain C)k is an open set. For C′
+
+> k
+
+, we can apply the same arguments and obtain i) L(C′ck ) = 0 , and ii) C′ 
+
+> k
+
+is an open set. To sum up, all the above results mean that L(Ack) = L(Bck ∪ B ′ck ∪ C ck ∪ C ′ck ) = 0 and thus Ak is not empty and, furthermore, Ak = Bk ∩ B ′ 
+
+> k
+
+∩ C k ∩ C ′ 
+
+> k
+
+is an open set in Rn×k.Now, we have X d
+
+= X′ on E, by Def. B.3, which means 
+
+
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )
+
+
+
+> E
+
+=
+
+
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)
+
+
+
+> E
+
+(59) 
+
+⇒
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )E =
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)E . (60) We start from the highest rank k1. Since Ak1 is non-empty, it has an element A1 ∈ A k1 . Apply A1 on both sides of Equation (60) and we get 
+
+AT
+
+> 1
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )E = AT
+
+> 1
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)E (61) 
+
+> J
+
+∑
+
+> j=1
+
+λj AT 
+
+> 1
+
+(N (μj , Σj )E ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+AT 
+
+> 1
+
+(N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)E ) (62) 
+
+⇒
+
+> J
+
+∑
+
+> j=1
+
+λj AT 
+
+> 1
+
+(N (μj , Σj )Xj ∩E ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+AT 
+
+> 1
+
+(N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)X ′  
+
+> j∩E
+
+). (63) Due to Bk ∩ B ′
+
+> k
+
+, we have rank (AT 
+
+> 1
+
+Σj A1) = kj for all j ∈ [J] and rank (AT 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1) = k′ 
+
+> j
+
+for all j ∈ [J′] . Thus, we can apply Lemma B.9, and obtain A1 is injective on col (Σj ) + μj , which is exactly Xj .Then, we can apply Lemma B.8 on Equation (63) and get 
+
+> J
+
+∑
+
+> j=1
+
+λj AT 
+
+> 1
+
+(N (μj , Σj )Xj ∩E ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+AT 
+
+> 1
+
+(N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)X ′  
+
+> j∩E
+
+) (64) 
+
+> J
+
+∑
+
+> j=1
+
+λj (AT 
+
+> 1
+
+N (μj , Σj )) AT   
+
+> 1(Xj∩E)
+
+=
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+(AT 
+
+> 1
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)) AT    
+
+> 1(X′
+> j∩E)
+
+(65) 
+
+> J
+
+∑
+
+> j=1
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
+=
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT   
+
+> 1(X′
+> j∩E)
+
+. (66) Next, we split both sides into two terms by the rank value kj and k′
+
+> j
+
+∑ 
+
+> {j∈[J]: kj=k1}
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
++ ∑ 
+
+> {j∈[J]: kj<k 1}
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
+(67) 
+
+= ∑ 
+
+> {j∈[J′]: k′
+> j=k1}
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT    
+
+> 1(X′
+> j∩E)
+
++ ∑ 
+
+> {j∈[J′]: k′
+> j<k 1}
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT    
+
+> 1(X′
+> j∩E)
+
+. (68) For the terms in the first sum on both sides, we have det (AT Σj A)̸ = 0 , which implies non-singular covariance matrices after transformation. This means N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1) ≪ L and N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1) ≪ L , where L is Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+the Lebesgue measure 2. In general, if λ ≪ μ, we also have λE ≪ μ and thus we have 
+
+N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
+≪ L and N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT    
+
+> 1(X′
+> j∩E)
+
+≪ L (69) For the terms in the second sum of both sides, we have 
+
+rank (AT 
+
+> 1
+
+Σj A1) = kj < k 1, rank (AT 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1) = k′ 
+
+> j
+
+< k 1, (70) which means after transformation, these components are still degenerate. Importantly, it means the support of 
+
+N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1) and N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1) have zero Lebesgue measure. By restricting further, the support of 
+
+N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
+and N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT    
+
+> 1(X′
+> j∩E)
+
+still have measure zero. Therefore, we can apply Lemma B.10 and obtain the equality for the terms with density 
+
+∑ 
+
+> {j∈[J]: kj=k1}
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)AT   
+
+> 1(Xj∩E)
+
+= ∑ 
+
+> {j∈[J′]: k′
+> j=k1}
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)AT   
+
+> 1(X′
+> j∩E)
+
+. (71) Let U := ∩{j∈[J]: kj =k1}AT 
+
+> 1
+
+(Xj ∩ E). Since AT 
+
+> 1
+
+(Xj ∩ E) is an open set in Rk1 for all {j ∈ [J] : kj = k1}, and have common element A1z0 by condition. Thus U is an open and non-empty set. We further restrict the measure of Equation (71) to U :
+
+∑ 
+
+> {j∈[J]: kj=k1}
+
+λj NU (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1) = ∑ 
+
+> {j∈[J]: k′
+> j=k1}
+
+λ′ 
+
+> j
+
+NU (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1) (72) 
+
+ ∑ 
+
+> {j∈[J]: kj=k1}
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1)
+
+
+
+> U
+
+=
+
+ ∑ 
+
+> {j∈[J]: k′
+> j=k1}
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1)
+
+
+
+> U
+
+. (73) Since each component in Equation (73) has density functions, and they are all different due to C ∩ C ′. As we discussed before, U is an open and non-empty set, thus by Theorem B.4, we can get 
+
+∑ 
+
+> {j∈[J]: kj=k1}
+
+λj N (AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1) = ∑ 
+
+> {j∈[J]: k′
+> j=k1}
+
+λ′ 
+
+> j
+
+N (AT 
+
+> 1
+
+μ′ 
+
+> j
+
+, A T 
+
+> 1
+
+Σ′ 
+
+> j
+
+A1), (74) which means |{ j ∈ [J] : kj = k1}| = |{ j ∈ [J′] : k′ 
+
+> j
+
+= k1}| , and there exits a permutation π : {j ∈ [J] : kj = k1} → {j ∈ [J′] : k′ 
+
+> j
+
+= k1}, such that 
+
+(AT 
+
+> 1
+
+μj , A T 
+
+> 1
+
+Σj A1) = ( AT 
+
+> 1
+
+μ′
+
+> π(j)
+
+, A T 
+
+> 1
+
+Σ′
+
+> π(j)
+
+A1), λj = λ′
+
+> π(j)
+
+, ∀A1 ∈ A k1 . (75) Consider two functions: 
+
+f1(A1) := ( AT 
+
+> 1
+
+(μj − μ′
+
+> π(j)
+
+)) 1 = 0 , f2(A1) := 
+
+(
+
+AT 
+
+> 1
+
+(Σj − Σ′
+
+> π(j)
+
+)A1
+
+)
+
+> 1,1
+
+= 0 , ∀A1 ∈ A k1 . (76) Since these hold for all A1 ∈ A k1 , and Ak1 is open and non-empty. Thus, we can take the first and second derivatives on f1 and f2, respectively, w.r.t. the elements in the first column of A1. We get 
+
+f ′
+
+> 1
+
+(A1) := μj − μ′ 
+
+> π(j)
+
+= 0n×1, f ′′  
+
+> 2
+
+(A1) = Σj − Σ′ 
+
+> π(j)
+
+= 0n×n, ∀A1 ∈ A k1 . (77) Thus we conclude 
+
+∃π : {j ∈ [J] : kj = k1} → { j ∈ [J′] : k′ 
+
+> j
+
+= k1}, s.t. μj = μ′
+
+> π(j)
+
+, Σj = Σ′
+
+> π(j)
+
+, λj = λ′
+
+> π(j)
+
+. (78) Now go back to Equation (63), we can cancel out the terms with rank k1 both sides and get 
+
+∑ 
+
+> {j∈[J]: kj<k 1}
+
+λj NE (μj , Σj ) = ∑ 
+
+> {j∈[J′]: k′
+> j<k 1}
+
+λ′ 
+
+> j
+
+NE (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+) (79) 
+
+> 2
+
+This is another of saying the distribution has a density w.r.t. L, by the Radon-Nikodym theorem Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+W.l.o.g, suppose k2 ≥ k′
+
+> 2
+
+, the same argument can apply to k2. And continue progressing from the largest to the smallest rank to cover all elements in both X and X′, and finally, we can get 
+
+J = J′, and ∃π : [ J] → [J′], s.t. μj = μ′
+
+> π(j)
+
+, Σj = Σ′
+
+> π(j)
+
+, λj = λ′
+
+> π(j)
+
+, (80) and by Theorem B.2, we can conclude X d
+
+= X′.We have concluded the proof of Theorem B.5, which proves the identifiability of two pdGMMs from an open set assuming a common non-empty intersection set for all components. Based on these results, we can prove our final goal of this section: Theorem 3.2, which removes the assumption of the common non-empty intersection set for all components. The basic idea is to group the components by whether they intersect on the same point and apply Theorem B.5 on each group. 
+
+Theorem 3.2 (Identifiability of pdGMMs from open set) . Consider two pdGMMs in Rn in reduced form, 
+
+X ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and X′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (1) 
+
+where rank (Σj ) > 0, ∀j ∈ [J] and rank (Σ′ 
+
+> j
+
+) > 0, ∀j ∈ [J′]. Let Xj be the supports of N (μj , Σj ). If there exists an open set E such that for all j ∈ [J], Xj ∩ E̸ = ∅ and X d
+
+= X′ on E, then X d
+
+= X′ on the whole domain, J = J′,and there exists a permutation π : [ J] → [J′] such that (λj , μj , Σj ) = ( λ′
+
+> π(j)
+
+, μ′
+
+> π(j)
+
+, Σ′
+
+> π(j)
+
+).Proof. We first focus on N (μ1, Σ1). Pick up one point z1 ∈ X 1 ∩ E, and define index set 
+
+u1 := {j ∈ [J] : z1 ∈ X j }, u′ 
+
+> 1
+
+:= {j ∈ [J′] : z1 ∈ X ′ 
+
+> j
+
+}. (81) Then, we can construct a open ball B(z1, δ ) ⊂ E, such that ∀j ∈ [J]\u1, Xj ∩ B(z1, δ ) = ∅. By condition we have X d
+
+= X′ on E, we restrict it on B(z1, δ ) and eliminate the zero measures on both sides, then we get 
+
+∑
+
+> j∈u1
+
+λj NB (μj , Σj ) = ∑
+
+> j∈u′
+> 1
+
+λ′ 
+
+> j
+
+NB (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+) (82) 
+
+ ∑
+
+> j∈u1
+
+λj N (μj , Σj )
+
+
+
+> B
+
+=
+
+ ∑
+
+> j∈u′
+> 1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)
+
+
+
+> B
+
+. (83) By Theorem B.5, we have 
+
+∑
+
+> j∈u1
+
+λj N (μj , Σj ) = ∑
+
+> j∈u′
+> 1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (84) also |u1| = |u′
+
+> 1
+
+|, and there exists a permutation π1 : u1 → u′
+
+> 1
+
+, such that (λj , μj , Σj ) = ( λ′
+
+> π1(j)
+
+, μ′
+
+> π1(j)
+
+, Σ′
+
+> π1(j)
+
+).Then, we move to the rest t ∈ [J]\{ 1}. Pick up one point zt ∈ X t ∩ E, and define index set 
+
+ut := {j ∈ [J]\(∪j<t uj ) : zt ∈ X j }, u′ 
+
+> t
+
+:= {j ∈ [J′]\(∪j<t u′ 
+
+> j
+
+) : zt ∈ X ′ 
+
+> j
+
+}. (85) If ut is not empty, this means we haven’t idenfity component t yet. Then as before, we construct a open ball 
+
+B(zt, δ ) ⊂ E, such that ∀j ∈ [J]\ut, Xj ∩ B(zt, δ ) = ∅. We restrict it on B(zt, δ ) and apply Theorem B.5 to get 
+
+∑
+
+> j∈ut
+
+λj N (μj , Σj ) = ∑
+
+> j∈u′
+> t
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (86) also |ut| = |u′
+
+> t
+
+|, and there exists a permutation πt : ut → u′
+
+> t
+
+, such that (λj , μj , Σj ) = ( λ′
+
+> πt(j)
+
+, μ′
+
+> πt(j)
+
+, Σ′
+
+> πt(j)
+
+).By going through all t ∈ [J], we can combine all results to conclude that X d
+
+= X′. Also J = J′, and there exists a permutation π : J → J′, such that (λj , μj , Σj ) = ( λ′
+
+> π(j)
+
+, μ′
+
+> π(j)
+
+, Σ′
+
+> π(j)
+
+).Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+B.2 Proofs for the identifiability of pdGMM latent variables 
+
+In this section, we consider the setting where latent variables follow pdGMMs and aim to identify the them from observations. In Section B.2.1 we provide the proof of Theorem 3.5, which shows the identifiability up to affine transformation within components. In Section B.2.2 we provide the proof of Theorem 3.7, which shows the identifiability up to affine transformation. Finally, in Section B.2.3 we provide the proof of Theorem 3.9, which shows the identifiability up to permutation and element-wise affine transformation. 
+
+B.2.1 Affine Identifiability within component of pdGMM latent variables mixed by piecewise affine function 
+
+In this section, we consider a set of latent variables that follow pdGMM and are transformed into observations via a continuous, invertible, piecewise affine mixing function. Our objective is to recover the latent variables from the observed data, without any auxiliary information, except for knowing that the latent variables are pdGMM. First, following Bona-Pellissier et al. (2023), we define continuous piecewise affine functions by closed polyhedra as follows: 
+
+Definition B.11 (Closed polyhedron (Bona-Pellissier et al., 2023)) . We say P ⊂ Rn is a closed polyhedron if and only if there exists q ∈ N, a1, ..., aq ∈ Rn and b1, ..., b q ∈ R such that 
+
+x ∈ P ⇔
+
+
+
+aT 
+
+> 1
+
+x + b1 ≤ 0
+
+...
+
+aTq x + bq ≤ 0.
+
+(87) 
+
+Definition B.12 (Continuous piecewise affine function (Bona-Pellissier et al., 2023)) . We say that a function 
+
+f : Rn → Rm is a continuous piecewise affine function if there exists a finite set of closed polyhedra whose union is Rn and such that f is affine over each polyhedron. A simple application of the pasting lemma (see e.g. Munkres (2000)) shows that a continuous piecewise affine function is indeed continuous. For a continuous piecewise affine function f , there are infinitely many finite covers of Rn by closed polyhedra such that f is affine over each polyhedron. We will be interested into a specific type of covers called admissible .
+
+Definition B.13. [(Bona-Pellissier et al., 2023)] Let f be a continuous piecewise affine function. Let Π be a finite set of closed polyhedra of Rn. We say that Π is admissible with respect to f if and only if 1. ⋃  
+
+> P∈Π
+
+P = Rn;2. for all P ∈ Π, f is affine on P ; and 3. for all P ∈ Π, the interior of P , denoted by P ◦, is not empty. Bona-Pellissier et al. (2023, Proposition 22) show that such an admissible set of closed polyhedra exists for all continuous piecewise affine functions. We first present a result by Kivva et al. (2022) that studies the identifiability of non-degenerate GMM latent variables with piecewise affine mixing function, which serves as a primary inspiration for our approach. 
+
+Theorem B.14 (Affine Identifiability of GMM latent variables (Kivva et al., 2022)) . Assume the observation 
+
+X = f (Z) follows the data-generating process in Sec. 2. Suppose Z follows a Gaussian mixture model 
+
+Z ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) (88) 
+
+with μj ∈ Rn, Σj ∈ Rn×n and |Σj | > 0 , λj > 0, and ∑Jj=1 λj = 1 . For every i̸ = j ∈ [J] we have 
+
+(μi, Σi)̸ = ( μj , Σj ). Then Z is identifiable from X up to an affine transformation. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 𝒛 𝟐 
+
+𝒛 𝟏 
+
+ො𝒛 𝟏 
+
+ො𝒛 𝟐 
+
+𝒇 
+
+Figure 3: Visualization of Example B.15: f switches half axes of z1 and z2. The orange area refers to the support of component 1, and the green area refers to the support of component 2 before transformation. However, the analysis of Theorem B.14 is restricted to non-degenerate Gaussian mixture models, assuming full-rank covariance matrices for all components. We begin by presenting an intermediate theorem (Thm. B.16), which shows that any continuous invertible piecewise affine function capable of transforming one pdGMM into another pdGMM must be affine on the support of each component in pdGMM. However, this property does not hold universally. We show now a counterexample in Example B.15, where f is not affine over the support of any Gaussian components but still preserves the same distribution. 
+
+Example B.15. Consider a pdGMM with dimension n = 2 and Gaussian components J = 2 ,
+
+Z ∼ 0.5N ((0 , 0) ,
+
+(1 00 0
+
+)
+
+) + 0 .5N ((0 , 0) ,
+
+(0 00 1
+
+)
+
+) (89) Denote the two dimensions as z1 and z2. One can construct a function f : Z → R2 that is clearly not affine on Z:
+
+f (z) = 
+
+(
+
+1 00 1
+
+)
+
+z, if z1 < 0 and z2 = 0 ,
+
+(
+
+−1 00 −1
+
+)
+
+z, if z1 = 0 and z2 > 0,
+
+(
+
+0 −11 0
+
+)
+
+z, if z1 = 0 and z2 < 0 or z1 > 0 and z2 = 0 .(90) In other words, f switches the relative position of axes, while retaining the same distribution, i.e. f (Z) d
+
+= Z.To avoid these special cases, we propose Ass. 3.4, which describes a general class of models. 
+
+Assumption 3.4 (Genericity of pdGMMs) . Consider a pdGMM in reduced form Z ∼ ∑Jj=1 λj N (μj , Σj ). Let 
+
+Jk := {j ∈ [J] : rank (Σj ) = k)} be the indices of the components with rank k. For any k ≤ n and any subset 
+
+J 0 
+
+> k
+
+⊆ J k, suppose that the intersection of the supports of the components Zj is non-empty, i.e., ∩j∈J 0 
+
+> k
+
+Zj̸ = ∅.We assume there exists at least one point z0 ∈ ∩ j∈J 0 
+
+> k
+
+Zj s.t. the Mahalanobis distance 3 of z0 to the distributions of any two distinct Gaussian components i, j ∈ J 0 
+
+> k
+
+is not the same. The idea is: the supports of components with the same rank k may overlap, but there is at least one common point in the intersection where the components can be distinguished, i.e., their projections onto the non-degenerate subspace do not have the same norm.         
+
+> 3Mahalanobis distance of a point z0from a distribution N(μj,Σj)is
+
+√           
+
+> (z0−μj)TΣ−1
+> j(z0−μj). When Σjis singular, we use the Moore-Penrose inverse for Σ−1
+> j
+
+Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+We provide proof and example to illustrate the genericity of Ass. 3.4 in Section E. The following theorem shows that any continuous invertible piecewise affine function capable of transforming one pdGMM into another pdGMM must be affine on the support of each component in pdGMM. 
+
+Theorem B.16 (Identifiability of pdGMMs from open set with common intersection) . Consider a pair of finite pdGMMs in Rn in reduced form, 
+
+Z ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and Z′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (91) 
+
+where | det (Σj )| ≥ 0, ∀j ∈ [J] and | det (Σ′ 
+
+> j
+
+)| ≥ 0, ∀j ∈ [J′]. Suppose Z satisfies Assumption 3.4. If there exists a continuous, invertible, piecewise affine function f : Rn → Rn satisfying Z′ d
+
+= f (Z), then for all j0 ∈ [J], f is affine on Zj0 , where Zj0 is the support of N (μj0 , Σj0 ).
+
+We introduce some useful theoretical results before we start the proof of Theorem B.16. The first lemma shows that the full-ranked matrices sharing the same Gram matrix can be converted to each other via rotations. 
+
+Lemma B.17. Consider two matrices A, B ∈ Rn×k with n ≥ k and A is full-column rank with rank (A) = k. If 
+
+AA T = BB T , then there exists an orthogonal matrix Q ∈ Rk×k such that A = BQ .Proof. Since AA T = BB T and A is full-column-rank, we can derive A = BB T A(AT A)−1. Then, we aim to prove 
+
+Q := BT A(AT A)−1 is an orthogonal matrix by showing QT Q = I, where I is a identity matrix: 
+
+QT Q = [ BT A(AT A)−1]T BT A(AT A)−1 = ( AT A)−1AT BB T A(AT A)−1 = I. (92) In the following lemma, we show that if we can find an open cover, such that two probability measure are the same over any open set in this open cover, then they are the same measure. 
+
+Lemma B.18. Let μ : F → [0 , 1] and λ : F → [0 , 1] be two probability measures on the Borel sigma-algebra F
+
+over Rn. Let X ⊆ Rn be the support of μ. Let O be an open cover of X . If for all O ∈ O , we have 
+
+μO∩X = λO∩X ,
+
+then μ = λ.Proof. Let B ∈ F . Let OB be a cover of B. Since B is a subset of a second-countable space, one can find a countable open subcover {O1, O 2, . . . } of B. We construct a partition B as follow: For all k ∈ N, define 
+
+B1 := B ∩ O1 and Bk := B ∩ Ok ∩
+
+(k−1⋂
+
+> i=1
+
+Bci
+
+)
+
+.
+
+We now show that {B1, B 2, . . . } is indeed a partition of B. For any x ∈ B, we show that there exists a unique Bk
+
+such that x ∈ Bk. Let kx := min {k ∈ N | x ∈ Ok}. Clearly, x̸ ∈ Bi for i < k x since x̸ ∈ Oi for i < k x. Moreover, 
+
+x ∈ Bkx since x ∈ Okx and x ∈ Bci for all i < k x. It is then clear that x̸ ∈ Bi for i > k x since x̸ ∈ Bckx .We write 
+
+μ(B) = μ(B ∩ X ) = μ(
+
+ ⋃
+
+> k≥1
+
+Bk
+
+ ∩ X ) = μ( ⋃
+
+> k≥1
+
+(Bk ∩ X )) = 
+
+> ∞
+
+∑
+
+> k=1
+
+μ(Bk ∩ X ) (93) 
+
+=
+
+> ∞
+
+∑
+
+> k=1
+
+μ(B ∩ Ok ∩
+
+(k−1⋂
+
+> i=1
+
+Bci
+
+)
+
+∩ X ) = 
+
+> ∞
+
+∑
+
+> k=1
+
+μOk ∩X (B ∩
+
+(k−1⋂
+
+> i=1
+
+Bci
+
+)
+
+) (94) 
+
+=
+
+> ∞
+
+∑
+
+> k=1
+
+λOk ∩X (B ∩
+
+(k−1⋂
+
+> i=1
+
+Bci
+
+)
+
+) = · · · = λ(B ∩ X ) , (95) (96) Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+where the · · · means we apply the exact same steps as before in reverse order. By taking B = X , we get 
+
+1 = μ(X ) = λ(X ∩ X ) = λ(X ), which means λ(X c) = 0 . This means 
+
+μ(B) = λ(B ∩ X ) = λ(B ∩ X ) + λ(B ∩ X c) = λ(B) ,
+
+which is what we intended to show. Next, we report two results from Xu et al. (2024), which show the identifiability results of potentially degenerate multivariate normal distributions (pdMVNs), as we will use them as important final steps in the proof of Theorem B.16 later. 
+
+Theorem B.19 (Affine Identifiability for pdMVNs with Piecewise Affine f (Xu et al. (2024))) . Assume f , ˆf :
+
+Rn → Rd are injective and piecewise affine. We assume Z and ˆZ follow a (degenerate) multivariate normal distribution. If f (Z) d
+
+= ˆf ( ˆZ), then there exists an invertible affine transformation h : Rn → Rn such that h(Z) d
+
+= ˆZ.
+
+Lemma B.20 (Linearity of f for pdMVNs (Xu et al. (2024))) . Let Z ∼ N (μ, Σ), where |Σ| ≥ 0, i.e. Z is potentially a degenerate multivariate normal. Assume that f : Rn → Rn is a continuous piecewise affine function such that f (Z) d
+
+= Z. Then f is affine over Z, the support of Z.
+
+Now we are ready to prove Theorem B.16. Below, we outline the structure of the proof. We begin by focusing on a fixed Gaussian component j0 from Z and partitioning its support into polyhedral regions such that the function 
+
+f is affine within each subdomain. Within each polyhedral region, by applying Theorem B.4, we show that there exists a component j′ 
+
+> 0
+
+in Z′ such that component j0 is mapped to j′
+
+> 0
+
+. Next, under Ass. 3.4, we show that f
+
+consistently assigns j0 to the same j′ 
+
+> 0
+
+across all polyhedra. This successfully builds a one-to-one correspondence between the Gaussian components on both sides via f . Finally, using the results from Xu et al. (2024), we conclude that f must be affine on the support of each component. 
+
+Theorem B.16 (Identifiability of pdGMMs from open set with common intersection) . Consider a pair of finite pdGMMs in Rn in reduced form, 
+
+Z ∼
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj ) and Z′ ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (91) 
+
+where | det (Σj )| ≥ 0, ∀j ∈ [J] and | det (Σ′ 
+
+> j
+
+)| ≥ 0, ∀j ∈ [J′]. Suppose Z satisfies Assumption 3.4. If there exists a continuous, invertible, piecewise affine function f : Rn → Rn satisfying Z′ d
+
+= f (Z), then for all j0 ∈ [J], f is affine on Zj0 , where Zj0 is the support of N (μj0 , Σj0 ).Proof. Fix j0 ∈ [J]. We must show that f is affine on Zj0 , the support of the j0th component. To achieve this, we will first show that, there exists an j′ 
+
+> 0
+
+∈ [J′], such that 
+
+f (N (μj0 , Σj0 )) = N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+).
+
+To get this, we will show that for all z0 ∈ Z j0 , there exists an open ball B centered at z0 such that 
+
+(f (N (μj0 , Σj0 ))) f (B) = ( N (μj′ 
+
+> 0
+
+, Σj′ 
+
+> 0
+
+)) f (B).
+
+Let us fix some z0 ∈ Z j0 and let Π be an admissible set of closed polyhedra for f (Definition B.13). The existence of admissible set is ensured by Proposition 22 from Bona-Pellissier et al. (2023). We consider two cases: 
+
+• Case 1. There exists P ∈ Π such that z0 ∈ P ◦, where P ◦ is the interior part of P as defined in Def. B.13. 
+
+• Case 2. For all P ∈ Π, z0̸ ∈ P ◦, where P ◦ is the interior part of P .
+
+Case 1. Case 1 is simple. Since z0 is in the interior of P , we can find an open set with interior point z0, B,such that B ⊂ P . By definition of an admissible cover, f is affine on P , and thus on B, and thus on B ∩ Z j . Since 
+
+f is injective, we know there exists an invertible matrix H and weight vector b such that f (z) = Hz + b, ∀z ∈ B.Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Define ϕ(z) := Hz + b for all z ∈ Rn. We can thus constrain the probability measure to f (B) on both sides of 
+
+f (Z) d
+
+= Z′ and write 
+
+∑
+
+> j∈J
+
+λj f (N (μj , Σj )B ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (B) , (97) 
+
+∑
+
+> j∈J
+
+λj ϕ (N (μj , Σj )B ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (B) . (98) By Lemma B.7 and f is injective, we have 
+
+∑
+
+> j∈J
+
+λj
+
+(N (Hμj + b, H Σj HT ))  
+
+> f(B)
+
+=
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (B) . (99) Since B is open set and f is an open map on B (all surjective linear maps are), f (B) is an open set as well. Thus we can apply Theorem 3.2 and get there must exists an j′ 
+
+> 0
+
+∈ [J′], such that f (N (μj0 , Σj0 )) = N (μ′
+
+> j′
+> 0
+
+, Σ′
+
+> j′
+> 0
+
+) on 
+
+f (B).
+
+Case 2. Case 2 is much more technical and will thus be the focus of the rest of the proof. Since Π covers 
+
+Rn, there must be at least one P1 ∈ Π such that z0 ∈ P1. Since z0 is not in the interior of P1, it must be in its boundary, ∂P 1. We now argue that z0 must also be in a distinct polyhedron. We argue by contradiction. Suppose that is false. This means z0 is in the complement of all polyhedra P ∈ Π \ { P1}. Since these polyhedra are closed, their complements are open, thus we can find an open set U containing z0 that do not intersect with any P ∈ Π \ { P1}. But since z0 is on the boundary of P1, this means a non-empty portion of U lies outside P1.But this would mean this portion is outside of all P ∈ Π, which is a contradiction since Π covers Rn. This means there must be at least one other polyhedron P2̸ = P1 containing z0. Again, since z0 is not in the interior of P2, it must be on its boundary, ∂P 2.To summarize, we found two distinct polyhedra, P1 and P2, such that z0 ∈ P1 ∩ P2 and such that z0 ∈ ∂P 1 and 
+
+z0 ∈ ∂P 2. In general, z0 could be in more than two polyhedra. Let P1, . . . , P L ∈ Π be the polyhedra that contain 
+
+z0. We know from the previous steps that L ≥ 2.Define the set of all components that intersects the point z0.
+
+Jz0 := {j ∈ [J] : z0 ∈ Z j }, (100) Of course, j0 ∈ Jz0 . Since the Zj are affine subspaces, they are closed sets. This means we can find an open set B′ containing z0 small enough such that B′ intersects only the components j ∈ Jz0 . Furthermore, since all 
+
+P ∈ Π are closed, we can choose an open set B′′ containing z0 that is small enough so has to not intersect with the polyhedra other than P1, . . . , P L. Take Bz0 := B′ ∩ B′′ . Since z0 is on the boundaries of each P1, . . . , P L, any open set must intersect with each Pl for l ∈ [L]. We can thus define the non-empty sets Sl := Bz0 ∩ Pl for all 
+
+l ∈ [L]. Define the index set 
+
+Jl := {j ∈ [J] : Sl ∩ Z j̸ = ∅} , (101) i.e. this is the set of components Zj that intersects the polyhedron Pl and the open set Bz0 . Notice that Jl ⊆ Jz0 .Then our goal for the following part is to show that there exists an j′ 
+
+> 0
+
+∈ [J′], such that f (N (μj0 , Σj0 )) = N (μ′
+
+> j′
+> 0
+
+, Σ′
+
+> j′
+> 0
+
+)
+
+on Sl.But we do not need to go through all l ∈ [L]. Instead, since we are focusing on component j0 now, in Case 2, we first explore the one on which N (μj0 , Σj0 ) has positive probability, and later come back to discuss the rest of the polyhedra. For this reason, we introduce one more index notation: 
+
+Lj0 := {l ∈ [L] : N (μj0 , Σj0 )( Sl) > 0) } , (102) where N (μj0 , Σj0 )( Sl) means the probability that measure N (μj0 , Σj0 ) take on Sl.Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Pick some polyhedron l ∈ [Lj0 ]. By condition we have Z′ d
+
+= f (Z), we restrict the measure on both sides to f (Sl)
+
+and then we get 
+
+f (
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )) 
+
+ 
+
+> f(Sl)
+
+=
+
+
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)
+
+ 
+
+> f(Sl)
+
+(103) Since f is injective, we can use Lemma B.7 to switch constrain and f on the left hand side and we get 
+
+f
+
+
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )
+
+
+
+> Sl
+
+ =
+
+
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)
+
+ 
+
+> f(Sl)
+
+, (104) 
+
+f
+
+
+
+> J
+
+∑
+
+> j=1
+
+λj N (μj , Σj )Sl
+
+ =
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl), (105) 
+
+> J
+
+∑
+
+> j=1
+
+λj f (N (μj , Σj )Sl ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl) , (106) where the second line uses the fact that the restriction of a mixture is the mixture of the restriction and the third line uses the fact that the pushforward of a mixture is the mixture of the pushforwards. Notice that if Zj ∩ Sl = ∅, we have that N (μj , Σj )Sl = 0 , i.e. it is the zero measure. The pushforward of the zero measure is also the zero measure, thus 
+
+∑
+
+> j∈Jl
+
+λj f (N (μj , Σj )Sl ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl) (107) Since f is piecewise affine and injective, we know there exists an invertible matrix Hl and weight vector bl such that f (z) = Hlz + bl, ∀z ∈ Sl. Define ϕl(z) := Hlz + bl for all z ∈ Rn. We can thus write 
+
+∑
+
+> j∈Jl
+
+λj ϕl (N (μj , Σj )Sl ) = 
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl) , (108) since f = ϕl on Sl. Since ϕl is injective, we can apply Lemma B.7 to get 
+
+∑
+
+> j∈Jl
+
+λj ϕl (N (μj , Σj )) ϕl(Sl) =
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl) (109) 
+
+∑
+
+> j∈Jl
+
+λj N (Hlμj + bl, H lΣj (Hl)T )f (Sl) =
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl) . (110) Define J′ 
+
+> l
+
+:= {j ∈ [J′] : Z′ 
+
+> j
+
+∩ f (Sl)̸ = ∅}. This allows us to write 
+
+∑
+
+> j∈Jl
+
+λj N (Hlμj + bl, H lΣj (Hl)T )f (Sl) = ∑
+
+> j∈J′
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (Sl). (111) Now we discuss the possible relations between N (μj0 , Σj0 ) and Sl. If N (μj0 , Σj0 ) takes probability zero on Sl,then we can skip it. If not, then we face two cases: 
+
+• Case 2.1 Zj0 intersects with the interior of Sl, i.e. Zj0 ∩ S◦
+
+> l
+
+̸ = ∅, where S◦ 
+
+> l
+
+:= Bz0 ∩ P ◦ 
+
+> l
+
+.
+
+• Case 2.2 Zj0 only intersects with the boundary of Sl with positive probability, i.e. Zj0 ∩ S◦ 
+
+> l
+
+= ∅ and 
+
+N (μj0 , Σj0 )( ∂S l) > 0, where ∂S l := Bz0 ∩ ∂P l.Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Case 2.1. For Case 2.1, define the index set that also intersects with the interior part of Sl:
+
+J◦ 
+
+> l
+
+:= {j ∈ Jl : Zj ∩ S◦
+
+> l
+
+̸ = ∅}, J′◦  
+
+> l
+
+:= {j ∈ J′ 
+
+> l
+
+: Z′ 
+
+> j
+
+∩ f (S◦ 
+
+> l
+
+)̸ = ∅}.
+
+We further constrain Equation (111) on f (S◦ 
+
+> l
+
+) and cancel out the purely zero measure terms on both sides, i.e. the terms are not in J◦ 
+
+> l
+
+and J′◦ 
+
+> l
+
+∑
+
+> j∈J◦
+> l
+
+λj N (Hlμj + bl, H lΣj (Hl)T )f (S◦  
+
+> l)
+
+= ∑
+
+> j∈J′◦
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (S◦ 
+
+> l)
+
+. (112) 
+
+f is an open map on S◦ 
+
+> l
+
+since it is affine on S◦ 
+
+> l
+
+. Therefore, f (S◦ 
+
+> l
+
+) is an open set as well. By the definition of J◦ 
+
+> l
+
+, we have ∀j ∈ J◦ 
+
+> l
+
+, Zj ∩ S◦
+
+> l
+
+̸ = ∅, then we can derive f (Zj ∩ S◦ 
+
+> l
+
+)̸ = ∅, ∀j ∈ J◦ 
+
+> l
+
+. Since f is invertible function, we can further derive ∀j ∈ Jl, f (Zj ) ∩ f (Sl)̸ = ∅. Therefore, we can use Theorem 3.2 and get 
+
+∑
+
+> j∈J◦
+> l
+
+λj N (Hlμj + bl, H lΣj (Hl)T ) = ∑
+
+> j∈J′◦
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (113) which means |J◦ 
+
+> l
+
+| = |J′◦  
+
+> l
+
+| and there exists a permutation πl : J◦ 
+
+> l
+
+→ J′◦  
+
+> l
+
+such that 
+
+HlΣj (Hl)T = Σ′
+
+> πl(j)
+
+, Hlμj + bl = μ′
+
+> πl(j)
+
+. (114) 
+
+Case 2.2. For Case 2.2, because of the definition of Lj0 (Equation (102)) where we pick up the Sl, we know 
+
+N (μj0 , Σj0 ) has positive probability on ∂S l. Since we know Zj0 is an affine space, it can only intersect with one facet of ∂S l. We denote this facet ∂S j0 
+
+> l
+
+. Define the index sets that the supports intersect with this facet with positive probability: 
+
+Jj0 
+
+> l
+
+:= {j ∈ Jl\J◦ 
+
+> l
+
+: N (μj , Σj )( ∂S j0 
+
+> l
+
+) > 0}, J′j0 
+
+> l
+
+:= {j ∈ J′ 
+
+> l
+
+\J′◦  
+
+> l
+
+: N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)( f (∂S j0 
+
+> l
+
+)) > 0}.
+
+Constrain Equation (111) further on f (∂S j0 
+
+> l
+
+) and eliminate the probability zero terms then we get 
+
+∑
+
+> j∈Jj0
+> l
+
+λj N (Hlμj + bl, H lΣj (Hl)T )f (∂S j0  
+
+> l)
+
+= ∑
+
+> j∈J′j0
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (∂S j0 
+
+> l)
+
+. (115) Since all the Gaussian components in Jj0 
+
+> l
+
+take a positive probability on ∂S j0 
+
+> l
+
+, which implies their rank is lower than or equal to the rank of ∂S j0 
+
+> l
+
+and their support is parallel with ∂S j0 
+
+> l
+
+. Then it must have no intersection with the interior of all adjacent polyhedra. Thus, we can construct an open set E ⊂ Rn, such that ∂S j0 
+
+> l
+
+⊂ E. And expand the constrained measure from f (∂S j0 
+
+> l
+
+) to f (E) and then we have 
+
+∑
+
+> j∈Jj0
+> l
+
+λj N (Hlμj + bl, H lΣj (Hl)T )f (E) = ∑
+
+> j∈J′j0
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+)f (E). (116) 
+
+f is an open map on E. Therefore, f (E) is also an open set. Therefore, we can use Theorem 3.2 and get 
+
+∑
+
+> j∈Jj0
+> l
+
+λj N (Hlμj + bl, H lΣj (Hl)T ) = ∑
+
+> j∈J′j0
+> l
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (117) which means |Jj0 
+
+> l
+
+| = |J′j0 
+
+> l
+
+| and there exists a permutation πl : Jj0 
+
+> l
+
+→ J′j0 
+
+> l
+
+such that 
+
+HlΣj (Hl)T = Σ′
+
+> πl(j)
+
+, Hlμj + bl = μ′
+
+> πl(j)
+
+. (118) To sum up, Equation (114) holds for all Sl in Case 2.1, and Equation (118) holds for all Sl in Case 2.2, which covers all Zj0 ∩ Bz0 . Thus, we can summarize it as for all l ∈ [Lj0 ]
+
+HlΣj (Hl)T = Σ′
+
+> πl(j)
+
+, Hlμj + bl = μ′
+
+> πl(j)
+
+. (119) Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+In the following part, we focus on the points z0 satisfying Ass. 3.4, denote this set as SZ . We aim to show that, consider z0 ∈ S Z , for all l ∈ [Lj0 ], permutations πl map j0 to the same index in Z′.We prove the claim for all z0 ∈ S Z by contradiction: suppose there exist l1, l 2 ∈ [Lj0 ], such that πl1(j0)̸ = πl2(j0).Denote πl1(j0) := j′
+
+> 0
+
+, this means, there exists a polyhedron l∗ ∈ [Lj0 ], such that (πl∗)−1(j′
+
+> 0
+
+)̸ = ( πl1 )−1(j′
+
+> 0
+
+). Denote 
+
+j∗ := ( πl∗)−1(j′
+
+> 0
+
+), we have j∗̸ = j0.We can derive this 
+
+{Hl1 Σj0 (Hl1 )T = Σ′
+
+> j′
+> 0
+
+, Hl1 μj0 + bl1 = μ′
+
+> j′
+> 0
+
+,Hl∗Σj∗(Hl∗)T = Σ′
+
+> j′
+> 0
+
+, Hl∗μj∗ + bl∗ = μ′
+
+> j′
+> 0
+
+. (120) 
+
+⇒
+
+{
+
+Hl1 Σj0 (Hl1 )T = Hl∗Σj∗(Hl∗)T ,Hl1 μj0 + bl1 = Hl∗μj∗ + bl∗. (121) Since z0 is in both polyhedra l1 and l∗, we get 
+
+Hl1 z0 + bl1 = f (z0) = Hl∗z0 + bl∗ (122) By taking the difference between Equation (122) and Equation (121), we have 
+
+Hl1 (z0 − μj0 ) = Hl∗(z0 − μj∗). (123) Suppose rank (Σ′
+
+> j′
+> 0
+
+) = k. By Equation (121), since both Hl1 and Hl2 are invertible matrix, we have 
+
+rank (Σ′ 
+
+> j′
+> 0
+
+) = rank (Σj0 ) = rank (Σj∗) = k. (124) By the definition of degenerate Gaussian random variable, we can find a n × k matrix A1 where A1AT 
+
+> 1
+
+= Σj0 and 
+
+rank (A1) = k, and have 
+
+A1ε + μj0 ∼ N (μj0 , Σj0 ),
+
+where ε follows a standard k-dimensional normal distribution. Hence, there exists a unique value ε1 ∈ Rk, such that z0 = A1ε1 +μj0 . The same analysis for N (μj∗, Σj∗), there exists a unique ε2 ∈ Rk such that z0 = A2ε2 +μj∗.Substitute into Equation (123), we get 
+
+Hl1 A1ε1 = Hl2 A2ε2. (125) Additionally, we have A1AT 
+
+> 1
+
+= Σj0 and A2AT 
+
+> 2
+
+= Σj∗. Substitute into Equation (121), we get 
+
+Hl1 A1(Hl1 A1)T = Hl2 A2(Hl2 )A2)T .
+
+First we have rank (Hl1 A1) = k as Hl1 is invertible. By Lemma B.17, this implies there exists an orthogonal matrix Q ∈ Rk×k, such that Hl1 A1 = Hl2 A2Q. Substitute into Equation (125), we have 
+
+Hl1 A1(ε1 − QT ε2) = 0 .
+
+Then we can derive ε1 −QT ε2 = 0 , which implies || ε1|| = || ε2|| .Note that || ε1|| =
+
+√
+
+(z0 − μj0 )T Σ−1 
+
+> j0
+
+(z0 − μj0 ) and 
+
+|| ε2|| =
+
+√
+
+(z0 − μj∗ )T Σ−1 
+
+> j∗
+
+(z0 − μj∗ ). This means for all z0 ∈ S Z , the Mahalanobis distance of z0 to N (μj0 , Σj0 )
+
+and N (μj∗ , Σj∗ ) are the same. We can find it will be contradictory to Assumption 3.4 if πl1 (j0)̸ = πl2 (j0). Therefore, we can claim there exists 
+
+j′ 
+
+> 0
+
+∈ [J′], such that πl(j0) = j′ 
+
+> 0
+
+for all l ∈ [Lj0 ]. Due to Equation (114) and the identifiability of pdMVN, we have 
+
+N (Hlμj0 + bl, H lΣj0 (Hl)T ) = N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+), ∀l ∈ [Lj0 ]. (126) Now we finished all the discussion of l ∈ [Lj0 ], i.e. all the Sl where N (μj0 , Σj0 ) can take positive probability. However, as our goal is to show f (N (μj0 , Σj0 )) = N (μ′
+
+> j′
+> 0
+
+, Σ′
+
+> j′
+> 0
+
+) over Zj0 ∩ B, there is a probability-zero subdomain Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+missing in the above analysis. Next, we discuss the rest part l ∈ [L]\[Lj0 ]. These cases can only happen if Zj0
+
+intersects with the boundary of Sl only, i.e. Zj0 ∩ S◦ 
+
+> l
+
+= ∅, Zj0 ∩ ∂S l̸ = ∅ and N (μj0 , Σj0 )( ∂S l) = 0 . For this case, since Zj0 ∩ ∂S l̸ = ∅ and N (μj0 , Σj0 )( ∂S l) = 0 , we know for every point z∗ ∈ Z j0 ∩ ∂S l, there must exist an adjecent Sl∗ such that z∗ ∈ Sl∗ and l∗ ∈ [Lj0 ]. Therefore, we can conclude that Zj0 ∩ B ⊆ ∪ l∈[Lj0 ]Sl.We now define a partition of the set Bz0 ∩ Z j0 by Sl, l ∈ [Lj0 ].For any non-empty subset I ⊆ [Lj0 ], we define 
+
+DI := ( ∩l′∈I Sl′ ) \ (∪l′̸ ∈I Sl′ ) .
+
+Note that all the affine functions Hlz + bl with l ∈ I agree on DI since DI ⊆ ∩ l∈I Pl. For simplicity, we can directly use lI := min I, i.e. the smallest index in I. When l = lI we constrain the measures on both sides of Equation (126) on subdomain f (DI ) and get 
+
+N (HlI μj0 + blI , H lI Σj0 (HlI )T )f (DI ) = N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (DI ) (127) Sum up all the I ⊆ [Lj0 ], we have 
+
+∑ 
+
+> I⊆[Lj0]
+
+N (HlI μj0 + blI , H lI Σj0 (HlI )T )f (DI ) = ∑ 
+
+> I⊆[Lj0]
+
+N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (DI ), (128) 
+
+∑ 
+
+> I⊆[Lj0]
+
+f (N (μj0 , Σj0 )DI ) = ∑ 
+
+> I⊆[Lj0]
+
+N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (DI ). (129) Note that DI ’s are disjoint from each other. Thus, we can switch sum into union and get 
+
+f
+
+(
+
+N (μj0 , Σj0 )∪I⊆[Lj0 ]DI
+
+)
+
+= N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (∪I⊆[Lj0 ]DI ). (130) Since DI is partition set of Bz0 ∩ Z j0 , which means ∪I⊆[Lj0 ]DI = Bz0 ∩ Z j0 , substitute into Equation (130) and then we have 
+
+f (N (μj0 , Σj0 )Bz0 ∩Z j0
+
+) = N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (Bz0 ∩Z j0 ), (131) 
+
+N (μj0 , Σj0 )Bz0 ∩Z j0 = f −1 (
+
+N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)f (Bz0 ∩Z j0 )
+
+)
+
+. (132) Since f is bijective on Rn, we have f −1 is injective. Thus by apply Lemma B.7, we can conclude Case 2: 
+
+N (μj0 , Σj0 )Bz0 ∩Z j0 = f −1 (
+
+N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)
+
+) 
+
+> Bz0∩Z j0
+
+. (133) Note that Equation (133) is true for all z0 ∈ S Z , i.e. we can construct an open set Bz0 containing z0 for all 
+
+z0 ∈ S Z . Notice that {Bz0 | z0 ∈∈ S Z } is thus an open cover of the support of the Zj0 . We can thus apply Lemma B.18 to get 
+
+N (μj0 , Σj0 ) = f −1 (
+
+N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+)
+
+)
+
+(134) 
+
+f (N (μj0 , Σj0 )) = N (μ′ 
+
+> j′
+> 0
+
+, Σ′ 
+
+> j′
+> 0
+
+). (135) Then, since f is injective and piecewise affine, by Theorem B.19 from Xu et al. (2024), there exists an invertible affine transformation hj0 : Rn → Rn such that hj0 (N (μj0 , Σj0 )) = N (μ′
+
+> j′
+> 0
+
+, Σ′
+
+> j′
+> 0
+
+). Substitute into Equation (135) then we have 
+
+f (N (μj0 , Σj0 )) = hj0 (N (μj0 , Σj0 )) ⇒ h−1 
+
+> j0
+
+◦ f (N (μj0 , Σj0 )) = N (μj0 , Σj0 ). (136) As h−1 
+
+> j0
+
+◦ f is a continuous piecewise affine function, by Lemma B.20 from Xu et al. (2024), we can conclude that 
+
+h−1 
+
+> j0
+
+◦ f is affine on Zj0 . Furthermore, we can conclude that f is affine on Zj0 . This result holds for all j0 ∈ [J].Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Theorem 3.5 (Identifiability up to ATwC of pdGMM latent variables) . Assume that Z is a pdGMM and the observation X = f (Z) follows the data-generating process in Sec. 2 for an injective continuous piecewise affine mixing function f , and Z satisfies Ass. 3.4. Let g : X → Rn be an invertible continuous piecewise affine function and ˆf : Rn → Rd be an invertible piecewise affine function onto its image. If both conditions hold, 
+
+E
+
+∥∥∥X − ˆf (g(X)) 
+
+∥∥∥22
+
+= 0 , and (2) 
+
+g(X) ∼
+
+> J′
+
+∑
+
+> j=1
+
+λ′ 
+
+> j
+
+N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+), (3) 
+
+for appropriate values of μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+(in reduced form), then J’=J and Z is identified by g(X) up to affine transformation within components, i.e., g ◦ f is an invertible affine function on Zj , j ∈ [J].Proof. Since X = f (Z), we can rewrite Equation (2) (perfect reconstruction) as 
+
+E|| f (Z) − ˆf (g(f (Z))) || 22 = 0 . (137) This means that f (Z) and ˆf (g(f (Z))) are equal PZ-almost everywhere, which implies f (Z) and ˆf (g(X))) are equally distributed with the same image space. Therefore, we can define h := ˆf −1 ◦ f on Z, which is a continuous and invertible piecewise affine function, and we have Z d
+
+= h−1(g(X)) , where both Z and g(X) are pdGMMs. Since Z satisfies Ass. 3.4, and h−1 is a continuous and invertible piecewise affine function, we can apply Theorem B.16 and get h−1 is affine on Z′ 
+
+> j
+
+, where Z′ 
+
+> j
+
+is the support of N (μ′ 
+
+> j
+
+, Σ′ 
+
+> j
+
+). One step more, we can conclude that h, i.e., ˆf −1 ◦ f , is affine on Zj .
+
+B.2.2 From affine on components to affine everywhere 
+
+While Theorem 3.5 proves that g ◦ f is affine within each individual component, it does not guarantee that there is a global affine function across all components. In this section, we seek conditions under which g ◦ f is globally affine, i.e., affine on the whole support for the pdGMM. In the following proposition (Prop. B.21), we show that if the supports of all components share a common basis (i.e., each support can be spanned by a subset of this common basis), then it is possible to construct a consistent affine function across the entire domain. 
+
+Assumption 3.6 (Common basis and translation vector) . Let Z1, . . . , ZJ ⊆ Rn be affine spaces such that there exists z0 ∈ ⋂Jj=1 Zj . We assume there exists a basis of Rn, denoted by {z1, . . . , zn}, such that for all j ∈ [J],there exists Kj ⊆ [n] s.t. {zk | k ∈ K j } is a basis for the vector space Zj − z0.
+
+Proposition B.21. Let Z1, . . . , ZJ ⊆ Rn be affine spaces that satisfy Ass. 3.6, and let f : Rn → R be a function such that, for all j ∈ [J], the restriction of f to Zj is affine. Then the restriction of f to Z := ∪i∈[m]Zi is affine. Proof. Our goal is to construct an affine function az + b with a ∈ R1×n and b ∈ R such that this function agrees with f on Z.First notice that, since f is affine on each Zj , we have: for each j ∈ [J], there exists aj ∈ R1×n and bj ∈ R such that, for all z ∈ Z j , f (z) = aj z + bj .Since z0 ∈ ∩ j∈[J]Zj , we have that, for all j ∈ [J], f (z0) = aj z0 + bj for all j ∈ [J].Let us define B := [ z1 · · · zn] ∈ Rn×n, which is invertible since its columns form a basis by assumption. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Fix j ∈ [J] and k ∈ K j . We know that 
+
+f (zk + z0) = aj (zk + z0) + bj (138) 
+
+= aj zk + aj z0 + bj (139) 
+
+= aj zk + f (z0) (140) 
+
+= aj B︸︷︷︸  
+
+> ˜aj:=
+
+ek + f (z0) (141) 
+
+= ˜ aj ek + f (z0) (142) 
+
+= ˜ ajk + f (z0) (143) 
+
+=⇒ ˜ajk = f (zk + z0) − f (z0) ∀k ∈ K j . (144) Let us define 
+
+a := [( f (z1 + z0) − f (z0)) · · · (f (zn + z0) − f (z0))] B−1 ∈ R1×nand (145) 
+
+b := f (z0) − az 0 . (146) We must now show that, for all z ∈ ∪ j∈[J]Zj , f (z) = az + b. Fix some arbitrary z ∈ ∪ j∈[J]Zj . We know there has to be one j0 ∈ [J] s.t. z ∈ Z j0 . Hence f (z) = aj0 z + bj0 . We showed earlier that bj = f (z0) − aj z0 for all j ∈ [J],hence we have f (z) = aj0 z + f (z0) − aj0 z0. Since B is invertible, there exists ˜z ∈ Rn such that z − z0 = B˜z.Since {zk | k ∈ K j } forms a basis for Zj − z0, we have that whenever k̸ ∈ K j , ˜zk = 0 . We can thus write 
+
+f (z) = aj0 z + bj0 (147) 
+
+= aj0 (B˜z + z0) + bj0 (148) 
+
+= aj0 B˜z + aj0 z0 + bj0 (149) 
+
+= ˜ aj0 ˜z + f (z0) (150) 
+
+= ∑
+
+> k∈K j
+
+˜aj0 
+
+> k
+
+˜zk + ∑ 
+
+> k̸∈K j
+
+˜aj0 
+
+> k
+
+˜zk
+
+︸︷︷︸ 
+
+> 0
+
++f (z0) (151) 
+
+= ∑
+
+> k∈K j
+
+˜aj0 
+
+> k
+
+˜zk + f (z0) (152) 
+
+= ∑
+
+> k∈K j
+
+(f (zk + z0) − f (z0)) ˜zk + f (z0) (153) 
+
+= ∑
+
+> k∈K j
+
+(f (zk + z0) − f (z0)) ˜zk + ∑ 
+
+> k̸∈K j
+
+(f (zk + z0) − f (z0)) ˜zk
+
+︸︷︷︸ 
+
+> 0
+
++f (z0) (154) 
+
+= [(f (z1 + z0) − f (z0)) · · · (f (zn + z0) − f (z0)) ] ˜z + f (z0) (155) 
+
+= [(f (z1 + z0) − f (z0)) · · · (f (zn + z0) − f (z0)) ] B−1(z − z0) + f (z0) (156) 
+
+= a(z − z0) + f (z0) (157) 
+
+= az + f (z0) − az 0
+
+︸ ︷︷ ︸
+
+> b:=
+
+(158) 
+
+= az + b . (159) Since z ∈ ∪ j∈[J]Zj was arbitrary, the above equality holds for all z in Z = ∪j∈[J]Zj . This concludes the proof. It is easy to construct examples of collections of subspaces Z1, . . . , ZJ satisfying the condition of Prop. B.21. One can simply choose some basis z1, · · · zn of Rn and construct each Zj as the span of some subset of this basis. In particular, one can use the standard basis e1, . . . , en, which will yield axis-aligned subspaces of Rn. We provide a counter-example in Section E. Then by combining Ass. 3.6 with Theorem B.16, we can directly conclude the identifiability up to affine transformation in the following theorem. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Theorem 3.7 (Identifiability up to AT of pdGMM latent variables) . We assume the same conditions as Thm. 3.5, and that the supports of components Z1, . . . , ZJ satisfy the common basis assumption (Ass. 3.6), then the representation g(X) identifies Z up to a single global affine transformation across components, i.e., g ◦ f is affine on all of Z.Proof. Due to Theorem 3.5, we have g ◦ f is affine restricted on Z1, ..., ZJ individually. In addition, since we assume Z1, ..., ZJ satisfying Ass. 3.6, by applying Prop. B.21, we can conclude g ◦ f is affine on Z = ∪Jj=1 Zj .
+
+B.2.3 From affine identifiability to element-wise identifiability via sparsity principle 
+
+In this section, we take a step further to investigate the possibility of achieving a stronger level of identifiabil-ity—namely, up to permutation and scaling indeterminacies only. We first introduce the following assumption, which is a special case of Ass. 3.6 that assumes zero translation vector and standard common basis of Rn.
+
+Assumption 3.8. Let Z1, . . . , ZJ ⊆ Rn be the supports of the components of Z. We assume: 
+
+• [Common Standard Basis] For all j ∈ [J], each Zj is a vector space, and there exists an index set Kj ⊆ [n]
+
+such that {ek | k ∈ K j } forms a basis for Zj , where {e1, . . . , en} denotes the standard basis of Rn (one-hot vectors). 
+
+• [Sufficient Support Basis Index Variability] For every i ∈ [n], the union of the support index sets Kj that do not include i covers all other standard basis directions: 
+
+⋃  
+
+> j∈[J]|i / ∈K j
+
+Kj = [ n] \ { i}.
+
+We then adapt a key argument due to Lachapelle et al. (2023a) in the context of sparse multitask learning and later adapted by Xu et al. (2024) in the context of partial observability. In our case, the masked latent variables exactly follow a piecewise-degenerate Gaussian mixture model (pdGMM) with supports that share a common standard basis. The adapted result is formalized as follows: 
+
+Lemma B.22 (Element-wise Identifiability from sparsity (Lachapelle et al., 2023a; Xu et al., 2024)) . Assume that the latent variables Z with support Z follows a pdGMM (Def. B.1). The supports of its components satisfy Ass. 3.8. Let the function v : Z → Rn be invertible and affine on Z, and 
+
+E ∥v(Z)∥0 ≤ E ∥Z∥0 . (160) 
+
+Then v is a permutation composed with an element-wise invertible affine transformation on Z.
+
+Since from Theorem 3.7 the mixing process is successfully reduced from the piecewise affine to affine, we can directly apply Lemma B.22 on this results under Ass. 3.8 to conclude the following theorem. 
+
+Theorem 3.9 (Identifiability up to PS of pdGMM latent variables) . We assume the same conditions as Thm. 3.5 and that the supports of components Z1, . . . , ZJ satisfy Ass. 3.8. If the following holds: 
+
+E ∥g(X)∥0 ≤ E ∥Z∥0 , (4) 
+
+where ∥·∥ 0 means L0 norm, then the representation g(X) identifies Z up to PST, i.e., g ◦ f is a permutation combined with an element-wise linear transformation on Z.Proof. Since satisfying Ass. 3.8 implies that Ass. 3.6 holds, by Theorem 3.7, we have g ◦ f is affine and invertible on Z. By Lemma. B.22, we can conclude g ◦ f is a permutation composed with an element-wise invertible affine transformation on Z.
+
+## C Implementation details and Licences 
+
+This section provides further details about the experiment implementation in Section 4. The implementation is built on the open-source code by Lachapelle et al. (2022) released under Apache 2.0 License; the code by Ahuja et al. (2022) released under MIT License; the code by Zheng et al. (2018) released under Apache 2.0 License. We list all the hyperparameters we used for training in Table 2, and provide all the code for our method, and the experiments at GitHub repository. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Table 2: Parameters for experiments results in Sec. 5 and App. D. Numerical Numerical Balls Balls Balls Stage 1 Stage 2 CNN Stage 1 Stage 2 Sparsity level ϵ 0.01 0.01 Optimizer Adam ExtraAdam Adam Adam ExtraAdam Primal optimizer learning rate 1e-4 1e-4 1e-3 1e-3 1e-4 Dual optimizer learning rate 5e-5 5e-5 Batch size 6144 6144 256 256 256 Group number J 5n 5n 2b 2b 2b
+
+# Seeds 5 5 5 5 5# Iterations 5000 80000 20000 10000 5000 
+
+## D Full experimental results 
+
+D.1 Metrics Metric for identifiability up to affine transformation R2 metric is the coefficient of determination of the linear regression model with ground truth latents Z as explanatory and our learned representations g(X) as response. R2 normally ranges from 0 to 1, and the closer it is to 1, the better its affine identifiability. 
+
+Metric for identifiability up to permutation and scaling. MCC metric is based on the Pearson correlation matrix Corr n×n between the learned representations ˆZ = g(X) and ground truth latent variables Z. Since our results are up to permutation, we compute the MCC on the permutation π that maximizes the average of 
+
+|Corr i,π (i)| for each index of a ground truth variable i ∈ [n], i.e. MCC= 1 
+
+> n
+
+max π∈perm ([ n]) 
+
+∑ni=1 |Corr i,π (i)|. We denote the correlation matrix with the permutation π as Corr n×nπ . MCC can take value in [0 , 1] , and the closer it is to 1, the better element-wise affine identifiability. 
+
+D.2 Numerical experiments 
+
+We first show the full version (including standard deviation) of Table 1. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Table 3: Results for the numerical experiments (Average ± Standard Deviation). The bold font indicates which parameters are varying in each block of rows. R2(Stage 1) shows the identifiability up to AT after Stage 1 (Thm. 3.7); MCC (Stage 1) reflects the neccesarity of sparsity to achieve PTS identifiability; MCC (Stage 2) presents the identifiability up to PTS after Stage 2 (Thm. 3.9). 
+
+n k m ρ δ θ R2 ↑(Stage1) MCC (Stage1) MCC (Stage1) MCC ↑(VaDE) 
+
+5 1 10 50% 0 0 0.93 ±0.02 0.75 ±0.03 0.96 ±0.01 ‘ 0.45 ±0.05 
+
+10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 
+
+20 1 10 50% 0 0 0.93 ±0.02 0.46 ±0.01 0.92 ±0.05 0.23 ±0.15 
+
+40 1 10 50% 0 0 0.94 ±0.01 0.37 ±0.01 0.94 ±0.03 0.25 ±0.11 10 0 10 50% 0 0 0.94 ±0.02 0.51 ±0.11 0.97 ±0.01 0.33 ±0.05 10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 10 2 10 50% 0 0 0.93 ±0.01 0.58 ±0.01 0.95 ±0.01 0.31 ±0.03 10 3 10 50% 0 0 0.92 ±0.03 0.56 ±0.02 0.91 ±0.04 0.27 ±0.03 10 1 3 50% 0 0 0.99 ±0.01 0.50 ±0.07 0.96 ±0.03 0.33 ±0.04 10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 10 1 20 50% 0 0 0.88 ±0.02 0.50 ±0.07 0.93 ±0.01 0.35 ±0.07 10 1 10 1 var 0 0 0.75 ±0.03 0.46 ±0.02 0.45 ±0.04 0.28 ±0.03 10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 10 1 10 75% 0 0 0.95 ±0.02 0.57 ±0.03 0.93 ±0.04 0.31 ±0.04 10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 10 1 10 50% 1 0 0.95 ±0.01 0.59 ±0.01 0.88 ±0.04 0.30 ±0.02 10 1 10 50% 2 0 0.96 ±0.01 0.59 ±0.03 0.61 ±0.04 0.27 ±0.03 10 1 10 50% 3 0 0.96 ±0.01 0.58 ±0.01 0.49 ±0.02 0.28 ±0.03 10 1 10 50% 0 0 0.94 ±0.02 0.56 ±0.03 0.97 ±0.01 0.32 ±0.03 10 1 10 50% 0 15 0.93 ±0.02 0.58 ±0.03 0.83 ±0.02 0.32 ±0.03 10 1 10 50% 0 30 0.93 ±0.02 0.57 ±0.03 0.60 ±0.02 0.31 ±0.04 10 1 10 50% 0 45 0.93 ±0.02 0.57 ±0.03 0.62 ±0.01 0.32 ±0.03 
+
+We show the Pearson Correlation matrix Corr n×nπ with the permutation π between ground truth latent variables 
+
+Z and the learned representations ˆZ = g(X). One figure represents one ablation study in Table 1. We choose one random seed to plot for each setup. Ground truth Pear. Corr. matrix on the left shows the original linear correlation inside Z, compared with the estimator on the right-hand side. z1 z2 z3 z4 z5                      
+
+> z1z2z3z4z5
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5
+> z1z2z3z4z5
+> n = 5 z1z2z3z4z5z6z7z8z9z10
+> z1z2z3z4z5z6z7z8z9z10
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5̂z6̂z7̂z8̂z9̂z10
+> z1z2z3z4z5z6z7z8z9z10
+> n = 10 z1
+> z3
+> z5
+> z7
+> z9
+> z11
+> z13
+> z15
+> z17
+> z19
+> z20
+> z1
+> z3
+> z5
+> z7
+> z9
+> z11
+> z13
+> z15
+> z17
+> z19
+> z20
+> Ground Truth ̂z1̂
+> z3̂
+> z5̂
+> z7̂
+> z9̂
+> z11 ̂
+> z13 ̂
+> z15 ̂
+> z17 ̂
+> z19 ̂
+> z20
+> z1
+> z3
+> z5
+> z7
+> z9
+> z11
+> z13
+> z15
+> z17
+> z19
+> z20
+> n = 20 z1
+> z5
+> z9
+> z13
+> z17
+> z21
+> z25
+> z29
+> z33
+> z37
+> z40
+> z1
+> z5
+> z9
+> z13
+> z17
+> z21
+> z25
+> z29
+> z33
+> z37
+> z40
+> Ground Truth ̂z1̂
+> z5̂
+> z9̂
+> z13 ̂
+> z17 ̂
+> z21 ̂
+> z25 ̂
+> z29 ̂
+> z33 ̂
+> z37 ̂
+> z40
+> z1
+> z5
+> z9
+> z13
+> z17
+> z21
+> z25
+> z29
+> z33
+> z37
+> z40
+> n = 40
+
+Figure 4: Ablation study on increasing the latent dimension n from 5 to 40 and fixing k = 1 , m = 10 , ρ = 50% ,
+
+δ = 0 .0σ, θ = 0 . The case with a higher n is more complicated to learn the latent variables. Danru Xu, Sébastien Lachapelle, Sara Magliacane z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+k = 0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+k = 1 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+k = 2 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+k = 3 
+
+Figure 5: Ablation study on increasing the density of causal graphs k from 0 to 3 and fixing n = 10 , m = 10 ,
+
+ρ = 50% , δ = 0 .0σ, θ = 0 . In the case with a denser graph, it is more complicated to learn the latent variables. z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+m = 3 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+m = 10 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+m = 20 
+
+Figure 6: Ablation study on increasing the number of Leaky-ReLU layers (m − 1) from 3 to 20 and fixing n = 10 ,
+
+k = 1 , ρ = 50% , δ = 0 .0σ, θ = 0 . The case with a higher n is more complicated to learn the latent variables. The case with larger m is more complicated to learn the latent variables due to a greater extent of nonlinearity. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+ρ = 1 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+ρ = 50 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+ρ = 75 
+
+Figure 7: Piecewise linear mixing function with linear causal relation and Gaussian noise: ablation study on increasing the ratio of active (unmasked) variables ρ from 1 variable only to 75% and fixing n = 10 , k = 1 ,
+
+m = 10 , δ = 0 .0σ, θ = 0 . Learning the latent variables is more complicated in the case with a larger portion of active variables. z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+δ = 0.0 σz1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+δ = 1.0 σz1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+δ = 2.0 σz1 z2 z3 z4 z5 z6 z7 z8 z9 z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+Ground Truth ̂z1̂ z2̂ z3̂ z4̂ z5̂ z6̂ z7̂ z8̂ z9̂ z10 
+
+> z1z2z3z4z5z6z7z8z9z10
+
+δ = 3.0 σ
+
+Figure 8: Ablation study on increasing the distance between masked value and mean of latents from 0.0σ to 3.0σ,where σ is the standard deviation of latents, and fixing n = 10 , k = 1 , m = 10 , ρ = 50% , θ = 0 . Disentangling the latent variables is more complicated in the case of a larger deviation from zero translation. Danru Xu, Sébastien Lachapelle, Sara Magliacane z1 z2 z3 z4 z5 z6 z7 z8 z9 z10                                                                    
+
+> z1z2z3z4z5z6z7z8z9z10
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5̂z6̂z7̂z8̂z9̂z10
+> z1z2z3z4z5z6z7z8z9z10
+> θ= 0.0 z1z2z3z4z5z6z7z8z9z10
+> z1z2z3z4z5z6z7z8z9z10
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5̂z6̂z7̂z8̂z9̂z10
+> z1z2z3z4z5z6z7z8z9z10
+> θ= 15.0 z1z2z3z4z5z6z7z8z9z10
+> z1z2z3z4z5z6z7z8z9z10
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5̂z6̂z7̂z8̂z9̂z10
+> z1z2z3z4z5z6z7z8z9z10
+> θ= 30.0 z1z2z3z4z5z6z7z8z9z10
+> z1z2z3z4z5z6z7z8z9z10
+> Ground Truth ̂z1̂z2̂z3̂z4̂z5̂z6̂z7̂z8̂z9̂z10
+> z1z2z3z4z5z6z7z8z9z10
+> θ= 45.0
+
+Figure 9: Ablation study on increasing the rotation of common basis from 0.0◦ to 45 .0◦, and fixing n = 10 ,
+
+k = 1 , m = 10 , ρ = 50% , δ = 0 .0σ. Disentangling the latent variables is more complicated in the case of a larger deviation from the standard basis. 
+
+D.3 Test on independent variables 
+
+To exclude the natural dependency between latent variables that potentially increases the value of metric MCC that might cause a false positive measurement, we provide additional experiment results with independent latent variables using five random seeds in Table 4. As we can see, it keeps the consistent performance as those in Table 1, where we repeat the results in the right column of Table 4 for easier comparison. This provides evidence that the MCC obtained by our method does not come from the inherent dependencies among latents. Table 4: Results for the numerical experiments (Stage 2) tested on independent data. The bold font indicates which parameters are varying in each block of rows. 
+
+n k m ρ δ θ MCC Independent MCC in Tab. 1 
+
+5 1 10 50 % 0 0 0.96 ±0.01 0.96 ±0.01 
+
+10 1 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 
+
+20 1 10 50 % 0 0 0.93 ±0.05 0.92 ±0.05 
+
+40 1 10 50 % 0 0 0.94 ±0.03 0.94 ±0.03 10 0 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 10 1 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 10 2 10 50 % 0 0 0.97 ±0.01 0.95 ±0.01 10 3 10 50 % 0 0 0.91 ±0.04 0.91 ±0.04 10 1 3 50 % 0 0 0.96 ±0.03 0.96 ±0.03 10 1 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 10 1 20 50 % 0 0 0.94 ±0.02 0.93 ±0.01 10 1 10 1var 0 0 0.46 ±0.04 0.45 ±0.04 10 1 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 10 1 10 75 % 0 0 0.93 ±0.03 0.93 ±0.04 10 1 10 50 % 0 0 0.97 ±0.01 0.97 ±0.01 10 1 10 50 % 1 0 0.87 ±0.04 0.88 ±0.04 10 1 10 50 % 2 0 0.61 ±0.04 0.61 ±0.04 10 1 10 50 % 3 0 0.49 ±0.02 0.49 ±0.02 10 1 10 50 % 0 0 0.96 ±0.03 0.97 ±0.01 10 1 10 50 % 0 15 0.84 ±0.01 0.83 ±0.02 10 1 10 50 % 0 30 0.61 ±0.01 0.60 ±0.02 10 1 10 50 % 0 45 0.63 ±0.01 0.62 ±0.01 Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+D.4 Empirical study on scalability 
+
+As shown in Tab. 2, Stage 1 only need 5000 epoch whereas Stage 2 need 80000. Consequently, the second stage of optimization constitutes the primary computational bottleneck of our method. To quantify scalability, we report both the number of epochs needed for convergence and the average execution time per 1000 epochs in seconds for the second stage. We can observe an exponential complexity increase in the table: Table 5: Number of epochs for convergence and training time 
+
+n 5 10 20 40 50 Epoch 2,500 20,000 125,000 300,000 800,000 Execution time per 1000 epoch in Stage2 (s) 13.4 20.2 45.6 145.4 219.7 In particular we report results for n = 50 and limited results for n = 100 . For comparisons, few works in the CRL literature are able to scale reliably to this number of latent variables, and most of the methods typically focus on 10-20 variables. For n = 50 , we got M CC = 0 .93 ± 0.03 averaged over 3 random seeds. For n = 100 , full convergence of the second stage was not reached. However, after 15,000 epochs of the first stage, we observed an average R2 = 0 .82 ± 0.13 , indicating a meaningful affine identifiability which validates Theorem 3.7. 
+
+D.5 Sensitivity Analysis of Hyper-parameters 
+
+We performed a sensitivity analysis on two hyperparameters: the sparsity level ϵ in Equation (5), which controls the sparsity level, and the learning rate. Bold options in the tables are the ones we used in the main paper, where ϵ = 1 e − 2 is inspired by Xu et al. (2024), which shows that the results are not sensitive to ϵ, but they are sensitive to the learning rate. Table 6: Sensitivity analysis of sparsity level ϵ in Eq. (5): Average MCCs over 5 random seeds (Setup: n = 10 ,
+
+k = 1 , m = 10 , ρ = 50 , δ = 0 , θ = 0 )
+
+ϵ 1000 100 10 1 1e-1 MCC 0.50 ±0.01 0.50 ±0.01 0.50 ±0.01 0.50 ±0.01 0.90 ±0.08 
+
+ϵ 1e-2 1e-3 1e-4 1e-5 MCC 0.97 ±0.01 0.94 ±0.03 0.90 ±0.07 0.88 ±0.07 The final hyperparameters we used in the experiments are chosen based on the MCC and R2 computed with the ground truth variables. If we did not know the ground truth, tuning the parameters would be more difficult, but in line with other DL approaches. For example, we can choose the learning rate as usual in DL by observing the behavior of the loss, while for the sparsity level ϵ we can choose it based on potential violations of our assumptions in the reconstructed variables, e.g., if the reconstructed variables are non-Gaussian. Table 7: Sensitivity analysis of learning rate: Average MCCs over 5 random seeds Learning rate 1e-2 1e-3 1e-4 1e-5 MCC 0.25 ±0.03 0.53 ±0.08 0.97 ±0.01 0.92 ±0.02 
+
+D.6 Ablation study on sparsity constraint and comparison with close works 
+
+We ran the experiments on all settings without a sparsity constraint in the second stage. As summarized Section D.6, the significant drop in MCC shows the important role that sparsity plays in the disentanglement process. Additionally, we compared two works (Xu et al., 2024; Kivva et al., 2022) which are closely related to our work, where Xu et al. (2024) serves as an oracle since it provides both group information and degenerate dimension, which is learned in our method. Xu et al. (2024) can be seen as a special case which can be explained in our Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+theorem and since it provides stronger information so we do not aim to outperform it. Kivva et al. (2022) only works for non-degenerate cases, which shows the importance of our method to solve the unexplored problem in the degenerate latent space. Table 8: Ablation study without sparsity constraints and baselines: Average MCCs over 5 random seeds. Ours = proposed method, WO = without sparsity constraints, Oracle (Xu et al., 2024), VaDE (Kivva et al., 2022) 
+
+n 5 10 20 40 Ours 0.96 ±0.01 0.97 ±0.01 0.92 ±0.05 0.94 ±0.03 WO 0.57 ±0.02 0.57 ±0.04 0.44 ±0.01 0.36 ±0.01 Oracle 0.91 ±0.05 0.98 ±0.00 0.96 ±0.01 0.94 ±0.02 VaDE 0.45 ±0.05 0.32 ±0.03 0.23 ±0.15 0.25 ±0.11  
+
+> (a) Varying n
+
+k 0 1 2 3Ours 0.97 ±0.01 0.97 ±0.01 0.95 ±0.01 0.91 ±0.04 WO 0.56 ±0.04 0.57 ±0.04 0.54 ±0.01 0.55 ±0.02 Oracle 0.98 ±0.01 0.98 ±0.00 0.95 ±0.04 0.95 ±0.03 VaDE 0.33 ±0.05 0.32 ±0.03 0.31 ±0.03 0.27 ±0.03  
+
+> (b) Varying k
+
+m 3 10 20 Ours 0.96 ±0.03 0.97 ±0.01 0.93 ±0.01 WO 0.55 ±0.01 0.57 ±0.04 0.56 ±0.02 Oracle 0.99 ±0.00 0.98 ±0.00 0.95 ±0.01 VaDE 0.33 ±0.04 0.32 ±0.03 0.35 ±0.07  
+
+> (c) Varying m
+
+ρ 1 50 75 Ours 0.45 ±0.04 0.97 ±0.01 0.93 ±0.04 WO 0.42 ±0.03 0.57 ±0.04 0.56 ±0.03 Oracle 0.86 ±0.04 0.98 ±0.00 0.98 ±0.01 VaDE 0.28 ±0.03 0.32 ±0.03 0.31 ±0.04  
+
+> (d) Varying ρ
+
+δ 0 1 2 3Ours 0.97 ±0.01 0.88 ±0.04 0.61 ±0.04 0.49 ±0.02 WO 0.57 ±0.04 0.54 ±0.02 0.55 ±0.04 0.55 ±0.03 Oracle 0.98 ±0.00 0.73 ±0.16 0.41 ±0.04 0.38 ±0.02 VaDE 0.32 ±0.03 0.30 ±0.02 0.27 ±0.03 0.28 ±0.03  
+
+> (e) Varying δ
+
+θ 0 15 30 45 Ours 0.97 ±0.01 0.83 ±0.02 0.60 ±0.02 0.62 ±0.01 WO 0.57 ±0.04 0.56 ±0.03 0.58 ±0.04 0.56 ±0.02 Oracle 0.98 ±0.00 0.85 ±0.01 0.62 ±0.02 0.63 ±0.01 VaDE 0.32 ±0.03 0.32 ±0.03 0.31 ±0.04 0.32 ±0.03  
+
+> (f) Varying θ
+
+D.7 Comparison with Baseline VaDE without misspecification 
+
+We provide results where we evaluate our method in a setting that is fair to the baseline VaDE, where we generate the latent with a non-degenerate GMM. In this setting, we can only compare the identifiability up to Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+AT measured by metric R2, but we cannot compare for P S for any of the two methods, because our method needs degeneracy, and VaDE needs an auxiliary variable and pairwise conditional independence. As shown below, our method outperforms VaDE for all settings. Table 9: Results for the numerical experiments (Stage 1) on nondegenerate GMM data. The bold font indicates which parameters are varying in each block of rows.                                                                                                                                           
+
+> nkmρδθMCC of VaDE MCC of Our Method
+> 5110 50 % 000.66 ±0.09 0.94 ±0.01
+> 10 110 50 % 000.78 ±0.05 0.94 ±0.01
+> 20 110 50 % 000.86 ±0.04 0.93 ±0.01
+> 40 110 50 % 000.84 ±0.07 0.93 ±0.01 10 010 50 % 000.86 ±0.05 0.95 ±0.01 10 110 50 % 000.78 ±0.05 0.94 ±0.01 10 210 50 % 000.74 ±0.12 0.94 ±0.01 10 310 50 % 000.69 ±0.11 0.93 ±0.02 10 1350 % 000.78 ±0.10 0.99 ±0.00 10 110 50 % 000.78 ±0.05 0.94 ±0.01 10 120 50 % 000.70 ±0.10 0.89 ±0.01 10 110 1var 000.77 ±0.05 0.94 ±0.01 10 110 50 % 000.78 ±0.05 0.94 ±0.01 10 110 75 % 000.75 ±0.08 0.94 ±0.02 10 110 50 % 000.78 ±0.05 0.94 ±0.01 10 110 50 % 015 0.77 ±0.01 0.94 ±0.01 10 110 50 % 030 0.78 ±0.02 0.94 ±0.02 10 110 50 % 045 0.78 ±0.02 0.94 ±0.01
+
+D.8 Over-parameterization of latent dimension n
+
+In our previous analysis, the latent dimension n is treated as fixed. To the best of our knowledge, prior work typically assumes n is known in theoretical analysis, but then relies on over-parameterization strategies in empirical analysis. We also consider an over-parameterized choice and show empirically that our method performs well under these settings. While a formal proof of identifiability for remains open, our experimental findings suggest that moderate over-specification does not undermine identifiability guarantees in practice. We use our basic setup: 
+
+n = 10 , k = 1 , m = 10 , ρ = 50 , δ = 0 , θ = 0 , varying estimation ˆn ∈ { 12 , 14 , 16 , 18 , 20 }.Table 10: Average R2 and MCC over 5 random seeds 
+
+ˆn 12(n+2) 14(n+4) 16(n+6) 18(n+8) 20(n+10) R2 0.91 0.89 0.88 0.88 0.83 MCC 0.96 0.96 0.93 0.96 0.96 
+
+D.9 Causal graph learning analysis 
+
+The aim of causal representation learning (CRL) is to recover latent causal variables from high-dimensional observations. Once these causal variables are recovered, one can learn the equivalence class of the causal graph on these variables, e.g. by applying a standard causal discovery method on top of these recovered variables. We provide results in which we apply a standard causal discovery method, PC (Spirtes et al., 2000), on our representations. We consider the same setting as in Table 3. We generate 5000 samples for each graph. We use the implementation from the pcalg package and use partial correlation tests with a significance threshold 
+
+α = 0 .01 .In Tab. 11, we report the average SHD on the CPDAG learned over our ˆz w.r.t. the oracle CPDAG (the ground truth CPDAG with oracle tests). We report the average SHD on the CPDAG learned over the ground truth variables z w.r.t. the oracle CPDAG. This is the best result we could obtain with a perfect reconstruction of the ground truth variables. We report the delta between them as an alternative measure of the accuracy of our reconstruction of the causal variables. Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+Table 11: The average SHD on the CPDAG learned over our ˆz and z w.r.t. the oracle CPDAG.                                                                                                                                                                                   
+
+> nkmρδθSHD (z)SHD (ˆz)∆SHD 5110 50 % 001.4 ±1.67 3.8 ±1.79 2.4
+> 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4
+> 20 110 50 % 007.8 ±2.86 22 ±12.90 14.2
+> 40 110 50 % 0013.6 ±4.04 39.8 ±17.75 26.2 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4 10 210 50 % 0013.2 ±2.17 16 ±2.64 2.8 10 310 50 % 0025 ±1.87 26.6 ±3.85 1.6 10 1350 % 001.8 ±1.79 3±1.22 1.2 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4 10 120 50 % 001.8 ±1.79 8.8 ±6.05 710 110 1var 001.8 ±1.79 21.4 ±3.05 19.6 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4 10 110 75 % 001.8 ±1.79 7.4 ±4.04 5.6 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4 10 110 50 % 101.8 ±1.79 16.8 ±5.12 15 10 110 50 % 201.8 ±1.79 21.8 ±2.59 20 10 110 50 % 301.8 ±1.79 22.2 ±2.68 20.4 10 110 50 % 001.8 ±1.79 4.2 ±1.10 2.4 10 110 50 % 015 2.2 ±1.24 18 ±2.83 15.8 10 110 50 % 030 2.6 ±2.41 20.8 ±1.64 18.2 10 110 50 % 045 4.5 ±0.71 21.4 ±2.30 16.9
+
+These results show that our learned causal graph is similar to the learned graphs on the ground truth variables. 
+
+D.10 Image dataset: Multiple Balls Data generation process We use PyGame to render images with size 64 × 64 × 3 as shown in Figure 10. The number of balls b varies from 2 to 6. In this setting, the latent variables we consider are the (x, y ) coordinates of each ball with support [0 , 1] 2. We sample the (x, y ) coordinates of each ball i ∈ [b] independently from a truncated 2-dimensional normal distribution N (μi, Σi) bounded within the square (0 .05 , 0.95) 2 with randomized 
+
+μi and fixed Σi: μi ∼ Unif (0 .3, 0.7) 2, and Σi = ((0 .01 , 0.00)(0 .00 , 0.01)) . To avoid the high ratio of occultation, we use rejection sampling to sample μi to ensure the Euclidean distance between any pair of μi values is at least 
+
+0.2. To model the degeneracy in this setting, we set each ball at a fixed position μi with probability p = 0 .1 by sampling a binomial variable to indicate the degeneracy status. 
+
+Figure 10: Example images of multiple ball dataset, modified based on the rendering code provided by Ahuja et al. (2022). Balls can move freely inside the frame, and each ball’s coordinates can be fixed randomly to a constant value, which causes their latent dimensions to be degenerate; Varying the number of balls from 2 to 6. 
+
+CNN architecture Before we train the model described in Sec. 4, we pre-train a CNN model to reduce the input image dimension from 64 × 64 × 3 to a vector of size 128 × 1. To control the information loss, we use a symmetric convolutional autoencoder to reconstruct the images. All convolutional layers use kernel size 3 with Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+stride 1 and padding 1, and a ReLU activation follows each convolutional or transposed convolutional layer, except for the final output layer which uses a Sigmoid activation function. We list the concrete network structure in Section D.10. Table 12: Architecture of the convolutional autoencoder used in Sec. 5 (input size: 3 × 64 × 64 ). 
+
+Layer Type Configuration Output Shape 
+
+Input RGB image (3, 64, 64) 
+
+Encoder 
+
+Conv2D + ReLU 3 → 32, kernel=3, stride=1, pad=1 (32, 64, 64) MaxPool2D 2×2 (32, 32, 32) Conv2D + ReLU 32 → 64, kernel=3, stride=1, pad=1 (64, 32, 32) MaxPool2D 2×2 (64, 16, 16) Conv2D + ReLU 64 → 64, kernel=3, stride=1, pad=1 (64, 16, 16) MaxPool2D 2×2 (64, 8, 8) Conv2D + ReLU 64 → 128, kernel=3, stride=1, pad=1 (128, 8, 8) MaxPool2D 2×2 (128, 4, 4) Conv2D + ReLU 128 → 128, kernel=3, stride=1, pad=1 (128, 4, 4) MaxPool2D 4×4 (128, 1, 1) 
+
+Decoder 
+
+ConvTranspose2D + ReLU 128 → 128, kernel=2, stride=2 (128, 2, 2) ConvTranspose2D + ReLU 128 → 64, kernel=2, stride=2 (64, 4, 4) ConvTranspose2D + ReLU 64 → 64, kernel=2, stride=2 (64, 8, 8) ConvTranspose2D + ReLU 64 → 32, kernel=2, stride=2 (32, 16, 16) ConvTranspose2D + Sigmoid 32 → 3, kernel=4, stride=4 (3, 64, 64) To evaluate the performance, we perform linear regression from each representation separately to the corresponding ground-truth ball (x,y)-position. For b = 2 , 4, 6, we provide the average R2 over 5 random seeds for each ball in Tables 13 to 15. The results show that for the settings b = 2 , 4, the position of each ball can be well recovered through pairs of representations, which is consistent with our theoretical results. However, as shown in the example images, when b = 6 , even though we use rejection sampling to ensure the distance between the mean values of any pair of balls is at least 0.2, due to the limited space of the frame, a high portion of occultation cannot be avoided, which also cause a performance drop as shown in Table 15. Table 13: Results for Multiple Balls with b = 2 : averaged R2 of linear regression between ground truth ball positions and learned representations.        
+
+> Ball 1 Ball 2 MCC 0.958 ±0.052 0.914 ±0.148
+
+Table 14: Results for Multiple Balls with b = 4 : averaged R2 of linear regression between ground truth ball positions and learned representations.                
+
+> Ball 1 Ball 2 Ball 3 Ball 4 MCC 0.953 ±0.033 0.853 ±0.194 0.932 ±0.041 0.880 ±0.137 Danru Xu, Sébastien Lachapelle, Sara Magliacane
+
+Table 15: Results for Multiple Balls with b = 6 : averaged R2 of linear regression between ground truth ball positions and learned representations.                       
+
+> Ball 1 Ball 2 Ball 3 MCC 0.743 ±0.106 0.105 ±0.046 0.293 ±0.229 Ball 4 Ball 5 Ball 6 MCC 0.407 ±0.375 0.474 ±0.183 0.595 ±0.241
+
+D.11 Identify x− and y−positions with fined-grained masks 
+
+we can define finer-grained sparsity patterns. In particular, our method can disentangle the x− and y−positions of each ball, if the dataset allows freezing x− and y−positions individually. We ran experiments on 5 random seeds with 2 balls (in total 4 latent variables), and got an average MCC = 
+
+0.97 ± 0.03 . In Section D.11, we show that the R2 of linear regression between ground truth ball positions bx 
+
+> 1
+
+, by 
+
+> 1
+
+,
+
+bx 
+
+> 2
+
+, by 
+
+> 2
+
+, and learned representations ˆz1,..., ˆz4. As we can see, both x− and y− can be disentangled well. Table 16: Example results of ˆzi assignments across blocks 
+
+bx 
+
+> 1
+
+by 
+
+> 1
+
+bx 
+
+> 2
+
+by
+
+> 2
+
+ˆz1 0.03 0.00 0.98 0.00 
+
+ˆz2 0.95 0.01 0.01 0.00 
+
+ˆz3 0.00 0.00 0.00 0.97 
+
+ˆz4 0.02 0.99 0.00 0.01 
+
+D.12 Compute information 
+
+The experiments in Section 5 are implemented on NVIDIA A100 GPU. The experiments in Section 5 on multiple balls are implemented on NVIDIA A40 GPU. Each job used 1 GPU per node and 20 GB of memory. 
+
+## E Discussion on Assumptions 
+
+In this section, we assess the applicability and robustness of our assumptions and discuss to what extent they hold or may fail in practical scenarios. We begin with empirical evidence on violations of Gaussianity and piecewise affine mixing, followed by a closer examination of each theoretical assumption, supported by proofs and illustrative examples. 
+
+E.1 Parametric assumptions: Gaussian latent and piecewise affine mixing 
+
+Mixture models capture a significantly broader range of latent structures than standard single-component (e.g., standard Gaussian) priors used in many prior works (e.g. VAE and β VAE). In fact, mixture models, especially GMMs, are commonly used to approximate real-world latent spaces in applications. Our use of a degenerate mixture is especially relevant in high-dimensional sparse regimes, where not all latent variables are active in every sample. The piecewise affine mixing function assumption aligns with a broad class of practical transformations (e.g., ReLU networks). Moreover, it can approximate any diffeomorphism functions up to arbitrary precision given a sufficient number of pieces. In addition, to test the robustness of our method, we report some results for violations of these assumptions in Table 17. We experiment with the violation of 1) the Gaussian assumption (replaced by Exponential and Gumbel), and 2) the piecewise affine (replace LeakyReLU by 1. smooth LeakyReLU 2. Sigmoid ). Except for the Sigmoid setting, we did not observe a performance drop, indicating the robustness of our method under certain violations of our assumptions. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Table 17: Results for the numerical experiments (Stage 2) on misspecified settings. 
+
+n k m ρ MCC Exponential Gumbel Smooth LeakyReLU Sigmoid 5 1 10 50 % 0.92 ±0.06 0.95 ±0.01 0.97 ±0.01 0.36 ±0.02 
+
+10 1 10 50 % 0.96 ±0.01 0.97 ±0.01 0.98 ±0.01 0.32 ±0.06 
+
+20 1 10 50 % 0.94 ±0.02 0.95 ±0.02 0.94 ±0.09 0.29 ±0.04 10 0 10 50 % 0.95 ±0.01 0.97 ±0.01 0.95 ±0.08 0.37 ±0.06 10 1 10 50 % 0.96 ±0.01 0.97 ±0.01 0.98 ±0.01 0.32 ±0.06 10 2 10 50 % 0.93 ±0.04 0.96 ±0.02 0.97 ±0.01 0.29 ±0.06 10 3 10 50 % 0.91 ±0.04 0.91 ±0.06 0.93 ±0.03 0.36 ±0.09 10 1 3 50 % 0.98 ±0.01 0.99 ±0.01 0.99 ±0.00 0.60 ±0.03 10 1 10 50 % 0.96 ±0.01 0.97 ±0.01 0.98 ±0.01 0.32 ±0.06 10 1 20 50 % 0.91 ±0.04 0.94 ±0.02 0.97 ±0.01 0.30 ±0.08 10 1 10 1var 0.66 ±0.08 0.59 ±0.07 0.70 ±0.07 0.36 ±0.01 10 1 10 50 % 0.96 ±0.01 0.97 ±0.01 0.98 ±0.01 0.32 ±0.06 10 1 10 75 % 0.92 ±0.04 0.94 ±0.04 0.95 ±0.03 0.32 ±0.07 
+
+E.2 Assumption 3.4: Genericity of pdGMMs 
+
+In this section, we clarify the genericity of Assumption 3.4. We begin by providing a proof that the set of parameters violating this assumption is a measure-zero subset of the parameter space under consideration, i.e., even when we consider only covariance matrices that are degenerate. Then, we introduce an example in two-dimensional space to support and illustrate the intuition behind it. We also extend this example to higher dimensions and conduct an ablation study to show the necessity of this assumption. Finally, we discuss the applicability of this assumption in practice. 
+
+Assumption 3.4 (Genericity of pdGMMs) . Consider a pdGMM in reduced form Z ∼ ∑Jj=1 λj N (μj , Σj ). Let 
+
+Jk := {j ∈ [J] : rank (Σj ) = k)} be the indices of the components with rank k. For any k ≤ n and any subset 
+
+J 0 
+
+> k
+
+⊆ J k, suppose that the intersection of the supports of the components Zj is non-empty, i.e., ∩j∈J 0 
+
+> k
+
+Zj̸ = ∅.We assume there exists at least one point z0 ∈ ∩ j∈J 0 
+
+> k
+
+Zj s.t. the Mahalanobis distance 4 of z0 to the distributions of any two distinct Gaussian components i, j ∈ J 0 
+
+> k
+
+is not the same. 
+
+Lemma E.1. Consider a pdGMM in reduced form Z ∼ ∑Jj=1 λj N (μj , Σj ). The set of parameters (λj , μj , Σj ), J ∈
+
+[J] violating Assumption 3.4 is measure-zero in the parameter space under consideration, i.e., when we consider 
+
+Σj to be degenerate covariance matrices. Proof. A violation of Assumption 3.4 means for some 0 < k ≤ n, there exists an subset J 0 
+
+> k
+
+∈ J k, such that all points 
+
+z0 ∈ ∩ j∈J 0 
+
+> k
+
+Zj , ∃ i, j ∈ J 0 
+
+> k
+
+such that the Mahalonobis distance are the same, i.e., 
+
+√
+
+(z0 − μi)T Σ−1 
+
+> i
+
+(z0 − μi) =
+
+√
+
+(z0 − μj )T Σ−1 
+
+> j
+
+(z0 − μj ).To constrain the parameter space of Σi and Σj to the ones with rank k, we parameterize Σi = AiATi and 
+
+Σj = Aj ATj via full-column-rank decompositions with rank( Ai) = rank( Aj ) = k. Therefore, we have 
+
+√
+
+(z0 − μi)T Σ−1 
+
+> i
+
+(z0 − μi) = || (ATi Ai)−1ATi (z0 − μi)|| (161) 
+
+√
+
+(z0 − μj )T Σ−1 
+
+> j
+
+(z0 − μj ) = || (ATj Aj )−1ATj (z0 − μj )|| . (162) In this way, we can define the subset of parameter space that violates the assumption for each pair of components 
+
+i and j.
+
+VJ 0 
+
+> k
+> ij
+
+:= {(Ai, A j , μi, μj ) : || (ATi Ai)−1ATi (z0 − μi)|| = || (ATj Aj )−1ATj (z0 − μj )|| ∀ z0 ∈ ∩ j∈J 0 
+
+> k
+
+Zj } (163) 
+
+> 4
+
+Mahalanobis distance of a point z0 from a distribution N (μj , Σj ) is 
+
+√
+
+(z0 − μj )T Σ−1 
+
+> j
+
+(z0 − μj ). When Σj is singular, we use the Moore-Penrose inverse for Σ−1
+
+> jDanru Xu, Sébastien Lachapelle, Sara Magliacane
+
+The total set of violating parameters for the pdGMM is V = ∪nk=1 ∪J 0  
+
+> k⊆J k
+
+∪i,j ∈J 0 
+
+> k
+
+VJ 0 
+
+> k
+> ij
+
+. Since a finite union of measure zero sets is still measure zero, if we can show that the measure of VJ 0 
+
+> k
+> ij
+
+is 0 for all pairs of components 
+
+i, j ∈ J 0 
+
+> k
+
+, the proof is complete. Let f z0 
+
+> ij
+
+:= || (ATi Ai)−1ATi (z0 − μi)|| − || (ATj Aj )−1ATj (z0 − μj )|| . By Mityagin (2020), a real analytic function from Rm to R for m ≥ 1 is either zero everywhere or non-zero almost everywhere. We can apply this result to our setting and show that f z0 
+
+> ij
+
+, which is a real analytic function in (Ai, A j , μi, μj ), is non-zero almost everywhere, which means that for each point z0 we can distinguish each pair of components. This means that once we can find one nonzero solution, we can conclude that the function is all nonzero almost everywhere. We construct the nonzero solution in this way: we can put the first term in the definition of f z0 
+
+> ij
+
+to zero by taking μi = z0 and using an arbitrary full-column matrix Ai. For the second term, we want to show that there exists a non-zero solution. We fix Aj and show that if z0 − μj̸ ∈ Im (( ATj Aj )−1ATj ), then f z0 
+
+> ij
+
+is nonzero. Thus, we conclude based on the result by Mityagin (2020) that f z0 
+
+> ij
+
+is non-zero almost everywhere for any z0.This means that the set of violations VJ 0 
+
+> k
+> ij
+
+is a measure-zero set for any pair i, j and therefore its finite union V is a measure-zero set. 
+
+Example E.2. Consider n = 2 and J = 2 with components N (μ1, Σ1) and N (μ2, Σ2). Suppose 
+
+μ1 =
+
+(00
+
+)
+
+, Σ1 =
+
+(1 00 0
+
+)
+
+. (164) There are only two ways to decompose Σ1 into the form A1AT 
+
+> 1
+
+: A1 = (1 , 0) T or (−1, 0) T . Let Σ2 = A2AT 
+
+> 2
+
+where 
+
+A2 = ( a1, a 2)T , and μ2 = ( μ1, μ 2). Consider ε1 = ε ∈ R, then ε2 = ε or −ε. To violate Ass. 3.4, (μ2, Σ2) can must satisfy: 
+
+{
+
+ε = a1ε + μ1
+
+0 = a2ε + μ2
+
+or 
+
+{
+
+−ε = a1ε + μ1
+
+0 = a2ε + μ2
+
+or 
+
+{
+
+ε = −a1ε + μ1
+
+0 = −a2ε + μ2
+
+or 
+
+{
+
+−ε = −a1ε + μ1
+
+0 = −a2ε + μ2
+
+(165) By solving the equations, we can conclude if and only if (a1 − 1) μ2 = a2μ1 or |(a1 − 1) μ2| = |a2μ1|, Ass. 3.4 is not satisfied, which is a measure-zero subset of parameter space. We extend this example to dimensions n = 2 , 5, 10 and show the results of our method on it in Section E.2. As you can see, these results are much worse than the comparable results in Table 1 for n = 5 , 10 , where the R2 was 
+
+∼ 0.93 , and the M CC was ∼ 0.96 , showing why this assumption is needed. Table 18: Average R2 and MCC over 5 random seeds 
+
+n 2 5 10 
+
+R2 0.87 0.70 0.64 MCC 0.92 0.63 0.47 In summary, we have shown that the violations of this assumption occur only on a measure-zero subset, supporting its genericity. The two-dimensional example further illustrates this result by explicitly characterizing the exceptional cases, which correspond to highly fine-tuned parameter choices. Together, these arguments support the statement that Assumption 3.4 is a mild and reasonable assumption, holding almost everywhere in real-world settings. 
+
+E.3 Assumption 3.6: Common basis and translation vector 
+
+This assumption states that the supports of all components should intersect and that a shared basis can represent them. This always holds for non-degenerate GMMs. For degenerate components, a violation can happen because the components are not intersecting, or if their individual bases do not form a global shared basis. To show the necessity of Assumption 3.6, we provide an example that violates this assumption, showing that such cases only local affine identifiability can be achieved, whereas global identifiability fails. Identifiability of Potentially Degenerate Gaussian Mixture Models With Piecewise Affine Mixing 
+
+Example E.3. Consider n = 2 with Z1 := span {e1}, Z2 := span {e2} and Z3 = span {e1 + e2}. In this case, all three subspaces are one-dimensional and the issue is that the family of vectors {e1, e2, e1 + e2} is linearly dependent and thus do not form a basis. One can construct a function f : ∪3
+
+> j=1
+
+Zj → R that is affine on each Zj
+
+individually, but not on the union: 
+
+f (z) := 
+
+{
+
+0, if z ∈ Z 1 ∪ Z 2
+
+z1, if z ∈ Z 3
+
+. (166) Clearly this function is not affine on ∪3
+
+> j=1
+
+Zj since 
+
+f (e1 + e2) = 1 ̸ = 0 = f (e1) + f (e2) . (167) Intuitively, Assumption 3.6 requires that there exists a unique shared basis for all Gaussian components. We conduct an ablation study to show the necessity. To show a violation of this, we generate the data with a mixture of two different bases: a standard basis and one with rotations. As shown in Tab. 19, these results are worse than the comparable results in Tab. 1, which shows why this assumption is needed for AT. Table 19: Average R2 over 5 random seeds 
+
+k 0 1 2 3
+
+R2 0.83 0.82 0.84 0.85 One concrete setting in which this assumption holds is the partially observable scenario in Xu et al. (2024). In that setting, there are n causal variables, but only a subset of them are “active” in each observation sample, e.g., they are captured in an image, while others are “inactive”. The sets of “active” and “inactive” variables can change for each observation. For example, one could consider a camera that captures objects moving in and out of frame, or are occluded by another object. We consider the “inactive” objects as contributing to the observation with a specific constant value, i.e., their inputs to the mixing functions are constant (e.g. 0). In this setting, the intersection of the supports is the vector of all the constant values for each variable and since we are masking the inputs for the “inactive” variables, the individual basis of the supports will always be orthogonal and hence form a well-defined global shared basis, satisfying Assumption 3.6. Other possible applications could include other high-dimensional applications that rely on sparse representations, such as language models (Cunningham et al., 2024; Gao et al., 2025; Marks et al., 2025), where we also have “active” and “inactive” concepts. If it does not hold strictly in a setting, e.g., it only holds for a subset of components, for this subset we can still achieve the same result as Theorem 3.7, but for the other components we will learn a local linear identified representation individually as stated in Theorem 3.5, but not a global one. 
+
+E.4 Assumption 3.8a: Common Standard Basis 
+
+The only difference between the Common Standard Basis Assumption (Assumption 3.8 (a)) and Assumption 3.6 is the interception term, which can be canceled out easily by shifting the modeling by a constant in practice. Table 1 already shows violations of Ass. 3.8a when δ (the masking value) and θ (the rotation of the standard basis) are non-zero, showcasing a decrease in performance when the assumption does not hold. 
+
+E.5 Assumption 3.8b: Sufficient Support Basis Index Variability 
+
+The Sufficient Support Basis Index Variability Assumption (Assumption 3.8 (b)), it is more likely to hold when the sparsity patterns across samples are sufficiently diverse. For example, in the partially observable CRL setting, this would mean that two variables are not always “inactive” and “active” at the same time, since we would otherwise not be able to disentangle them. Even if this assumption does not hold strictly in a setting, our framework still supports a weaker form of identifiability: block-wise identifiability, which allows disentanglement across blocks of latent variables, even if Danru Xu, Sébastien Lachapelle, Sara Magliacane 
+
+variables within each block may remain entangled. This relaxation still enables meaningful interpretability and structure in learned representations. We ran experiments with different blocks of variables that were always active/inactive together. We use our basic setup: n = 10 , k = 1 , m = 10 , ρ = 50 , δ = 0 , θ = 0 with three types of block to see whether the performance varies with different block sizes: [[ z0, z1], [z2, z3], [z4, z5], [z6, z7], [z8, z9]] , [[ z0], [z1], [z2], [z3, z4, z5], [z6, z7, z8, z9]] ,
+
+[[ z0], [z1], [z2, z3], [z4, z5, z6, z7, z8, z9]] , and we show R2 of the linear regression between each block and learned representations ˆz1, . . . , ˆz10. The results show that even though the variables are entangled within blocks, disentanglement can be achieved across blocks. Table 20: Example results of ˆzi assignments across blocks 
+
+[z0, z1] [z2, z3] [z4, z5] [z6, z7] [z8, z9]ˆz0 0.95 0.01 0.01 0.02 0.01 
+
+ˆz1 0.90 0.00 0.00 0.00 0.00 
+
+ˆz2 0.01 0.84 0.01 0.01 0.00 
+
+ˆz3 0.00 0.84 0.00 0.00 0.01 
+
+ˆz4 0.00 0.00 0.91 0.00 0.00 
+
+ˆz5 0.00 0.00 0.91 0.00 0.01 
+
+ˆz6 0.00 0.00 0.00 0.86 0.00 
+
+ˆz7 0.01 0.01 0.00 0.96 0.01 
+
+ˆz8 0.01 0.00 0.00 0.01 0.91 
+
+ˆz9 0.00 0.00 0.01 0.02 0.88 
+
+Table 21: Example results of ˆzi assignments across blocks 
+
+[z0] [z1] [z2] [z3, z4, z5] [z6, z7, z8, z9]ˆz0 0.95 0.00 0.00 0.01 0.03 
+
+ˆz1 0.00 0.89 0.00 0.00 0.00 
+
+ˆz2 0.01 0.00 0.92 0.01 0.02 
+
+ˆz3 0.00 0.00 0.00 0.91 0.02 
+
+ˆz4 0.01 0.00 0.00 0.94 0.01 
+
+ˆz5 0.00 0.00 0.00 0.92 0.00 
+
+ˆz6 0.00 0.00 0.00 0.00 0.89 
+
+ˆz7 0.01 0.00 0.01 0.01 0.96 
+
+ˆz8 0.01 0.00 0.00 0.01 0.92 
+
+ˆz9 0.00 0.00 0.00 0.02 0.93 
+
+Table 22: Example results of ˆzi assignments across blocks 
+
+[z0] [z1] [z2, z3] [z4, z5, z6, z7, z8, z9]ˆz0 0.92 0.00 0.01 0.05 
+
+ˆz1 0.00 0.89 0.00 0.01 
+
+ˆz2 0.01 0.00 0.91 0.04 
+
+ˆz3 0.00 0.00 0.88 0.01 
+
+ˆz4 0.01 0.00 0.00 0.94 
+
+ˆz5 0.01 0.00 0.01 0.91 
+
+ˆz6 0.02 0.00 0.00 0.92 
+
+ˆz7 0.00 0.00 0.00 0.88 
+
+ˆz8 0.01 0.00 0.00 0.92 
+
+ˆz9 0.00 0.00 0.00 0.82
