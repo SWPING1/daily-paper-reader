@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-001.webp",
+      "caption": "Table 1: Centroid replacement cost across seven models. Mean accuracy cost when replacing all visual or text tokens with their nearest centroids (α=0). Text replacement costs 4.0× more than visual on average. Negative values indicate centroid replacement improves accuracy. † Ratio computed using |vis. cost|; visual centroids actually help these models (negative cost). Per-task breakdown in Figure 2.",
+      "page": 6,
+      "index": 1,
+      "width": 814,
+      "height": 228
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-002.webp",
+      "caption": "Table 8: CD effect vs. centroid count K (Qwen2.5-VL-7B, αinterp=0, 11K centroid fit). Smaller K produces stronger contrast at full erasure (α=0); all main paper results use K=256, where partial erasure (α > 0) recovers performance (see Table 2).",
+      "page": 21,
+      "index": 2,
+      "width": 582,
+      "height": 214
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-003.webp",
+      "caption": "Table 9: Sink/dead-token confound analysis (Qwen2.5-VL-7B, BLINK 6 tasks). Centroids are refit on 2,000 COCO activations under three exclusion variants. NO DEAD drops bottom5% norm tokens; NO SINK drops top-1% norm tokens; NO EITHER applies both filters. Mean best-α CD delta changes by at most 0.68 pp from baseline, and the text centroid cost is identical across all four variants.",
+      "page": 22,
+      "index": 3,
+      "width": 826,
+      "height": 207
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-004.webp",
+      "caption": "Figure 7: Per-model alpha sweep under the Phase 2 protocol. CD delta (%) versus centroid interpolation strength αinterp for all seven models (N=2,000 COCO images, K=256, αcd=1.0). Dashed vertical line marks αinterp=0.4 (fixed reporting protocol). SFT/DPO models (Qwen2.5, LLaVA-OV, Idefics3) show clear task-selective peaks, while SFT+/MPO models (Qwen3, InternVL) show flatter, near-zero responses, consistent with the audit pattern in Table 4.",
+      "page": 18,
+      "index": 4,
+      "width": 494,
+      "height": 792
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-005.webp",
+      "caption": "Table 18: VPBench summary (7 models × 2 tasks = 14 points). The 3.1× aggregate asymmetry (mean text cost +11.4%, mean visual cost +3.7%) replicates the BLINK finding on a benchmark independently flagged for visual-prompt fragility by Feng et al. (2026), confirming the geometric signal operates upstream of visual-prompt design.",
+      "page": 28,
+      "index": 5,
+      "width": 830,
+      "height": 192
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-006.webp",
+      "caption": "Table 19: MedBLINK summary (9 models × 8 tasks = 72 points). Mean text-vs-visual centroid costs, mean best-α CD delta, and number of McNemar-significant (p < 0.05, ∆ > 0) CD wins. Text-visual asymmetry holds across all 9 models; clinical-domain fine-tuning preserves and in the smaller-model case amplifies the pattern (MedGemma-4B asym = 11.4×).",
+      "page": 28,
+      "index": 6,
+      "width": 830,
+      "height": 217
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-007.webp",
+      "caption": "Figure 4: Competition is distributed across text segments. CD effect when selectively erasing centroids on different text segments (Qwen2.5-VL-7B, αinterp = 0.4, αcd = 1.0). All-text erasure produces the strongest gains on TEXT-COMPETES tasks (Forensic +7.6%, Vis. Sim. +8.9%, Art Style +6.8%). System-prompt erasure yields a surprisingly large gain on Forensic Detection (+12.1%). Options-only erasure at this dose is largely flat or mildly negative; at a lower αinterp = 0.3 it recovers TEXT-COMPETES gains cleanly (Section D.2). Green indicates accuracy improvement; red indicates degradation.",
+      "page": 8,
+      "index": 7,
+      "width": 597,
+      "height": 349
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-008.webp",
+      "caption": "Figure 8: Per-task layer sweep (Qwen2.5-VL-7B). Individual task CD deltas across 16 layers, complementing the group means in Figure 5. Shaded region (L4–L22): teal indicates where TEXT-COMPETES tasks benefit from text centroid erasure; red indicates where TEXT-NEEDED tasks are hurt. The divergence is consistent per task, not just in aggregate.",
+      "page": 19,
+      "index": 8,
+      "width": 736,
+      "height": 401
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-009.webp",
+      "caption": "Table 13: Centroid fitting variance (Qwen2.5-VL-7B, primary data seed=1337, five Kmeans seeds). CD delta (%) at the per-task best αinterp across five independent K-means fits (seeds 42, 800, 1337, 2024, 8320). σ ≤ 1.5% across seeds confirms stability of the centroid decomposition; the variance decomposition across the full 3×5 factorial is given in Table 14.",
+      "page": 24,
+      "index": 9,
+      "width": 636,
+      "height": 202
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-010.webp",
+      "caption": "Figure 5: The task taxonomy is stable across model depth. Mean CD delta for TEXTCOMPETES and TEXT-NEEDED task groups across 16 layers of Qwen2.5-VL-7B. The two groups diverge consistently from L4 through L22 (shaded), confirming that the competition structure is a stable model property.",
+      "page": 9,
+      "index": 10,
+      "width": 402,
+      "height": 458
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-011.webp",
+      "caption": "Figure 9: Dose–response for real text centroid CD vs. three null controls, options-only erasure, Qwen2.5-VL-7B. Left: TEXT-COMPETES mean across Forensic Detection, Visual Similarity, and Art Style. Right: mean across all 6 BLINK tasks. Real CD (blue) traces an inverted-U peaking at αinterp=0.3; all three controls remain near zero or flat-negative across αinterp ∈ {0.2, 0.3, 0.4, 0.6}, confirming that the gains require the specific geometric structure captured by K-means.",
+      "page": 20,
+      "index": 11,
+      "width": 772,
+      "height": 227
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-012.webp",
+      "caption": "Figure 2: The text–visual asymmetry is universal. Per-task centroid replacement cost (visual in teal, text in red) across seven models. In every model, erasing text centroid structure costs substantially more accuracy than erasing visual centroid structure, on tasks that demand visual reasoning.",
+      "page": 5,
+      "index": 12,
+      "width": 816,
+      "height": 426
+    },
+    {
+      "url": "assets/figures/arxiv/2604.14363v1/fig-013.webp",
+      "caption": "Figure 6: Task examples from BLINK. One representative sample per task showing the input image(s), prompt with four answer choices, and the correct answer. Top row: TEXTCOMPETES tasks (Forensic Detection, Visual Similarity, Art Style) where text centroid CD improves accuracy. Bottom row: TEXT-NEEDED tasks (Counting, Relative Depth, Spatial Relation) where text structure is required for the task.",
+      "page": 16,
+      "index": 13,
+      "width": 810,
+      "height": 746
+    }
+  ]
+}

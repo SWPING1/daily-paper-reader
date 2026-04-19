@@ -1,0 +1,345 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-04-19T19:38:45.056387+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 6,
+    "quick_skim_target": 11,
+    "quick_selected": 6
+  },
+  "deep_dive": [
+    {
+      "id": "2604.10702v2",
+      "source": "arxiv",
+      "title": "Architecture-Agnostic Modality-Isolated Gated Fusion for Robust Multi-Modal Prostate MRI Segmentation",
+      "abstract": "Multi-parametric prostate MRI -- combining T2-weighted, apparent diffusion coefficient, and high b-value diffusion-weighted sequences -- is central to non-invasive detection of clinically significant prostate cancer, yet in routine practice individual sequences may be missing or degraded by motion, artifacts, or abbreviated protocols. Existing multi-modal fusion strategies typically assume complete inputs and entangle modality-specific information at early layers, offering limited resilience when one channel is corrupted or absent. We propose Modality-Isolated Gated Fusion (MIGF), an architecture-agnostic module that maintains separate modality-specific encoding streams before a learned gating stage, combined with modality dropout training to enforce compensation behavior under incomplete inputs. We benchmark six bare backbones and assess MIGF-equipped models under seven missing-modality and artifact scenarios on the PI-CAI dataset (1,500 studies, fold-0 split, five random seeds). Among bare backbones, nnUNet provided the strongest balance of performance and stability. MIGF improved ideal-scenario Ranking Score for UNet, nnUNet, and Mamba by 2.8%, 4.6%, and 13.4%, respectively; the best model, MIGFNet-nnUNet (gating + ModDrop, no deep supervision), achieved 0.7304 +/- 0.056. Mechanistic analysis reveals that robustness gains arise from strict modality isolation and dropout-driven compensation rather than adaptive per-sample quality routing: the gate converged to a stable modality prior, and deep supervision was beneficial only for the largest backbone while degrading lighter models. These findings support a simpler design principle for robust multi-modal segmentation: structurally contain corrupted inputs first, then train explicitly for incomplete-input compensation.",
+      "authors": [
+        "Yongbo Shu",
+        "Wenzhao Xie",
+        "Shanhu Yao",
+        "Zirui Xin",
+        "Luo Lei",
+        "Kewen Chen",
+        "Aijing Luo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-04-12T15:54:21+00:00",
+      "link": "https://arxiv.org/pdf/2604.10702v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "resilience when one channel is corrupted or absent using modality-isolated gated fusion",
+      "llm_evidence_cn": "使用模态隔离门控融合在通道损坏或缺失时的鲁棒性",
+      "llm_evidence": "使用模态隔离门控融合在通道损坏或缺失时的鲁棒性",
+      "canonical_evidence": "使用模态隔离门控融合在通道损坏或缺失时的鲁棒性",
+      "llm_tldr_en": "A gated fusion module that maintains modality isolation to handle missing or corrupted MRI sequences.",
+      "llm_tldr_cn": "一种保持模态隔离的门控融合模块，用于处理缺失或损坏的MRI序列。",
+      "llm_tldr": "一种保持模态隔离的门控融合模块，用于处理缺失或损坏的MRI序列。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2604.12735v1",
+      "source": "arxiv",
+      "title": "AffectAgent: Collaborative Multi-Agent Reasoning for Retrieval-Augmented Multimodal Emotion Recognition",
+      "abstract": "LLM-based multimodal emotion recognition relies on static parametric memory and often hallucinates when interpreting nuanced affective states. In this paper, given that single-round retrieval-augmented generation is highly susceptible to modal ambiguity and therefore struggles to capture complex affective dependencies across modalities, we introduce AffectAgent, an affect-oriented multi-agent retrieval-augmented generation framework that leverages collaborative decision-making among agents for fine-grained affective understanding. Specifically, AffectAgent comprises three jointly optimized specialized agents, namely a query planner, an evidence filter, and an emotion generator, which collaboratively perform analytical reasoning to retrieve cross-modal samples, assess evidence, and generate predictions. These agents are optimized end-to-end using Multi-Agent Proximal Policy Optimization (MAPPO) with a shared affective reward to ensure consistent emotion understanding. Furthermore, we introduce Modality-Balancing Mixture of Experts (MB-MoE) and Retrieval-Augmented Adaptive Fusion (RAAF), where MB-MoE dynamically regulates the contributions of different modalities to mitigate representation mismatch caused by cross-modal heterogeneity, while RAAF enhances semantic completion under missing-modality conditions by incorporating retrieved audiovisual embeddings. Extensive experiments on MER-UniBench demonstrate that AffectAgent achieves superior performance across complex scenarios. Our code will be released at: https://github.com/Wz1h1NG/AffectAgent.",
+      "authors": [
+        "Zeheng Wang",
+        "Zitong Yu",
+        "Yijie Zhu",
+        "Bo Zhao",
+        "Haochen Liang",
+        "Taorui Wang",
+        "Wei Xia",
+        "Jiayu Zhang",
+        "Zhishu Liu",
+        "Hui Ma",
+        "Fei Ma",
+        "Qi Tian"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-14T13:49:19+00:00",
+      "link": "https://arxiv.org/pdf/2604.12735v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal emotion recognition with retrieval-augmented generation to handle modal ambiguity",
+      "llm_evidence_cn": "利用检索增强生成处理模态歧义的多模态情感识别",
+      "llm_evidence": "利用检索增强生成处理模态歧义的多模态情感识别",
+      "canonical_evidence": "利用检索增强生成处理模态歧义的多模态情感识别",
+      "llm_tldr_en": "A multi-agent RAG framework for fine-grained multimodal emotion recognition and dependency capturing.",
+      "llm_tldr_cn": "一种用于细粒度多模态情感识别和依赖关系捕获的多智能体检索增强生成框架。",
+      "llm_tldr": "一种用于细粒度多模态情感识别和依赖关系捕获的多智能体检索增强生成框架。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2604.11283v1",
+      "source": "arxiv",
+      "title": "Empowering Video Translation using Multimodal Large Language Models",
+      "abstract": "Recent developments in video translation have further enhanced cross-lingual access to video content, with multimodal large language models (MLLMs) playing an increasingly important supporting role. With strong multimodal understanding, reasoning, and generation capabilities, MLLMs-based video translation systems are overcoming the limitations of traditional cascaded pipelines that separately handle automatic speech recognition, machine translation, text-to-speech and lip synchronization. These MLLM-powered approaches not only achieve competitive or superior translation quality, but also demonstrate stronger robustness in zero-shot settings and multi-speaker scenarios, while jointly modeling semantic fidelity, timing, speaker identity, and emotional consistency. However, despite the rapid progress of MLLMs and extensive surveys on general video-language understanding, a focused and systematic review of how MLLMs empower video translation tasks is still lacking. To fill this gap, we provide the first comprehensive overview of MLLMs-based video translation, organized around a three-role taxonomy: 1) Semantic Reasoner, which characterizes how MLLMs perform video understanding, temporal reasoning, and multimodal fusion; 2) Expressive Performer, which analyzes LLM-driven and LLM-augmented techniques for expressive, controllable speech generation; and 3) Visual Synthesizer, which examines different types of video generators for high-fidelity lip-sync and visual alignment. Finally, we discuss open challenges in video understanding, temporal modeling, and multimodal alignment, and outline promising future research directions for MLLMs-powered video translation.",
+      "authors": [
+        "Bingzheng QU",
+        "Kehai Chen",
+        "Xuefeng Bai",
+        "Min Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-13T10:42:31+00:00",
+      "link": "https://arxiv.org/pdf/2604.11283v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "jointly modeling emotional consistency in multimodal video translation",
+      "llm_evidence_cn": "在多模态视频翻译中共同建模情感一致性",
+      "llm_evidence": "在多模态视频翻译中共同建模情感一致性",
+      "canonical_evidence": "在多模态视频翻译中共同建模情感一致性",
+      "llm_tldr_en": "Uses MLLMs for video translation while maintaining semantic fidelity and emotional consistency.",
+      "llm_tldr_cn": "利用多模态大模型进行视频翻译，同时保持语义忠实度和情感一致性。",
+      "llm_tldr": "利用多模态大模型进行视频翻译，同时保持语义忠实度和情感一致性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.11797v2",
+      "source": "arxiv",
+      "title": "SyncFix: Fixing 3D Reconstructions via Multi-View Synchronization",
+      "abstract": "We present SyncFix, a framework that enforces cross-view consistency during the diffusion-based refinement of reconstructed scenes. SyncFix formulates refinement as a joint latent bridge matching problem, synchronizing distorted and clean representations across multiple views to fix the semantic and geometric inconsistencies. This means SyncFix learns a joint conditional over multiple views to enforce consistency throughout the denoising trajectory. Our training is done only on image pairs, but it generalizes naturally to an arbitrary number of views during inference. Moreover, reconstruction quality improves with additional views, with diminishing returns at higher view counts. Qualitative and quantitative results demonstrate that SyncFix consistently generates high-quality reconstructions and surpasses current state-of-the-art baselines, even in the absence of clean reference images. SyncFix achieves even higher fidelity when sparse references are available.",
+      "authors": [
+        "Deming Li",
+        "Abhay Yadav",
+        "Cheng Peng",
+        "Rama Chellappa",
+        "Anand Bhattad"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-13T17:58:06+00:00",
+      "link": "https://arxiv.org/pdf/2604.11797v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "reconstructing and synchronizing distorted representations across views",
+      "llm_evidence_cn": "跨视图重建和同步扭曲的表示",
+      "llm_evidence": "跨视图重建和同步扭曲的表示",
+      "canonical_evidence": "跨视图重建和同步扭曲的表示",
+      "llm_tldr_en": "A framework for fixing 3D reconstructions by synchronizing semantic and geometric representations across views.",
+      "llm_tldr_cn": "通过同步跨视图的语义和几何表示来修复3D重建质量的框架。",
+      "llm_tldr": "通过同步跨视图的语义和几何表示来修复3D重建质量的框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Reconstructing missing modalities before feature decoupling in multimodal learning",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.14016v1",
+      "source": "arxiv",
+      "title": "MAny: Merge Anything for Multimodal Continual Instruction Tuning",
+      "abstract": "Multimodal Continual Instruction Tuning (MCIT) is essential for sequential task adaptation of Multimodal Large Language Models (MLLMs) but is severely restricted by catastrophic forgetting. While existing literature focuses on the reasoning language backbone, in this work, we expose a critical yet neglected dual-forgetting phenomenon across both perception drift in Cross-modal Projection Space and reasoning collapse in Low-rank Parameter Space. To resolve this, we present \\textbf{MAny} (\\textbf{M}erge \\textbf{Any}thing), a framework that merges task-specific knowledge through \\textbf{C}ross-modal \\textbf{P}rojection \\textbf{M}erging (\\textbf{CPM}) and \\textbf{L}ow-rank \\textbf{P}arameter \\textbf{M}erging (\\textbf{LPM}). Specifically, CPM recovers perceptual alignment by adaptively merging cross-modal visual representations via visual-prototype guidance, ensuring accurate feature recovery during inference. Simultaneously, LPM eliminates mutual interference among task-specific low-rank modules by recursively merging low-rank weight matrices. By leveraging recursive least squares, LPM provides a closed-form solution that mathematically guarantees an optimal fusion trajectory for reasoning stability. Notably, MAny operates as a training-free paradigm that achieves knowledge merging via efficient CPU-based algebraic operations, eliminating additional gradient-based optimization beyond initial tuning. Our extensive evaluations confirm the superior performance and robustness of MAny across multiple MLLMs and benchmarks. Specifically, on the UCIT benchmark, MAny achieves significant leads of up to 8.57\\% and 2.85\\% in final average accuracy over state-of-the-art methods across two different MLLMs, respectively.",
+      "authors": [
+        "Zijian Gao",
+        "Wangwang Jia",
+        "Xingxing Zhang",
+        "Pengfei Qian",
+        "Tao Sun",
+        "Bo Ding",
+        "Yong Dou",
+        "Huaimin Wang",
+        "Kele Xu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-04-15T15:57:23+00:00",
+      "link": "https://arxiv.org/pdf/2604.14016v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Recovering perceptual drift in cross-modal projection space",
+      "llm_evidence_cn": "恢复跨模态投影空间中的感知漂移",
+      "llm_evidence": "恢复跨模态投影空间中的感知漂移",
+      "canonical_evidence": "恢复跨模态投影空间中的感知漂移",
+      "llm_tldr_en": "Addresses forgetting in multimodal models by merging task-specific knowledge in projection and parameter spaces.",
+      "llm_tldr_cn": "通过合并投影和参数空间中的任务特定知识，解决多模态模型中的遗忘问题。",
+      "llm_tldr": "通过合并投影和参数空间中的任务特定知识，解决多模态模型中的遗忘问题。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.14363v1",
+      "source": "arxiv",
+      "title": "The Cost of Language: Centroid Erasure Exposes and Exploits Modal Competition in Multimodal Language Models",
+      "abstract": "Multimodal language models systematically underperform on visual perception tasks, yet the structure underlying this failure remains poorly understood. We propose centroid replacement, collapsing each token to its nearest K-means centroid, as a controlled probe for modal dependence. Across seven models spanning three architecture families, erasing text centroid structure costs 4$\\times$ more accuracy than erasing visual centroid structure, exposing a universal imbalance where language representations overshadow vision even on tasks that demand visual reasoning. We exploit this asymmetry through text centroid contrastive decoding, recovering up to +16.9% accuracy on individual tasks by contrastively decoding against a text-centroid-erased reference. This intervention varies meaningfully with training approaches: standard fine-tuned models show larger gains (+5.6% on average) than preference-optimized models (+1.5% on average). Our findings suggest that modal competition is structurally localized, correctable at inference time without retraining, and quantifiable as a diagnostic signal to guide future multimodal training.",
+      "authors": [
+        "Akshay Paruchuri",
+        "Ishan Chatterjee",
+        "Henry Fuchs",
+        "Ehsan Adeli",
+        "Piotr Didyk"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-04-15T19:26:30+00:00",
+      "link": "https://arxiv.org/pdf/2604.14363v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "exposes modal competition and imbalance in multimodal models",
+      "llm_evidence_cn": "揭示多模态模型中的模态竞争与不平衡",
+      "llm_evidence": "揭示多模态模型中的模态竞争与不平衡",
+      "canonical_evidence": "揭示多模态模型中的模态竞争与不平衡",
+      "llm_tldr_en": "Investigates how language dominates vision in MLLMs, providing insights into modal dependence and robustness.",
+      "llm_tldr_cn": "研究多模态大模型中语言如何主导视觉，揭示了模态依赖性与鲁棒性问题。",
+      "llm_tldr": "研究多模态大模型中语言如何主导视觉，揭示了模态依赖性与鲁棒性问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.14629v1",
+      "source": "arxiv",
+      "title": "Switch-KD: Visual-Switch Knowledge Distillation for Vision-Language Models",
+      "abstract": "Vision-Language Models (VLMs) have shown remarkable capabilities in joint vision-language understanding, but their large scale poses significant challenges for deployment in resource-constrained scenarios. Knowledge Distillation (KD) offers a viable way to improve model capabilities without increasing model size or data requirements, making deployment more efficient. However, applying KD to VLMs is challenged by modality-specific supervision: although multimodal knowledge in VLMs is fused within the language space, current methods supervise each modality separately without explicitly addressing multimodal alignment, leading to inconsistent multimodal knowledge transfer. To address this, we propose Switch-KD, a visual-switch distillation framework that unifies vision-language knowledge transfer within a shared text-probability space. Switch-KD comprises two key components: (1) Visual-Switch Distillation, which switches the student's visual outputs into the teacher's language pathway to construct cross-modal probabilistic references for implicit visual knowledge transfer; and (2) Dynamic Bi-directional Logits Difference (DBiLD) loss, which adaptively aligns informative probability regions while preserving the distributional structures of teacher and student through bidirectional supervision. Guided by Switch-KD, a 0.5B TinyLLaVA effectively distills rich multimodal knowledge from its 3B teacher, yielding an average improvement of 3.6 points across 10 multimodal benchmarks without any architectural modification.",
+      "authors": [
+        "Haoyi Sun",
+        "Xiaoxiao Wang",
+        "Ning Mao",
+        "Qian Wang",
+        "Lifu Mu",
+        "Wen Zheng",
+        "Tao Wei",
+        "Wei Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-16T05:13:57+00:00",
+      "link": "https://arxiv.org/pdf/2604.14629v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "addressing inconsistent multimodal knowledge transfer",
+      "llm_evidence_cn": "解决不一致的多模态知识迁移",
+      "llm_evidence": "解决不一致的多模态知识迁移",
+      "canonical_evidence": "解决不一致的多模态知识迁移",
+      "llm_tldr_en": "A knowledge distillation framework that improves multimodal alignment and robustness in vision-language models.",
+      "llm_tldr_cn": "一种通过改进多模态对齐来提升视觉语言模型鲁棒性的知识蒸馏框架。",
+      "llm_tldr": "一种通过改进多模态对齐来提升视觉语言模型鲁棒性的知识蒸馏框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.14746v1",
+      "source": "arxiv",
+      "title": "Disentangle-then-Refine: LLM-Guided Decoupling and Structure-Aware Refinement for Graph Contrastive Learning",
+      "abstract": "Conventional Graph Contrastive Learning (GCL) on Text-Attributed Graphs (TAGs) relies on blind stochastic augmentations, inadvertently entangling task-relevant signals with noise. We propose SDM-SCR, a robust framework anchored in Approximate Orthogonal Decomposition. First, the Semantic Decoupling Module (SDM) leverages the instruction-following capability of Large Language Models (LLMs) to actively parse raw attributes into asymmetric, task-oriented signal and noise views. This shifts the paradigm from random perturbation to semantic-aware disentanglement. Subsequently, Semantic Consistency Regularization (SCR) exploits the spectral observation that semantic signals are topologically smooth while residual noise is high-frequency. SCR functions as a selective spectral filter, enforcing consistency only on the signal subspace to eliminate LLM hallucinations without over-smoothing. This ``Disentangle-then-Refine'' mechanism ensures rigorous signal purification. Extensive experiments demonstrate that SDM-SCR achieves SOTA performance in accuracy and efficiency.",
+      "authors": [
+        "Zhaoxing Li",
+        "Hai-Feng Zhang",
+        "Xiaoming Zhang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-04-16T07:57:11+00:00",
+      "link": "https://arxiv.org/pdf/2604.14746v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "LLM-guided decoupling of task-oriented signal and noise views",
+      "llm_evidence_cn": "大模型引导的任务导向信号与噪声视图解耦",
+      "llm_evidence": "大模型引导的任务导向信号与噪声视图解耦",
+      "canonical_evidence": "大模型引导的任务导向信号与噪声视图解耦",
+      "llm_tldr_en": "Leverages LLMs to disentangle task-relevant signals from noise in graph contrastive learning.",
+      "llm_tldr_cn": "利用大语言模型在图对比学习中将任务相关信号与噪声进行语义解耦。",
+      "llm_tldr": "利用大语言模型在图对比学习中将任务相关信号与噪声进行语义解耦。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
