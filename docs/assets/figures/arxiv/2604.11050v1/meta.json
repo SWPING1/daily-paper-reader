@@ -1,0 +1,54 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-001.webp",
+      "caption": "Figure 6: Four-layer decomposition as grouped bar chart. Per-model Spearman ρ for the four isolating contrasts of Figure 5 and Section 4.3, shown as grouped bars for direct layer-by-layer comparison between Mistral 7B Instruct and Llama 3.1 8B Instruct. Layers 1 (method, A vs C), 2 (sub-parameters, B vs C), and 3 (precision, C vs D) are the three clean isolating contrasts; layer 4 (conflated A vs D) is shown in a distinct color to indicate that it is a mixture rather than an estimator. The layer-2 (sub-parameter) bars are the lowest for both models and nearly identical (ρ = 0.019 vs 0.033), establishing sub-parameter sensitivity as the largest robust source of disagreement within generation extraction. The layer-3 (precision) bars show a factorof-~2.5 gap between the two models (0.215 vs 0.527), establishing that quantization effects on emotion geometry are model-dependent. The layer-4 (conflated) bars distort in opposite directions relative to layer 3 — over-reading in Mistral and under-reading in Llama — which is the practical danger that motivates the four-layer decomposition. See Section 4.3 and Figure 5 for the full matrix.",
+      "page": 26,
+      "index": 1,
+      "width": 924,
+      "height": 542
+    },
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-002.webp",
+      "caption": "Figure 4: Tier 1 cross-model RDM alignment by pair group (instruct-only). Boxplot of pairwise RDM Spearman correlations across the C(6,2) = 15 instruct model pairs in our dataset, grouped by the size class and family composition of each pair. Original Tier 1 (n = 3) comprises the three sub-4B-parameter mature pairs — Qwen 2.5 × SmolLM2, Qwen 2.5 × Llama 3.2, SmolLM2 × Llama 3.2 — with mean ρ = 0.825 (range 0.813–0.842). New 7B+ pairs (n = 7) comprises all instruct pairs involving either Mistral 7B v0.3 or Llama 3.1 8B, contributed by this paper’s addition of 7B+ models to the mature set, with mean ρ = 0.838 (range 0.742–0.919). The maximum of this group (ρ = 0.919) is the Llama 3.1 8B × Llama 3.2 3B cross-generation within-family pair, consistent with the family-identity result of Section 3.4. Gemma pairs (n = 5) comprises the pairs between Gemma-3 1B instruct and each of the five mature instruct models, with mean ρ = 0.575 (range 0.527–0.625) — substantially below both mature groups, consistent with Gemma-3’s still-partial recovery from its immature base form (Section 3.3). The overlap between the Original Tier 1 distribution and the New 7B+ distribution shows that adding 7B+ models to the mature set does not pull the distribution upward or downward, and establishes that the universality result of Section 3.1 is not specific to one size range within the mature regime. The horizontal reference line at ρ = 0.7 marks the Tier 1 inclusion threshold; all 10 mature-mature pairs fall above it and all 5 Gemma pairs fall below. Box elements: IQR with median; diamond: group mean; individual points: single pair values.",
+      "page": 15,
+      "index": 2,
+      "width": 924,
+      "height": 828
+    },
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-003.webp",
+      "caption": "Figure 1: Cross-model 21-emotion vector geometry across twelve small language models. 12 × 12 RDM-of-RDMs matrix. Each cell shows the Spearman correlation between the off-diagonal entries of two models’ 21 × 21 cosine RDMs at their respective best layers (Section 2.5). Models are grouped by family with base and instruct variants adjacent. The five mature architectures form a single high-correlation block (ρ = 0.74–0.92 among instruct pairs), and base × instruct pairs within each family are the strongest alignments in the matrix: Mistral 7B v0.3 ρ = 0.985, Qwen 2.5 ρ = 0.975, Llama 3.1 ρ = 0.950, SmolLM2 ρ = 0.922, Llama 3.2 ρ = 0.918. Gemma-3 1B base, with anisotropy 0.997, sits as an isolated noise-floor row (ρ = 0.17–0.25 to all other models) regardless of architectural similarity; its instruct variant recovers to ρ = 0.53–0.63 against the mature block but does not reach the mature-architecture range. See Section 3.1 for substantive interpretation and Section 4.1 for the anisotropy reliability discussion.",
+      "page": 10,
+      "index": 3,
+      "width": 924,
+      "height": 849
+    },
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-004.webp",
+      "caption": "Figure 5: Four-layer decomposition of the apparent comprehension-vs-generation method effect: 4-way pipeline comparison matrix. For each of Mistral 7B Instruct (top row) and Llama 3.1 8B Instruct (bottom row), the 4 × 4 cell grid shows the Spearman correlation between the 21 × 21 cosine RDMs produced by four pipeline configurations: A = fp16 comprehension, B = fp16 generation with Jeong (2026a)’s original sub-parameter configuration, C = fp16 generation with the protocol-matched sub-parameter configuration (paper5_extract_protocol_matched. py, Section 2.3), and D = INT8 generation as originally reported in Jeong (2026a). The four isolating contrasts are read off the off-diagonal cells: A vs C = method effect at fp16 with subparameters matched (Mistral ρ = 0.091, Llama ρ = 0.355); B vs C = sub-parameter sensitivity within fp16 generation (Mistral ρ = 0.019, Llama ρ = 0.033); C vs D = precision effect at protocol-matched generation (Mistral ρ = 0.215, Llama ρ = 0.527); A vs D = the conflated cross-experiment statistic originally reported for these models (Mistral ρ = 0.409, Llama ρ = 0.325). The conflated A–D cell is a mixture of the three preceding effects, not an estimator of any one of them, and in Mistral it over-reads the true precision-only disagreement by a factor of ~1.9 while in Llama it under-reads by a factor of ~0.62. See Section 4.3 for the full development.",
+      "page": 23,
+      "index": 4,
+      "width": 928,
+      "height": 356
+    },
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-005.webp",
+      "caption": "Figure 3: Representation maturity gradient scales with model size (n = 12). Scatter plots showing three of the four size–geometry correlations of Section 3.5, with each of the twelve models plotted as a single point. (a) Anisotropy at best layer vs hidden dimension d_model: Spearman ρ = −0.882, p = 0.0001. (b) RDM standard deviation at best layer vs parameter count (B): ρ = −0.891, p = 0.0001. (c) Best-layer percentage (index as a fraction of total depth) vs parameter count: ρ = −0.484, p = 0.11 (not significant at n = 12). Anisotropy and RDM standard deviation — the \"sharpness\" dimensions of the representation — scale monotonically with size: larger models have less degenerate residual streams and more differentiated emotion structure, with Mistral 7B v0.3 and Llama 3.1 8B at the mature end and Gemma-3 1B base as the clear outlier at anisotropy 0.997. Best-layer percentage, by contrast, clusters within families (Qwen ~54%, Llama 3.2 and 3.1 ~37–39%, Mistral 7B ~41%, SmolLM2 ~45–54%, Gemma instruct ~58%) rather than shifting systematically with scale, indicating that location is a family signature while sharpness scales with size. See Section 3.5 for the size-correlation analysis and Section 3.4 for the family-signature interpretation of the best-layer plot.",
+      "page": 17,
+      "index": 5,
+      "width": 927,
+      "height": 721
+    },
+    {
+      "url": "assets/figures/arxiv/2604.11050v1/fig-006.webp",
+      "caption": "Figure 2: Behavioral–representational dissociation: Qwen 2.5 × Llama 3.2 case study. Side-byside raw 21 × 21 cosine distance RDMs (rows and columns ordered alphabetically by emotion label) for Qwen 2.5 1.5B Instruct (left) and Llama 3.2 3B Instruct (right), each computed at the respective model’s best layer (Qwen layer 15 of 28, anisotropy 0.848; Llama 3.2 layer 11 of 28, anisotropy 0.627). The two models occupy opposite poles of the MTI Compliance facets: Qwen scores 0.80 on the epistemic facet (B) and 0.61 on the procedural facet (D), an overall yielding profile; Llama 3.2 scores 0.20 on B and 0.85 on D, an inverted profile — epistemically firm but procedurally compliant. Despite this behavioral inversion, the two RDMs are visually and statistically near-identical: the upper-triangle Spearman correlation between them is ρ = 0.813 (Pearson r = 0.840), well within the mature-architecture distribution of Section 3.1 (0.742–0.919) and slightly above its mean of 0.834. The behavioral facet differences therefore arise above, not within, the shared emotion representation — a negative result that constrains any account of compliance behavior that would tie it tightly to the low-level affective substrate. Raw cosine distance is used without anisotropy normalization (see Section 4.1 for the rationale). See Section 3.2 for the full analysis.",
+      "page": 12,
+      "index": 6,
+      "width": 923,
+      "height": 438
+    }
+  ]
+}

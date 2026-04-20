@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.16264v1/fig-001.webp",
+      "caption": "Fig. 3: This shows the qualitative comparison on MMBenchVideo dataset. The baseline often generates responses that either mimic the wording in the question or produce hallucinated answers that are not grounded in the video content. In contrast, MOIR produces video-grounded responses by relying on visual evidence from the frames.",
+      "page": 5,
+      "index": 1,
+      "width": 520,
+      "height": 270
+    },
+    {
+      "url": "assets/figures/arxiv/2604.16264v1/fig-002.webp",
+      "caption": "Fig. 2: Overview of MOIR. Modality A and Modality B are first encoded into token sequences T1, T2, T3, T4. The color intensity of each token represents its informativeness. For example, lighter color indicates sparse and less informative tokens and darker colors indicate dense and more informative tokens. MOIR identifies less informative channels within tokens and adaptively routes information from a complementary modality before tokens are processed by the LLM decoder.",
+      "page": 2,
+      "index": 2,
+      "width": 510,
+      "height": 365
+    },
+    {
+      "url": "assets/figures/arxiv/2604.16264v1/fig-003.webp",
+      "caption": "Table 1: This table summarizes performance, representational changes, and modality usage across diverse configurations. Modality indicates the input modalities (I+T: Image + Text, V+A+T: Video + Audio + Text). Place. denotes the layer type to which LoRA is applied: Attn denotes attention layers, MLP denotes feed-forward layers, and Proj. is a projection layers. Acc. reports the official benchmark accuracy from [11, 12, 7]. Rank∆I and Rank∆T denote changes in the effective rank of image/video and text token representation spaces, respectively. MDI denotes Modality Dominance Index [13] and AEI denotes Attention Efficiency Index [13]. Results are shown for standard LoRA fine-tuning (LoRA FT) and LoRA fine-tuning with the proposed Multi-modal Information Router (FT w/ MOIR). Higher Rank ∆I / Rank ∆T indicates stronger information contribution (higher value is better (denoted as ↑)) [17], whereas lower MDI and AEI indicate more balanced attention usage (lower value is better (denoted as ↓). [13]",
+      "page": 4,
+      "index": 3,
+      "width": 842,
+      "height": 577
+    },
+    {
+      "url": "assets/figures/arxiv/2604.16264v1/fig-004.webp",
+      "caption": "Fig. 1: This figure compares between existing VisionLanguage model architecture and MOIR. Red arrows indicate attention flow from the LLM decoder to modality-specific tokens. The width of each arrow represents the average attention magnitude per token. (a) Modality-specific tokens are directly fed into the LLM decoder, without accounting for cross-modal information disparity. As a result, differences in information density across modalities lead to imbalanced attention allocation and modality dominance. (b) MOIR selectively routes complementary information from the other modality to construct information-dense tokens. By reducing token-level information disparity, MOIR enables more balanced attention flow across modalities.",
+      "page": 1,
+      "index": 4,
+      "width": 510,
+      "height": 237
+    }
+  ]
+}

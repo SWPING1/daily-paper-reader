@@ -6,45 +6,49 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-19
-- 运行时间：2026-04-19 19:40:03 UTC
+- 最新运行日期：2026-04-20
+- 运行时间：2026-04-20 20:36:52 UTC
 - 运行状态：成功
-- 本次总论文数：8
+- 本次总论文数：9
 - 精读区：2
-- 速读区：6
+- 速读区：7
 
 ### 今日简报（AI）
-今日聚焦多模态融合与推理，深度解析了从前列腺 MRI 精准分割到多智能体情感识别的 8 篇前沿进展。
-重点推荐 9.0 分的架构无关门控融合技术，以及利用 RAG 增强多模态情感识别的 AffectAgent 框架。
-- 详情：[/202604/19/README](/202604/19/README)
+今日聚焦多模态情感识别与鲁棒语义分割，深度解析 AffectAgent 协作推理等 9 篇前沿成果。
+重点关注多智能体 RAG 架构对情感计算的提升，以及结构化潜投影在处理缺失模态分割中的卓越表现。
+建议深入了解视觉语言模型中的模态主导与推理偏差问题，探索更稳健的跨模态融合方案。
+- 详情：[/202604/20/README](/202604/20/README)
 
 ### 精读区论文标签
-1. [Architecture-Agnostic Modality-Isolated Gated Fusion for Robust Multi-Modal Prostate MRI Segmentation](/202604/19/2604.10702v2-architecture-agnostic-modality-isolated-gated-fusion-for-robust-multi-modal-prostate-mri-segmentation)  
+1. [AffectAgent: Collaborative Multi-Agent Reasoning for Retrieval-Augmented Multimodal Emotion Recognition](/202604/20/2604.12735v1-affectagent-collaborative-multi-agent-reasoning-for-retrieval-augmented-multimodal-emotion-recognition)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：使用模态隔离门控融合在通道损坏或缺失时的鲁棒性
-2. [AffectAgent: Collaborative Multi-Agent Reasoning for Retrieval-Augmented Multimodal Emotion Recognition](/202604/19/2604.12735v1-affectagent-collaborative-multi-agent-reasoning-for-retrieval-augmented-multimodal-emotion-recognition)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：利用检索增强生成处理模态歧义的多模态情感识别
+   evidence：检索增强的多模态情感识别与模态歧义处理
+2. [Robust Multispectral Semantic Segmentation under Missing or Full Modalities via Structured Latent Projection](/202604/20/2604.15856v1-robust-multispectral-semantic-segmentation-under-missing-or-full-modalities-via-structured-latent-projection)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：多光谱语义分割中的缺失模态
 
 ### 速读区论文标签
-1. [Empowering Video Translation using Multimodal Large Language Models](/202604/19/2604.11283v1-empowering-video-translation-using-multimodal-large-language-models)  
+1. [GAViD: A Large-Scale Multimodal Dataset for Context-Aware Group Affect Recognition from Videos](/202604/20/2604.16214v1-gavid-a-large-scale-multimodal-dataset-for-context-aware-group-affect-recognition-from-videos)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：用于上下文感知群体情感识别的多模态数据集
+2. [Do Vision-Language Models Truly Perform Vision Reasoning? A Rigorous Study of the Modality Gap](/202604/20/2604.16256v1-do-vision-language-models-truly-perform-vision-reasoning-a-rigorous-study-of-the-modality-gap)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：通过缺失模态格式隔离模态特定推理
+3. [Information Router for Mitigating Modality Dominance in Vision-Language Models](/202604/20/2604.16264v1-information-router-for-mitigating-modality-dominance-in-vision-language-models)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：丰富输入模态中缺失或模糊的信息
+4. [Shared Emotion Geometry Across Small Language Models: A Cross-Architecture Study of Representation, Behavior, and Methodological Confounds](/202604/20/2604.11050v1-shared-emotion-geometry-across-small-language-models-a-cross-architecture-study-of-representation-behavior-and-methodological-confounds)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：在多模态视频翻译中共同建模情感一致性
-2. [SyncFix: Fixing 3D Reconstructions via Multi-View Synchronization](/202604/19/2604.11797v2-syncfix-fixing-3d-reconstructions-via-multi-view-synchronization)  
+   evidence：情感表示与几何结构的跨架构研究
+5. [Progressively Texture-Aware Diffusion for Contrast-Enhanced Sparse-View CT](/202604/20/2604.11559v1-progressively-texture-aware-diffusion-for-contrast-enhanced-sparse-view-ct)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：跨视图重建和同步扭曲的表示
-3. [MAny: Merge Anything for Multimodal Continual Instruction Tuning](/202604/19/2604.14016v1-many-merge-anything-for-multimodal-continual-instruction-tuning)  
+   evidence：重建模块用于恢复稀疏视图CT中的底层信号
+6. [NeuroLip: An Event-driven Spatiotemporal Learning Framework for Cross-Scene Lip-Motion-based Visual Speaker Recognition](/202604/20/2604.15718v1-neurolip-an-event-driven-spatiotemporal-learning-framework-for-cross-scene-lip-motion-based-visual-speaker-recognition)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：恢复跨模态投影空间中的感知漂移
-4. [The Cost of Language: Centroid Erasure Exposes and Exploits Modal Competition in Multimodal Language Models](/202604/19/2604.14363v1-the-cost-of-language-centroid-erasure-exposes-and-exploits-modal-competition-in-multimodal-language-models)  
+   evidence：在声学线索不可用（模态缺失）时有效的视觉识别
+7. [Joint-Centric Dual Contrastive Alignment with Structure-Preserving and Information-Balanced Regularization](/202604/20/2604.16247v1-joint-centric-dual-contrastive-alignment-with-structure-preserving-and-information-balanced-regularization)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：揭示多模态模型中的模态竞争与不平衡
-5. [Switch-KD: Visual-Switch Knowledge Distillation for Vision-Language Models](/202604/19/2604.14629v1-switch-kd-visual-switch-knowledge-distillation-for-vision-language-models)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：解决不一致的多模态知识迁移
-6. [Disentangle-then-Refine: LLM-Guided Decoupling and Structure-Aware Refinement for Graph Contrastive Learning](/202604/19/2604.14746v1-disentangle-then-refine-llm-guided-decoupling-and-structure-aware-refinement-for-graph-contrastive-learning)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：大模型引导的任务导向信号与噪声视图解耦
+   evidence：严重维度不平衡下的多模态对齐
 
 
 <div class="dpr-home-promo-card">
