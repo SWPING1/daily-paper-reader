@@ -1,0 +1,796 @@
+Title: Hyperbolic Enhanced Representation Learning for Incomplete Multi-view Clustering
+
+URL Source: https://arxiv.org/pdf/2604.16959v1
+
+Published Time: Tue, 21 Apr 2026 00:42:09 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+> JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+
+# Hyperbolic Enhanced Representation Learning for Incomplete Multi-view Clustering 
+
+Tianyi Chen †, Haobo Wang †, Kai Tang, Gengyu Lyu, Tianlei Hu, Gang Chen, Hong Ma ∗, Meixiang Xiang ∗
+
+Abstract —Incomplete Multi-View Clustering (IMVC) aims to uncover latent cluster structures from partially observed multi-modal data, yet existing methods are predominantly developed in Euclidean space. Such flat geometry is often inadequate for modeling the hierarchical semantics of real-world data, especially under view incompleteness. As a result, learned representations tend to suffer from geometric mismatch and semantic blurring, where samples drift toward spatially close but semantically different neighbors, thereby degrading clustering discrimination and missing-view recovery. To address this limitation, we pro-pose HERL, a Hyperbolic Enhanced Representation Learning framework for IMVC, which constructs a latent space in the Poincar’e ball. Specifically, HERL adopts a Euclidean affinity-guided contrastive backbone to learn cross-view representations and provide a basis for missing-view completion. Building upon this, we project features onto a constrained hyperbolic manifold and design a dual-constraint instance-level geometric alignment mechanism, which combines angular alignment to preserve semantic identity with distance-based anchoring to encode hi-erarchical compactness and refine structural relations. Further-more, we introduce a hyperbolic prototype head to align cross-view hierarchy-aware prototype distributions, thereby mitigating structural drift and enforcing prototype-level semantic consis-tency. Through synergy between local geometric refinement and structural regularization, HERL enhances the discriminability, compactness, and recovery reliability of incomplete multi-view representations, leading to sharper cluster boundaries and more faithful imputation under missing data. Extensive experiments on four benchmark datasets demonstrate that HERL consistently outperforms state-of-the-art methods across a wide range of missing rates. Additional analyses and ablation studies verify that hyperbolic geometry provides a suitable inductive bias for capturing fine-grained semantic relations and latent hierarchies in incomplete multi-view clustering. 
+
+Index Terms —Incomplete multi-view clustering, Hyperbolic representation learning, Contrastive learning. 
+
+I. I NTRODUCTION 
+
+Multi-view data are ubiquitous in real-world scenarios, where objects are described by heterogeneous modalities that 
+
+Tianyi Chen and Haobo Wang contributed equally to this work. Tianyi Chen and Haobo Wang is with the School of Software Technology, Zhejiang University, Zhejiang 310027, China (e-mail: tiannychen@zju.edu.cn; wanghaobo@zju.edu.cn). Kai Tang, Tianlei Hu, Gang Chen are with the College of Computer Science and Technology, Zhejiang University, Zhejiang 310027, China (e-mail: kai.t@zju.edu.cn; htl@zju.edu.cn; cg@zju.edu.cn). Gengyu Lyu is with the Beijing Key Laboratory of Traffic Data Analysis and Mining, Beijing Jiaotong University, Beijing 100044, China, and also with the School of Computer and Information Technology, Beijing Jiaotong University, Beijing 100044, China (e-mail: lyugengyu@gmail.com). Hong Ma and Meixiang Xiang is with the School of Medicine, Zhe-jiang University, Zhejiang 310027, China (e-mail: hong ma@zju.edu.cn; xiangmx@zju.edu.cn). Corresponding author: Hong Ma and Meixiang Xiang (e-mail: hong ma@zju.edu.cn; xiangmx@zju.edu.cn). Class “AS” 
+
+Multi-view Data Euclidean Space 
+
+Hyperbolic Space            
+
+> View1
+> View2
+> Class “stripes”
+> Class “ShortHair” Class “LongHair”
+> Class “BS” Class “ AC” Class “ MC”
+> Hierarchical
+> Structure
+> desc.... desc.... desc.... desc.... desc.... desc....
+> ....
+> .... ....
+> .... .... ....
+> .... .... ....
+
+Fig. 1: Illustration of hierarchical structures in multi-view data and their geometric representations. Euclidean space provides a flat geometry that struggles to preserve hierarchical semantic relations. As an enhancement, hyperbolic space leverages its exponential volume to accommodate hierarchies, capturing fine-grained semantic distances. theoretically provide complementary information for uncover-ing latent cluster structures (i.e., Multi-view Clustering) [1]. In practice, however, the ideal assumption of view completeness rarely holds. Due to inevitable factors such as sensor failures in autonomous driving, privacy constraints in medical diagnosis, or varying acquisition costs in multimedia analysis, data are often partially observed [2]. This gives rise to Incomplete Multi-View Clustering (IMVC), a task that addresses the dual challenge of deriving discriminative cluster structures while maintaining robustness against incompleteness by maximizing the utility of fragmentary observations [3]–[6]. To this end, a large body of recent work formulates IMVC from a representation learning perspective, where contrastive learning has emerged as a central paradigm for enforcing cross-view semantic consistency. Some approaches [7], [8] focus on refining instance-level contrastive relations to mit-igate the influence of false negative pairs, while some other methods [9], [10] further introduce category- or prototype-level contrastive objectives to promote semantically coherent clustering structures across views. Whether addressing missing data via explicit imputation [11] or learning view-invariant rep-resentations in an imputation-free manner [12], these methods converge on a common aim: learning discriminative represen-tations from incomplete data to facilitate more accurate and robust downstream clustering. Despite their prevalence, existing IMVC methods predom-inantly operate within Euclidean space, a setting we argue  
+
+> arXiv:2604.16959v1 [cs.LG] 18 Apr 2026 JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 2
+
+is geometrically suboptimal, particularly when distinctively modeling intrinsic structures from incomplete data. The flat geometry of Euclidean space lacks the capacity to accom-modate the hierarchical semantic structures (e.g., fine-grained sub-categories) from the limited available complete samples, as shown in Fig. 1. This geometric mismatch limits the representation quality: unable to discriminatively model latent hierarchies from the insufficient samples, the model struggles to differentiate between semantically similar clusters. Conse-quently, the boundaries between distinct yet related concepts become semantically blurred, obscuring the distinctiveness required for clustering. Furthermore, the absence of hierar-chical constraints renders data recovery inherently ambiguous, causing representations to drift towards spatially proximal but semantically distinct neighbors. To address these geometry limitations, we propose a Hyper-bolic Enhanced Representation Learning framework for IMVC (HERL ). Our key insight is that by constructing representa-tions with explicit hierarchical structures, we can simultane-ously enhance discrimination and constrain the recovery of missing data. Firstly, we employ Euclidean Affinity-Guided Contrastive Learning as the backbone to extract foundational representations and provide a preliminary basis for data im-putation. Secondly, we project these embeddings onto a con-strained Poincar´ e ball by applying feature clipping followed by the exponential map. Within this non-Euclidean space, we implement Hyperbolic Instance-level Geometric Align-ment, which explicitly optimizes both angular and distance-based alignment to model intricate feature relationships and capture fine-grained hierarchies. Thirdly, to enforce global semantic structure, we design a hyperbolic prototype head that transforms embeddings into hierarchy-aware prototype distributions. This leverages hyperbolic geometry to enhance cross-view prototype-level semantic consistency and mitigate global structural drift. By unifying these objectives, HERL dis-entangles fine-grained semantic correlations to sharpen cluster boundaries and imposes geometric constraints to rectify the data recovery, yielding robust representation learning even under severe incompleteness. Extensive experiments on four benchmark datasets demonstrate that HERL consistently out-performs state-of-the-art approaches, with particularly notable accuracy improvements of 6.84% on Reuters at a missing rate of 0.3 and 4.07% on HandWritten at a missing rate of 0.1. II. R ELATED WORK 
+
+A. Incomplete Multi-view Clustering 
+
+To cope with missing views, deep IMVC methods ex-ploit representation learning at different levels to achieve robust clustering. Early works such as COMPLETER [13] maximize cross-view mutual information to encourage con-sistent representations and enable view prediction. With the rise of contrastive learning, methods like DCP [14] combine instance-level contrastive objectives with clustering. However, as instance-wise learning suffers from false negative pairs, SURE [7] and DIVIDE [8] introduce threshold-based or soft targets to improve robustness. Beyond sample-level alignment, recent studies explore prototype-level modeling for reliable semantics. ProImp [11] and CPSPAN [10] associate sam-ples with class prototypes, enabling joint learning and stable imputation. Additionally, MVP [15] establishes inter-view correspondences in the VAE latent space. Other works bypass explicit imputation, such as ICMVC [16] (using GCN) and I2MVC [12] (using distillation). Despite their effectiveness, most approaches are formulated in Euclidean space, potentially suboptimal for complex hierarchical structures. 
+
+B. Hyperbolic Learning 
+
+Hyperbolic geometry has emerged as a powerful paradigm for representation learning, as its exponential volume growth naturally accommodates hierarchical structures where Eu-clidean spaces suffer from distortion [17]. Initial works fo-cused on embedding symbolic data like graphs and words [18]. Recently, this paradigm has been successfully extended to computer vision, demonstrating superior capability in captur-ing latent semantic hierarchies for image embeddings [19], [20] and contrastive learning [21]. Further studies broaden its use in specific tasks such as semantic segmentation [22], action understanding [23], and weakly supervised learning [24], [25], underscoring its efficacy as a strong structural inductive bias. In MVC, pioneering works like MHCN [26] and CMHHC [27] integrate hyperbolic geometry but are restricted to complete views and instance-level alignment, overlooking data incom-pleteness and global consistency. Conversely, HERL is specif-ically tailored for IMVC, synergizing instance- and prototype-level constraints to ensure hierarchy-aware learning even with missing views. III. P RELIMINARIES 
+
+A. Affinity-Guided Contrastive Objective 
+
+Standard contrastive learning treats all non-anchors as negatives, inevitably repelling semantically similar instances (the False Negative Problem ). To mitigate this, we adopt an affinity-guided paradigm [8]. Instead of rigid binary labels, we utilize an affinity matrix G to provide soft supervision. Formally, the loss is defined as: 
+
+Lcon (U, V; G; S) = 
+
+− 1
+
+N
+
+> N
+
+X
+
+> i=1
+> N
+
+X
+
+> j=1
+
+Gij log exp( S(ui, vj )/τ )
+
+PNl=1 exp( S(ui, vl)/τ ) , (1) where S(·, ·) denotes the similarity metric (e.g., cosine simi-larity or hyperbolic distance) and τ is the temperature. This objective ensures representations respect the intrinsic data topology, pulling together semantically related samples even if they are not explicitly defined as anchor pairs. 
+
+B. Hyperbolic Geometry 
+
+Hyperbolic space Hn is a non-Euclidean Riemannian man-ifold characterized by constant negative curvature. A key property of this space is that its volume grows exponentially with the radius, making it intrinsically suitable for modeling hierarchical and tree-structured data where node capacity expands exponentially with depth [28]. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3
+
+In this work, we represent hyperbolic space using the Poincar´ e ball model [17], which has been widely adopted in hyperbolic representation learning [25]. The n-dimensional Poincar´ e ball is defined as Dnc = {a ∈ Rn | c∥a∥2 < 1},where c > 0 is a hyperparameter that implies the curvature 
+
+K = −c. The associated Riemannian metric takes the form 
+
+GD = λ2 
+
+> c
+
+GE, with λc(x) = 21−c∥x∥2 denoting the conformal scaling factor and GE being the Euclidean metric tensor. As points approach the boundary of the ball, the scaling factor increases rapidly, leading to an exponential expansion of distances, enabling hyperbolic space to faithfully preserve hierarchical relations. In order to project the feature z from Euclidean space En to hyperbolic space Hn, we leverage the bijective exponential map at the origin with curvature c
+
+formulated as: 
+
+exp c
+
+> o
+
+(z) = tanh  √c∥z∥ z
+
+√c∥z∥ . (2) For the movement of points within the manifold, we utilize the M¨ obius addition [18]: 
+
+x ⊕c y = (1 + 2 c⟨x, y⟩ + c∥y∥2)x + (1 − c∥x∥2)y
+
+1 + 2 c⟨x, y⟩ + c2∥x∥2∥y∥2 . (3) To maintain numerical stability and prevent features from van-ishing near the boundary, we apply a feature clipping operator before the projection [29], defined as C(z) = min 
+
+n
+
+1, cr 
+
+> ∥z∥
+
+o
+
+·z,where cr is the clipping threshold. Consequently, the final hyperbolic mapping process employed in our framework is formally defined as: 
+
+H(z) = exp c
+
+> o
+
+(C(z)) . (4) This constrained projection guarantees that all embeddings strictly reside within the Poincar´ e ball, thereby ensuring valid geodesic computations in subsequent steps. IV. M ETHOD 
+
+A. Backbone Network Construction 
+
+Feature Extraction. As illustrated in Fig. 2, HERL employs a dual-branch Euclidean backbone to extract view-specific student representations Fv and momentum-updated teacher counterparts Fvt . A projection head g(·) yields the predicted features Zv = g(Fv ), establishing the preliminary Euclidean basis. To transcend the limitations of flat geometry and capture intrinsic hierarchies, we project these Euclidean features into the Poincar´ e ball manifold Dnc via two parallel hyperbolic transformations to obtain instance-level and prototype-level embeddings, respectively: 
+
+ˆQH 
+
+> v
+
+= H(Zv ), ˆPH 
+
+> v
+
+= hv (Zv ). (5) Here, the first set of embeddings, ˆQH 
+
+> v
+
+(and its teacher counter-part QH 
+
+> v
+
+= H(Fvt )), denotes the hyperbolic instance features utilized to capture fine-grained sample-to-sample geometric relationships. The second set, ˆPH 
+
+> v
+
+(and PH 
+
+> v
+
+= hv (Fvt )), rep-resents the hierarchy-aware prototype distributions generated by view-specific hyperbolic prototype heads hv (·), aiming to align global semantic structures across views. This dual-mapping strategy ensures the learned representations are both discriminative for instance alignment and robust for global semantic consistency. 
+
+Euclidean Backbone Optimization. To establish a foundation for representation learning, we follow the strategy of DI-VIDE [8] to construct a high-order affinity graph Gv as a soft supervision signal. Specifically, we derive a transition matrix 
+
+Tv based on the pairwise Euclidean distances of teacher embeddings and perform a t-step random walk to capture global semantic relations (see supplemental material for full construction details): 
+
+Gv = ξIN + (1 − ξ)( Tv )t, (6) where IN is the identity matrix and ξ is fixed to 0.5 to balance the diffusion intensity. Adopting the paradigm defined in Eq. 1 and utilizing cosine similarity as the metric S, the overall Euclidean objective is defined as: 
+
+LE 
+
+> con
+
+= X
+
+> v
+
+Lcon (Fv, Fvt ; Gv ) + X 
+
+> v̸=u
+
+Lcon (Zv, Fut ; Gu), (7) which jointly optimizes false-negative-aware view-specific structure and cross-view consistency. 
+
+Data Recovery Mechanism. The projection head learned in the contrastive process can be interpreted as a semantics-preserving translator between views. It is therefore used to recover missing representations in incomplete data. Let M ∈{0, 1}N ×V denote the observation mask, where Miv = 1 
+
+indicates that sample i is observed in view v. The unified completion rule is computed as: 
+
+˜Zv = M·v ⊙ Fvt + ( 1 − M·v ) ⊙ g(Fut ), (8) where ⊙ denotes the element-wise product. Subsequently, the completed representations from all views are concatenated and then processed by the k-means algorithm to produce the final clustering results. While Euclidean geometry provides a preliminary basis for completion, the flat space is inherently limited in dis-tinguishing semantically similar yet distinct representations. Consequently, the recovered features often suffer from seman-tic ambiguity and blurring, as evidenced by Fig. 3(a). This limitation necessitates a geometric upgrade to enforce clearer semantic boundaries for more reliable imputation. 
+
+B. Hyperbolic Enhanced Representation Learning 
+
+To address the geometric limitations of Euclidean space and further exploit intrinsic multi-level semantics, we intro-duce hyperbolic representation learning as a vital enhance-ment through two complementary components: an Hyperbolic Instance-level Geometric Alignment module and a Prototype-level Semantic Consistency module. The former refines embed-dings by optimizing both angular semantics and radial hierar-chy within the Poincar´ e ball, while the latter enforces global structural consistency by aligning hierarchy-aware prototype distributions across views. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4𝐀 𝐀    
+
+> ℍ𝐀 𝐀
+> ℍ
+> 𝐀 𝐀𰠀𝐀
+> ℍ
+> 𝐀 𝐀
+> ℍ𝐀 𝐀
+> ℍ
+> 𝐀 𝐀𱐀𝐀
+> ℍ
+> Instance 1 Instance 2
+> Instance 3
+> Hyperbolic
+> Space
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+𝐀 𝐀 
+
+> Exponential
+> Map
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀       
+
+> ℍ
+> Classifier
+> Exponential
+> Map
+> Hyperbolic
+> Space
+> 𝐀 𝐀
+> ℍ𝐀 𝐀
+> ℍ
+> 𝐀 𝐀𴐀𝐀
+> ℍ
+> 𝐀 𝐀
+> ℍ𝐀 𝐀
+> ℍ
+> 𝐀 𝐀
+> ℍ
+> 𝐀 𝐀
+> ℍ
+> P1 P2 P3
+> P1 P2 P3
+> align
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀 
+
+> ℍ
+
+𝐀 𝐀  
+
+> ℍ
+> Prototype 1 Prototype 2
+> Prototype 3
+
+Encoder 𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 MLP 
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+Encoder 𝐀 𝐀 
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+𝐀 𝐀 
+
+> 𝐀
+
+MLP 
+
+> Imputation
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+> 𝐀
+
+𝐀 𝐀 
+
+𝐀 𝐀     
+
+> Euclidean Space
+> 𝐀 𝐀𝐀𰠀
+> 𝐀
+> (a)
+> (c) Prototype-level
+> (b )Instance-level
+> ... ... ...
+> View 1
+> View 2
+
+Fig. 2: Overview of the HERL framework. (a) Euclidean Backbone establishes basic representations to capture cross-view consistency while preserving view-specific information in flat space. (b) Hyperbolic Instance-level Geometric Alignment projects features onto the Poincar´ e ball to capture fine-grained hierarchies via angular consistency and distance-based anchoring. (c) Hyperbolic Prototype-level Semantic Consistency employs hyperbolic prototype heads to align features with hierarchy-aware prototype distributions. 
+
+1) Hyperbolic Instance-level Geometric Alignment: This component serves as a fine-grained geometric representation refiner within the Poincar´ e ball, modeling sample-to-sample relational relationships to disentangle subtle semantic distinc-tions compressed in flat geometry. We achieve this by optimiz-ing two complementary objectives: Angular Alignment and 
+
+Distance-based Anchoring .
+
+Angular Alignment: Given the hyperbolic representations 
+
+ˆQH 
+
+> v
+
+and QH 
+
+> v
+
+(derived in Eq. (5)), we first prioritize angular alignment. Exploiting the conformal property of the Poincar´ eball, where angles remain consistent with Euclidean geometry, we define the angular similarity as: Sa(a, b) = a·b 
+
+> ∥a∥ ∥ b∥
+
+. Since this directional metric shares geometric consistency with the Euclidean backbone, we can effectively utilize the Euclidean affinity graph Gu as reliable semantic guidance: 
+
+LH 
+
+> ang
+
+= X 
+
+> v̸=u
+
+Lcon 
+
+ ˆQH 
+
+> v
+
+, QH 
+
+> u
+
+; Gu; Sa( ˆQH 
+
+> v
+
+, QH 
+
+> u
+
+)
+
+
+
+. (9) 
+
+Geometric Insight: This objective functions as a semantic stabilizer . By strictly aligning the limited available complete views, it partitions the Poincar´ e ball into distinct semantic cones radiating from the origin. This benefits both cluster-ing and recovery: for representation learning, it ensures that instances are robustly separated by category direction; for data recovery, it constrains the completed views to fall within these correct semantic sectors. Even if the imputed features contain noise, this angular constraint prevents catastrophic category shifts, ensuring the recovered data serves the downstream clustering task effectively. 
+
+Distance-based Anchoring: Second, to capture the intrinsic data topology, we incorporate distance-based anchoring. We define the distance similarity as Sd(a, b) = −D H(a, b), where the hyperbolic distance DH is computed as: 
+
+DH(a, b) = 2
+
+√c arctanh  √c ∥ − a ⊕c b∥ . (10) Unlike angular alignment, hyperbolic distance encodes unique norm-based structural information that is not fully captured by the flat affinity graph. Therefore, to avoid imposing mis-matched Euclidean structural priors on the curved geometry, we formulate the distance loss as a standard alignment task supervised by the identity matrix I:
+
+LH 
+
+> dis
+
+= X 
+
+> v̸=u
+
+Lcon 
+
+ ˆQH 
+
+> v
+
+, QH 
+
+> u
+
+; I; Sd( ˆQH 
+
+> v
+
+, QH 
+
+> u
+
+)
+
+
+
+. (11) 
+
+Geometric Insight: While angular alignment secures the direc-tion, embeddings may still drift along the radial dimension. This distance-based objective acts as a hierarchical anchor .By leveraging complete pairs to learn precise geodesic prox-imities, it “pins” instances to their correct hierarchical depths. This not only cultivates a fine-grained hierarchical structure for clustering (distinguishing general vs. specific concepts) but also eliminates the structural blurriness in imputed data. It ensures that recovered views are not just directionally correct but also structurally compact, reducing the uncertainty often found in missing modalities. The final hyperbolic instance-level objective unifies these perspectives into a coherent framework: 
+
+LH 
+
+> ins
+
+= αLH 
+
+> dis
+
++ (1 − α)LH
+
+> ang
+
+, (12) where α linearly increases with the training epochs. This dy-namic weighting strategy allows the model to prioritize angular JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5
+
+consistency LH 
+
+> ang
+
+to form basic semantic clusters in the early stages, while progressively integrating distance constraints LH
+
+> dis
+
+to refine the hierarchical structure. 
+
+2) Hyperbolic Prototype-level Semantic Consistency: 
+
+While instance-level alignment refines sample-to-sample fea-tures, robust IMVC also requires consistent global semantic structures across views. However, standard prototype-based contrastive learning in Euclidean space often leads to blurred boundaries between semantically proximal categories. To over-come this, we introduce a hyperbolic prototype-oriented mod-ule designed to enforce cross-view alignment of hierarchy-aware prototype distributions. Leveraging the view-specific hyperbolic prototype heads defined in Eq. (5), we obtain the hierarchy-aware distributions 
+
+ˆPH 
+
+> v
+
+and PH 
+
+> v
+
+∈ DN ×Kc , where each entry represents the soft assignment of an instance to one of the K hyperbolic proto-types. Crucially, K governs the semantic granularity and is not strictly bound to the cluster number. Optimal selection is vital: an insufficient K limits hierarchical depth in complex data, whereas an excessive K induces redundancy in simpler tasks. This confirms that our enhancement sharpens discriminative boundaries when the geometric configuration aligns with the true data structure (see Sec. V-D for details). Unlike Euclidean approaches, these distributions inherently encode hierarchical relations among prototype centers. To es-tablish reliable semantic anchors across heterogeneous modal-ities, we minimize the cross-view discrepancy by maximizing the angular similarity ( Sa) between corresponding prototype distributions while pushing apart distinct ones: 
+
+LH
+
+> pro
+
+=− 1
+
+K
+
+X 
+
+> v̸=uK
+
+X
+
+> k=1
+
+log exp( Sa( ˆPH
+
+> v,k
+
+,PH
+
+> u,k
+
+)/τ )
+
+PKi=1 exp( Sa( ˆPH
+
+> v,k
+
+,PH
+
+> u,i
+
+)/τ ). (13) Here, ˆPH 
+
+> v,k
+
+denotes the k-th column of the predicted distribu-tion from view v, and PH 
+
+> u,k
+
+is the corresponding column of the teacher distribution from view u. By modeling fine-grained prototype distributions within the non-Euclidean geometry, this module provides high-level semantic guidance for the learned features. This structural alignment not only distin-guishes instances according to their intrinsic hierarchy but also regularizes the imputation process, ensuring that missing views are recovered within the correct semantic categories without conflation. 
+
+C. Overall Objective 
+
+By integrating the aforementioned loss terms into a unified optimization framework, the overall objective function of the proposed HERL is formulated as follows: 
+
+L = LE 
+
+> con
+
++ LH 
+
+> ins
+
++ βLH
+
+> pro
+
+, (14) where β denotes a trade-off hyperparameter. 
+
+D. Theoretical Justification on Representation Capacity 
+
+In this section, we provide a rigorous theoretical justification for the geometric advantage of the proposed HERL framework. We analyze the representation capacity mismatch between Euclidean and Hyperbolic spaces when modeling data with 
+
+Algorithm 1 Training and Inference of HERL                                        
+
+> Require: Incomplete dataset X, hyperparameters.
+> Ensure: Clustering assignments.
+> 1: while not converged do
+> 2: Euclidean Step: Extract features Zv,Fv,Fvt; construct graph
+> Gv; compute LE
+> con via Eq. (7).
+> 3: Mapping Step: Project to Poincar´ e ball via Eq. (5).
+> 4: Instance-level Step: Compute alignment LH
+> ins combining an-gular and distance constraints (Eqs. 9-12).
+> 5: Prototype-level Step: Compute hierarchy-aware distributions consistency LH
+> pro via Eq. (13).
+> 6: Update: Minimize Ltotal =LE
+> con +LH
+> ins +βLH
+> pro ; update teacher
+> θtvia EMA.
+> 7: end while
+> 8: Inference: Recover missing views via Eq. (8); perform k-means on concatenated features.
+
+latent hierarchical structures (e.g., scene hierarchies in Scene-15, spatial categories in LandUse-21). To rigorously justify this, we model the latent structure of the dataset as a discrete regular tree T with branching factor b ≥ 2 and depth R.
+
+Preliminaries: Metric Embeddings and Distortion. Let T =(V, E ) be the regular tree, where V denotes the set of nodes. The tree metric dT (u, v ) is the shortest path distance between nodes u, v ∈ V . An embedding f : V → (M, d M) maps the tree nodes into a metric manifold M. The distortion D of this embedding measures the worst-case stretching or compressing of distances relative to a global scaling factor s:
+
+s · dT (u, v ) ≤ dM(f (u), f (v)) ≤ D · s · dT (u, v ), ∀u, v ∈ V
+
+(15) If D = 1 , the embedding is isometric (perfectly structure-preserving). A large D implies that semantically distinct nodes are forced to be arbitrarily close, leading to semantic blurring. 
+
+Proposition 1 (Geometric Capacity Mismatch). Embedding 
+
+T into Euclidean space Rn incurs a distortion DE that grows exponentially with depth, whereas embedding into the Poincar´ e ball D2 maintains a constant distortion DH:
+
+DE = Ω( bR/n · R−1) vs. DH ≈ 1 + ϵ. (16) 
+
+Proof. The fundamental disparity stems from the packing bottleneck in Euclidean space versus the natural exponential expansion of hyperbolic space ( sinh r ∼ er ). Here, we provide the detailed proof for this capacity mismatch, divided into the impossibility result for Euclidean space and the existence result for Hyperbolic space. 
+
+Part I: The Euclidean Lower Bound (Impossibility Result). 
+
+Statement: Any embedding of a regular tree T (branching fac-tor b, depth R) into a Euclidean space Rn of fixed dimension 
+
+n incurs a distortion DE that grows exponentially with depth 
+
+R: DE = Ω( bR/n · R−1).
+
+Intuition: The number of nodes in a tree grows exponentially (bR), while the volume of a Euclidean ball grows only polyno-mially with its radius ( rn). To pack exponentially many nodes into a polynomial container, the nodes must be aggressively compressed together, destroying the distance structure and leading to unavoidable semantic blurring. We employ a volumetric packing argument focusing on the leaf nodes of the tree. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6
+
+1) The Demand (Exponential Growth): The number of leaves in T is |L| = bR. In the tree metric, any two dis-tinct leaves u, v are separated by at least dT (u, v ) ≥ 2.For an embedding to preserve distinctness with scaling factor s, we must be able to place disjoint Euclidean balls of radius s centered at each leaf image f (u).Required Volume = |L| · Vol (Bns ) = bR · Cnsn (17) where Cn is the volume coefficient for the n-dimensional unit ball. 2) The Supply (Polynomial Constraint): The maximum distance in the tree is 2R (diameter). With distortion D,the maximum distance in the embedding is bounded by 
+
+2D · s · R. Thus, the entire set of embedded points must fit within a Euclidean ball of radius Rmax ≈ D · s · R.Available Volume = Vol (BnRmax ) = Cn(D·s·R)n (18) 3) The Contradiction: Packing condition requires Total Required Volume ≤ Available Volume: 
+
+bR · Cnsn ≤ Cn(D · s · R)n (19) Dividing by Cnsn and taking the n-th root: 
+
+bR/n ≤ D · R =⇒ D ≥ bR/n 
+
+R (20) 
+
+Conclusion: As the hierarchy depth R increases, the distor-tion D explodes exponentially. This theoretical lower bound explains why Euclidean-based baselines suffer from mode collapse on complex datasets: the space simply lacks the capacity to separate the hierarchical clusters. 
+
+Part II: The Hyperbolic Upper Bound (Existence Result). 
+
+Statement: For any regular tree T , there exists an embedding 
+
+f : T → D2 (2D Poincar´ e disk) such that the distortion DH
+
+is bounded by a small constant ( DH ≈ 1 + ϵ), independent of depth R.
+
+Intuition: In hyperbolic space, the circumference of a circle grows exponentially with its radius ( L ∝ er ). This expansion perfectly matches the exponential growth of tree nodes, al-lowing us to place nodes recursively without running out of room. We use the constructive proof by [30] in the Poincar´ edisk with curvature −c = 1 .1) Construction Strategy (Recursive Placement): We place the root at the origin. We place children of a node 
+
+u (at radius rk) on a circle at radius rk+1 = rk +τ , where 
+
+τ is the radial step size. The angular sector available for a node at level k shrinks exponentially as the tree branches: 
+
+∆θk ≈ 2πbk (21) In Euclidean space, this shrinking angle would force nodes to become arbitrarily close. In Hyperbolic space, we can compensate for this by increasing the radius. 2) The Separation Condition: To maintain isometry, the hyperbolic distance dH between adjacent siblings at level 
+
+k+1 must be maintained at ≈ τ (the edge length). Using the Hyperbolic Law of Cosines for a triangle with two sides rk+1 and angle ∆θk+1 :
+
+cosh( dH) = cosh 2(rk+1 ) − sinh 2(rk+1 ) cos(∆ θk+1 )
+
+(22) Using the approximation cosh( d) ≈ 12 ed, sinh( r) ≈ 
+
+> 12
+
+er , and cos( θ) ≈ 1 − θ2/2 for large r and small θ,this simplifies to: 
+
+dH ≈ 2 ln 
+
+
+
+sinh( rk+1 ) · ∆θk+1 
+
+2
+
+
+
+≈ 2 ln 
+
+ 12 erk+1 · πbk+1 
+
+ (23) 3) The Exponential Cancellation: We set the radius to grow linearly: rk+1 = ( k + 1) τ . Substituting this into the equation: 
+
+dH ≈ 2 ln 
+
+
+
+C · e(k+1) τ
+
+bk+1 
+
+
+
+= 2 ln C ·
+
+ eτ
+
+b
+
+k+1 !
+
+(24) To prevent the distance from collapsing (i.e., to keep dH
+
+constant), we choose the step size τ such that the base of the exponential term is 1: 
+
+eτ
+
+b = 1 = ⇒ τ = ln b (25) 
+
+Conclusion: By setting the radial step τ = ln b, the ex-ponential expansion of the hyperbolic space ( eτ ) perfectly cancels the exponential reduction in angular space ( b−1). Consequently, the pairwise distances between siblings remain constant regardless of the hierarchy depth k. This proves that HERL can disentangle fine-grained categories at arbitrary depths without semantic drift. 
+
+Implication. This geometric alignment empowers HERL to reconstruct latent hierarchical structures even from limited complete views, mitigating the semantic ambiguity caused by data incompleteness. By providing reliable geometric anchors that resist collapse, the framework yields discriminative rep-resentations with sharp boundaries and guides robust cross-view completion, ensuring that recovered data adheres to the underlying taxonomy without overcrowding. V. E XPERIMENTS 
+
+A. Experimental Setup 
+
+Datasets and Evaluation Metrics. We conduct extensive experiments on four widely-used benchmark datasets. As mentioned in the main text, we select datasets that exhibit inherent hierarchical structures to fully leverage the advantages of hyperbolic geometry. 
+
+1) Scene-15 [31]: This dataset consists of 4,485 images distributed across 15 scene categories, where GIST and LBP 
+
+features serve as two views. The categories follow a semantic taxonomy, ranging from broad classifications (e.g., indoor vs. outdoor) to fine-grained scenes (e.g., bedroom, kitchen, forest, mountain), which naturally form a hierarchical structure. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 7
+
+TABLE I: The clustering performance on four multi-view benchmarks with different missing rates. The best and the second-best results are denoted in bold and underline, respectively. 
+
+Datasets Missing rates 0.0 0.1 0.3 0.5 0.7 Metrics ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI Scene-15 COMPLETER 39.28 42.97 22.85 41.69 43.85 24.90 40.00 43.03 23.82 39.16 41.96 22.90 37.62 39.96 22.20 SURE 43.03 42.65 25.15 41.85 44.48 25.72 38.46 41.33 23.47 37.90 40.13 21.82 43.03 43.44 25.91 DSIMVC 29.74 35.44 17.52 30.62 35.72 17.04 31.57 36.49 17.75 30.72 35.64 17.14 29.58 34.68 16.39 DIMVC 37.28 37.49 19.73 34.41 36.43 17.84 34.05 34.97 16.92 30.07 31.86 13.96 29.23 29.87 13.63 ProImp 43.60 45.00 26.80 43.56 44.57 26.70 40.77 43.20 25.05 41.60 42.90 25.30 40.89 41.45 24.06 ICMVC 39.78 37.42 22.48 39.21 36.81 21.99 37.40 35.00 20.58 31.39 27.80 15.02 25.79 24.52 11.70 DCG 36.21 35.43 19.40 37.53 34.65 20.16 38.08 35.57 21.51 32.84 30.68 17.64 33.60 29.92 17.35 DIVIDE 47.51 48.63 30.97 47.40 47.62 30.53 47.02 47.00 30.08 45.42 45.51 29.09 43.34 43.21 26.79 
+
+HERL 50.33 49.22 32.97 49.86 49.18 32.66 49.94 48.48 32.36 48.75 47.14 31.26 45.96 45.20 28.84 
+
+> Reuters
+
+COMPLETER 39.75 22.98 9.82 40.91 24.54 8.26 40.77 23.46 9.41 39.14 23.75 10.95 40.99 21.88 8.88 SURE 49.35 28.94 23.01 46.55 28.61 24.85 43.73 27.96 20.53 51.75 30.90 26.04 47.82 33.12 27.84 DSIMVC 45.44 28.07 23.71 43.72 24.62 20.71 42.42 22.69 19.24 42.02 21.22 18.58 37.47 17.36 14.73 DIMVC 51.28 26.53 20.55 48.88 22.79 17.63 52.28 27.23 21.21 53.62 26.25 20.87 49.44 22.31 18.58 ProImp 56.54 39.35 32.77 53.25 39.10 32.07 47.21 35.26 27.00 51.89 35.54 28.53 47.40 34.64 26.58 ICMVC 48.24 33.70 25.57 49.07 33.57 25.59 48.79 33.94 26.09 47.59 28.43 23.56 51.91 32.29 26.15 DCG 50.54 35.59 27.81 52.63 37.37 29.42 49.02 17.73 19.61 48.53 33.87 27.80 46.83 30.00 24.44 DIVIDE 45.08 30.85 18.21 50.90 34.27 22.94 47.96 32.49 20.36 53.68 37.44 28.14 53.88 36.64 28.10 
+
+HERL 59.12 39.45 33.12 59.82 39.58 34.13 59.12 39.23 33.83 59.14 38.13 33.50 55.87 38.19 32.73 
+
+> LandUse-21
+
+COMPLETER 25.06 31.98 13.34 25.57 32.12 13.49 26.01 31.15 12.35 20.59 26.25 9.92 24.88 28.81 11.61 SURE 25.62 30.51 11.93 27.00 29.79 12.31 24.00 28.76 11.00 26.71 29.21 13.09 25.05 25.88 10.88 DSIMVC 19.19 18.53 5.86 18.00 18.79 5.39 17.94 17.87 5.12 17.56 17.35 4.85 16.83 16.69 4.54 DIMVC 25.81 32.21 12.38 23.34 27.80 9.59 23.39 29.88 10.59 23.61 29.62 10.07 22.68 26.80 9.06 ProImp 23.70 27.90 10.80 24.43 29.22 11.44 24.63 28.45 11.78 24.45 27.43 10.94 23.86 27.05 10.82 ICMVC 27.02 30.86 14.12 26.36 30.52 13.40 26.23 29.64 13.26 24.51 26.40 10.71 21.47 24.33 8.70 DCG 26.43 30.31 13.43 26.81 30.71 13.60 26.12 29.83 12.87 23.52 26.94 10.45 22.97 25.15 9.65 DIVIDE 32.45 39.77 17.97 30.51 35.97 16.10 30.40 35.77 16.17 29.86 35.23 15.73 29.88 34.74 15.55 
+
+HERL 33.12 40.94 18.87 32.23 37.57 17.16 31.74 36.81 16.84 31.20 36.85 16.93 30.98 34.99 16.13 
+
+> HandWritten
+
+COMPLETER 76.75 79.87 65.32 75.36 79.86 68.26 77.97 81.14 70.40 74.54 77.37 64.30 74.52 77.48 67.44 SURE 89.35 79.80 78.22 85.40 75.80 71.35 69.85 61.58 51.91 75.75 62.37 55.44 67.25 59.83 50.43 DSIMVC 82.80 79.25 73.15 78.40 75.26 67.92 73.29 70.37 60.96 66.39 63.49 51.21 53.86 51.15 36.92 DIMVC 66.75 63.29 52.86 77.15 69.18 61.71 59.76 46.81 36.40 79.24 67.97 61.36 56.78 54.13 42.22 ProImp 83.23 81.42 74.55 82.45 80.58 73.40 83.04 80.49 74.48 78.98 74.08 66.47 78.84 73.65 66.68 ICMVC 87.52 78.40 75.11 87.71 79.07 75.63 84.10 74.53 70.20 77.24 68.32 60.16 58.19 50.17 36.60 DCG 85.65 85.41 78.96 82.75 82.63 74.88 82.70 80.54 73.96 80.80 76.21 70.45 79.75 74.00 67.54 DIVIDE 92.78 86.65 84.93 89.58 85.14 82.13 87.80 82.34 78.36 86.53 77.23 73.71 84.41 73.82 69.65 
+
+HERL 94.94 89.53 89.13 93.65 87.36 86.49 92.49 85.80 84.36 89.89 81.74 79.54 86.82 77.29 74.01 
+
+2) Reuters [32]: This is a multilingual news dataset con-taining 18,758 samples. We utilize 10-dimensional English and French textual latent embeddings as two views. The textual data possesses an intrinsic topical hierarchy, where general topics branch into more specific sub-events. 
+
+3) LandUse-21 [33]: This dataset comprises 2,100 satellite images from 21 classes, with PHOG and LBP features as two views. Its hierarchy arises from geospatial semantics, organizing from high-level terrain types to more specific land-use categories. 
+
+4) HandWritten [34]: This dataset contains 2,000 digit im-ages (0–9). We construct a two-view setting using the Fourier coefficients and the Karhunen–Loeve coefficients . Beyond class labels, the dataset also exhibits morphological hierarchies, where digits sharing similar structural patterns form latent tree-like relations in the feature space. We report standard clustering evaluation metrics, including accuracy (ACC), normalized mutual information (NMI), and adjusted Rand index (ARI), to assess clustering quality. 
+
+Baseline Methods. We compare HERL with eight state-of-the-art baselines. These methods cover both standard multi-view clustering and incomplete multi-view clustering settings. 
+
+1) COMPLETER [13]: COMPLETER unifies consistent representation learning and cross-view data recovery within an information-theoretic framework. It learns informative shared representations by maximizing mutual information across views and recovers missing views through dual prediction based on conditional entropy minimization. 
+
+2) SURE [7]: SURE addresses both partially view-unaligned and partially sample-missing problems under aunified contrastive learning framework. It further introduces a noise-robust contrastive loss to alleviate the false negative issue caused by random cross-view negative sampling. 
+
+3) DSIMVC [35]: DSIMVC proposes a safe incomplete multi-view clustering framework that dynamically imputes missing views from learned semantic neighbors. Through a bi-level optimization strategy, it also automatically selects reliable imputed samples for training to reduce the risk of performance degradation caused by semantically inconsistent imputations. 
+
+4) DIMVC [36]: DIMVC is an imputation-free and fusion-free deep IMVC method that learns view-specific represen-tations and clustering structures separately for each view. It exploits multi-view cluster complementarity in a high-dimensional space and adopts an EM-like optimization scheme JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8 
+
+> (a) Imputation results on View 1. (b) Global and local t-SNE visualizations.
+
+Fig. 3: Qualitative analysis on the HandWritten dataset. The top and bottom rows represent Euclidean-based method DIVIDE and our HERL, respectively. (a) Comparison of imputation performance on View 1 under severe incompleteness ( η = 0 .7) to highlight recovery robustness. (b) Global t-SNE visualization (left) and local structural alignment (right) for similar digits 1, 7, and 9 at η = 0 .1.to iteratively refine feature learning and clustering. 
+
+5) ProImp [11]: ProImp introduces a dual-stream frame-work to capture both instance commonality and view versa-tility in incomplete multi-view clustering. By learning view-specific prototypes and sample–prototype relationships via dual attention and dual contrastive learning, it enables missing-view recovery based on prototype information. 
+
+6) ICMVC [16]: ICMVC is an end-to-end incomplete con-trastive multi-view clustering framework with high-confidence guidance. It combines consistency relation transfer, graph convolution, attention-based fusion, and instance-level con-trastive learning to jointly handle missing views, representation learning, and clustering. 
+
+7) DIVIDE [8]: DIVIDE is a robust contrastive multi-view clustering method that employs high-order random walks to identify positive and negative pairs in a more global manner. It further decouples inter-view and intra-view contrastive learn-ing into different embedding spaces, improving robustness against false pairs and missing views. 
+
+8) DCG [37]: DCG is a diffusion-based incomplete multi-view clustering method that performs view recovery through forward diffusion and reverse denoising processes. It further combines instance-level and category-level interactive learning to exploit both consistent and complementary information for robust end-to-end clustering. 
+
+Implementation Details. HERL is implemented in PyTorch on RTX 4090 GPUs using Adam [38]. We set the default batch size to 1024 and learning rate to 2 × 10 −3, adjusting them to 256 and 5 × 10 −4 for HandWritten. Training runs for 500 epochs (200 for Reuters), with the relational affinity graph introduced after epoch 100. Other hyperparameters TABLE II: Ablation study on Reuters with η = 0 .3.                               
+
+> LE
+> con LH
+> ang LH
+> dis LH
+> pro
+> Reuters ACC NMI ARI
+> ✓51.06 34.71 24.05
+> ✓✓52.76 35.12 25.61
+> ✓✓51.01 35.98 25.33
+> ✓✓✓54.24 38.04 27.83
+> ✓✓56.76 37.20 32.22
+> ✓✓✓✓59.12 39.23 33.83
+
+(α, β, c, cr, K ) are detailed in the supplemental material. To simulate incomplete multi-view data, we randomly remove one view from instances based on a missing rate η = m/n , where 
+
+m is the number of incomplete instances and n is the total number of samples. 
+
+B. Main Empirical Results 
+
+HERL achieves SOTA results. As shown in Table I, HERL outperforms all rivals by a substantial margin across all datasets . Specifically, with the missing rate set to 0.3, our method achieves remarkable performance gains on both Reuters and HandWritten datasets, improving upon the best baseline by 6.84% and 4.69% in ACC, 4.21% and 3.46% in NMI, and 6.83% and 6.00% in ARI, respectively. Remark-ably, HERL ( η = 0 .3) achieves results comparable to or even surpassing the complete-view baseline ( η = 0 .0). For instance, on Scene-15, HERL outperforms the baseline in ACC ( 49.94% 
+
+vs. 47.51% ), demonstrating that our hyperbolic strategy not only ensures high-quality geometry-driven recovery but also yields superior representations. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 9 
+
+> (a) Scene-15 (b) HandWritten
+
+Fig. 4: Hyperparameter sensitivity analysis on Scene-15 (a) and HandWritten (b) with η = 0 .3. For each dataset, the left panel visualizes the joint impact of α and β, while the right panel illustrates the performance variations with respect to the number of prototypes. TABLE III: Hyperbolic-aware parameters analysis with η =0.3.                                                               
+
+> ccr Scene-15 HandWritten LandUse-21 ACC NMI ACC NMI ACC NMI 0.01 1.0 49.69 48.34 90.82 84.81 30.88 37.10
+> 1.5 49.94 48.48 92.16 85.31 31.03 36.68 2.0 49.91 48.72 92.49 85.80 31.20 36.87 0.05 1.0 49.25 48.46 90.78 84.69 30.89 36.74 1.5 49.73 48.22 92.05 85.25 30.99 36.98 2.0 49.83 48.75 92.40 85.70 31.30 36.88 0.1 1.0 49.37 48.40 90.74 84.64 31.74 36.81 1.5 49.37 48.40 92.17 85.28 31.33 36.85 2.0 49.57 48.34 91.97 85.09 30.93 36.99
+
+HERL learns more distinguishable representations. To qualitatively validate our hyperbolic enhanced strategy, we compare HERL against the Euclidean baseline DIVIDE on the HandWritten dataset (Fig. 3). Regarding imputation (Fig. 3(a)), we evaluate the models under a challenging missing rate of 0.7 to emphasize their recovery capabilities. The base-line exhibits blurring artifacts indicative of semantic drift, whereas HERL recovers distinct and faithful patterns. This confirms that the hyperbolic structural constraints provide reliable guidance for inferring missing modalities. As for clustering performance (Fig. 3(b), η = 0 .1), HERL achieves sharper class separation. Particularly for similar digits 1, 7, and 9, the Euclidean baseline suffers from feature entanglement, while HERL disentangles these proximal categories. These results verify that the hyperbolic enhancement strategy offers the structural distinctiveness to resolve ambiguity in both data recovery and fine-grained clustering. 
+
+C. Ablation Studies 
+
+Tab. II details ablation results on Reuters ( η = 0 .3) using the Euclidean loss LE 
+
+> con
+
+as the baseline. We applied identical dynamic weighting ( α) across all variants. 
+
+Synergy of Angular and Distance Constraints. Deploying 
+
+LH 
+
+> ang
+
+or LH 
+
+> dis
+
+in isolation yields suboptimal results, occasion-ally degrading performance. This underscores the intrinsic geometric coupling of the Poincar´ e ball: angular alignment establishes directional semantic identity but lacks hierarchical regularization, while distance anchoring captures depth but may struggle with semantic separation without directional guidance. However, their combination (Row 4) achieves sig-nificant improvements, confirming that these objectives are mutually reinforcing—jointly ensuring accurate semantic po-sitioning within the curved geometry. 
+
+Impact of Hyperbolic Prototype Consistency. Incorporat-ing LH 
+
+> pro
+
+delivers the most substantial individual gains (e.g., 
+
++5.70% ACC on Reuters). This indicates that instance-level refinement alone is insufficient. By aligning hierarchy-aware prototype distributions, LH 
+
+> pro
+
+sharpens global cluster bound-aries and reduces semantic ambiguity, acting as a critical regularizer against representation drift. Ultimately, the full HERL framework achieves superior performance, validating the necessity of unifying fine-grained geometric constraints with global structural consistency. 
+
+D. Hyperparameter Sensitivity Analysis 
+
+We investigate the sensitivity of HERL to key hyperparam-eters in Fig. 4 and Tab. III 
+
+Loss Coefficients ( α and β). These coefficients play a pivotal role in balancing the multi-objective optimization framework. Specifically, α regulates the trade-off within the instance-level module between Angular Alignment (semantic direction) and Distance-based Anchoring (hierarchical depth). Simulta-neously, β controls the contribution of the global Prototype-level Semantic Consistency . As illustrated in Fig. 4, HERL achieves stable and superior performance across a broad spec-trum of values. However, extreme settings lead to performance degradation. The experimental results suggest that HERL is robust to these weights provided they are within a reasonable magnitude, avoiding the need for meticulous fine-tuning. 
+
+Hyperbolic-aware Parameters ( c and cr ). We analyze the sensitivity of the manifold curvature c and the boundary clip-ping threshold cr in Tab. III. Curvature c governs the geometric capacity of the hyperbolic space, where larger values induce stronger negative curvature and exponential volume expansion. We observe that the optimal choice of c naturally varies across different datasets. This aligns with our theoretical expectation that different datasets possess distinct intrinsic latent hierar-chical structures (e.g., LandUse-21 implies a deeper hierarchy than HandWritten). Crucially, despite this variation, HERL JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 10 
+
+maintains consistently competitive performance across a wide feasible range. Clipping Threshold cr ensures numerical sta-bility by constraining embeddings within the Poincar´ e ball boundary. Results indicate that the model is largely robust to variations in cr , provided it allows sufficient proximity to the boundary where hyperbolic capacity is maximized. 
+
+Number of Prototypes K. We study the effect of the prototype number K in Fig. 4, which controls the struc-tural guidance induced by the hyperbolic space. The opti-mal K differs across datasets (e.g., K = 30 for Scene-15 and K = 10 for HandWritten), reflecting their distinct semantic structures. In general, performance improves as K
+
+better matches the underlying category distribution, leading to stronger semantic separability. However, overly large K
+
+(as in HandWritten) causes performance degradation due to semantic over-segmentation, where coherent clusters are split into redundant prototypes. This suggests that the benefit of hyperbolic enhancement depends on whether the prototype configuration is aligned with the true data structure. VI. C ONCLUSION 
+
+In this paper, we proposed HERL, a hyperbolic enhanced representation learning framework for incomplete multi-view clustering, to explicitly address the geometric mismatch and semantic blurring inherent in existing Euclidean-based IMVC methods. By moving representation learning from flat Euclidean space to the Poincar´ e ball, HERL constructs a structure-aware latent space that is better suited to model-ing the latent hierarchical semantics embedded in incom-plete multi-view data. The proposed framework combines a Euclidean affinity-guided contrastive backbone with a dual-level hyperbolic enhancement strategy, enabling the model to improve both representation discrimination and missing-view recovery in a unified manner. REFERENCES [1] Y. Zhang, J. Cai, Z. Wu, P. Wang, and S. Ng, “Mixture of experts as representation learner for deep multi-view clustering,” in AAAI , 2025, pp. 22 704–22 713. [2] X. Liu, X. Zhu, M. Li, L. Wang, C. Tang, J. Yin, D. Shen, H. Wang, and W. Gao, “Late fusion incomplete multi-view clustering,” IEEE Trans. Pattern Anal. Mach. Intell. , pp. 2410–2423, 2019. [3] S. Liu, J. Zhang, Y. Wen, X. Yang, S. Wang, Y. Zhang, E. Zhu, C. Tang, L. Zhao, and X. Liu, “Sample-level cross-view similarity learning for incomplete multi-view clustering,” in AAAI , 2024, pp. 14 017–14 025. [4] S. Yu, Y. Cheung, S. Wang, X. Liu, and E. Zhu, “Bifurcate then alienate: Incomplete multi-view clustering via coupled distribution learning with linear overhead,” in ICML , 2025. [5] C. Liu, Z. Wu, J. Wen, Y. Xu, and C. Huang, “Localized sparse incomplete multi-view clustering,” IEEE Transactions on Multimedia ,vol. 25, pp. 5539–5551, 2022. [6] H. Wang, M. Yao, Y. Chen, Y. Xu, H. Liu, W. Jia, X. Fu, and Y. Wang, “Manifold-based incomplete multi-view clustering via bi-consistency guidance,” IEEE Transactions on Multimedia , vol. 26, pp. 10 001– 10 014, 2024. [7] M. Yang, Y. Li, P. Hu, J. Bai, J. Lv, and X. Peng, “Robust multi-view clustering with incomplete information,” IEEE Trans. Pattern Anal. Mach. Intell. , pp. 1055–1069, 2023. [8] Y. Lu, Y. Lin, M. Yang, D. Peng, P. Hu, and X. Peng, “Decoupled contrastive multi-view clustering with high-order random walks,” in 
+
+AAAI , 2024, pp. 14 193–14 201. [9] Y. Ding, K. Hotta, C. Gu, A. Li, J. Yu, and C. Zhang, “Learning to discriminate while contrasting: Combating false negative pairs with coupled contrastive learning for incomplete multi-view clustering,” IEEE Trans. Knowl. Data Eng. , pp. 6046–6060, 2025. [10] J. Jin, S. Wang, Z. Dong, X. Liu, and E. Zhu, “Deep incomplete multi-view clustering with cross-view partial sample and prototype alignment,” in CVPR , 2023, pp. 11 600–11 609. [11] H. Li, Y. Li, M. Yang, P. Hu, D. Peng, and X. Peng, “Incomplete multi-view clustering via prototype-based imputation,” in IJCAI , 2023, pp. 3911–3919. [12] B. Wu, W. Du, J. Wang, and G. Yu, “Imputation-free incomplete multi-view clustering via knowledge distillation,” in IJCAI , 2025, pp. 6570– 6578. [13] Y. Lin, Y. Gou, Z. Liu, B. Li, J. Lv, and X. Peng, “COMPLETER: incomplete multi-view clustering via contrastive prediction,” in CVPR ,2021, pp. 11 174–11 183. [14] Y. Lin, Y. Gou, X. Liu, J. Bai, J. Lv, and X. Peng, “Dual contrastive prediction for incomplete multi-view representation learning,” IEEE Trans. Pattern Anal. Mach. Intell. , pp. 4447–4461, 2023. [15] X. Gao and J. Pu, “Deep incomplete multi-view learning via cyclic permutation of vaes,” in ICLR , 2025. [16] G. Chao, Y. Jiang, and D. Chu, “Incomplete contrastive multi-view clustering with high-confidence guiding,” in AAAI , 2024, pp. 11 221– 11 229. [17] M. Nickel and D. Kiela, “Poincar´ e embeddings for learning hierarchical representations,” in NeurIPS , 2017, pp. 6338–6347. [18] O. Ganea, G. B´ ecigneul, and T. Hofmann, “Hyperbolic neural networks,” in NeurIPS , 2018, pp. 5350–5360. [19] V. Khrulkov, L. Mirvakhabova, E. Ustinova, I. V. Oseledets, and V. S. Lempitsky, “Hyperbolic image embeddings,” in CVPR , 2020, pp. 6417– 6427. [20] A. Ermolov, L. Mirvakhabova, V. Khrulkov, N. Sebe, and I. V. Oseledets, “Hyperbolic vision transformers: Combining improvements in metric learning,” in CVPR , 2022, pp. 7399–7409. [21] S. Ge, S. Mishra, S. Kornblith, C. Li, and D. Jacobs, “Hyperbolic contrastive learning for visual representations beyond objects,” in CVPR ,2023, pp. 6840–6849. [22] M. G. Atigh, J. Schoep, E. Acar, N. van Noord, and P. Mettes, “Hyperbolic image segmentation,” in CVPR , 2022, pp. 4443–4452. [23] L. Franco, P. Mandica, B. Munjal, and F. Galasso, “Hyperbolic self-paced learning for self-supervised skeleton-based action representa-tions,” in ICLR , 2023. [24] J. Leng, Z. Wu, M. Tan, Y. Liu, J. Gan, H. Chen, and X. Gao, “Beyond euclidean: Dual-space representation learning for weakly supervised video violence detection,” in NeurIPS , 2024. [25] Y. Liu, Z. He, and K. Han, “Hyperbolic category discovery,” in CVPR ,2025, pp. 9891–9900. [26] F. Lin, B. Bai, Y. Guo, H. Chen, Y. Ren, and Z. Xu, “MHCN: A hyperbolic neural network model for multi-view hierarchical clustering,” in of ICCV , 2023, pp. 16 479–16 489. [27] F. Lin, B. Bai, K. Bai, Y. Ren, P. Zhao, and Z. Xu, “Contrastive multi-view hyperbolic hierarchical clustering,” in of IJCAI , 2022, pp. 3250– 3256. [28] N. Monath, M. Zaheer, D. Silva, A. McCallum, and A. Ahmed, “Gradient-based hierarchical clustering using continuous representations of trees in hyperbolic space,” in KDD , 2019, pp. 714–722. [29] Y. Guo, X. Wang, Y. Chen, and S. X. Yu, “Clipped hyperbolic classifiers are super-hyperbolic classifiers,” in CVPR , 2022, pp. 1–10. [30] R. Sarkar, “Low distortion delaunay embedding of trees in hyperbolic plane,” in Graph Drawing , 2011, pp. 355–366. [31] L. Fei-Fei and P. Perona, “A bayesian hierarchical model for learning natural scene categories,” in CVPR , 2005, pp. 524–531. [32] M. Amini, N. Usunier, and C. Goutte, “Learning from multiple partially observed views - an application to multilingual text categorization,” in 
+
+NeurIPS , 2009, pp. 28–36. [33] Y. Yang and S. Newsam, “Bag-of-visual-words and spatial extensions for land-use classification,” in ACM SIGSPATIAL Int. Conf. Adv. Inf. ,2010, pp. 270–279. [34] A. Asuncion and D. Newman, “Uci machine learning repository,” 2007. [35] H. Tang and Y. Liu, “Deep safe incomplete multi-view clustering: Theorem and algorithm,” in ICML , 2022, pp. 21 090–21 110. [36] J. Xu, C. Li, Y. Ren, L. Peng, Y. Mo, X. Shi, and X. Zhu, “Deep incomplete multi-view clustering via mining cluster complementarity,” in AAAI , 2022, pp. 8761–8769. [37] Y. Zhang, Y. Lin, W. Yan, L. Yao, X. Wan, G. Li, C. Zhang, G. Ke, and J. Xu, “Incomplete multi-view clustering via diffusion contrastive generation,” in AAAI , 2025, pp. 22 650–22 658. [38] D. P. Kingma and J. Ba, “Adam: A method for stochastic optimization,” in ICLR , 2015.

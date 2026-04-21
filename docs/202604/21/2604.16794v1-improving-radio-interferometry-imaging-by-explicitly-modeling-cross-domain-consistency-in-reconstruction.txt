@@ -1,0 +1,1004 @@
+Title: Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction
+
+URL Source: https://arxiv.org/pdf/2604.16794v1
+
+Published Time: Tue, 21 Apr 2026 00:30:52 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction 
+
+## Kai Cheng 
+
+The Hong Kong University of Science and Technology Hong Kong, China kai.cheng@connect.ust.hk 
+
+## Ruoqi Wang 
+
+The Hong Kong University of Science and Technology (Guangzhou) Guangzhou, China rwang280@connect.hkust-gz.edu.cn 
+
+## Qiong Luo ∗
+
+The Hong Kong University of Science and Technology Hong Kong, China The Hong Kong University of Science and Technology (Guangzhou) Guangzhou, China luo@ust.hk 
+
+Abstract 
+
+Radio astronomy plays a crucial role in understanding the universe, particularly within the realm of non-thermal astrophysics. Images of celestial objects are derived from the signals (called visibility) measured by radio telescopes. Such imaging results, called dirty im-ages, contain artifacts due to factors such as sparsity and therefore require reconstruction to improve imaging quality. Existing meth-ods typically restrict reconstruction to a unimodal domain, either to the dirty image after imaging or to the sparse visibility prior to imaging. Focusing solely on each unimodal reconstruction results in the loss of complementary in-context information in either the visibility or image domain, leading to an incomplete modeling of mutual dependency and consistency. To address these challenges, we propose CDCRec, a multimodal radio interferometric data recon-struction method that explicitly models cross-domain consistency. We design a hierarchical multi-task and multi-stage framework to enhance the exploration of interplays between domains during reconstruction. Our experimental results demonstrate that CDCRec improves imaging performance through enhanced cross-domain correlation extraction. In particular, our self-supervised comple-mentary modeling strategy is better than current methods at in-terferometric domain translations that rely heavily on recovering dense information from constrained source-domain data. 
+
+CCS Concepts 
+
+• Applied computing → Astronomy .
+
+Keywords 
+
+Multimodal Learning, Radio Interferometry, Data Reconstruction 
+
+1 Introduction 
+
+In radio astronomy, telescopes are deployed to observe the sky by recording radio waves and storing the distribution in the complex form of visibility data, serving as sources for subsequent astronomi-cal studies [ 16 , 19 ]. Specifically, the cross-correlation between pairs of antenna signals is captured by radio interferometers in the fre-quency domain, holding astronomical significance. Compared to the visible spectrum, radio waves are able to penetrate dust and gas due to longer wavelengths, thus providing more comprehensive and insightful information. However, due to technical limitations 
+
+> ∗Qiong Luo is the corresponding author. Artifacts
+> introduced
+> Recon.
+> Task
+
+(a) The  post-imaging reconstruction paradigm. 
+
+(b) The  before-imaging reconstruction paradigm. 
+
+> Imaging
+
+(c) Our multimodal pipeline that models cross-domain consistency.    
+
+> Recon.
+> Task
+> Only Source
+> Domain Incorporated
+> Imaging
+> Sparse Visibility Dirty Image Ground Truth
+> Sparse Visibility Ground Truth Dense Form
+> Dense Form
+> Recon.
+> Complementary Modeling
+> Imaging
+> Ground Truth Sparse Visibility
+
+Figure 1: Comparison of the traditional reconstruction para-digm and our multimodal pipeline. 
+
+of telescopes [ 23 ], observed visibility data in the uv-plane are spec-trally sparse as certain regions cannot be sampled. Additionally, these data are affected by various factors such as cosmic microwave background radiation, galactic emissions, atmospheric disturbances, and receiver interferences [ 25 , 33 ]. Consequently, the dirty images 
+
+reconstructed from the information-incomplete sparse visibility 
+
+data severely hinder scientific research [4, 9]. Researchers have proposed to perform image reconstruction based on dirty images to remove some artifacts and noises [ 10 , 35 ], as shown in Figure 1 (a). Also, recent studies [ 30 , 32 ] indicate that reconstructing visibility in the frequency domain yields im-provements. The process is shown in Figure 1 (b). Fundamentally, each paradigm independently conducts reconstruction within a unimodal domain, hindering the exploration of mutual interactions and consistency between image and visibility. However, effectively establishing complementary modeling to connect both domains is critical for achieving a smooth domain transformation and ob-taining high-fidelity clean images . In this paper, we propose a mul-timodal radio interferometric data reconstruction approach that explicitly maintains cross-domain consistency to enhance imaging results. 
+
+> arXiv:2604.16794v1 [cs.CV] 18 Apr 2026 Kai Cheng, Ruoqi Wang, and Qiong Luo
+
+The first challenge arises from the highly ill-posed nature of reconstructing the image from sparse visibility data. The inherent sparsity inevitably forms an underdetermined system [ 1, 14 ]. Such domain mapping is vulnerable to noise and easily degraded by massive artifacts, undermining its stability. Most existing methods adopt a straightforward yet insufficient target task of reconstruc-tion, directly mapping the sparse visibility to its dense form and anticipating that such reconstructed results can be translated into precise images. However, this approach is prone to inadequate generalization due to the limited information available in sparse visibility. Specifically, insufficient semantic awareness hinders the ability of the network’s convergence to distinguish multiple plau-sible predictions in blank spaces [ 18 , 37 ], making it fall short in addressing such ambiguity. This issue hinders the mode coverage of potential outcomes, thereby restricting the capacity to learn the diversity of the distribution. Relying solely on this straight-forward task of reconstruction is unable to capture the essential semantic information, ultimately propagating the ambiguity into the reconstructed images. The second challenge lies in the modeling of strong dependen-cies between the visibility and image domains. Both the intensity distribution and semantic structures of images are embedded within the frequency domain [ 27 , 29 ]. Recovering key features of images from the underlying information in sparse visibility requires a joint modeling that leverages both domains. Performing unimodal image reconstruction after imaging inevitably confounds the do-main transformation with noise, as unmitigated frequency-domain deficiency caused by sparsity propagates through the transforma-tion [ 7 ]. Specifically, the missing knowledge about blank spaces introduces noise with uncertain patterns that are hard to trace in the image domain, making pattern recognition for removing such noise challenging. Furthermore, reconstructing visibility data before imaging makes the reconstruction and domain transforma-tion separate. The absence of prior knowledge about the mutual dependency between domains renders the reconstruction limited. To address these challenges, we propose CDCRec, a multimodal radio interferometric data reconstruction approach that explicitly models cross-domain consistency through a hierarchical two-stage learning strategy. CDCRec is designed to enhance the coherence between reconstruction and imaging processes, underscoring ex-plicit modeling of dependencies between domains, as illustrated in Figure 1 (c). To strengthen the joint learning of multimodal repre-sentations, we develop two stages that progressively extract highly compressed information and preserve critical information across domains. Compared with previous unimodal methods, CDCRec focuses on cross-domain alignment and representation learning between visibility data and images by explicitly incorporating con-sistency constraints. Building upon the learned priors, our interfer-ometric data reconstruction is effective and produces high-fidelity imaging results. Specifically, we incorporate contrastive learning and complemen-tary masking reconstruction as pretext tasks to explicitly enable the model to learn cross-domain knowledge extraction. Since the problematic behavior of learning the shortcut for averaging plau-sible predictions of distinct samples is caused by the sparsity of visibility, CDCRec penalizes it through the regularization of the contrastive loss and enforces the model to establish proper pairings between visibility data and corresponding images. To make the learned representations more compact, we design an additional pretext task of complementary masking reconstruction to further strengthen the extractions of multimodal dual-domain interplay, thereby enhancing the confidence of the target task of interferomet-ric data reconstruction. To further promote diversity, we propose to apply random masking by performing band limiting to visibility and patchification to the image based on the characteristics of both modalities. Through modeling cross-domain consistency, CDCRec learns multimodal features to address the limitations and improve the effectiveness of interferometric data reconstruction. Overall, our contributions can be summarized as follows: 
+
+• We propose a multimodal radio interferometric data re-construction approach, called CDCRec, explicitly model-ing cross-domain consistency and therefore addressing the challenges of sparse visibility. 
+
+• We propose a hierarchical framework with effective strate-gies, which seamlessly integrates two pretext tasks to en-able multimodal learning from mutually dependent do-mains to replace the previous paradigm of a single-target task with insufficient modeling ability. 
+
+• We empirically show that our CDCRec improves the accu-racy and confidence of imaging after the enhancement of the modeling of cross-domain consistency. Extended exper-imental results show the effectiveness and robustness of our proposed method. 
+
+2 Background and Related Work 2.1 Radio Interferometric Imaging 
+
+In modern astrophysics, the extension of the observed spectral bands toward the electromagnetic spectrum has greatly enriched our understanding of the state and evolutionary history of cos-mic matter. Radio astronomy is able to perform observations at extremely low temperatures, while optical astronomy is primarily limited to high temperatures [ 8, 36 ]. Meanwhile, with long wave-lengths and strong penetration capabilities, radio waves enable the discovery of densely obscured astrophysical environments [ 26 ]. Spatial resolution was a major limiting factor in the early devel-opment of radio astronomy. According to the Rayleigh Criterion [22 ], achieving resolutions comparable to optical telescopes with single-aperture radio telescopes requires extremely large physical apertures. Therefore, Very Long Baseline Interferometry (VLBI) [ 3] is implemented by using separated antenna arrays for spatial frequency sampling. However, the number of baselines remains limited, leading to essentially sparse observations due to the dis-crete samplings in the uv-plane [ 3 , 28 ] and making reconstruction indispensable. According to the van Cittert-Zernike theorem [ 13 , 38 ], the com-plex spatial mutual coherence function measured in the observation plane, namely visibility, is strictly equal to the two-dimensional Fourier transform of the surface brightness distribution function 
+
+𝐼 (𝑙, 𝑚 ) of a distant celestial body, given by: 
+
+𝐼 (𝑙, 𝑚 ) =
+
+∫
+
+> 𝑢
+
+∫
+
+> 𝑣
+
+¯M𝑣 (𝑢, 𝑣 ) 𝑒 𝑗 2𝜋 (𝑢𝑙 +𝑣𝑚 ) 𝑑𝑢 𝑑𝑣, (1) Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction 
+
+where ¯M𝑣 (𝑢, 𝑣 ) denotes the frequency-domain visibility data and 
+
+𝐼 (𝑙, 𝑚 ) denotes the intensity distribution of the sky. 
+
+2.2 Interferometric Data Reconstruction 
+
+Most existing methods restricted reconstruction to a unimodal do-main. On the one hand, some methods performed reconstruction in the spatial domain after imaging. Specifically, the CLEAN algorithm [10 ] iteratively removed the dirty beam from dirty images, suppress-ing coherent interference. Although its assumption of point-like sources [ 9 ] simplified the problem mathematically, it performed poorly on sources with complex structures, resulting in its funda-mental limitation. It focused solely on reconstructing the spatial domain and failed to capture the essential information preserved in the spectral domain. Other methods made efforts to utilize dirty images and convert them into clean images with the help of deep learning-based approaches, which are later demonstrated to be less effective due to the redundant noise before imaging [4, 9]. On the other hand, some methods performed reconstruction before imaging, which are typically limited to the spectral domain. Specifically, Schmidt et al. [23 ] and Wu et al. [34 ] introduced convo-lutional neural networks and sequence models for reconstructing incomplete data, respectively. Wang et al. [30 ] proposed to consider all components in the angular coordinates of visibility data. Wang et al. [32 ] also explored the data augmentation in the spectral domain. In comparison to existing work, our CDCRec proposes the multi-modal modeling of the cross-domain consistency and improves the imaging results by explicitly learning their multimodal interplay and dependency. 
+
+3 Methodology 3.1 Overall Architecture 
+
+The overall framework of the first stage of Self-supervised Comple-mentary Modeling (SCM) in CDCRec is depicted in Figure 2. Sparse visibility M𝑣 ∈ ˜S𝑣 and its corresponding image M𝑖 ∈ S 𝑖 are input to explore their cross-domain consistency. Specifically, M𝑣 can be represented through applying the Fourier Transformation F to M𝑖 
+
+with an under-sampling matrix 𝑫 Λ and noise 𝜖 , thus making the inverse problem ill-posed, which is defined as: 
+
+M𝑣 = 𝑫 ΛF (M 𝑖 ) + 𝜖, (2) where Λ denotes the telescopes’ sampling pattern. Thus, the ideal imaging process expects to perform Inverse Fourier Transformation 
+
+F −1 to dense visibility ¯M𝑣 = F (M 𝑖 ) ∈ ¯S𝑣 without being affected by sparsity. This domain transformation can be expressed as: 
+
+¯S𝑣 F−1
+
+↦−−−→ S 𝑖 . (3) However, radio telescopes can only acquire sparse visibility data, making the real scenario formulated as: 
+
+˜S𝑣 ⊂ ¯S𝑣 F−1
+
+↦−−−→ ˜S𝑖 , (4) 
+
+𝑝 ˜S𝑣 =
+
+∫
+
+> ¯S𝑣
+
+𝑝 Λ
+
+ M𝑣 |𝑥  𝑝 ¯S𝑣 (𝑥 ) 𝑑𝑥, (5) where ˜S𝑣 denotes the domain of sparse visibility, 𝑝 ˜S𝑣 is the repre-sentation of ˜S𝑣 . Thus, there remains a large discrepancy between 
+
+˜S𝑖 and the desired S𝑖 , which can be measured by KL divergence 
+
+𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˜S𝑖 
+
+
+
+. One solution to this problem is to reconstruct sparse visibility into its dense form. As such, the reconstruction quality will have an indispensable effect on the final results. This domain transformation can be formulated as: 
+
+˜S𝑣 
+
+> E𝜃
+
+↦−−−−−−−→ ˆS𝑣 
+
+| {z }
+
+> Visibility Domain Transformation Term
+> F−1
+
+↦−−−→ ˆS𝑖 , (6) where ˆS𝑣 can be viewed as an approximation of ¯S𝑣 and thus the final transformation result ˆS𝑖 is also an approximation of S𝑖 , mak-ing the objective of model E𝜃 the minimization of 𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˆS𝑖 
+
+
+
+.In Equation (6) , we can observe that the reconstruction process is restricted to only the visibility domain. Such a visibility domain transformation term falls short in learning the cross-domain consis-tency, weakening the utilization of dependencies between source and target domains in the subsequent domain transformation. Thus, we propose to first explore the mutual interactions between the vis-ibility and the image. Data utilized in the stage of SCM are sampled from ˜S𝑣 and S𝑖 and formulated as pairs D = M𝑣,𝑘 , M𝑖,𝑘 𝑚 𝑘 =1,where M𝑣,𝑘 ∈ ˜S𝑣 and M𝑖,𝑘 ∈ D 𝑖 = {(M 𝑖 ) ∈ S 𝑖 }. The domain transformation of our CDCRec can be expressed as: 
+
+D𝑖 + ˜S𝑣 𝑝 𝐶𝐷𝐶𝑅𝑒𝑐 𝜃 
+
+↦−−−−−−−→ ˆS𝑣 F−1
+
+↦−−−→ ˆS𝑖 , (7) 
+
+min 𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˆS𝑖 
+
+
+
+, (8) where 𝑝 𝐶𝐷𝐶𝑅𝑒𝑐 𝜃 is the representation of the CDCRec model. Next, we provide essential definitions and introductions of com-ponents in our framework to facilitate subsequent derivations. In the stage of SCM, the visibility encoder E𝑣 and image encoder E𝑖 
+
+take M𝑣 and M𝑖 as input and output encoded features 𝜉 and 𝜂 
+
+in the latent space, respectively, as shown in Figure 2. We design the first pretext task based on contrastive learning to align two modalities in the encoded latent space. We perform complementary masking to 𝜉 and 𝜂 following the principles of the band limiting and image patchification, where the detail is shown in Figure 3. Next, the image predictor F 𝑣 →𝑖 and visibility predictor F 𝑖 →𝑣 predict masked parts of each modality conditioned on their respective visi-ble components of their counterparts. Finally, we merge the visible and predicted parts and input them into visibility decoder D𝑣 and image decoder D𝑖 accordingly, outputing the results of ˆM𝑣 and ˆM𝑖 
+
+and completing the second pretext task of complementary masking reconstruction. In the stage of Interferometric Data Reconstruc-tion (IDR), only the visibility encoder E𝑣 from the stage of SCM is retained and fine-tuned, as shown in Figure 4. Furthermore, we design a reconstruction network based on Multilayer Perceptron (MLP), which takes ˆM𝑣 and 𝜉 as input and outputs the dense form of visibility ˆ¯M𝑣 .Kai Cheng, Ruoqi Wang, and Qiong Luo Random 
+
+Masking 
+
+Complementary 
+
+Random 
+
+Masking 
+
+Input  Feature 
+
+Encoding 
+
+Cross-Domain Correlation Extraction 
+
+Task 1: 
+
+Contrastive Learning 
+
+Task 2: Complementary Masked Reconstruction 
+
+v
+
+i
+
+Image 
+
+Encoder 
+
+i
+
+Visibility 
+
+Encoder 
+
+v
+
+Reconstruction 
+
+Complementary 
+
+Image 
+
+Predictor 
+
+> →
+
+ v i
+
+Visibility 
+
+Predictor 
+
+> →
+
+ i v
+
+Visibility 
+
+Decoder 
+
+v
+
+Image 
+
+Decoder 
+
+i
+
+Merging and Restoring 
+
+i
+
+> ^
+
+v
+
+> ^
+
+Figure 2: Overview of the stage of Self-supervised Complementary Modeling (SCM). The visibility encoder E𝑣 and image encoder E𝑖 take M𝑣 and M𝑖 as input and output encoded features 𝜉 and 𝜂 in the latent space, respectively. The first pretext task helps align the encoded latent space based on contrastive learning. After performing complementary masking to 𝜉 and 𝜂 
+
+following the principles of the band limiting and image patchification, the image predictor F 𝑣 →𝑖 and visibility predictor F 𝑖 →𝑣 
+
+predict the masked parts of each other. Finally, visible and predicted parts are merged and decoded by visibility decoder D𝑣 
+
+and image decoder D𝑖 accordingly to complete the second pretext task of complementary masking reconstruction and output the results of ˆM𝑣 and ˆM𝑖 .…Mask   
+
+> Band Limiting
+> Mask
+> Patchify
+> Complementary
+> Masked Reconstruction
+> Masked Images:
+> Sparse Visibility
+> Image
+> Predict Predict Predict
+
+Figure 3: Illustration of the complementary masking in CD-CRec. The sparse visibility is masked by applying band limit-ing, while the image is first patchified and then masked. The masked parts are depicted in black. Due to sparsity, we adopt random sampling within each band to ensure the balance between the masked and visible information. 
+
+Building upon the preliminary knowledge introduced above, we proceed to derive the overall objective function, given by: 
+
+arg min 
+
+> 𝜃
+
+𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˆS𝑖 
+
+
+
+= arg min 
+
+> 𝜃
+
+−
+
+∫
+
+> M𝑖
+
+𝑝 S𝑖 (M 𝑖 ) log 
+
+𝑝 ˆS𝑖 (M 𝑖 )
+
+𝑝 S𝑖 (M 𝑖 ) 𝑑 M𝑖 
+
+= arg max 
+
+> 𝜃
+
+∫
+
+> M𝑖
+
+𝑝 S𝑖 (M 𝑖 ) log 𝑝 ˆS𝑖 (M 𝑖 )− arg max 
+
+> 𝜃
+
+∫
+
+> M𝑖
+
+𝑝 S𝑖 (M 𝑖 ) log 𝑝 S𝑖 (M 𝑖 ) 𝑑 M𝑖 
+
+. (9) Since the second term in Equation (9) is independent of the param-eters 𝜃 being optimized, it can be disregarded. Thus, Equation (9) simplifies to: 
+
+arg min 
+
+> 𝜃
+
+𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˆS𝑖 
+
+
+
+= arg max 
+
+> 𝜃
+
+∫
+
+> M𝑖
+
+𝑝 S𝑖 (M 𝑖 ) log 𝑝 ˆS𝑖 (M 𝑖 )
+
+= arg max 
+
+> 𝜃
+
+EM𝑖 ∼𝑝 S𝑖 
+
+h
+
+log 𝑝 ˆS𝑖 (M 𝑖 )
+
+i
+
+= arg max 
+
+> 𝜃
+
+log 
+
+> 𝑚
+
+Ö
+
+> 𝑘 =1
+
+F −1 
+
+𝑝 ˆS𝑣 
+
+ ˆM𝑣,𝑘 
+
+ 
+
+.
+
+(10) The distribution of the modeling of CDCRec can be expressed as: 
+
+ˆS𝑣 ∼ 𝑝 ˆS𝑣 = 𝑝 𝐶𝐷𝐶𝑅𝑒𝑐 𝜃 = 𝑝 𝜃, M𝑣 ∼ ˜S𝑣 ,M𝑖 ∼D 𝑖 
+
+
+
+M𝑣 , M𝑖 
+
+. (11) Substituting Equation (11) into Equation (10), we obtain: 
+
+arg min 
+
+> 𝜃
+
+𝐷 𝐾𝐿 
+
+
+
+S𝑖 ∥ ˆS𝑖 
+
+
+
+= arg max 
+
+> 𝜃
+
+𝑝 𝜃, M𝑣 ∼ ˜S𝑣 ,M𝑖 ∼D 𝑖 (M 𝑣 , M𝑖 ). (12) In summary, the objective of enhancing imaging quality is rendered equivalent to the optimization of our proposed CDCRec. In the following, we detail our method in a stage-wise manner. 
+
+3.2 Stage of SCM 
+
+3.2.1 Contrastive Learning. In the stage of SCM, our main purpose is to grasp the cross-domain consistency with the aid of two pretext tasks. Thus, the visibility encoder E𝑣 and image encoder E𝑖 should not only embed the two modalities into latent spaces, but also learn to establish connections between each other in a unified space. The encoding processes can be expressed as: 
+
+𝜉 = E𝑣 (M 𝑣 ) ∼ 𝑝 E𝑣 
+
+(𝜉 |M 𝑣 ) , (13) 
+
+𝜂 = E𝑖 (M 𝑖 ) ∼ 𝑝 E𝑖 
+
+(𝜂 |M 𝑖 ) . (14) Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction Visibility 
+
+> Encoder
+
+v
+
+> Reconstruction Network
+
+v 
+
+> v
+> Sparse Visibility
+> Enabled in
+> Stage IDR:
+> Deactivated in Stage IDR:
+
+## …Visibility       
+
+> Encoder
+> v
+> Image
+> Encoder
+> iModules in Stage SCM Image
+> Decoder
+> i
+> Image
+> Predictor
+> →
+> vi
+> Visibility
+> Predictor
+> →
+> iv
+> Visibility
+> Decoder
+> v
+> Dense
+> Inpainting v
+> ^
+
+Figure 4: Illustration of the stage of Interferometric Data Reconstruction (IDR). 
+
+We perform the mutual information maximization between modali-ties to achieve alignment, defined as I ( 𝜉 ; 𝜂 ). Also, the joint repre-sentation of 𝜉 and 𝜂 is denoted as: 
+
+𝑝 (𝜉, 𝜂 ) = EM𝑣 ,M𝑖 
+
+h
+
+𝑝 E𝑣 
+
+(𝜉 |M 𝑣 ) 𝑝 E𝑖 
+
+(𝜂 |M 𝑖 )
+
+i
+
+. (15) According to Oord et al. [ 20 ], minimizing the information noise-contrastive estimation loss is equivalent to maximizing the lower bound of I ( 𝜉 ; 𝜂 ). Thus, we construct all possible bi-modal pairs within a mini-batch composed of 𝑛 instances, where  𝜉 𝑗 , 𝜂 𝑗 
+
+ ∼
+
+𝑝 (𝜉, 𝜂 ) , 𝑗 = 1, . . . , 𝑛 represent positive pairs while others represent negative pairs. After transforming the density ratio estimation into classification, we minimize the negative lower bound as follows: 
+
+L𝑣 →𝑖 = −E𝑝 E𝑣 ,𝑝 E𝑖 
+
+
+
+log exp 
+
+
+
+∥𝜉 𝑙 ∥𝑇 ∥𝜂 𝑙 ∥
+
+
+
+/𝜏 
+
+Í𝑛 𝑗 =1
+
+
+
+exp 
+
+
+
+∥𝜉 𝑙 ∥𝑇 𝜂 𝑗 
+
+
+
+/𝜏 
+
+
+
+, (16) where 𝜏 denotes the temperature. L𝑣 →𝑖 represents the loss for identifying the positive 𝜂 given 𝜉 , and vice versa for L𝑖 →𝑣 . Thus, the total contrastive loss is defined as: 
+
+L𝑐 = 12
+
+
+
+L𝑣 →𝑖 + L 𝑖 →𝑣 
+
+. (17) 
+
+3.2.2 Complementary Masking Reconstruction. The second pretext task further strengthens the alignment and exploits cross-domain consistency. The masking on two modalities is denoted as: 
+
+𝜉 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 = B( 𝜉 ) ⊙ Ω, (18) 
+
+𝜂 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 = P ( 𝜂 ) ⊙ ( 1 − Ω) , (19) where Ω is the masking matrix, B is the patchifying operation for visibility based on band limiting, and P is the operation for image patchification. Then, the visible parts are utilized to mutually predict the complementary masked parts, which is denoted as: 
+
+ˆ𝜂 𝑚𝑎𝑠𝑘𝑒𝑑 = F 𝑣 →𝑖 (𝜉 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 ) ∼ 𝑝 𝑣 →𝑖 
+
+ˆ𝜂 𝑚𝑎𝑠𝑘𝑒𝑑 𝜉 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 
+
+, (20) 
+
+ˆ𝜉 𝑚𝑎𝑠𝑘𝑒𝑑 = F 𝑖 →𝑣 (𝜂 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 ) ∼ 𝑝 𝑖 →𝑣  ˆ𝜉 𝑚𝑎𝑠𝑘𝑒𝑑 𝜂 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 
+
+, (21) where ˆ𝜉 𝑚𝑎𝑠𝑘𝑒𝑑 and ˆ𝜂 𝑚𝑎𝑠𝑘𝑒𝑑 are the predictions. Then, the combi-nations of visible and predicted masked parts are denoted as: 
+
+ˆ𝜉 = 𝜉 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 ⊙ Ω + ˆ𝜉 𝑚𝑎𝑠𝑘𝑒𝑑 ⊙ ( 1 − Ω) , (22) 
+
+ˆ𝜂 = 𝜂 𝑣𝑖𝑠𝑖𝑏𝑙𝑒 ⊙ ( 1 − Ω) + ˆ𝜂 𝑚𝑎𝑠𝑘𝑒𝑑 ⊙ Ω. (23) Next, D𝑣 and D𝑖 map the latent representations to output the complementary reconstructions ˆM𝑣 and ˆM𝑖 , denoted as: 
+
+ˆM𝑣 = D𝑣  ˆ𝜉 
+
+
+
+∼ 𝑝 D𝑣  ˆM𝑣 ˆ𝜉 
+
+
+
+, (24) 
+
+ˆM𝑖 = D𝑖 ( ˆ𝜂 ) ∼ 𝑝 D𝑖  ˆM𝑖 ˆ𝜂 
+
+
+
+. (25) For the reconstruction of M𝑣 , our objective is to maximize the log-likelihood log 𝑝 (M 𝑣 ). By applying Jensen’s inequality, we can derive the Evidence Lower Bound (ELBO) as follows: 
+
+log 𝑝 (M 𝑣 ) = log 
+
+∫
+
+𝑝 (M 𝑣 , 𝜉 ) 𝑑𝜉 
+
+= log E𝜉 ∼𝑝 E𝑣 
+
+ 𝑝 (M 𝑣 , 𝜉 )
+
+𝑝 E𝑣 (𝜉 |M 𝑣 )
+
+
+
+≥ E𝜉 ∼𝑝 E𝑣 
+
+
+
+log 𝑝 (M 𝑣 , 𝜉 )
+
+𝑝 E𝑣 (𝜉 |M 𝑣 )
+
+
+
+= ELBO 𝑣 
+
+, (26) ELBO 𝑣 = E𝜉 ∼𝑝 E𝑣 
+
+"
+
+log 𝑝 D𝑣 
+
+(M 𝑣 |𝜉 ) 𝑝 (𝜉 )
+
+𝑝 E𝑣 (𝜉 |M 𝑣 )
+
+#
+
+= E𝜉 ∼𝑝 E𝑣 
+
+h
+
+log 𝑝 D𝑣 
+
+(M 𝑣 |𝜉 )
+
+i
+
+− D 𝐾𝐿 
+
+
+
+𝑝 E𝑣 
+
+(𝜉 |M 𝑣 ) 𝑝 (𝜉 )
+
+. (27) Since the latter term in Equation (27) also constrains the latent representations, we choose to streamline the objective and consider only the former term to avoid redundancy and potential conflicts with L𝑐 . Thus, we quantify the reconstruction loss using the 𝐿 2
+
+distance between M𝑣 and ˆM𝑣 :
+
+L𝑟𝑒𝑐 𝑣 = M𝑣 − ˆM𝑣  
+
+> 22
+
+. (28) Similarly, we have the reconstruction loss of the image as follows: 
+
+L𝑟𝑒𝑐 𝑖 = M𝑖 − ˆM𝑖  
+
+> 22
+
+. (29) In summary, the overall loss in the stage of SCM is composed of L𝑟𝑒𝑐 𝑣 , L𝑟𝑒𝑐 𝑖 , and L𝑐 and balanced by a hyperparameter called contrastive loss weight 𝜅 , which is defined as follows: 
+
+L𝑆𝐶𝑀 = L𝑟𝑒𝑐 𝑣 + L 𝑟𝑒𝑐 𝑖 + 𝜅 L𝑐 . (30) 
+
+3.3 Stage of IDR 
+
+In the stage of IDR, the visibility encoder E𝑣 from the stage of SCM is retained and fine-tuned. From Equation (13), we obtain: 
+
+ˆ¯M𝑣 = G𝑣  E𝑣 (M 𝑣 ) , M𝑣 
+
+ ∼ 𝑝 G𝑣  ˆ¯M𝑣 𝜉, M𝑣 
+
+
+
+, (31) where G𝑣 denotes the reconstruction network. Following the work by Jiang et al. [ 15 ], we optimize parameters in the stage of IDR by utilizing losses computed from complex values in the spectral domain: 
+
+L𝐼 𝐷𝑅  ˆ¯M𝑣 , ¯M𝑣 
+
+
+
+= Avg 
+
+
+
+𝜔 ˆ¯M𝑣 − ¯M𝑣 
+
+> 2
+
+
+
+, (32) 
+
+𝜔 =
+
+ 𝜌 
+
+max (𝜌 ) + 1
+
+ ˆ¯M𝑣 − ¯M𝑣 , (33) where Avg denotes the average operation on the uv-plane and 𝜌 
+
+denotes the amplitude. Kai Cheng, Ruoqi Wang, and Qiong Luo MG 
+
+Dirty Image  Reconstruction  Real Sky  Dirty Image  Reconstruction  Real Sky 
+
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> IRSG
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> UTSG
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> EGwB
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+
+Figure 5: Visualization of the reconstruction results of CDCRec compared with the dirty image and real sky, including both visibility and image. In each panel, the upper half of the visibility is the real part, and the lower half is the imaginary part. 
+
+4 Experiments 4.1 Experimental Setup 
+
+Following Wang et al. [ 30 ], we utilize identical telescope config-urations to sample interferometric data using the eht-imaging toolkit [ 5 , 6] from real astronomical observations in different public datasets of distinct galaxy morphologies: Merging Galaxies (MG), In-between Round Smooth Galaxies (IRSG), Unbarred Tight Spiral Galaxies (UTSG), and Edge-on Galaxies with Bulge (EGB). These data are sourced from the DESI Legacy Imaging Surveys [ 11 ], inte-grating contributions from the Beijing-Arizona Sky Survey (BASS) [39 ], the DECam Legacy Survey (DE-CaLS) [ 2], and the Mayall z-band Legacy Survey [ 24 ]. To ensure a fair comparison with previous baseline models, we use the same observation parameters as in the 8-telescope Event Horizon Telescope (EHT). All proposed models and experiments are implemented in PyTorch [ 21 ]. The training and evaluation processes are conducted on a high-performance Linux workstation equipped with an NVIDIA H800 GPU. To quantitatively analyze the quality of reconstructions, we adopt two commonly used metrics, Peak Signal-to-Noise Ratio (PSNR) and Structural Sim-ilarity Index Measure (SSIM), for evaluating the generated images. 
+
+4.2 Overall Performances 
+
+Table 1 presents the quantitative comparison of our proposed CD-CRec against previous methods on four datasets, where the best and second-best results are highlighted in bold and underlined, respec-tively. As shown in the table, our multimodal method consistently outperforms competing approaches across both metrics. Specifi-cally, our CDCRec yields an average improvement of 1.99 over the second-best methods in terms of PSNR. Compared to methods that reconstruct the image in a unimodal setting, the improvement is more significant, reaching 8.28. These performance gains demon-strate that our method suppresses artifacts and noise effectively throughout the reconstruction and imaging process. Regarding structural preservation, improvements in SSIM further demonstrate the enhanced ability of CDCRec to retain details, which are crucial for astronomical observations. Such performance improvements showcase that explicit modeling of cross-domain consistency con-tributes key information for producing more precise images. We further present a visual comparison of the dirty image, recon-struction result generated by CDCRec, and real sky across different datasets and their corresponding visibilities, as shown in Figure 5. In contrast to dirty images that suffer from severe artifacts, CDCRec effectively produces reconstructions that are more consistent with the real sky, better recovering complex details, such as edges and textures. This improvement shows that multimodal features ex-tracted from both domains carry mutual dependencies for domain transformations and preserve crucial features to facilitate a highly intact reconstruction. Overall, the qualitative visualization results demonstrate the effectiveness of enhancing the consistency be-tween visibility and image, providing better support for subsequent scientific studies [31]. To further demonstrate the effectiveness of modeling cross-domain consistency in our CDCRec, we present qualitative per-formance in the stage of SCM across different datasets in Table 2. Sparse visibility inherently contains limited information, while the image is spatially dense and highly informative, making the align-ment of two domains challenging. CDCRec delivers consistently high contrastive accuracy across all datasets, averaging 99.93%. Different loss terms successfully converge to a notably low value, showcasing the effectiveness of our design. These performance results suggest that the emphasis on the multimodal alignment Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction 
+
+Table 1: Performance comparisons on different datasets. The Peak Signal to Noise Ratio (PSNR ↑: higher is better) and Structural Similarity Index Measure (SSIM ↑) are reported. Bold and underlined denote the best and second best results respectively. Method Recon. Modality MG IRSG UTSG EGB 
+
+PSNR ↑ SSIM ↑ PSNR ↑ SSIM ↑ PSNR ↑ SSIM ↑ PSNR ↑ SSIM ↑
+
+DIRTY [12] N/A 11.633 0.715 11.398 0.722 11.890 0.725 11.356 0.708 CLEAN [10] Image (Unimodal) 18.557 0.818 20.913 0.839 17.048 0.806 19.448 0.831 U-Net [35] 18.126 0.818 19.770 0.828 14.877 0.786 19.232 0.822 Radionets [23] 
+
+Visibility (Unimodal) 
+
+19.687 0.836 21.369 0.854 20.828 0.844 20.322 0.836 NF [34] 20.560 0.875 24.099 0.898 21.323 0.880 21.276 0.879 VisRec [32] 22.267 0.883 24.940 0.915 23.805 0.909 23.268 0.901 PolarRec [30] 24.088 0.884 26.234 0.912 25.384 0.904 25.420 0.908 CDCRec( Ours ) Visibility (Multimodal) 26.506 0.914 28.081 0.925 27.497 0.924 26.989 0.917 Dimension 1        
+
+> Dimension 2
+> -40
+> -20
+> 0
+> 20
+> 40
+> -40 -30 -20 -10 10 20 30 40 0
+> w/o SCM
+> w/ SCM
+> w/ SCM
+> ξ
+> ξ
+> η
+
+Figure 6: t-SNE visualization comparison of the key latent encodings with and without our proposed stage of SCM. 
+
+in the stage of SCM is essential, providing a solid foundation for interferometric data reconstruction. 
+
+4.3 Qualitative Analysis 
+
+We visualize key latent encodings 𝜉 and 𝜂 with and without the stage of SCM by utilizing the t-distributed Stochastic Neighbor Embedding (t-SNE) [ 17 ], where strong dependencies are exhibited. With the aid of the stage of SCM, strong connections are established, as it is demonstrated that each pair of the two modalities {𝜉, 𝜂 } is well matched. As visualized in the feature space, 𝜉 obtained without the stage of SCM is significantly more constrained, covering a much smaller area than those generated by our CDCRec. The broader distribution demonstrates that our proposed approach learns more diverse and comprehensive feature patterns, showcasing that ex-plicit modeling of the cross-domain consistency is essential for successfully extracting the dependencies between two domains. 
+
+4.4 Cross-Dataset Generalization 
+
+In this experiment, we employ two distinct configurations in the stage of SCM. The first configuration is cross-dataset generalization. 
+
+Table 2: Qualitative results across different datasets in the stage of SCM. The contrastive accuracy ( 𝐴𝑐𝑐 ↑: higher is bet-ter) and different loss terms ↓ (lower is better) are reported. Metric MG IRSG UTSG EGB                               
+
+> Contrastive Accuracy 𝐴𝑐𝑐 ↑100.00% 99.87% 99.86% 100.00% Contrastive Loss L𝑐 ↓0.0055 0.0246 0.0321 0.0073 Image Recon. Loss L𝑟𝑒𝑐 𝑖 ↓0.0489 0.1081 0.0673 0.0660 Visibility Recon. Loss L𝑟𝑒𝑐 𝑣 ↓0.0166 0.0116 0.0113 0.0118 Total Loss L𝑆𝐶𝑀 ↓0.0658 0.1209 0.0802 0.0782
+
+Table 3: Comparisons of results between cross-dataset gener-alizations and intra-dataset performances. Metric Settings in stage of SCM MG IRSG UTSG EGB                   
+
+> PSNR ↑Cross-Dataset 26.506 28.081 27.497 26.989 Intra-Dataset 26.112 28.194 27.438 26.951 SSIM ↑Cross-Dataset 0.914 0.925 0.924 0.917 Intra-Dataset 0.912 0.926 0.924 0.918
+
+For each specific dataset, we utilize the other three datasets as the training source in the stage of SCM. The second one is intra-dataset configuration. The entire training process is conducted exclusively on each individual dataset, respectively. As shown in Table 3, both configurations yield comparable results across datasets, indicating that the cross-domain consistency learned by our CDCRec demon-strates good generalization capabilities. Even though the cross-domain consistency is learned from other datasets, it is validated to be still effective in facilitating interferometric data reconstruction. 
+
+4.5 Sensitivity and Ablation Experiments 
+
+We investigate the sensitivity of our CDCRec to its hyperparameter 
+
+𝜅 , as shown in Figure 7. Figure 7 (a) to (d) show the distributions of contrastive accuracy 𝐴𝑐𝑐 , contrastive loss L𝑐 , image reconstruction loss L𝑟𝑒𝑐 𝑖 , and visibility reconstruction loss L𝑟𝑒𝑐 𝑣 when 𝜅 changes by orders of magnitude. Our model exhibits stable performance with some increase in losses under extreme conditions, demonstrating its robustness. Furthermore, Figure 7 (e) to (m) demonstrate the bivariate joint kernel density plot of each pair of losses. With the Kai Cheng, Ruoqi Wang, and Qiong Luo Contrastive Accuracy  ↑Acc 
+
+> 100
+> 0
+> 80
+> 60
+> 40
+> 20
+
+Contrastive  Loss Weight  κ        
+
+> 0.005 0.05 0.5 1.0 5.0
+> 99.73% 100.00% 99.86% 99.46% 97.96%
+
+(a)  (b) 
+
+Contrastive  Loss Weight  κ    
+
+> 0.005 0.05 0.5 1.0 5.0
+> 0.08
+> 0.06
+> 0.04
+> 0.02
+> 0.10
+> 0.12
+> 0.14
+> 0.00
+> Contrastive Loss  ↓c
+
+(d) 
+
+Contrastive  Loss Weight  κ    
+
+> 0.005 0.05 0.5 1.0 5.0
+> 0.04
+> 0.03
+> 0.02
+> 0.01
+> 0.05
+> 0.06
+> 0.07
+> 0.00
+> Visibility Recon. Loss  ↓rec v
+
+(c) 
+
+Contrastive  Loss Weight  κ          
+
+> 0.005 0.05 0.5 1.0 5.0
+> Image Recon. Loss  ↓rec i
+> 0.4
+> 0.3
+> 0.2
+> 0.1
+> 0.5
+> 0.6
+> 0.7
+> 0.0
+> Image Recon. Loss  ↓rec i
+> Contrastive Loss ↓c
+> 0.08
+> 0.07
+> 0.06
+> 0.05
+> 0.04
+> 0.02
+> 0.03
+> -0.02 0.00 0.02 0.04 0.06 0.08
+
+(e)  (f) 
+
+(h)  (i)  (j) 
+
+(k)  (l)  (m)        
+
+> Contrastive Loss ↓c
+> Visibility Recon. Loss  ↓rec v
+> 0.0275
+> 0.0250
+> 0.0225
+> 0.0200
+> 0.0175
+> 0.0150
+> 0.0125
+> 0.0100
+> 0.0075 -0.02 0.00 0.02 0.04 0.06 0.08
+> Visibility Recon. Loss  ↓rec v
+> Image Recon. Loss ↓rec i
+
+(g)                                      
+
+> 0.0275
+> 0.0250
+> 0.0225
+> 0.0200
+> 0.0175
+> 0.0150
+> 0.0125
+> 0.0100
+> 0.0075
+> 0.02 0.03 0.04 0.05 0.06 0.08 0.07
+> Image Recon. Loss  ↓rec i
+> Contrastive Loss ↓c
+> -0.05 0.00 0.05 0.10 0.15
+> 0.7
+> 0.6
+> 0.5
+> 0.4
+> 0.3
+> Contrastive Loss ↓c
+> Visibility Recon. Loss  ↓rec v
+> -0.05 0.00 0.05 0.10 0.15
+> 0.07
+> 0.06
+> 0.05
+> 0.04
+> 0.03
+> Visibility Recon. Loss  ↓rec v
+> Image Recon. Loss ↓rec i
+> 0.3 0.4 0.5 0.6 0.7
+> 0.07
+> 0.06
+> 0.05
+> 0.04
+> 0.03
+> Image Recon. Loss  ↓rec i
+> Contrastive Loss ↓c
+> 0.70
+> 0.65
+> 0.60
+> 0.55
+> 0.45
+> 0.50
+> -0.1 0.0 0.1 0.2 0.3 0.4
+> Contrastive Loss ↓c
+> Visibility Recon. Loss  ↓rec v
+> -0.1 0.0 0.1 0.2 0.3 0.4
+> 0.08
+> 0.06
+> 0.05
+> 0.04
+> 0.03
+> 0.07
+> Visibility Recon. Loss  ↓rec v
+> Image Recon. Loss ↓rec i
+> 0.08
+> 0.06
+> 0.05
+> 0.04
+> 0.03
+> 0.07
+> 0.45 0.50 0.55 0.60 0.70 0.65
+> 0.005
+> 0.05
+> 0.005
+> 0.05
+> 0.005
+> 0.05
+> 0.5
+> 1.0
+> 0.5
+> 1.0
+> 0.5
+> 1.0
+> 1.0
+> 5.0
+> 1.0
+> 5.0
+> 1.0
+> 5.0
+
+Figure 7: Illustration of the results of the sensitivity analysis. (a) to (d) show the distributions of contrastive accuracy 𝐴𝑐𝑐 ,contrastive loss L𝑐 , image reconstruction loss L𝑟𝑒𝑐 𝑖 , and visibility reconstruction loss L𝑟𝑒𝑐 𝑣 when hyperparameter contrastive loss weight 𝜅 changes. (e) to further demonstrate the bivariate joint kernel density plot of each pair of losses. Table 4: Ablation study of stages and modules in CDCRec. Modules in the stage of SCM are grouped by pretext tasks to ensure the model remains functional. Model Stage of SCM Stage of IDR MG 
+
+Task 1 Task 2 PSNR ↑ SSIM ↑
+
+I ✗ ✓ ✓ 23.085 0.898 II ✓ ✗ ✓ 23.005 0.901 III ✗ ✗ ✓ 22.274 0.888 IV ✓ ✓ ✗ 12.286 0.719 Full ✓ ✓ ✓ 26.506 0.914 
+
+gradual increase of 𝜅 , L𝑟𝑒𝑐 𝑖 and L𝑟𝑒𝑐 𝑣 exhibit an earlier upward trend and display notable synchronization in their distributional patterns. This phenomenon underscores the strong interplay between the two domains. Meanwhile, L𝑐 receives greater emphasis and thus maintains a stably low level during the early stages. Ultimately, under extreme conditions, L𝑐 exhibits a sudden surge alongside 
+
+L𝑟𝑒𝑐 𝑖 and L𝑟𝑒𝑐 𝑣 , which clearly demonstrates the collaborative effects among the three losses. To systematically evaluate our CDCRec, we categorize its compo-nents based on two stages and pretext tasks, and conduct ablation experiments, as shown in Table 4. The performance of Model I and II demonstrates that removing specific pretext tasks leads to noticeable performance degradation. After removing the entire stage of SCM, Model III fails to explicitly model the cross-domain consistency, making its performance drop to the level of previous unimodal methods. Similarly, Model IV is the variant without the stage of IDR. Its performance decrease suggests that the learned prior knowledge in the stage SCM has to be transferred to the task of interferometric data reconstruction to take effect, highlighting the importance of the stage of IDR. 
+
+5 Conclusion and Future Work 
+
+In this paper, we present a multimodal radio interferometric data reconstruction method that explicitly models cross-domain consis-tency, called CDCRec. It can uncover the underlying dependencies and correlations between the visibility and image domains in a mul-timodal manner with a well-structured hierarchical multi-task and multi-stage framework to tackle the current challenges in interfero-metric data reconstruction: (1) the highly ill-posed nature of recon-structing the image from sparse visibility, (2) the intrinsic difficulty in the modeling of strong dependencies between the sparse visibility and image. Extensive experimental results demonstrate competi-tive performance across multiple datasets, exhibiting robustness and generalization of CDCRec as well. Our work underscores the importance of cross-domain consistency for interferometric data reconstruction and offers foundations and insights for multimodal modeling. We envision that the cross-domain consistency could benefit other disciplines involving domain transformations with increased diversity in both numerical scales and heterogeneous types. Future work could also involve exploring fields such as mag-netic resonance imaging and remote sensing to demonstrate the versatility of our approach. Improving Radio Interferometry Imaging by Explicitly Modeling Cross-Domain Consistency in Reconstruction 
+
+References 
+
+[1] Mark Beliaev and Ramtin Pedarsani. 2025. Inverse reinforcement learning by estimating expertise of demonstrators. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 15532–15540. [2] Robert D Blum, Kaylan Burleigh, Arjun Dey, David J Schlegel, Aaron M Meisner, Michael Levi, Adam D Myers, Dustin Lang, John Moustakas, Anna Patej, et al .2016. The decam legacy survey. In American Astronomical Society Meeting Abstracts# 228 , Vol. 228. 317–01. [3] Katherine L Bouman, Michael D Johnson, Adrian V Dalca, Andrew A Chael, Freek Roelofs, Sheperd S Doeleman, and William T Freeman. 2018. Reconstructing video of time-varying sources from radio interferometric measurements. IEEE Transactions on Computational Imaging 4, 4 (2018), 512–527. [4] Katherine L Bouman, Michael D Johnson, Daniel Zoran, Vincent L Fish, Sheperd S Doeleman, and William T Freeman. 2016. Computational imaging for VLBI image reconstruction. In IEEE Conference on Computer Vision and Pattern Recognition .913–922. [5] Andrew A Chael, Katherine L Bouman, Michael D Johnson, Ramesh Narayan, Sheperd S Doeleman, John FC Wardle, Lindy L Blackburn, Kazunori Akiyama, Maciek Wielgus, Chi-kwan Chan, et al . 2019. ehtim: Imaging, analysis, and simulation software for radio interferometry. Astrophysics Source Code Library 
+
+(2019), ascl–1904. [6] Andrew A Chael, Michael D Johnson, Katherine L Bouman, Lindy L Blackburn, Kazunori Akiyama, and Ramesh Narayan. 2018. Interferometric imaging directly with closure phases and closure amplitudes. The Astrophysical Journal 857, 1 (2018), 23. [7] Joseph Paul Cohen, Margaux Luck, and Sina Honari. 2018. Distribution matching losses can hallucinate features in medical image translation. In International Conference on Medical Image Computing and Computer-Assisted Intervention .Springer, 529–536. [8] Chime/Frb Collaboration, Bridget C Andersen, Kevin Bandura, Mohit Bhardwaj, PJ Boyle, Charanjot Brar, Daniela Breitman, Tomas Cassanelli, Shami Chatterjee, Pragya Chawla, et al . 2022. Sub-second periodicity in a fast radio burst. Nature 
+
+607, 7918 (2022), 256–259. [9] Liam Connor, Katherine L Bouman, Vikram Ravi, and Gregg Hallinan. 2022. Deep radio-interferometric imaging with POLISH: DSA-2000 and weak lensing. 
+
+Monthly Notices of the Royal Astronomical Society 514, 2 (2022), 2614–2626. [10] Tim J Cornwell. 2008. Multiscale CLEAN deconvolution of radio synthesis images. IEEE Journal of Selected Topics in Signal Processing 2, 5 (2008), 793–801. [11] Arjun Dey, David J Schlegel, Dustin Lang, Robert Blum, Kaylan Burleigh, Xiaohui Fan, Joseph R Findlay, Doug Finkbeiner, David Herrera, Stéphanie Juneau, et al .2019. Overview of the DESI legacy imaging surveys. The Astronomical Journal 
+
+157, 5 (2019), 168. [12] Anna C Gilbert, Piotr Indyk, Mark Iwen, and Ludwig Schmidt. 2014. Recent developments in the sparse Fourier transform: A compressed Fourier transform for big data. IEEE Signal Processing Magazine 31, 5 (2014), 91–100. [13] Joseph W Goodman. 2015. Statistical optics . John Wiley & Sons. [14] Kunpu Ji, Yunzhong Shen, Nico Sneeuw, Lin Zhang, and Qiujie Chen. 2025. A recursive regularized solution to geophysical linear ill-posed inverse problems. 
+
+IEEE Transactions on Geoscience and Remote Sensing 63 (2025), 1–14. [15] Liming Jiang, Bo Dai, Wayne Wu, and Chen Change Loy. 2021. Focal frequency loss for image reconstruction and synthesis. In IEEE/CVF International Conference on Computer Vision . 13919–13929. [16] Y Li, SB Zhang, YP Yang, CW Tsai, X Yang, CJ Law, R Anna-Thomas, XL Chen, KJ Lee, ZF Tang, et al . 2026. A sudden change and recovery in the magnetic environment around a repeating fast radio burst. Science 391, 6782 (2026), 280– 284. [17] Laurens van der Maaten and Geoffrey Hinton. 2008. Visualizing data using t-SNE. 
+
+Journal of Machine Learning Research 9, Nov (2008), 2579–2605. [18] Beatriz Cardoso Nascimento and Marcos M Raimundo. [n. d.]. Towards a geomet-ric theory of fairness: Detecting mode collapse on the grassmannian manifold. In ICLR 2026 Workshop on Geometry-grounded Representation Learning and Gen-erative Modeling .[19] Kenzie Nimmo, Ziggy Pleunis, Paz Beniamini, Pawan Kumar, Adam E Lanman, DZ Li, Robert Main, Mawson W Sammons, Shion Andrew, Mohit Bhardwaj, et al .2025. Magnetospheric origin of a fast radio burst constrained using scintillation. 
+
+Nature 637, 8044 (2025), 48–51. [20] Aaron van den Oord, Yazhe Li, and Oriol Vinyals. 2018. Representation learning with contrastive predictive coding. arXiv preprint arXiv:1807.03748 (2018). [21] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al . 2019. Pytorch: An imperative style, high-performance deep learning library. Advances in Neural Information Processing Systems 32 (2019). [22] Lord Rayleigh. 1880. Investigations in optics, with special reference to the spectroscope. Monthly Notices of the Royal Astronomical Society, Vol. 40, p. 254 40 (1880), 254. [23] Kevin Schmidt, Felix Geyer, Stefan Fröse, P-S Blomenkamp, Marcus Brüggen, Francesco De Gasperin, Dominik Elsässer, and Wolfgang Rhode. 2022. Deep learning-based imaging in radio interferometry. Astronomy & Astrophysics 664 (2022), A134. [24] David R Silva, Robert D Blum, Lori Allen, Arjun Dey, David J Schlegel, Dustin Lang, John Moustakas, Aaron M Meisner, Francisco Valdes, Anna Patej, et al .2016. The mayall z-band legacy survey. In American Astronomical Society Meeting Abstracts# 228 , Vol. 228. 317–02. [25] Saurabh Singh, Jishnu Nambissan T, Ravi Subrahmanyan, N Udaya Shankar, BS Girish, A Raghunathan, R Somashekar, KS Srivani, and Mayuri Sathya-narayana Rao. 2022. On the detection of a cosmic dawn signal in the radio background. Nature Astronomy 6, 5 (2022), 607–617. [26] Nadia Steyn, Renée C Kraan-Korteweg, Sambatriniaina HA Rajohnson, Sushma Kurapati, Hao Chen, Bradley Frank, Paolo Serra, Lister Staveley-Smith, Fernando Camilo, and Sharmila Goedhart. 2024. H i galaxy signatures in the SARAO MeerKAT Galactic Plane Survey–I. Probing the richness of the great attractor wall across the inner zone of avoidance. Monthly Notices of the Royal Astronomical Society: Letters 529, 1 (2024), L88–L94. [27] Yuki Tatsunami and Masato Taki. 2024. FFT-based dynamic token mixer for vision. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 38. 15328–15336. [28] A Richard Thompson, James M Moran, and George W Swenson. 2017. Interfer-ometry and synthesis in radio astronomy . Springer Nature. [29] Lingren Wang, Wenxuan Tu, Jieren Cheng, Jianan Wang, Xiangyan Tang, and Chenchen Wang. 2025. Discovering maximum frequency consensus: Light-weight federated learning for medical image segmentation. In ACM International Conference on Multimedia . 1900–1909. [30] Ruoqi Wang, Zhuoyang Chen, Jiayi Zhu, Qiong Luo, and Feng Wang. 2024. PolarRec: Improving radio interferometric data reconstruction using polar co-ordinates. In IEEE/CVF Conference on Computer Vision and Pattern Recognition .12841–12850. [31] Ruoqi Wang, Haitao Wang, and Qiong Luo. 2025. GalaxAlign: Mimicking citi-zen scientists’ multimodal guidance for galaxy morphology analysis. In ACM International Conference on Multimedia . 8636–8644. [32] Ruoqi Wang, Haitao Wang, Qiong Luo, Feng Wang, and Hejun Wu. 2025. VisRec: A semi-supervised approach to visibility data reconstruction in radio astronomy. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 39. 852–860. [33] Robert W Wilson. 1979. The cosmic microwave background radiation. Science 
+
+205, 4409 (1979), 866–874. [34] Benjamin Wu, Chao Liu, Benjamin Eckart, and Jan Kautz. 2022. Neural in-terferometry: Image reconstruction from astronomical interferometers using transformer-conditioned neural fields. In Proceedings of the AAAI Conference on Artificial Intelligence . 2685–2693. [35] Yutong Xie and Quanzheng Li. 2022. Measurement-conditioned denoising dif-fusion probabilistic model for under-sampled medical image reconstruction. In 
+
+International Conference on Medical Image Computing and Computer-Assisted Intervention . Springer, 655–664. [36] CK Xu, C Cheng, PN Appleton, P-A Duc, Y Gao, N-Y Tang, M Yun, YS Dai, J-S Huang, U Lisenfeld, et al . 2022. A 0.6 Mpc H i structure associated with Stephan’s Quintet. Nature 610, 7932 (2022), 461–466. [37] Taeyoung Yun, Dinghuai Zhang, Jinkyoo Park, and Ling Pan. 2025. Learning to sample effective and diverse prompts for text-to-image generation. In IEEE/CVF Conference on Computer Vision and Pattern Recognition . 23625–23635. [38] Frederik Zernike. 1938. The concept of degree of coherence and its application to optical problems. Physica 5, 8 (1938), 785–795. [39] Hu Zou, Xu Zhou, Xiaohui Fan, Tianmeng Zhang, Zhimin Zhou, Jundan Nie, Xiyan Peng, Ian McGreer, Linhua Jiang, Arjun Dey, et al . 2017. Project overview of the beijing–arizona sky survey. Publications of the Astronomical Society of the Pacific 129, 976 (2017), 064101.

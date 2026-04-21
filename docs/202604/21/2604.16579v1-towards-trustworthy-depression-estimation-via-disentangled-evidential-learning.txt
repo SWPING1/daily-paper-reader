@@ -1,0 +1,759 @@
+Title: Towards Trustworthy Depression Estimation via Disentangled Evidential Learning
+
+URL Source: https://arxiv.org/pdf/2604.16579v1
+
+Published Time: Tue, 21 Apr 2026 00:10:24 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+> JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+
+# Towards Trustworthy Depression Estimation via Disentangled Evidential Learning 
+
+Fangyuan Liu, Sirui Zhao ∗, Zeyu Zhang, Jinyang Huang, Feng-Qi Cui, Bin Luo, Tong Xu, Meng Li, Senior Member, IEEE , and Enhong Chen ∗, Fellow, IEEE 
+
+Abstract —Automated depression estimation is highly vulner-able to signal corruption and ambient noise in real-world de-ployment. Prevailing deterministic methods produce uncalibrated point estimates, exposing safety-critical clinical systems to the severe risk of overconfident misdiagnoses. To establish a highly resilient and trustworthy assessment paradigm, we propose EviDep, an evidential learning framework that jointly quantifies depression severity alongside aleatoric and epistemic uncertain-ties via a Normal-Inverse-Gamma distribution. A fundamental vulnerability in multimodal evidential fusion is the uncontrolled accumulation of cross-modal redundancies. This structural flaw artificially inflates diagnostic confidence by double-counting over-lapping evidence. To guarantee robust evidence synthesis, EviDep enforces strict information integrity. First, a Frequency-aware Feature Extraction module leverages a wavelet-based Mixture-of-Experts to dynamically isolate task-irrelevant noise, preserving the fidelity of diagnostic signals. Subsequently, a Disentangled Evidential Learning strategy separates the shared consensus from modality-specific nuances. By explicitly decoupling these representations before Bayesian fusion, EviDep systematically mitigates evidence redundancy. Extensive experiments on AVEC 2013, 2014, DAIC-WOZ, and E-DAIC confirm that EviDep achieves state-of-the-art predictive accuracy and superior un-certainty calibration, delivering a robust fail-safe mechanism for trustworthy clinical screening. 
+
+Index Terms —Depression Estimation, Trustworthy AI, Uncer-tainty Quantification, Robust Multimodal Fusion. 
+
+I. I NTRODUCTION 
+
+Automated depression estimation leveraging multimodal behavioral signals (e.g., audio and visual cues) has emerged as a crucial area in affective computing [1], [2]. However, deploying these data-driven systems in unconstrained clinical environments exposes severe security and reliability vulner-abilities [3]. Sensor artifacts, missing modalities, and inher-ent behavioral ambiguity inevitably compromise real-world recordings. In high-stakes clinical applications, this data cor-ruption can silently propagate through the network, leading to uncalibrated and potentially misleading predictions. Therefore, 
+
+Fangyuan Liu, Zeyu Zhang, Feng-Qi Cui, Sirui Zhao, Tong Xu, and Enhong Chen are with the School of Computer Science and Technology, University of Science and Technology of China, Hefei, China (e-mail: 
+
+{liufangyuan, sa25011305, fengqi cui }@mail.ustc.edu.cn; {siruit, tongxu, cheneh }@ustc.edu.cn). Meng Li and Jinyang Huang are with the School of Computer Science and Information Engineering, Hefei University of Technology, Hefei, China (e-mail: {mengli, hjy }@hfut.edu.cn). Bin Luo is with the Department of Psychiatry, The First Affiliated Hospital of University of Science and Technology of China, Division of Life Sciences and Medicine, University of Science and Technology of China, Hefei 230001, China (e-mail: luobinsky@foxmail.com). 
+
+> ∗
+
+Sirui Zhao and Enhong Chen are the corresponding authors. 
+
+Fig. 1. Illustration of different depression estimation paradigms. (a) The deterministic paradigm outputs a single point estimate ( ˆy). (b) The post-hoc calibration paradigm generates a confidence interval ( ˆs) through a separate calibration module. (c) Our evidential learning paradigm directly estimates the parameters of the Normal-Inverse-Gamma (NIG) distribution ( δ, γ, α, β )to jointly predict the depression score ( δ) and quantify its associated predictive uncertainties ( γ, α, β ). 
+
+establishing a trustworthy evaluation mechanism capable of rigorous uncertainty quantification and robust evidence extrac-tion is a critical imperative [4]–[7]. Conventionally, multimodal depression assessment [8], [9] is predominantly formulated as a deterministic regression problem. As illustrated in Fig. 1a, this paradigm maps complex input streams directly to a single scalar estimate ˆy. By struc-turally forcing the network to collapse all diagnostic evidence into an absolute point value, these models discard the underly-ing predictive distribution and remain inherently incapable of quantifying their uncertainty. Consequently, these models lack the capacity to verify the integrity of their own predictions. When confronted with compromised multimodal signals, they are forced into blind extrapolations, producing overconfident outputs that inherently undermine the trustworthiness of the automated diagnostic pipeline. To address this critical deficit in risk awareness, recent studies have explored post-hoc calibration methods [10]–[12] to construct confidence intervals. However, this decoupled paradigm introduces a fundamental limitation. Because the feature encoder is trained without any awareness of predictive risk, the representations it produces carry no reliability signal. The post-hoc calibrator, operating solely on these uncertainty- 
+
+> arXiv:2604.16579v1 [cs.LG] 17 Apr 2026 JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 2
+
+agnostic features, often struggles to provide instance-adaptive defenses against complex cross-modal interference. To achieve inherently trustworthy multimodal depression estimation, we propose EviDep, a novel end-to-end frame-work built upon an evidential learning paradigm illustrated in Fig. 1(c). Diverging from existing deterministic or post-hoc methods, EviDep conceptualizes the regression task as an evidence-collection process. By directly inferring the param-eters of a higher-order Normal-Inverse-Gamma (NIG) distri-bution, our framework explicitly quantifies both the aleatoric and epistemic uncertainties alongside the severity score in a unified, end-to-end manner. However, a key challenge in this setting is that reliable evidential reasoning is highly sensitive to evidence redundancy. Standard multimodal fusion is highly vulnerable to information entanglement, such as transient signal noise [13] and cross-modal redundancy [14], [15]. Fail-ing to constrain this entanglement misleads the network into double-counting overlapping information, artificially inflating diagnostic confidence. To guarantee evidence purity and prevent redundant confi-dence inflation, EviDep introduces two tailored mechanisms. First, to address the temporal-frequency heterogeneity of noisy behavioral cues, we propose the Frequency-aware Feature Extraction (FFE) module. Utilizing a wavelet-based Mixture-of-Experts architecture, FFE explicitly decomposes the signals to capture both stable macro-level affective baselines and transient micro-level behavioral bursts. Through a dynamic gating mechanism, it selectively filters out task-irrelevant sensor artifacts while preserving genuine behavioral nuances, acting as a crucial signal purification step. Operating on these structured and purified representations, a Disentangled Evidential Learning (DEL) strategy then explicitly separates the cross-modal shared consensus from modality-specific nu-ances. By enforcing orthogonality and consistency constraints, DEL achieves explicit feature decorrelation, ensuring that the extracted evidence streams are highly complementary and non-redundant before Bayesian fusion. This rigorous disentangle-ment successfully prevents the network from double-counting overlapping information, thereby avoiding artificially inflated diagnostic confidence and yielding a statistically calibrated, trustworthy system resilient to clinical noise. Our contributions can be summarized as follows: 1) We formulate multimodal depression estimation as a trustworthy evidential regression task. By leveraging a Normal-Inverse-Gamma (NIG) distribution to explicitly quantify both aleatoric and epistemic uncertainties, Ev-iDep shifts the paradigm from vulnerable determinis-tic prediction to a risk-aware, reliable decision-making framework, directly addressing the trustworthiness bot-tleneck in unconstrained environments. 2) We propose the Frequency-aware Feature Extraction (FFE) module as a scale-aware signal purification mech-anism. By synergizing Transformer and CNN experts via a wavelet-based MoE architecture, FFE explicitly decouples stable macro-level affective baselines from transient micro-level behavioral bursts. This targeted filtering suppresses physical artifacts while preserving genuine multi-scale dynamics, ensuring the purity of the extracted diagnostic evidence. 3) We introduce the Disentangled Evidential Learning (DEL) module to tackle the critical issue of infor-mation entanglement in multimodal fusion. By en-forcing orthogonality and consistency constraints to separate cross-modal shared consensus from modality-specific nuances, DEL explicitly decorrelates the evi-dence streams. This rigorous disentanglement prevents redundant evidence accumulation, effectively avoiding artificially inflated diagnostic confidence. 4) Extensive experiments across four public benchmarks demonstrate that EviDep not only achieves state-of-the-art predictive accuracy but also enhances diagnostic re-liability. Our analysis reveals that elevated epistemic un-certainty reliably aligns with challenging or highly am-biguous clinical samples, highlighting its practical utility for supporting risk-aware clinical decision-making. II. R ELATED WORK 
+
+A. Multimodal Depression Estimation 
+
+Automated multimodal depression estimation relies on in-tegrating complementary multimodal behavioral signals [16]. Early architectures established the foundation by extracting spatial-temporal representations through unified networks [17] or self-attention mechanisms [18]. To capture richer clinical dynamics, subsequent research progressively addressed more nuanced challenges. Pan et al. [19] employed adversarial multi-stage training to extract multi-scale facial features, while Liu et al. [20] explicitly modeled bidirectional cross-modal interactions via a collaborative transformer architec-ture. Beyond interaction modeling. Recognizing the pervasive influence of noise in clinical recordings, Wang et al. [21] incorporated targeted noise elimination to improve long-term behavior modeling, and Li et al. [8] proposed a disentangle-ment framework to isolate modality-shared from modality-specific representations. Despite these advances in interaction modeling, interpretability, and feature purification, existing methods universally operate within a deterministic regression paradigm, mapping multimodal features to point estimates without any quantification of predictive uncertainty. 
+
+B. Uncertainty Estimation in Depression Assessment 
+
+Recognizing the high-stakes nature of automated depression assessment, a growing body of work has explored uncertainty quantification to complement deterministic predictions. Initial efforts leveraged uncertainty as an auxiliary training signal: Yang et al. [22] modeled clinical label noise and ambiguity by transforming PHQ-8 scores into label distributions, enhancing representation learning via label-based contrastive learning. To explicitly quantify predictive confidence at inference, recent studies have turned to post-hoc calibration techniques. Li et al. [10] proposed a conformal prediction framework to generate prediction intervals with rigorous coverage guaran-tees, and Li et al. [11] extended this paradigm with group-conditional coverage constraints to address fairness across JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3NIG 
+
+> NIG
+> NIG
+> Audio Input Visual Input
+> Avg pool
+> Avg pool
+
+Feature Extraction Trustworthy Evidential Regression   
+
+> Frequency-aware Feature Extraction Frequency-aware Feature Extraction
+> Mixture of Experts
+> Private Encoder
+> Private Encoder
+> Shared Encoder
+
+Disentangled Evidential Learning 
+
+> Decoder
+> Decoder
+> MSE
+> MSE
+> CMD
+> Assign weight Evidence Strength
+> Evidence-Guided Bayesian Fusion
+> Aleatoric Uncertainty
+> Depression Score
+> Epistemic Uncertainty
+> conflict penalty
+> Fig. 2. Overall architecture of the proposed EviDep framework. The framework sequentially processes audio-visual inputs through a Frequency-aware Feature Extraction module to isolate multi-scale behavioral cues, and a Disentangled Evidential Learning module to separate shared consensus from private nuances. Finally, a Trustworthy Evidential Regression module employs an NIG prior and evidence-guided Bayesian fusion to jointly output the depression score and its associated aleatoric and epistemic uncertainties.
+
+demographic subgroups. However, as these calibration meth-ods operate on frozen representations from pre-trained de-terministic networks, the underlying feature learning remains entirely decoupled from uncertainty estimation, limiting their capacity to proactively account for multimodal ambiguity during representation learning. 
+
+C. Deep Evidential Regression 
+
+Deep Evidential Regression (DER) provides a principled end-to-end framework for uncertainty quantification by placing higher-order conjugate priors over standard likelihoods [23]. Extending this to multimodal domains, Ma et al. [14] intro-duced a Mixture of Normal-Inverse-Gamma distributions to dynamically allocate uncertainty-aware fusion weights. How-ever, optimizing DER in complex scenarios presents intrinsic theoretical challenges. Recent theoretical study demonstrates that the evidential paradigm remains highly prone to ”ev-idence contraction” in complex scenarios [15]. This struc-tural vulnerability reveals that DER’s reliability fundamentally depends on the information integrity of the input space. In unconstrained multimodal environments, this theoretical flaw directly manifests as the information entanglement and evi-dence redundancy issues discussed earlier. Feeding predictive heads with such entangled features inevitably leads to the re-dundant evidence accumulation, artificially inflating diagnostic confidence. Guided by these insights, our framework explic-itly purifies and decorrelates the representation space before fusion, proactively guaranteeing that the subsequent evidential reasoning operates on genuinely non-redundant evidence. III. M ETHODOLOGY 
+
+A. Framework Overview 
+
+As illustrated in Fig. 2, we propose EviDep, a trustworthy framework that extracts purified, non-redundant evidence to explicitly model predictive uncertainty for reliable multimodal depression assessment. First, the Frequency-aware Feature Extraction (FFE) module dynamically decouples stable affec-tive baselines from micro-level behaviors, acting as a crucial signal purification step to filter extraneous noise. Operating on these purified features, the Disentangled Evidential Learn-ing (DEL) module explicitly separates cross-modal consensus from modality-specific cues to achieve strict feature decorre-lation. EviDep then parameterizes these non-redundant repre-sentations into Normal-Inverse-Gamma (NIG) distributions to jointly infer depression severity and predictive uncertainties. Finally, an Evidence-Guided Bayesian Fusion dynamically integrates these streams into a joint Normal-Inverse-Gamma (NIG) distribution. This unified distribution ultimately yields the final depression score and predictive uncertainties. By systematically eliminating temporal noise contamination and cross-modal double-counting, EviDep guarantees the non-redundancy of the evidence streams, ultimately delivering a rigorously calibrated and trustworthy assessment. 
+
+B. Frequency-aware Feature Extraction 1) Temporal Context Modeling: For each modality m ∈{v, a }, we first employ a Transformer encoder to model intra-modal temporal dependencies from the raw feature sequence 
+
+Xm ∈ RT ×Dm , yielding an intermediate representation Hm ∈
+
+RT ×D for subsequent frequency-aware refinement. 
+
+Hm = TransformerEncoder m(Xm). (1) where T denotes the temporal length of the sequence, Dm
+
+the input feature dimension of modality m, and D the hidden feature dimension. 
+
+2) Frequency-aware Feature Refinement: As detailed in Fig. 3, to guarantee the purity of the collected diagnostic evidence, we adopt a decompose-process-reconstruct paradigm to isolate macro-level affective baselines from micro-level behavioral transients, preventing uninformative artifacts from contaminating the representation. An L-level Discrete Wavelet Transform (DWT) is applied to the temporal features Hm, decomposing them into frequency components at different scales. Conceptually, this decomposi-tion aligns high-frequency sub-bands with transient behavioral JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4hmhigh,l           
+
+> hmhigh,l
+> DWT
+> Macro level
+> Micro level
+> Gating
+> Network
+> Global Temporal
+> Pooling
+> Global Temporal
+> Pooling
+> IDWT
+> Transformer
+> Expert
+> CNN Expert
+> ...
+> Different level
+> Importance
+> Assign weight
+> Assign weights
+> ，
+> Fig. 3. Architecture of the Frequency-aware Feature Refinement mod-ule, comprising DWT-based decomposition, heterogeneous Transformer-CNN Mixture-of-Experts, adaptive gating, and IDWT-based reconstruction.
+
+bursts, while the low-frequency representation captures the underlying persistent affective tendencies: 
+
+{hmhigh,l }Ll=1 , hmlow = DWT (Hm). (2) To handle the heterogeneous time-frequency dynamics of depressive signals, we employ a scale-adaptive Mixture-of-Experts (MoE) architecture. This design explicitly aligns the inductive biases of the expert networks with the intrinsic properties of the signal. CNN experts are assigned to high-frequency components i ∈ {high 1, . . . , high L} to capture localized micro-level patterns via their bounded receptive fields, while a Transformer expert processes the low-frequency component i = low to model long-term macro-level trends through global self-attention mechanisms: 
+
+∆hmi =
+
+(
+
+CNN (xmi ), i ∈ { high 1, . . . , high L}
+
+Transformer (xmi ). i = low (3) To dynamically modulate the contribution of each frequency band and suppress extraneous noise, we introduce an inde-pendent gating mechanism. The global temporal pooling of each frequency component, denoted as ¯hmi , is computed and concatenated into a global context vector: 
+
+wm = ¯hmhigh, 1; . . . ; ¯hmhigh,L ; ¯hmlow 
+
+ ∈ R(L+1) ×D , (4) where [·; ·] denotes concatenation along the feature dimension. The context vector wm is then fed into a gating network to predict the gating weights g ∈ [0 , 1] L+1 via: 
+
+g = σ(MLP (wm)) . (5) This gating mechanism allows each frequency component to be modulated independently based on its specific time-varying dynamics. To explicitly incorporate the extracted micro and macro-level patterns while preventing information loss, we employ a gated residual connection: 
+
+˜hmi = hmi + gi · ∆hmi , i ∈ { high 1, . . . , high L, low }, (6) ensuring that the network adaptively emphasizes informative behavioral bursts while suppressing task-irrelevant artifacts, preserving the structural integrity of the original features. Next, the Inverse Discrete Wavelet Transform (IDWT) is applied to reconstruct the purified representation Zm ∈ RT ×D:
+
+Zm = IDWT ({˜hmhigh,l }Ll=1 , ˜hmlow ). (7) To conclude the FFE pipeline and provide a compact global representation for the next phase, the sequence Zm is compressed into ¯Zm ∈ RD via Temporal Average Pooling: 
+
+¯Zm = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+Zm(t, ·). (8) This aggregation yields a unified feature vector, ultimately delivering noise-resilient and highly discriminative evidence for the downstream Disentangled Evidential Learning module. 
+
+C. Disentangled Evidential Learning 
+
+Given that correlations across modalities, arising from shared noise, can be mistakenly interpreted as redundant evidence, directly fusing multimodal features may produce overconfident and biased predictions. To address this issue, we introduce a Disentangled Evidential Learning (DEL) strategy. DEL disentangles each modality’s representation into two parts: cross-modal shared features that capture consensus representation indicative of depression severity, and modality-specific features that represent unique, complementary infor-mation from each modality. By separating these components, DEL prevents redundant correlations from dominating the de-cision process, ensuring that the predicted scores are grounded in trustworthy evidence. 
+
+1) Modality-Shared and Modality-Private Representations: 
+
+For each modality m ∈ { v, a }, we disentangle the globally pooled representation ¯Zm ∈ RD into a cross-modal shared component zsh m ∈ RD and a modality-specific component 
+
+zsp m ∈ RD .To this end, ¯Zm is fed into two parallel projection heads with identical architectures (a two-layer MLP with GELU activation) but different parameterization schemes: 
+
+zsh m = ϕsh (¯Zm), zsp m = ϕmsp (¯Zm), (9) where ϕsh is a modality-shared projector with parameters tied across modalities, aiming to capture modality-invariant information. In contrast, ϕmsp is a modality-specific projector with independent parameters for each modality, designed to preserve modality-exclusive characteristics. To facilitate unified evidential modeling of the diagnostic consensus, we further aggregate the shared components from all modalities into a joint representation: 
+
+zsh = [ zsh v ; zsh a ] ∈ R2D , (10) where [·; ·] denotes concatenation. This structural disentan-glement ensures that the subsequent evidential learning can be performed on purified feature subspaces, preventing inter-modal redundancy from producing overconfident and biased diagnostic evidence. 
+
+2) Disentanglement and Alignment Constraints: To reduce cross-modal redundancy of the collected evidence and prevent cross-modal contamination, we introduce two complementary constraints that explicitly separate the shared consensus from private nuances. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5
+
+a) Cross-Modal Consistency: To enforce the shared com-ponents to capture a modality-invariant diagnostic signature, we minimize the distribution discrepancy between zsh v and 
+
+zsh a . We employ the Central Moment Discrepancy (CMD) loss, which aligns the two distributions by matching their statistical moments. This ensures that the shared representations distill a robust, unified evidence source while mitigating modality-specific noise: 
+
+Laln = CMD (zsh v , zsh a ). (11) 
+
+b) Orthogonal Independence: To guarantee that the pri-vate features zsp m encode non-redundant information distinct from the shared consensus, we minimize the mutual correlation between the two subspaces within each modality m ∈ { v, a }:
+
+Lorth = X
+
+> m∈{ v,a }
+
+ zsh m · zsp m
+
+∥zsh m ∥ ∥ zsp m ∥
+
+2
+
+. (12) This orthogonal constraint encourages zsp m to preserve com-plementary behavioral nuances that are non-redundant with the shared diagnostic evidence, thereby maximizing the informa-tion diversity across the disentangled branches. 
+
+3) Information Fidelity Preservation Loss: To prevent the loss of critical diagnostic information during disentanglement, we implement a self-supervised reconstruction task. The dis-entangled shared and private components, zsh m and zsp m , are first concatenated and then processed by a decoder Dm to reconstruct the original feature representation, formulated as 
+
+ˆZm = Dm([ zsh m ; zsp m ]) .The decoder Dm mirrors the encoder via a symmetrical MLP architecture. Prior to reconstruction, Layer Normaliza-tion is applied to align the disparate distributions of the disentangled features, ensuring an equitable contribution from both subspaces. The entire process is optimized via an L1
+
+reconstruction loss: 
+
+Lrecon = X
+
+> m∈{ v,a }
+
+∥¯Zm − ˆZm∥1, (13) where ˆZm is the reconstructed frequency-enhanced feature. This constraint ensures that the disentangled latent space collectively preserves the complete diagnostic information of the input signal. 
+
+D. Trustworthy Evidential Regression 1) Joint Modeling of Dual Uncertainties via NIG Prior: 
+
+In unconstrained clinical depression assessment, a truly trust-worthy diagnostic system must not only deliver accurate severity estimates but also rigorously quantify the underlying predictive risks. Multimodal signals captured in the wild are inevitably plagued by dual sources of ambiguity: irreducible data-level noise (Aleatoric Uncertainty, AU) such as sensor artifacts, and model-level ignorance (Epistemic Uncertainty, EU) when encountering unfamiliar behavioral patterns. To this end, we conceptualize the regression task as an evidence-collection process via Evidential Deep Learning (EDL). In-stead of directly predicting a deterministic scalar, we assume the observed depression score y is drawn from a Gaussian 𝑧 𝑚 
+
+> 𝑠 ℎ
+> Linear La
+> GELU
+> Linear La
+
+𝑧 𝑚  
+
+> 𝑠𝑝
+
+Or 𝑧 𝑚 
+
+> 𝑠 ℎ
+
+തZ𝑚 
+
+> Linear Layer
+> GELU
+> Linear Layer
+
+Disentanglement Decoder 𝐷 ∙
+
+> Layer Norm
+
+𝑧 𝑚 
+
+> 𝑠𝑝
+
+෠Z𝑚  𝑧 𝑚 
+
+> (∙)
+
+Linear Layer 
+
+𝛿 
+
+𝛾 
+
+𝛼 
+
+𝛽 
+
+> …
+
+Softplus  Predicted score 
+
+Evidential 
+
+Parameters 
+
+concat  
+
+> Fig. 4. Detailed structure of the NIG Regression Head. The latent feature is projected into a 4-D vector via a linear layer, with specific Softplus-based activations to ensure the NIG parameters ( δ, γ, α, β ) satisfy their respective domain constraints.
+
+distribution N (μ, σ 2), and we place a higher-order Normal-Inverse-Gamma (NIG) conjugate prior over its unknown mean 
+
+μ and variance σ2:
+
+p(μ, σ 2|τ ) = NIG (μ, σ 2|δ, γ, α, β ), (14) where τ = (δ, γ, α, β ) denotes the evidence parameters estimated by the neural network. This hierarchical formulation perfectly aligns with our clin-ical motivation by endowing each parameter with a specific statistical interpretation. Specifically, δ serves as the predicted continuous depression score. The parameter γ represents the virtual observation count (acting as the precision scale of the estimator), while α and β dictate the shape and scale of the inferred variance distribution. Grounded in these probabilis-tic definitions, we can analytically derive the expected data variance (Aleatoric Uncertainty) and the variance of the mean estimator (Epistemic Uncertainty) as follows: AU = E[σ2] = βα − 1 , EU = Var (μ) = βγ(α − 1) . (15) By directly inferring these evidence parameters, the frame-work fundamentally shifts from blind point estimation to a principled uncertainty quantification process. 
+
+2) Evidence Parameterization: To operationalize this the-oretical framework, we map the disentangled representations from the DEL module into the evidential parameter space. For each evidence branch k ∈ { sh, v sp , a sp }, the corresponding evidence set τ k = ( δk, γ k, α k, β k) is generated by a dedicated Uncertainty-Aware Regression Head: 
+
+τ k = NIGHead k(zk). (16) As illustrated in Fig. 4, each NIG Head linearly projects the input features zk into a four-dimensional vector v =[v1, v 2, v 3, v 4]⊤. To strictly satisfy the domain constraints of the NIG distribution ( δ ∈ R, γ > 0, α > 1, and β > 0), we apply targeted activation functions: 
+
+δ = v1,γ = softplus( v2) + ϵ, α = softplus( v3) + 1 + ϵ, β = softplus( v4) + ϵ, 
+
+(17) where ϵ = 10 −6 is a small constant for numerical stability. This parameterization ensures that each branch independently JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6
+
+yields a valid probabilistic distribution, where γ, α, and β
+
+collectively quantify the strength of the diagnostic evidence supporting the prediction δ.
+
+3) Evidence-Guided Bayesian Fusion: Building upon the strictly non-redundant evidence streams ( τ sh , τ sp v , τ sp a ) es-tablished by the DEL module, we propose an Evidence-Guided Bayesian Fusion strategy to structurally integrate these genuinely complementary cues. To perform the Evidence-Guided Bayesian Fusion, we quan-tify the absolute reliability of each branch using its virtual observation counts. Under the NIG prior, γ provides the pseudo-observations for the mean estimation. For the vari-ance, the shape parameter α implies 2α degrees of freedom, corresponding to 2α virtual observations. By pooling the pseudo-observations assigned to both statistical moments, we aggregate them to define the holistic evidence strength wk:
+
+wk = γk + 2 αk. (18) This formulation mathematically bridges evidence theory and uncertainty fusion. By weighting each branch according to its explicit evidence strength, the mechanism suppresses modalities exhibiting high aleatoric or epistemic uncertainty. The fused predicted mean δf is then computed as an evidence-weighted average, ensuring that the most reliable branches dominate the diagnostic decision: 
+
+δf =
+
+P 
+
+> k
+
+wkδk
+
+P 
+
+> k
+
+wk
+
+. (19) The remaining parameters γf , α f , β f are updated following the conjugate addition rules: 
+
+γf = X
+
+> k
+
+γk,αf = X
+
+> k
+
+αk + K − 12 ,βf = X
+
+> k
+
+βk + 12
+
+X
+
+> k
+
+γk(δk − δf )2,
+
+(20) where K = 3 denotes the total number of evidence branches. Statistically, while γf and αf strictly accumulate the total pseudo-observations, the quadratic dispersion term in βf acts as a built-in conflict penalty. If modalities yield divergent predictions, their deviation from the consensus δf inflates 
+
+βf . This automatically spikes the final epistemic uncertainty (EU = βf   
+
+> γf(αf−1)
+
+), providing a mathematically grounded fail-safe to flag contradictory clinical inputs. 
+
+4) Evidential Regression Loss: For any given branch out-putting parameters τ = ( δ, γ, α, β ), we aim to maximize the model evidence by minimizing the Negative Log-Likelihood (NLL) of the posterior predictive distribution. Marginalizing over the likelihood parameters (μ, σ 2) yields a Student-t distribution, leading to the following NLL objective: 
+
+Lnll = 12 ln 
+
+ πγ
+
+
+
+− α ln(Ω) + C(α)+
+
+
+
+α + 12
+
+
+
+ln  γ(y − δ)2 + Ω  ,
+
+(21) where y is the ground-truth score, C(α) = ln Γ( α)Γ( α+0 .5) , Γ( ·)
+
+denotes the Gamma function, and Ω = 2 β(1+ γ) represents the scaling factor derived from the inverse-gamma prior.To prevent the model from being overconfident in erroneous predictions, we incorporate an Evidence Regularization term Lreg . This term penalizes high evidence counts ( γ) and shape parameters (α) when the prediction error |y − δ| is large: 
+
+Lreg = |y − δ| · (2 γ + α). (22) The total evidential loss for a specific branch is defined as the weighted sum of these two terms: 
+
+LEDL = Lnll + λr Lreg , (23) where λr balances the trade-off between model fitting and uncertainty calibration. 
+
+E. Total Optimization Objective 
+
+The total training objective of EviDep combines structural, evidential, and regression losses, organized to ensure training stability and well-calibrated uncertainty estimation. First, the structural loss ensures feature disentanglement and alignment. It comprises the disentanglement loss Ldis , the cross-modal alignment loss Laln (CMD), and the reconstruc-tion loss Lrec :
+
+Lstruct = Ldis + λaln Laln + λrec Lrec . (24) Specifically, the disentanglement loss Ldis imposes orthog-onality constraints within each modality and across modality-specific private subspaces: 
+
+Ldis = λorth 
+
+ X
+
+> m∈{ v,a }
+
+Lorth 
+
+ zsp m , zsh m
+
+ + Lorth 
+
+ zsp v , zsp a
+
+ .
+
+(25) Second, to distill comprehensive diagnostic evidence, we apply the evidential supervision defined in Eq. 23 across both the primary fusion branch f and the auxiliary branches. Let 
+
+Kaux = {sh, v sp , a sp } denote the set of auxiliary heads. We formulate the aggregated evidential loss Levid by prioritizing the primary prediction while leveraging deep supervision from auxiliary heads. A weighting factor λaux is introduced to control the contribution of auxiliary branches: 
+
+Levid = L(f ) 
+
+> EDL
+
++ λaux 
+
+X
+
+> k∈K aux
+
+L(k)
+
+> EDL
+
+, (26) where L(f ) 
+
+> EDL
+
+denotes the evidential loss computed from the fused representation, and L(k) 
+
+> EDL
+
+represents the loss for the k-th auxiliary head. This loss ensures that each branch indepen-dently generates a valid NIG distribution that captures both the predictive mean and its corresponding uncertainty. Finally, while the total objective integrates the aforemen-tioned structural and evidential constraints, directly optimiz-ing evidential parameters from random initialization typically suffers from the cold-start problem inherent to evidential deep learning [24]. To stabilize the early training stage, we introduce a Progressive Curriculum Learning strategy. By em-ploying a Deterministic Regression Guide LMSE modulated by JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 7
+
+a dynamic coefficient ηt = min(1 , t/T ), this strategy smoothly guides the network to master primary symptom mapping prior to complex uncertainty calibration. Consequently, the total optimization objective is formulated as: 
+
+L(t) 
+
+> total
+
+= Lstruct + (1 − ηt)LMSE (δf , y ) + ηtLevid , (27) where t denotes the current epoch, and T is the burn-in thresh-old. This progressive transition effectively prevents premature parameter collapse and ensures robust convergence. IV. E XPERIMENTS 
+
+In this section, we conduct extensive experiments to eval-uate the predictive performance and clinical reliability of the proposed EviDep framework. First, we introduce the datasets used in our study, followed by the implementation details and evaluation metrics. Next, a comprehensive comparison with state-of-the-art methods is provided to demonstrate the superiority of our model in predictive accuracy. Subsequently, we present an in-depth uncertainty quantification analysis, evaluating predictive reliability via interval estimation, ex-amining the correlation between estimated uncertainty and prediction error, and providing qualitative clinical case studies. Finally, detailed ablation studies are performed to validate the architectural contributions of the Frequency-aware Feature Extraction (FFE) module and the Disentangled Evidential Learning (DEL) strategy, as well as to demonstrate the frame-work’s resilience against severe data degradation. 
+
+A. Datasets 1) AVEC 2013: The AVEC 2013 dataset [25] is a subset of the Audio-Visual Depressive Language Corpus, containing 150 video clips from 82 subjects aged between 18 and 63. The recordings primarily capture participants performing specified tasks in front of a computer, such as reading predefined text or providing improvised responses. Each video is labeled with a depression severity score ranging from 0 to 63 based on the BDI-II scale. Since this dataset provides original audio-visual video files rather than pre-extracted features, it is widely utilized in multimodal depression recognition research. 
+
+2) AVEC 2014: The AVEC 2014 dataset [26] consists of 150 primary audio-visual clips. Each of these clips is partitioned into two distinct sub-clips, independently capturing the Northwind and Freeform tasks. In contrast to the 2013 corpus, the sub-clips in this edition are considerably shorter, with durations ranging from 6 seconds to just over 4 minutes. Consistent with the previous dataset, every primary clip is assigned a single BDI-II score, providing a continuous de-pression severity label from 0 to 63. 
+
+3) DAIC-WOZ: The DAIC-WOZ dataset [27] is a widely adopted benchmark for depression and psychological distress detection. It consists of multimodal clinical interview data, including audio, video, and transcribed text, collected through interactions between 189 participants and a virtual interviewer named Ellie. The corpus spans roughly 50 hours of recordings and provides various low-level and high-level feature de-scriptors alongside raw speech signals. Depression severity is quantified using PHQ-8 scores on a 0 to 24 scale. This dataset served as the foundation for the AVEC 2017 challenge and has since become a standard evaluation resource in affective computing research. 
+
+4) E-DAIC: The Extended Distress Analysis Interview Cor-pus (E-DAIC) [28] expands upon the DAIC-WOZ dataset and was utilized in the AVEC 2019 challenge, comprising a total of 275 clinical interview recordings. The dataset is partitioned into 163 for training, 56 for validation, and 56 for testing. For the multimodal input, E-DAIC provides raw audio, textual transcriptions, and precomputed facial features. Correspondingly, depression severity is labeled using PHQ-8 scores as the ground truth for the regression task. 
+
+B. Experimental Setups and Evaluation Metrics 1) Implementation Details: For AVEC 2013/2014, visual features are extracted using a ResNet-50 encoder pre-trained on WebFace [29] and fine-tuned with video-level labels, yield-ing 128-dimensional embeddings. For DAIC-WOZ and E-DAIC, we follow [8] to derive 49-dimensional visual descrip-tors comprising head pose, eye gaze, and facial action units. Audio features are consistently extracted across all datasets using Silero VAD [30], producing 50-dimensional representa-tions combining eGeMAPS, MFCCs with deltas, and temporal indices. To handle varying video durations, we randomly sample a single 1,000-frame segment per AVEC 2014 clip during training, and five uniformly spaced segments for the longer AVEC 2013, DAIC-WOZ, and E-DAIC recordings. At test time, ten equidistant segments are extracted per sample, and their predictions are averaged. Given the pronounced severity imbalance in DAIC-WOZ and E-DAIC, high-severity training samples (PHQ-8 ≥ 15) are oversampled to mitigate bias towards low-severity predictions. Our proposed EviDep is implemented in PyTorch and trained on an NVIDIA GeForce RTX 4090 GPU. The model is trained for 100 epochs using the Adam optimizer with a learning rate of 1×10 −4 and a batch size of 4. We employ the Haar wavelet basis with a DWT decomposition level of L = 3 ,and set the feature fusion dimension to D = 128 . The loss weights are empirically configured as λaln = 1 .0, λrec = 0 .001 ,
+
+λaux = 0 .2, λorth = 0 .05 , and λr = 1 × 10 −4. Finally, the dynamic curriculum coefficient ηt increases linearly from 0 to 1 over the initial T = 20 burn-in epochs. 
+
+2) Evaluation Metrics: To comprehensively assess the de-pression severity estimation performance, we adopt Mean Absolute Error (MAE) and Root Mean Square Error (RMSE) for error quantification. MAE and RMSE measure the average magnitude of prediction errors, defined as MAE = 1
+
+> N
+
+P |yi −
+
+ˆyi| and RMSE =
+
+q 1
+
+> N
+
+P(yi − ˆyi)2.To evaluate the clinical reliability of the estimated un-certainty, we utilize Prediction Interval Coverage Probability (PICP) and Mean Prediction Interval Width (MPIW). Given the predicted bounds [ˆ yLi , ˆyUi ] under a 90% target coverage, the metrics are computed as: PICP = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+ci, MPIW = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+(ˆ yUi − ˆyLi ), (28) JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8      
+
+> TABLE I COMPARISON WITH STATE -OF -THE -ART METHODS ON AVEC 2013 AND
+> AVEC 2014 DATASETS .BOLD AND UNDERLINED DENOTE BEST AND SECOND -BEST PERFORMANCE ,RESPECTIVELY .
+
+Methods AVEC 2013 AVEC 2014 
+
+MAE ↓ RMSE ↓ MAE ↓ RMSE ↓
+
+Audio Modality 
+
+MAFF [31] 7.14 9.50 7.65 9.13 TTFNet [32] 7.08 8.93 7.13 8.96 DCCANet [33] 6.78 8.47 6.17 7.54 TFCAV [34] 6.26 8.32 7.49 9.25 WavDepressionNet [35] 6.14 8.20 6.60 8.61 
+
+Visual Modality 
+
+MSN [36] 5.98 7.90 5.82 7.61 TSTM [37] 5.95 7.57 5.86 7.18 LDBM [21] 5.71 6.99 5.36 6.93 Depressformer [38] 5.49 7.47 5.56 7.22 MLM-EOE [9] 5.49 6.84 5.51 7.22 
+
+Multimodal (Audio + Visual) 
+
+FedDAAM [39] 6.78 8.61 6.77 8.59 TMFE-GFN [18] 6.60 9.00 7.05 9.45 AVA-DepressNet [40] 6.23 7.99 5.32 6.83 FDFNet [8] 6.22 7.58 5.21 6.49 MAFF [17] 6.14 8.16 5.21 7.03 Dis2DR [41] 6.12 7.97 5.45 6.61 MFMamba [42] 6.11 7.05 5.16 6.71 VLDSP-TAP-MFB [43] 5.38 6.83 5.03 6.16 
+
+STE-Mamba [44] 5.08 6.94 5.10 6.77 
+
+Ours 4.91 6.54 5.02 6.80 
+
+where ci = 1 if yi ∈ [ˆ yLi , ˆyUi ], and 0 otherwise. A well-calibrated model must yield a PICP ≥ 90% to ensure reliable bounding of true values, while simultaneously minimizing the MPIW to provide informatively sharp diagnostic intervals. 
+
+C. Comparisons with the State-of-the-Arts 
+
+To comprehensively evaluate EviDep, we compare it against a wide range of recent state-of-the-art methods across audio-based, visual-based, and multimodal categories. As shown in Table I, EviDep achieves state-of-the-art results on AVEC 2013 with an MAE of 4.91 and RMSE of 6.54. On AVEC 2014, EviDep attains the best MAE of 5.02. Although VLDSP-TAP-MFB [43] reports a lower RMSE (6.16), our superior MAE highlights a more consistent error reduction across general clinical samples, indicating robust average predictions without overfitting to extreme outliers. Table II presents results on DAIC-WOZ and E-DAIC, two clinical interview corpora annotated with PHQ-8 scores. EviDep achieves the lowest RMSE on both benchmarks and the lowest MAE on E-DAIC. On DAIC-WOZ, FeDAAM [39] reports a slightly lower MAE of 3.68 versus our 3.73; however, EviDep attains a substantially better RMSE of 4.39 versus 4.71, suggesting more stable predictions overall. Unlike the       
+
+> TABLE II COMPARISON WITH STATE -OF -THE -ART METHODS ON DAIC-WOZ AND
+> E-DAIC DATASETS .BOLD AND UNDERLINED DENOTE BEST AND SECOND -BEST PERFORMANCE ,RESPECTIVELY .
+
+Methods DAIC-WOZ E-DAIC 
+
+MAE ↓ RMSE ↓ MAE ↓ RMSE ↓
+
+Audio Modality 
+
+STFN [45] 5.38 6.36 5.38 6.29 AFN [46] 5.67 6.55 - -TTFNet [32] 5.09 6.01 5.00 5.76 AGBiTNet [47] 4.27 5.35 - -MFDS-VAN [48] 4.27 5.34 - -
+
+Visual Modality 
+
+STE-Mamba [44] 4.89 6.28 4.58 5.99 FaceHOG [49] 4.64 5.98 - -HOG-PCA [50] 4.89 6.23 - -MLM-EOE [9] - - 5.05 6.07 LDBM [21] - - 5.13 6.28 
+
+Multimodal (Audio + Visual) 
+
+STE-Mamba [44] 5.18 6.24 5.05 6.21 Dis2DR [41] 4.69 5.49 4.32 5.35 AVA-DepressNet [40] 4.62 5.78 - -FDFNet [8] 4.25 5.34 4.41 5.10 FAU-GF [51] - - 3.77 4.95 FedDAAM [39] 3.68 4.71 - -
+
+Ours 3.73 4.39 3.72 4.60 
+
+task-directed AVEC recordings, these semi-directed dyadic interviews contain prolonged non-diagnostic segments and virtual agent interactions, introducing significant modality-specific noise. By assigning independent uncertainty estimates to disentangled representations, EviDep dynamically down-weights non-pathological variations during fusion, ensuring robust assessment in unconstrained clinical scenarios. 
+
+D. Uncertainty Quantification Analysis 
+
+Reliable depression assessment requires not only accurate predictions but also robust uncertainty quantification. Since standard deterministic networks cannot express predictive con-fidence, their reliability intrinsically falters given ambiguous clinical cues. By formulating severity estimation as an eviden-tial learning process, EviDep inherently quantifies this uncer-tainty. To validate our evidential mechanism, we systematically analyze the outputs across three dimensions: assessing interval estimation reliability, examining the uncertainty-error correla-tion, and providing a qualitative case study to illustrate the model’s dynamic responses during unconstrained interviews. 
+
+1) Reliability Assessment via Interval Estimation: To quan-titatively evaluate the clinical reliability of EviDep’s uncer-tainty estimates, we analyze its performance using the PICP and MPIW metrics under a target coverage of 90% ( α = 0 .1). As presented in Table III, naive uncertainty estimations exhibit severe overconfidence. For instance, QR yields an JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 9     
+
+> TABLE III UNCERTAINTY QUANTIFICATION PERFORMANCE ON THE AVEC 2013
+> AND AVEC 2014 DATASETS (α= 0 .1).
+
+Method AVEC 2013 AVEC 2014 PICP (%) ↑ MPIW ↓ PICP (%) ↑ MPIW ↓
+
+NLL [52] 66.94 17.69 69.57 19.59 QR [53] 22.30 5.38 70.49 16.83 CQR [54] 92.29 27.78 93.06 27.76 CHR [55] 91.20 27.93 92.48 26.16 CDP [10] 95.25 28.29 93.86 26.28 CDP-ACC [10] 91.25 24.13 92.18 23.29 Ours 96.40 26.19 94.00 26.34   
+
+> All intervals are constructed with a target miscoverage rate of α= 0 .1.
+
+extremely narrow MPIW of 5.38 on AVEC 2013 but suf-fers a catastrophic PICP drop to 22.30%, utterly failing to bound the ground truth. Advanced Conformal Prediction (CP) algorithms, such as CQR and CDP, successfully restore the coverage to the 90% threshold via post-hoc calibration. Among them, CDP-ACC achieves the narrowest valid intervals (MPIWs of 24.13 and 23.29). However, such CP methods strictly straddle the minimum acceptable coverage limit. In contrast, EviDep models the evidential distribution di-rectly during the forward pass, eliminating post-hoc calibra-tion. It achieves a safer, more conservative PICP (96.40% and 94.00% on AVEC 2013 and 2014) while maintaining highly competitive MPIWs (26.19 and 26.34). For risk-averse depression screening, this enhanced coverage acts as a vital fail-safe, securely bounding true severity scores to prevent confident but harmful misdiagnoses. 
+
+2) Correlation Between Uncertainty and Prediction Error: 
+
+A trustworthy regression framework should inherently flag predictions that are prone to large errors. To systematically validate this capability, we analyze the correlation between EviDep’s estimated uncertainty and its actual prediction error from two complementary perspectives: static quantile binning and uncertainty-based prediction rejection. First, we partition the AVEC 2014 test samples into four ascending quantiles based on their estimated uncertainty. For each subset, we compute the mean absolute error (MAE) with 90% bootstrap confidence intervals to ensure statistical robustness. As illustrated in Fig. 5, the results exhibit astrict, monotonic positive correlation. In the lowest-uncertainty quartile, EviDep achieves a highly accurate average MAE of 2.12. As the estimated uncertainty increases, the error consistently escalates, peaking at an MAE of 7.07 in the highest quartile. Furthermore, the progressive widening of the bootstrap intervals correctly reflects the heightened error variance associated with highly uncertain inputs. To evaluate the practical utility of this well-calibrated correlation, we further plot the Sparsification Error Curve in Fig. 6. This curve simulates a human-in-the-loop clini-cal scenario where predictions with the highest uncertainty are progressively rejected. By dropping the most uncertain samples, the MAE of the retained subset drops significantly. 0–25% 25–50% 50–75% 75–100%          
+
+> Uncertainty Quantile
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> 7
+> 8
+> 9
+> Average MAE
+> Error vs. Uncertainty Quantile
+> Low Uncertainty
+> High Uncertainty
+> 90% Bootstrap CI ̄
+> x=2.12 ̄
+> x=4.30 ̄
+> x=6.58 ̄
+> x=7.07
+> Fig. 5. Average MAE and 90% bootstrap confidence intervals across four uncertainty quantiles on the AVEC 2014 test set. 010 20 30 40 50 60 70 80
+> Rejection Rate (%)
+> 1
+> 2
+> 3
+> 4
+> 5
+> MAE of Retained Samples
+
+Sparsification Error Curve (MAE)    
+
+> Random Drop Oracle (Ideal) EviDep (Ours)
+> AUSE: 0.789
+> Fig. 6. Sparsification Error Curve evaluated on the AVEC 2014 test set. EviDep effectively tracks the ideal oracle distribution
+
+Notably, EviDep yields an Area Under the Sparsification Error curve (AUSE) of 0.789. At an 80% rejection rate, our evidential mechanism achieves a substantial error reduction (∆rand = 3 .05 ) compared to the random drop baseline, closely tracking the theoretical ideal oracle ( ∆ideal = 1 .28 ). Together, these results empirically validate that EviDep yields a meaningful measure of diagnostic reliability, enabling the system to autonomously flag potentially erroneous assess-ments without requiring ground-truth labels. 
+
+3) Qualitative Clinical Case Study: To explicitly demon-strate how EviDep captures diagnostic ambiguity, Fig. 7 visu-alizes the continuous predictive probability density functions, along with the aleatoric (AU) and epistemic (EU) uncertainties, for four representative subjects. By parameterizing a Student-t distribution, the model allows for direct observation of its confidence landscape and 90% confidence intervals (CIs). For typical subjects with clear multimodal cues, such as 342 3, 220 3, and 245 3, EviDep yields highly concentrated density curves. Supported by consistently low epistemic uncer-tainties (EU ranging from 9.1 to 21.4), the resulting 90% CIs JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 10 0.000                
+
+> 0.025
+> 0.050
+> 0.075
+> Density  y=8.4
+> GT=9
+> AU=36.3
+> EU=9.1
+> 019
+> CI=22.1
+> Minimal (ID:342_3)
+> y=16.4
+> GT=15
+> AU=26.9
+> EU=14.5
+> 627
+> CI=21.1
+> Mild (ID:220_3)
+> 020 40 60
+> BDI-II Score
+> 0.000
+> 0.025
+> 0.050
+> 0.075
+> Density  y=23.1
+> GT=21
+> AU=18.9
+> EU=21.4
+> 13 34
+> CI=20.8
+> Moderate (ID:245_3)
+> 020 40 60
+> BDI-II Score
+> y=28.9 GT=34
+> AU=6.1
+> EU=124.2
+> 10 48
+> CI=37.3
+> Severe (ID:315_2)
+> Evidential Predictive Distributions for Representative Cases
+> Minimal (0 13) Mild (14 19) Moderate (20 28) Severe (29 63)
+> Fig. 7. Evidential predictive distributions and 90% CIs for four representative cases. Solid and dashed vertical lines denote the predicted mean ˆyand ground truth, respectively. Inset boxes report the decomposed aleatoric (AU) and epistemic (EU) uncertainties. Notably, for the challenging severe case (315 2), the model adaptively flattens its distribution (high EU) to encompass the true severity as a risk alert safely.
+
+maintain compact widths between 20.8 and 22.1. Crucially, the predicted means align closely with the ground truth, providing precise and confident numerical boundaries. In contrast, subject 315 2 represents a challenging scenario where the point estimate (28.9) underestimates the actual severe condition (34). However, instead of yielding an over-confident error, EviDep explicitly recognizes the scarcity of evidence for this severe phenotype. Confronted with this unfamiliar clinical pattern, the framework triggers a prominent epistemic uncertainty (EU) spike to 124.2. This elevated EU mathematically flattens the predictive distribution and dynam-ically expands the CI width to 37.3. This adaptively widened interval successfully bounds the true severity, acting as an automated risk-alert mechanism. By proactively flagging its own epistemic limitations, the model demonstrates a critical fail-safe capability for clinical screening. 
+
+E. Ablation Study 
+
+To validate the architectural design and clinical reliabil-ity of EviDep, we conduct a systematic ablation study on the AVEC 2014 and E-DAIC benchmarks. By progressively removing key components and introducing controlled signal degradation, we examine four aspects: (1) the effectiveness of the frequency-aware feature extraction (FFE) module; (2) the role of explicit disentanglement in enabling independent multimodal learning and mitigating overconfident predictions; (3) the contribution of trustworthy evidential regression and Bayesian fusion to predictive reliability; and (4) the robust-ness of the uncertainty-aware paradigm under severe signal degradation and adversarial corruption. 
+
+1) Impact of Frequency-aware Feature Extraction: The Frequency-aware Feature Extraction (FFE) module cascades temporal context modeling and frequency-aware feature re-finement. To rigorously validate its design, we conduct a hier-archical ablation on the sequential stages, the expert allocation, and the dynamic routing mechanism.        
+
+> TABLE IV ABLATION STUDY OF THE FREQUENCY -AWARE FEATURE EXTRACTION
+> (FFE) MODULE ON AVEC 2014 AND E-DAIC.
+
+FFE Variant AVEC 2014 E-DAIC MAE ↓ RMSE ↓ MAE ↓ RMSE ↓
+
+w/o Temporal Modeling 5.32 7.05 4.25 5.12 w/o Frequency Refinement 5.36 7.19 4.27 5.19 w/o MoE 5.27 6.96 4.09 4.92 All-CNN Experts 5.22 7.01 3.91 5.11 All-Transformer Experts 5.16 6.89 4.00 4.86 Reversed MoE 5.23 7.04 4.10 5.22 w/o Gating Router 5.11 6.98 3.93 4.73 
+
+Ours 5.02 6.80 3.72 4.60 
+
+Table IV reveals that ablating either temporal modeling or frequency refinement consistently degrades predictive ac-curacy across both benchmarks. The performance drop is most pronounced when frequency refinement is removed, with RMSE surging by 0.39 and 0.59 points on AVEC 2014 and E-DAIC, respectively. This confirms that monolithic representations fail to isolate transient noise from macro-level affective trends, underscoring the necessity of explicit frequency decomposition. Building upon this, the architectural configuration of the experts proves equally critical. Replacing the heterogeneous MoE with homogeneous alternatives consistently yields sub-optimal results across both benchmarks. The importance of correct expert assignment is further evidenced by the Reversed MoE configuration, where swapping CNN and Transformer assignments raises RMSE by 0.24 and 0.62 points on AVEC 2014 and E-DAIC, respectively. This consistent degradation empirically validates our core inductive bias: assigning CNNs to high-frequency components effectively captures localized transient noise, while Transformers applied to low-frequency components better model long-range affective dependencies. Beyond static structural choices, retaining the heterogeneous experts while removing the dynamic gating network ( w/o Gating Router ) consistently drives the RMSE up. This indi-cates that static frequency decomposition is insufficient; the framework must dynamically scale each expert’s contribution based on real-time signal characteristics to ensure only reliable diagnostic evidence is propagated. 
+
+2) Validity of Disentangled Evidential Learning: As de-tailed in Part A of Table V, removing Lstruct substantially de-grades performance, increasing RMSE by 0.53 and 0.12 points on AVEC 2014 and E-DAIC, respectively. Specifically, omit-ting either the alignment ( Laln ) or orthogonality ( Lorth ) losses degrades predictive accuracy, confirming that explicit regular-ization is vital to separate shared consensus from modality-specific nuances. Furthermore, dropping the reconstruction loss ( Lrec ) hurts performance, proving its essential role in preserving critical diagnostic cues during disentanglement. Crucially, without these decoupling constraints, overlapping representations force the NIG fusion rule to accumulate redun-JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 11 
+
+TABLE V COMPREHENSIVE ANALYSIS OF THE DISENTANGLED EVIDENTIAL 
+
+LEARNING (DEL) MODULE ON AVEC 2014 AND E-DAIC. 
+
+Configuration AVEC 2014 E-DAIC MAE ↓ RMSE ↓ MAE ↓ RMSE ↓
+
+Part A: Loss Constraints 
+
+w/o Lstruct 5.37 7.33 3.93 4.72 w/o Laln 5.19 7.01 3.86 4.80 w/o Lorth 5.18 7.05 3.85 4.65 w/o Lrec 5.17 7.02 3.86 4.61 
+
+Part B: Feature Source Contribution 
+
+Entangled Evidential 5.25 7.13 4.06 5.08 Shared-Only ( τ sh ) 5.11 6.96 3.94 4.78 Private-Only ( τ sp v,a ) 5.20 7.08 3.89 4.64 Single NIG Head 5.15 6.94 3.91 4.82 
+
+Ours 5.02 6.80 3.72 4.60 0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 4.0                   
+
+> Epistemic Uncertainty [Log Scale: log(1 + EU)]
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> Density
+> Median = 0.04
+> Median = 2.45
+> Mann–Whitney U test
+> p < 0.001 ***
+> Cohen's d= 7.96
+> (a) AVEC2014
+> 0.00 0.25 0.50 0.75 1.00 1.25 1.50 1.75
+> Epistemic Uncertainty [Log Scale: log(1 + EU)]
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> Median = 0.41
+> Median = 1.29
+> Mann–Whitney U test
+> p < 0.001 ***
+> Cohen's d= 6.41
+> (b) E-DAIC
+> w/o Dis (Entangled) w/ Dis (Disentangled)
+
+Fig. 8. Density distributions of the predicted Epistemic Uncertainty (EU) on two datasets: (a) AVEC2014 and (b) E-DAIC. Across both datasets, the entangled models (w/o Dis) exhibit pathological overconfidence characterized by sharp spikes near zero, whereas our DEL module (w/ Dis) consistently restores healthy, well-calibrated unimodal distributions, demonstrating robust cross-dataset generalization. 
+
+dant evidence. This artificially inflates diagnostic confidence and inevitably yields overconfident, uncalibrated estimates that severely compromise overall predictive reliability. The feature source ablation (Part B of Table V) further cor-roborates this mechanism. The entangled baseline unexpect-edly underperforms the shared-only branch ( τ sh ), increasing RMSE by 0.17 and 0.30 on AVEC 2014 and E-DAIC. This inversion proves that unstructured fusion directly causes the double-counting of redundant evidence. Furthermore, relying solely on shared or private features degrades performance, confirming the necessity of both. Lastly, the failure of a single NIG head dictates that uncertainty must be parameterized separately for each disentangled branch. The epistemic uncertainty distributions in Fig. 8 provide direct visual evidence of this theoretical violation. The en-tangled models exhibit pathological overconfidence, marked by sharp density spikes near zero epistemic uncertainty. This highlights the severe danger of evidence redundancy, where double-counting entangled features artificially inflates diag-
+
+TABLE VI ABLATION STUDY OF THE TRUSTWORTHY EVIDENTIAL REGRESSION AND 
+
+BAYESIAN FUSION ON AVEC 2014 AND E-DAIC. 
+
+Evidential (NIG) Bayesian Fusion AVEC 2014 E-DAIC MAE ↓ RMSE ↓ MAE ↓ RMSE ↓
+
+✗ ✗ 5.09 6.92 4.34 5.23 
+
+✓ ✗ 5.07 6.88 3.96 4.69 
+
+✓ ✓ 5.02 6.80 3.72 4.60 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9          
+
+> Input Missing Ratio
+> 3.5
+> 4.0
+> 4.5
+> 5.0
+> 5.5
+> 6.0
+> 6.5
+> 7.0
+> MAE
+> (a) Predictive Error under Input Degradation
+> EviDep (Ours)
+> w/o NIG (Deterministic)
+> =1.60
+> 6.87
+> 5.27
+> 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> Input Missing Ratio
+> 2.0
+> 3.0
+> 4.0
+> 5.0
+> 6.0
+> 7.0
+> 8.0
+> Uncertainty Estimation
+> 5.69
+> 4.73
+> (b) Uncertainty Estimation under Input Degradation
+> Aleatoric Uncertainty (AU)
+> Epistemic Uncertainty (EU)
+
+Fig. 9. Performance and uncertainty awareness under varying feature missing rates on the E-DAIC test set. (a) Comparison of MAE between the determin-istic baseline and EviDep. EviDep exhibits a substantial robustness margin as data quality degrades. (b) The aleatoric (AU) and epistemic (EU) uncertainties quantified by EviDep. 
+
+nostic confidence even when the actual predictions yield higher errors. By explicitly separating the shared consensus from private nuances via DEL constraints, EviDep prevents this artificial evidence inflation. Consequently, our approach restores a well-calibrated uncertainty distribution and ensures the trustworthiness of the final diagnostic synthesis. 
+
+3) Effectiveness of Trustworthy Evidential Regression: 
+
+To validate the superiority of the evidential paradigm over conventional deterministic approaches, we conduct a stepwise ablation in Table VI. First, disabling both the NIG formulation and Bayesian fusion degrades the framework into a standard deterministic point-estimation model. This baseline yields the highest errors (e.g., an RMSE of 5.23 on E-DAIC), confirming that deterministic networks struggle to capture the inherent ambiguity of clinical signals. Subsequently, introducing the evidential NIG formulation alone reduces the RMSE by 0.04 and 0.54 points on AVEC 2014 and E-DAIC, respectively. This demonstrates that parameterizing predictions as probabilistic distributions fundamentally outperforms rigid point estimates. Finally, upgrading to the complete Evidence-Guided Bayesian Fusion achieves the lowest overall errors. This confirms that Trustworthy Evidential Regression must be coupled with prin-cipled probabilistic updating to dynamically discount unreli-able modalities and maximize diagnostic accuracy. 
+
+4) System Resilience against Severe Data Degradation: To evaluate the framework’s trustworthiness against severe data corruption, we simulate progressive signal degradation. By randomly masking temporal multimodal features with missing rates ranging from 0.0 to 0.9, we emulate real-world sensor failures or transient occlusions. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 12 
+
+As illustrated in Fig. 9a, the deterministic baseline suffers catastrophic performance degradation when processing highly missing inputs. In contrast, EviDep dynamically discounts cor-rupted evidence streams, establishing a substantial robustness margin that culminates in a significant MAE reduction of 1.60 at the extreme 0.9 missing rate. Importantly, Fig. 9b validates the framework’s diagnostic self-monitoring capability. As data quality deteriorates, the aleatoric uncertainty (AU) sharply increases, accurately quantifying the inherent information loss. Concurrently, the epistemic uncertainty (EU) and its variance expand prominently, explicitly flagging the model’s limitations when processing highly atypical, sparse features. Rather than yielding overconfident misdiagnoses, EviDep captures both objective data noise and its own predictive boundaries, acting as an automated fail-safe alarm for resilient clinical assessment in unreliable environments. V. CONCLUSION 
+
+In this paper, we present EviDep, a trustworthy multimodal depression estimation framework that moves beyond determin-istic point estimation by reformulating the regression task as an evidence-collection process. By integrating a Frequency-aware Feature Extraction module to decouple stable macro-level affective baselines from transient micro-level behavioral bursts, and a Disentangled Evidential Learning strategy to separate cross-modal shared consensus from modality-specific nuances, EviDep ensures that the subsequent Normal-Inverse-Gamma fusion operates on genuinely complementary and low-redundancy diagnostic evidence. Extensive experiments on AVEC 2013, AVEC 2014, DAIC-WOZ, and E-DAIC demon-strate that EviDep achieves state-of-the-art predictive accuracy while maintaining well-calibrated uncertainty estimates, with epistemic uncertainty consistently correlated with actual pre-diction error. These properties collectively establish EviDep as a practically viable framework for risk-aware clinical depres-sion screening, where knowing when not to trust a prediction is as important as the prediction itself. REFERENCES [1] S. Guohou, Z. Lina, and Z. Dongsong, “What reveals about depression level? the role of multimodal features at the level of interview questions,” Information and Management , vol. 57, no. 7, p. 103349, 2020. [Online]. Available: https://www.sciencedirect.com/ science/article/pii/S0378720620302871 [2] L. He, M. Niu, P. Tiwari, P. Marttinen, R. Su, J. Jiang, C. Guo, H. Wang, S. Ding, Z. Wang, X. Pan, and W. Dang, “Deep learning for depression recognition with audiovisual cues: A review,” Information Fusion , vol. 80, pp. 56–86, Apr. 2022. [3] H. Qiu, H. Ma, Z. Zhang, A. Abuadbba, W. Kang, A. Fu, and Y. Gao, “Toward a critical evaluation of robustness for deep learning backdoor countermeasures,” IEEE Transactions on Information Forensics and Security , vol. 19, pp. 455–468, 2024. [4] B. Kompa, J. Snoek, and A. L. Beam, “Second opinion needed: communicating uncertainty in medical machine learning,” npj Digital Medicine , vol. 4, no. 1, p. 4, 2021. [5] A. Lindenmeyer, M. Blattmann, S. Franke, T. Neumuth, and D. Schneider, “Towards trustworthy ai in healthcare: Epistemic uncertainty estimation for clinical decision support,” Journal of Personalized Medicine , vol. 15, no. 2, 2025. [Online]. Available: https://www.mdpi.com/2075-4426/15/2/58 [6] Z. Sun, L. Liu, Z. Li, T. Wang, Z. Sui, N. Ruan, C. He, D. Lin, and J. Li, “Trustworthy dataset proof: Certifying the authentic use of dataset in training models for enhanced trust,” IEEE Transactions on Information Forensics and Security , vol. 21, pp. 1902–1913, 2026. [7] M. Aristodemou, X. Liu, Y. Wang, K. G. Kyriakopoulos, S. Lamboth-aran, and Q. Wei, “Maximizing uncertainty for federated learning via bayesian optimization-based model poisoning,” IEEE Transactions on Information Forensics and Security , vol. 20, pp. 2399–2411, 2025. [8] S. Li, Z. Shao, R. Qin, Y. Huang, P. Liang, X. Li, Y. Jiang, Y. Deng, T. Liu, and X. Tan, “Audio-visual feature disentanglement and fusion network for automatic depression severity prediction,” IEEE Transac-tions on Affective Computing , 2025. [9] Z. Lin, Y. Wang, Y. Zhou, F. Du, and Y. Yang, “Mlm-eoe: Automatic depression detection via sentimental annotation and multi-expert ensem-ble,” IEEE Transactions on Affective Computing , 2025. [10] Y. Li, S. Qu, and X. Zhou, “Conformal depression prediction,” IEEE Transactions on Affective Computing , vol. 16, no. 3, pp. 1814–1824, 2025. [11] Y. Li, Z. Zhang, and X. Zhou, “Fair Uncertainty Quantification for Depression Prediction,” Sep. 2025. [12] J. Cheong, A. Bangar, S. Kalkan, and H. Gunes, “U-fair: Uncertainty-based multimodal multitask learning for fairer depression detection,” in 
+
+Proceedings of the 4th Machine Learning for Health Symposium , ser. Proceedings of Machine Learning Research, S. Hegselmann, H. Zhou, E. Healey, T. Chang, C. Ellington, V. Mhasawade, S. Tonekaboni, P. Argaw, and H. Zhang, Eds., vol. 259. PMLR, 15–16 Dec 2025, pp. 203–218. [Online]. Available: https://proceedings.mlr.press/v259/ cheong25a.html [13] V. Panaite, J. Rottenberg, and L. M. Bylsma, “Daily affective dynamics predict depression symptom trajectories among adults with major and minor depression,” Affective Science , vol. 1, no. 3, pp. 186–198, 2020. [14] H. Ma, Z. Han, C. Zhang, H. Fu, J. T. Zhou, and Q. Hu, “Trustworthy multimodal regression with mixture of normal-inverse gamma distribu-tions,” Advances in Neural Information Processing Systems , vol. 34, pp. 6881–6893, 2021. [15] Y. Wu, B. Shi, B. Dong, Q. Zheng, and H. Wei, “The evidence contraction issue in deep evidential regression: Discussion and solution,” Proceedings of the AAAI Conference on Artificial Intelligence ,vol. 38, no. 19, pp. 21 726–21 734, Mar. 2024. [Online]. Available: https://ojs.aaai.org/index.php/AAAI/article/view/30172 [16] L. He, M. Niu, P. Tiwari, P. Marttinen, R. Su, J. Jiang, C. Guo, H. Wang, S. Ding, Z. Wang, X. Pan, and W. Dang, “Deep learning for depression recognition with audiovisual cues: A review,” 
+
+Information Fusion , vol. 80, pp. 56–86, 2022. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S1566253521002207 [17] M. Niu, J. Tao, B. Liu, J. Huang, and Z. Lian, “Multimodal spatiotem-poral representation for automatic depression level detection,” IEEE transactions on affective computing , vol. 14, no. 1, pp. 294–307, 2020. [18] H. Fan, X. Zhang, Y. Xu, J. Fang, S. Zhang, X. Zhao, and J. Yu, “Transformer-based multimodal feature enhancement networks for mul-timodal depression detection integrating video, audio and remote photo-plethysmograph signals,” Information Fusion , vol. 104, p. 102161, 2024. [19] Y. Pan, Y. Shang, Z. Shao, T. Liu, G. Guo, and H. Ding, “Integrating Deep Facial Priors Into Landmarks for Privacy Preserving Multimodal Depression Recognition,” IEEE Transactions on Affective Computing ,vol. 15, no. 3, pp. 828–836, Jul. 2024. [20] F. Liu, S. Zhao, K. Yin, T. Xu, and E. Chen, “Depformer: A unified framework with bimodal collaborative transformer for depression detection,” in Proceedings of the 33rd ACM International Conference on Multimedia , ser. MM ’25. New York, NY, USA: Association for Computing Machinery, 2025, p. 13930–13936. [Online]. Available: https://doi.org/10.1145/3746027.3762062 [21] Y. Wang, Z. Lin, C. Yang, Y. Zhou, and Y. Yang, “Automatic depression recognition with an ensemble of multimodal spatio-temporal routing features,” IEEE Transactions on Affective Computing , 2025. [22] B. Yang, P. Wang, M. Cao, X. Zhu, S. Wang, R. Ni, and C. Yang, “Uncertainty-aware label contrastive distribution learning for automatic depression detection,” IEEE Transactions on Computational Social Systems , vol. 11, no. 2, pp. 2979–2989, 2024. [23] A. Amini, W. Schwarting, A. Soleimany, and D. Rus, “Deep evidential regression,” in Advances in Neural Information Processing Systems , H. Larochelle, M. Ranzato, R. Hadsell, M. Balcan, and H. Lin, Eds., vol. 33. Curran Associates, Inc., 2020, pp. 14 927– 14 937. [Online]. Available: https://proceedings.neurips.cc/paper files/ paper/2020/file/aab085461de182608ee9f607f3f7d18f-Paper.pdf [24] J. Gao, M. Chen, L. Xiang, and C. Xu, “A comprehensive survey on evidential deep learning and its applications,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 48, no. 3, pp. 2118– 2138, 2026. [25] M. Valstar, B. Schuller, K. Smith, F. Eyben, B. Jiang, S. Bilakhia, S. Schnieder, R. Cowie, and M. Pantic, “AVEC 2013: The Continu-JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 13 
+
+ous Audio/Visual Emotion and Depression Recognition Challenge,” in 
+
+Proceedings of the 3rd ACM International Workshop on Audio/Visual Emotion Challenge , 2013, pp. 3–10. [26] M. Valstar, B. Schuller, K. Smith, T. Almaev, F. Eyben, J. Krajewski, R. Cowie, and M. Pantic, “AVEC 2014: 3D Dimensional Affect and De-pression Recognition Challenge,” in Proceedings of the 4th International Workshop on Audio/Visual Emotion Challenge , 2014, pp. 3–10. [27] J. Gratch, R. Artstein, G. Lucas, G. Stratou, S. Scherer, A. Nazarian, R. Wood, J. Boberg, D. DeVault, S. Marsella, D. Traum, S. Rizzo, and L.-P. Morency, “The distress analysis interview corpus of human and computer interviews,” in Proceedings of the Ninth International Conference on Language Resources and Evaluation (LREC’14) ,N. Calzolari, K. Choukri, T. Declerck, H. Loftsson, B. Maegaard, J. Mariani, A. Moreno, J. Odijk, and S. Piperidis, Eds. Reykjavik, Iceland: European Language Resources Association (ELRA), May 2014, pp. 3123–3128. [Online]. Available: https://aclanthology.org/L14-1421/ [28] F. Ringeval, B. Schuller, M. Valstar, N. Cummins, R. Cowie, L. Tavabi, M. Schmitt, S. Alisamir, S. Amiriparian, E.-M. Messner et al. , “AVEC 2019 Workshop and Challenge: State-of-Mind, Detecting Depression with AI, and Cross-Cultural Affect Recognition,” in Proceedings of the 9th International Workshop on Audio/Visual Emotion Challenge and Workshop , 2019, pp. 3–12. [29] Z. Zhu, G. Huang, J. Deng, G. Ye, J. Chen, J. Li, J. Tian, W. Du, X. Zhou, J. Liu et al. , “WebFace260M: A Benchmark Unveiling the Power of Million-Scale Deep Face Recognition,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2021, pp. 10 492–10 502. [30] S. Team, “Silero vad: pre-trained enterprise-grade voice activity detec-tor (vad), number detector and language classifier,” https://github.com/ snakers4/silero-vad, 2024. [31] M. Niu, J. Tao, B. Liu, J. Huang, and Z. Lian, “Multimodal spatiotem-poral representation for automatic depression level detection,” IEEE Transactions on Affective Computing , vol. 14, no. 1, pp. 294–307, 2023. [32] X. Chen, Z. Shao, Y. Jiang, R. Chen, Y. Wang, B. Li, M. Niu, H. Chen, Q. Hu, J. Wu, C. Yang, and Y. Shang, “Ttfnet: Temporal-frequency features fusion network for speech based automatic depression recognition and assessment,” IEEE Journal of Biomedical and Health Informatics , vol. 29, no. 10, pp. 7536–7548, 2025. [33] Z. Zhao, S. Liu, M. Niu, H. Wang, and B. W. Schuller, “Dense coordinate channel attention network for depression level estimation from speech,” in International Conference on Pattern Recognition . Springer, 2024, pp. 402–413. [34] M. Niu, B. Liu, J. Tao, and Q. Li, “A time-frequency channel attention and vectorization network for automatic depression level prediction,” 
+
+Neurocomputing , vol. 450, pp. 208–218, 2021. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0925231221005981 [35] M. Niu, J. Tao, Y. Li, Y. Qin, and Y. Li, “Wavdepressionnet: Automatic depression level prediction via raw speech signals,” IEEE Transactions on Affective Computing , vol. 15, no. 1, pp. 285–296, 2023. [36] W. C. De Melo, E. Granger, and A. Hadid, “A deep multiscale spa-tiotemporal network for assessing depression from facial dynamics,” 
+
+IEEE transactions on affective computing , vol. 13, no. 3, pp. 1581– 1592, 2020. [37] J. Xu, H. Gunes, K. Kusumam, M. Valstar, and S. Song, “Two-stage temporal modelling framework for video-based depression recognition using graph representation,” IEEE Transactions on Affective Computing ,vol. 16, no. 1, pp. 161–178, 2025. [38] L. He, Z. Li, P. Tiwari, C. Cao, J. Xue, F. Zhu, and D. Wu, “Depressformer: Leveraging video swin transformer and fine-grained local features for depression scale estimation,” Biomedical Signal Processing and Control , vol. 96, p. 106490, 2024. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S1746809424005482 [39] L. He, W. Yang, J. Zhao, H. Chen, and D. Jiang, “Feddaam: Feder-ated domain adversarial learning with attention mechanism for privacy preserving multimodal depression assessment,” IEEE Transactions on Circuits and Systems for Video Technology , 2025. [40] Y. Pan, Y. Shang, Z. Shao, T. Liu, G. Guo, and H. Ding, “Integrating deep facial priors into landmarks for privacy preserving multimodal depression recognition,” IEEE Transactions on Affective Computing ,vol. 15, no. 3, pp. 828–836, 2023. [41] Y. Pan, J. Jiang, K. Jiang, and X. Liu, “Disentangled-multimodal privileged knowledge distillation for depression recognition with incom-plete multimodal data,” in Proceedings of the 32nd ACM international conference on multimedia , 2024, pp. 5712–5721. [42] J. Liu, Y. Shang, M. Yang, Z. Shao, J. Lu, and T. Liu, “Mfmamba: A multimodal fusion state space model for depression recognition,” in 
+
+ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2025, pp. 1–5. [43] M. A. Uddin, J. B. Joolee, and K.-A. Sohn, “Deep multi-modal network based automated depression severity estimation,” IEEE Transactions on Affective Computing , vol. 14, no. 3, pp. 2153–2167, 2023. [44] Z. Lin, Y. Wang, Y. Zhou, F. Du, and Y. Yang, “Ste-mamba: Auto-mated multimodal depression detection through emotional analysis and spatio-temporal information ensemble,” in ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2025, pp. 1–5. [45] Z. Han, Y. Shang, Z. Shao, J. Liu, G. Guo, T. Liu, H. Ding, and Q. Hu, “Spatial–temporal feature network for speech-based depression recog-nition,” IEEE Transactions on Cognitive and Developmental Systems ,vol. 16, no. 1, pp. 308–318, 2024. [46] S. A. Qureshi, S. Saha, M. Hasanuzzaman, and G. Dias, “Multitask representation learning for multimodal estimation of depression level,” 
+
+IEEE Intelligent Systems , vol. 34, no. 5, pp. 45–52, 2019. [47] J. Liu, Y. Shang, M. Yang, Z. Shao, H. Ding, and T. Liu, “Attention-guided bi-direction temporal-aware network for speech-based depression recognition,” Digital Signal Processing , vol. 166, p. 105359, 2025. [Online]. Available: https://www.sciencedirect.com/ science/article/pii/S1051200425003811 [48] Y. Pan, Y. Shang, W. Wang, Z. Shao, Z. Han, T. Liu, G. Guo, and H. Ding, “Multi-feature deep supervised voiceprint adversarial network for depression recognition from speech,” Biomedical Signal Processing and Control , vol. 89, p. 105704, 2024. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S1746809423011370 [49] S. Rathi, B. Kaur, and R. K. Agrawal, “Enhanced depression detection from facial cues using univariate feature selection techniques,” in Pattern Recognition and Machine Intelligence , B. Deka, P. Maji, S. Mitra, D. K. Bhattacharyya, P. K. Bora, and S. K. Pal, Eds. Cham: Springer International Publishing, 2019, pp. 22–29. [50] B. Sun, Y. Zhang, J. He, L. Yu, Q. Xu, D. Li, and Z. Wang, “A random forest regression method with selected-text feature for depression as-sessment,” in Proceedings of the 7th annual workshop on Audio/Visual emotion challenge , 2017, pp. 61–68. [51] C. Fu, F. Qian, Y. Su, K. Su, S. Song, M. Niu, J. Shi, Z. Liu, C. Liu, C. T. Ishi, and H. Ishiguro, “Facial action units guided graph representation learning for multimodal depression detection,” 
+
+Neurocomputing , vol. 619, p. 129106, 2025. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0925231224018770 [52] P. Cui, W. Hu, and J. Zhu, “Calibrated reliable regression using maximum mean discrepancy,” in Advances in Neural Information Processing Systems 33: Annual Conference on Neural Information Processing Systems 2020, NeurIPS 2020, December 6-12, 2020, virtual ,H. Larochelle, M. Ranzato, R. Hadsell, M. Balcan, and H. Lin, Eds., 2020. [Online]. Available: https://proceedings.neurips.cc/paper/ 2020/hash/c74c4bf0dad9cbae3d80faa054b7d8ca-Abstract.html [53] J. W. Taylor, “A quantile regression neural network approach to es-timating the conditional density of multiperiod returns,” journal of forecasting , vol. 19, no. 4, pp. 299–311, 2000. [54] Y. Romano, E. Patterson, and E. Candes, “Conformalized quantile regression,” in Advances in Neural Information Processing Systems ,H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alch´ e-Buc, E. Fox, and R. Garnett, Eds., vol. 32. Curran Associates, Inc., 2019. [Online]. Available: https://proceedings.neurips.cc/paper files/paper/2019/file/5103c3584b063c431bd1268e9b5e76fb-Paper.pdf [55] M. Sesia and Y. Romano, “Conformal prediction using conditional histograms,” in Advances in Neural Information Processing Systems ,M. Ranzato, A. Beygelzimer, Y. Dauphin, P. Liang, and J. W. Vaughan, Eds., vol. 34. Curran Associates, Inc., 2021, pp. 6304– 6315. [Online]. Available: https://proceedings.neurips.cc/paper files/ paper/2021/file/31b3b31a1c2f8a370206f111127c0dbd-Paper.pdf

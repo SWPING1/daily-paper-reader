@@ -1,0 +1,355 @@
+Title: A Lightweight Transformer for Pain Recognition from Brain Activity
+
+URL Source: https://arxiv.org/pdf/2604.16491v1
+
+Published Time: Tue, 21 Apr 2026 00:07:07 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# A Lightweight Transformer for Pain Recognition from Brain Activity 
+
+Stefanos Gkikas 
+
+Honda Research Institute Japan 
+
+Wako City, Japan stefanos.gkikas@jp.honda-ri.com 
+
+Christian Arzate Cruz 
+
+Honda Research Institute Japan 
+
+Wako City, Japan christian.arzate@jp.honda-ri.com 
+
+Yu Fang 
+
+Honda Research Institute Japan 
+
+Wako City, Japan yu.fang@jp.honda-ri.com 
+
+Lu Cao 
+
+Honda Research Institute Japan 
+
+Wako City, Japan lu.cao@jp.honda-ri.com 
+
+Muhammad Umar Khan 
+
+BioSIS (Biosensing & Intelligent Systems) Lab Centre for Intelligent Computing and Systems University of Canberra 
+
+Canberra, Australia umar.khan@canberra.edu.au 
+
+Thomas Kassiotis 
+
+Department of Electronic Engineering Hellenic Mediterranean University 
+
+Chania, Greece ddk305@edu.hmu.gr 
+
+Giorgos Giannakakis 
+
+Department of Electronic Engineering Hellenic Mediterranean University 
+
+Chania, Greece ggian@hmu.gr 
+
+Raul Fernandez Rojas 
+
+BioSIS (Biosensing & Intelligent Systems) Lab Centre for Intelligent Computing and Systems University of Canberra 
+
+Canberra, Australia raul.fernandezrojas@canberra.edu.au 
+
+Randy Gomez 
+
+Honda Research Institute Japan 
+
+Wako City, Japan r.gomez@jp.honda-ri.com 
+
+Abstract —Pain is a multifaceted and widespread phenomenon with substantial clinical and societal burden, making reliable automated assessment a critical objective. This paper presents a lightweight transformer architecture that fuses multiple fNIRS representations through a unified tokenization mechanism, en-abling joint modeling of complementary signal views without requiring modality-specific adaptations or increasing architec-tural complexity. The proposed token-mixing strategy preserves spatial, temporal, and time-frequency characteristics by projecting heterogeneous inputs onto a shared latent representation, using a structured segmentation scheme to control the granularity of local aggregation and global interaction. The model is evaluated on the AI4Pain dataset using stacked raw waveform and power spectral density representations of fNIRS inputs. Experimental results demonstrate competitive pain recognition performance while remaining computationally compact, making the approach suitable for real-time inference on both GPU and CPU hardware. 
+
+Index Terms —Pain assessment, deep learning, neural signals, data fusion 
+
+I. I NTRODUCTION 
+
+Pain serves as an evolutionary function by signaling potential tissue damage or disease to the organism, thereby helping preserve physiological integrity [1]. It is inherently subjective and multidimensional, involving nociceptive, sensory, affective, and cognitive components [2]. Due to its high prevalence and substantial societal burden, pain has been described as a “silent public health crisis ” [3], emphasizing the need for systematic and reliable assessment. Opioid analgesics remain the most frequently prescribed treatment for pain [4], despite their well-documented risks of addiction, overdose [5], and side effects such as sedation, depression, anxiety, and nausea that severely impair daily functioning and quality of life [6]. The subjective and complex nature of pain continues to challenge accurate assessment in both clinical practice and research. Reliance on self-reported measures limits treatment precision and contributes to overprescription and misuse of analgesics. These difficulties are particularly pronounced in medically unstable patients or those unable to communicate effectively [7]. Pain in critically ill adults is often under-recognized and inadequately managed, mainly due to the scarcity of objective, standardized assessment tools [8]. Cancer-related pain is especially common, particularly in advanced stages of the disease [9]. In addition, pain directly affects attention, functional performance, and cognitive processing speed [10]. For instance, Li et al. [11] showed that pain disrupts cognitive control by impairing expectancy processing and decision formation. Moore et al. [12] demonstrated that both chronic and experimentally induced pain alter attentional performance in a task-dependent manner. Pain assessment strategies span multiple modalities, each with distinct advantages and limitations. Self-report instruments, such as numerical rating scales and standardized questionnaires, remain the clinical gold standard because they directly capture the subjective experience of pain. However, their reliability is limited in patients who cannot communicate effectively, including critically ill, sedated, cognitively impaired, or pedi-atric populations. In such cases, behavioral observation methods based on facial expressions, vocalizations, and body movements 
+
+> arXiv:2604.16491v1 [cs.CV] 13 Apr 2026
+
+are used to infer pain levels [13]. Physiological signals, including electrocardiography and skin conductance, have also been explored as objective indicators of nociceptive responses [14]. However, these measures often reflect general stress or arousal rather than pain-specific neural activity, motivating the use of neuroimaging approaches capable of directly capturing cortical processes associated with pain perception. Functional near-infrared spectroscopy (fNIRS) has emerged as a promising noninvasive neuroimaging modality for cap-turing cortical activity related to pain. It monitors changes in cerebral hemodynamics and oxygenation by simultaneously measuring concentrations of oxygenated hemoglobin (HbO) and deoxygenated hemoglobin (HbR) in the cortex [15]. Studies have consistently shown that noxious stimuli elicit distinct oxygenation changes across multiple cortical regions in both healthy subjects and clinical populations [16]. This work explores brain activity using fNIRS, evaluat-ing two representations: the original 1D multichannel wave-forms and their time-frequency spectrograms. We introduce a lightweight transformer-based architecture that performs multi-stream, multi-representation fusion through a specialized token-mixing mechanism, achieving strong performance while maintaining computational efficiency. II. R ELATED WORK 
+
+Over the last decade, research on automatic pain assessment has grown rapidly. This progress has been accompanied by a transition from classical image- and signal-processing pipelines to deep learning-based approaches, although conventional methods still perform well, especially when data are limited [17]. Most existing methods focus on video, aiming to capture behavioral manifestations of pain through facial expressions, body motion, and other observable cues, and they employ a broad range of learning strategies [18]–[21]. Although video-based approaches dominate the field, an increasing number of studies have also investigated biosignal-driven pain recognition, using physiological markers from electrocardiography [22], [23], electromyography [24]–[26], electrodermal activity (EDA) [27]–[32], and brain activity measured with functional near-infrared spectroscopy [15], [16], [33]–[36]. Several pain studies have employed fNIRS in conjunction with machine learning to extract informative features and discriminate between pain con-ditions. In [37], a bag-of-words representation combined with a K-NN classifier on time–frequency features outperformed using time- or frequency-domain features alone. In contrast, [38] reported the best results by combining time- and frequency-domain features with a Gaussian SVM, while [33] used raw fNIRS signals with a two-layer BiLSTM, achieving 90 .60% 
+
+accuracy in a multi-class classification task. Finally, [39] proposed a hybrid CNN–LSTM architecture to capture spatio-temporal patterns in fNIRS and reported high performance. Multimodal pain recognition has also gained momentum, with evidence that combining behavioral and physiological information can improve robustness and predictive performance [40]–[42]. In [43], the authors fused features extracted from ECG and EDA and applied tree-based classifiers for pain recognition. Similarly, [44] combined wavelet-based features from ECG and EMG and used a k-nearest neighbor classifier. Beyond biosignals, [45] integrated facial and voice features in pediatric postoperative settings, reporting strong performance and further underscoring the value of multimodal modeling. III. M ETHODOLOGY 
+
+This section details the preprocessing pipeline for fNIRS signals, describes the augmentation and regularization strategies used for pain recognition, and presents the proposed transformer model, along with its underlying tokenization approach. 
+
+A. Pre-processing 
+
+In the preprocessing stage, the fNIRS signals are utilized in their original waveform format (as multichannel 1D vectors) and also as spectrogram representations derived from the raw signals. These spectrograms are computed via short-time power spectral density (PSD) estimation over successive sliding windows, yielding 2D time-frequency representations that are resized to 224 × 224 pixels. The proposed methodology can handle both filtered and unfiltered raw signals, as it does not rely on hand-crafted feature engineering. However, in cases of heavy noise contamination, a denoising step may be beneficial. In this study, unfiltered signals are employed. 
+
+B. Architecture 
+
+The architecture uses the unified token representation produced by the proposed tokenization method, allowing a single model to process inputs with different dimensionalities, structures, or modalities. A set of learnable latent vectors interacts with the input token sequence through cross-attention and is iteratively refined using self-attention and feedforward layers [46]. This design preserves a fixed latent dimensionality while adapting to variations in input resolution, sequence length, and modality. The approach imposes a structured latent bottleneck by partitioning the token sequence into segments and associating a latent vector with each segment. Specifically, for an input tensor: 
+
+X ∈ RA1×···× AD ×C , (1) 
+
+D denotes the number of input axes, A1, . . . , A D the axis sizes, and C the number of channels per input location. The number of axes D is kept small (typically D ∈ { 1, 2}) by folding modality-specific factors into the channel dimension. For 2D inputs, D = 2 and A1 × A2 = H × W , where H
+
+and W denote the height and width, yielding X ∈ RH×W ×C .Multiple image-like representations per sample (e.g., fNIRS spectrograms) are concatenated along the channel dimension, with C representing the total number of channels. For 1D inputs such as fNIRS waveforms, D = 1 and X ∈ RL×C ,where L is the temporal length and C the number of signal channels. The input axes are flattened into a sequence of N tokens, where N equals the number of spatial or temporal positions (e.g. , N = H × W for D = 2 and N = L for D = 1 ). Each token is a vector comprising the input data features and positional embeddings. Positional information is encoded using Fourier features. For positions p ∈ [−1, 1] D , the encoding with 
+
+K frequency bands and maximum frequency fmax is: 
+
+γ(p) =  sin( πsp ), cos( πsp ), p, (2) where s = [ s1, . . . , s K ]⊤ with {sk}Kk=1 spanning [1 , f max /2] .After flattening, data channels and positional features are concatenated to form the token matrix: 
+
+T ∈ RN ×C′
+
+, C′ = C + D(2 K + 1) . (3) Multi-head attention (MHA) splits queries, keys, and values into H heads, computes scaled dot-product attention per head, and concatenates the results: 
+
+MHA( Q, K, V) = Concat(head 1, . . . , head H )WO , (4) where 
+
+head h = softmax 
+
+ QhK⊤
+
+> h
+
+√dh
+
+
+
+Vh, (5) and Qh = QW Qh , with analogous projections for keys and values. Cross-attention and self-attention employ the same mechanism, differing only in the context: 
+
+MHA( Q, K, V) = MHA( XW Q, CW K , CW V ), (6) where queries come from X = L, and the context is C = T
+
+for cross-attention or C = L for self-attention. The architecture maintains a structured set of latent states by partitioning the token sequence into S contiguous segments, assigning one latent state to each segment. Tokens are formed as described, yielding T ∈ RN ×C′
+
+. The sequence is partitioned into S segments of length ns = ⌈N/S ⌉, padded to ˜N = Sn s,and reshaped as: ˜T ∈ RS×ns×C′
+
+. (7) The tokens of segment s are denoted ˜Ts ∈ Rns×C′
+
+. Seg-ment states are initialized at runtime by replicating a shared learnable vector ℓinit ∈ Rd across segments. These states are not independent parameters; segment-specific representations emerge from local attention updates. Each layer updates the latent states via attention-based aggregation followed by mixing, with pre-normalization, residual connections, and a position-wise feedforward network. Specifically, each segment state aggregates information from its assigned tokens through local cross-attention: 
+
+e(ℓ) 
+
+> s
+
+= e(ℓ−1)  
+
+> s
+
++ Attn  e(ℓ−1)  
+
+> s
+
+, ˜Ts
+
+, (8) where e(ℓ) 
+
+> s
+
+∈ Rd and Attn( L, C) denotes a pre-normalized multi-head attention block with queries from L and key-values from C, followed by a feedforward transformation. Stacking segment states yields E(ℓ) ∈ RS×d. Inter-segment communication occurs via self-attention on the segment states: 
+
+E(ℓ) ← E(ℓ) + Attn  E(ℓ), E(ℓ), (9) applied multiple times per layer to enhance latent interactions. Local cross-attention is parallelized by treating segments as batch elements, without changing the computation. After L
+
+TABLE I: Architectural details.           
+
+> Hyperparameter Value
+> Depth ( L)4Number of latents ( M)32 Latent dimension ( d)128 Cross-attention heads 1Latent self-attention heads 8Cross-attention head dimension 64 Latent attention head dimension 64 Self-attention blocks per cross ( R)8
+
+TABLE II: Training configuration.          
+
+> Optimizer LR LR decay Weight decay Total epochs Warmup epochs Cooldown epochs Batch size
+> AdamW 2e-5 cosine 0.1 200 20 10 32
+
+layers, the final segment states E(L) provides the representation for prediction. Figure 1 illustrates the proposed architecture in a multimodal setup, fusing fNIRS waveforms and their spectrograms. Model hyperparameters for all experiments are summarized in Table I, while Table II presents the training setup. IV. E XPERIMENTAL EVALUATION & R ESULTS 
+
+This study utilizes the AI4Pain dataset [47], [48], comprising synchronized facial videos and fNIRS recordings from 65 
+
+participants. The dataset was gathered at the Human–Machine Interface Laboratory at the University of Canberra, Australia, and divided into 41 subjects for training, 12 for validation, and 
+
+12 for testing. To induce controlled pain stimuli, transcutaneous electrical nerve stimulation electrodes were placed on the inner forearm and the dorsum of the right hand. Pain threshold denotes the lowest stimulus intensity perceived as painful (low pain), whereas pain tolerance denotes the highest intensity a participant can tolerate before it becomes unbearable (high pain). For the fNIRS modality, 24 oxygenated hemoglobin (HbO) channels were employed. All experiments use a three-class classification scheme (No Pain, Low Pain, High Pain) and are evaluated under a hold-out strategy on the validation set, reporting macro-averaged accuracy, precision, and F1 score. Comparisons with previous methods on the testing set are detailed in Section V. 
+
+A. Impact of Latent Segmentation on fNIRS Representations 
+
+Table III reports performance and computational charac-teristics of the proposed framework on fNIRS inputs across different latent segmentation settings, considering both raw waveform and spectrogram-based PSD representations using all 24 channels. Varying the number of segments reorganizes how tokens aggregate into latent states without changing token dimensionality, primarily influencing the cost of segment-level interactions and the granularity of localized representation learning. For the waveform representation, accuracy remains stable across segment number, increasing from 43 .94% in ch-1 
+
+> ch-2
+> ch-24
+> …
+
+fNIRS - Waveforms 
+
+fNIRS - Spectrograms 
+
+> ch-1
+> ch-2
+> ch-24
+> …
+
+Tokenization 
+
+> …
+> …
+> …
+> …
+> …
+> ……
+> interpolation
+> …
+> …
+> …
+> …
+> …
+> ……
+> …
+> …
+> …
+> …
+> …
+> ……
+> …
+> …
+> …
+> …
+> …
+> ……
+> ..
+> axis folding
+> …
+> …
+> …
+> …
+> …
+> ……
+> …
+> …
+> …
+> …
+> …
+> ……
+> …
+> …
+> …
+> …
+> …
+> ……
+> ..
+> channel concat
+> ………
+> ..
+> flatten
+> spatial axes
+> …………
+> ..
+> & Fourier features
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> token segmentation
+> (S=32)
+> ..
+
+Fig. 1: Overview of the proposed tokenization framework, using videos and fNIRS. the unsegmented configuration to 47 .18% at 32 segments, with most settings clustering around the mid-46% range. Precision and F1 exhibit similar consistency, indicating that segmentation does not introduce unstable optimization behavior. Computationally, waveform inputs remain lightweight, with GFLOPs increasing gradually as the number of segments grows, while GPU latency remains nearly constant (approximately 13 –
+
+14 ms) across all settings, showing that finer latent structuring improves representational capacity without sacrificing inference speed. For the PSD representation, performance is consistently higher than the waveform across all segment counts. Accuracy remains above 49% throughout, peaking at 52 .31% with 2
+
+segments and remaining strong even as segmentation increases. Precision and F1 follow similar trends, reinforcing that the time– frequency structure provides more discriminative information about pain-related cortical dynamics. Although PSD incurs higher GFLOPs due to higher-dimensional tokenization, GPU latency remains comparable to waveform, indicating efficient scaling with richer representations. Figure 2 presents mean accuracy averaged across waveform and spectrogram repre-sentations, alongside GFLOPs and GPU latency for the latent segmentation settings reported in Table III. As the number of segments increases, the computational cost rises gradually, while recognition accuracy remains largely stable, with limited sensitivity to the segmentation level. Segment numbers between 
+
+2 and 16 yield lower GFLOPs and reduced GPU latency than the unsegmented global representation, while maintaining comparable performance. 
+
+B. Representation Fusion 
+
+The effect of combining complementary fNIRS represen-tations is examined by stacking the waveform and PSD tensors along the channel dimension, thereby enabling joint modeling with a single shared backbone. For this analysis, Global 2 4 8 16 32 64    
+
+> Number of Segments
+> 44
+> 46
+> 48
+> 50
+> 52
+> 54
+> Accuracy (%)
+> fNIRS: Accuracy, GFLOPs, and GPU Latency
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12
+> 14
+> GFLOPs
+> 13.2
+> 13.5
+> 13.7
+> 14.0
+> 14.2
+> 14.5
+> GPU Latency (ms)
+> Mean Accuracy Max Accuracy GFLOPs GPU Latency
+
+Fig. 2: Effect of latent segmentation on fNIRS accuracy (averaged across waveform and spectrogram representations) versus computational and inference cost. 
+
+S = 32 segments are selected, as this configuration provides strong unimodal performance with balanced computational and inference costs. The fusion results are reported in Table IV. Stacking waveform and PSD achieves 48 .52% accuracy, 
+
+45 .62% precision, and 44 .62% F1 score, indicating that tem-poral dynamics in the raw signal and time–frequency structure in the PSD encode complementary information relevant to pain perception. The increase in computational cost remains modest, comparable to PSD-only processing, while inference latency remains within the same efficient regime on both GPU and CPU. To enable representation fusion, the 1D waveform grid is projected onto a 2D layout through interpolation and concatenated with the PSD tensor along the channel dimension: 
+
+Xstack = Cat C
+
+ I(Xwave ), XPSD , (10) where I denotes interpolation from the C × L waveform structure to a single H × W tensor. TABLE III: Performance and computational/inference cost of fNIRS representations across latent segmentation settings.                                                                                                                                                               
+
+> Input #Segm. Computational Cost Inference Cost Performance Params(M) GFLOPs Latency (ms) GPU ↓Samples/s GPU ↑Latency (ms) CPU ↓Samples/s CPU ↑Accuracy Precision F1 fNIRS-Wave –7.81 2.58 14.26 70.14 22.44 44.56 43.94 42.94 39.34 fNIRS-PSD –15.05 15.07 14.36 69.64 56.14 17.81 49.26 47.91 39.90 fNIRS-Wave 27.81 0.25 13.33 74.99 11.33 88.27 46.06 42.63 43.20 fNIRS-PSD 215.05 12.74 13.40 74.62 51.03 19.59 52.31 46.66 47.76
+> fNIRS-Wave 47.81 0.41 14.31 69.90 11.80 84.75 46.99 44.32 43.59 fNIRS-PSD 415.05 12.90 13.58 73.63 45.02 22.21 51.53 46.12 47.11 fNIRS-Wave 87.81 0.41 13.62 73.39 13.80 72.48 46.90 43.74 42.96 fNIRS-PSD 815.05 13.21 13.39 74.70 45.98 21.75 51.67 49.58 43.06 fNIRS-Wave 16 7.81 1.34 13.48 74.16 17.95 55.72 45.05 42.64 39.42 fNIRS-PSD 16 15.05 13.83 13.84 72.25 46.11 21.69 52.04 46.59 45.88 fNIRS-Wave 32 7.81 2.58 13.50 74.06 22.97 43.54 47.18 43.54 41.34 fNIRS-PSD 32 15.05 15.07 14.64 68.31 48.88 20.46 51.16 45.42 45.70 fNIRS-Wave 64 7.81 5.07 14.09 70.99 31.94 31.31 46.85 42.19 41.81 fNIRS-PSD 64 15.05 17.56 13.99 71.48 51.83 19.29 49.81 29.01 36.67
+> Notes: For fNIRS, we use all available channels ( 24 ). The bold font marks the highest score within each modality, while the underline marks the second-highest. Segm.: Segments
+
+TABLE IV: Performance and computational/inference cost for the representation fusion.                       
+
+> Modality Fusion Computational Cost Inference Cost Performance Params(M) GFLOPs Latency (ms) GPU ↓Samples/s GPU ↑Latency (ms) CPU ↓Samples/s CPU ↑Accuracy Precision F1 fNIRS-Wave stack 15.15 15.20 13.79 72.54 49.00 20.41 48.52 45.62 44.62 fNIRS-PSD
+
+V. C OMPARISON WITH EXISTING METHODS 
+
+Table V presents a comparison of the AI4Pain testing set across video-based, fNIRS-based, and multimodal ap-proaches. Classical handcrafted-feature pipelines have limited capacity to capture complex pain-related patterns, with the SVM framework in [47] achieving at most 43 .30% accuracy across modalities. Deep learning methods yield consistent improvements: the multimodal transformer in [49] achieves 
+
+46 .67% , followed by a video-only CNN at 49 .00% [50], and a CNN–Transformer fusion at 51 .33% [51]. The ensemble classifier in [52] reaches 53 .66% using handcrafted fNIRS features, while the video transformer in [53] achieves 55 .00% .The multimodal transformer in [54] reports the strongest result at 55 .69% through joint video–fNIRS learning. The proposed method achieves 50 .00% accuracy on the testing set using stacked waveform and PSD fNIRS representations. Relying exclusively on cortical signals without any behavioral input, this result surpasses all classical fNIRS pipelines and remains competitive with multimodal systems, supporting the viability of unified tokenization and representation fusion for fNIRS-based pain recognition. VI. C ONCLUSION 
+
+This work presented a lightweight transformer for fNIRS-based pain recognition, built around a unified tokenization and latent segmentation strategy that supports multi-representation fusion without architectural specialization. Evaluated on the 
+
+AI4Pain dataset, the model achieves stable recognition perfor-mance across a broad range of computational configurations, with segment numbers between 2 and 16 offering the most favorable balance between efficiency and accuracy. Fusing raw TABLE V: Comparison of studies on the AI4Pain testing set. 
+
+Study Modality Method Accuracy Video fNIRS Features Model — ✓ 43.30 
+
+✓ — 40.10 [47] 
+
+✓ ✓
+
+Handcrafted SVM 41.70 [49] ✓ ✓ Deep Transformer 46.67 [50] ✓ — Deep 2D CNN 49.00 [51] ✓ ✓ Deep CNN-Transformer 51.33 [52] — ✓ Handcrafted ENS 53.66 [53] ✓ — Deep Transformer 55.00 — ✓ 52.60 
+
+✓ — 53.67 [54] 
+
+✓ ✓
+
+Deep Transformer 55.69 Our — ✓ Deep Transformer 50.00 †  
+
+> ✓indicates the modality is used – indicates not used ENS: Ensemble Classifier
+> †: Wave & PSD stack fusion
+
+waveform and PSD representations shows strong performance and confirms that temporal and time–frequency structures capture complementary information relevant to cortical pain dynamics. However, further exploration is needed to better understand the strengths and limitations of different represen-tations. Despite relying only on brain activity and operating under tight computational constraints, the proposed method surpasses classical fNIRS pipelines and remains competitive with multimodal deep learning systems that incorporate behav-ioral signals. These results support the effectiveness of efficient transformer designs for neurophysiological pain assessment in constrained settings [55], [56]. This is relevant to clinical and interactive environments [57], [58], where social robots could use real-time estimates of pain and cognitive states to adapt their interactions with users [59]–[64]. REFERENCES [1] V. Santiago, “Painful truth: The need to re-center chronic pain on the functional role of pain,” Journal of Pain Research , vol. 15, pp. 497–512, 2022. [2] S. Marchand, The pain phenomenon . Springer Nature, 2024, vol. 13. [3] J. G. Katzman and R. M. Gallagher, “Pain: The silent public health epidemic,” Journal of Primary Care & Community Health , vol. 15, p. 21501319241253547, 2024. [4] A. D. Kaye, M. R. Jones, A. M. Kaye, J. G. Ripoll, V. Galan, B. D. Beakley, F. Calixto, J. L. Bolden, R. D. Urman, and L. Manchikanti, “Prescription opioid abuse in chronic pain: an updated review of opioid abuse predictors and strategies to curb opioid abuse: part 1,” Pain physician , vol. 20, no. 2, p. S93, 2017. [5] A. Stampas, C. Pedroza, J. N. Bush, A. R. Ferguson, J. L. K. Kramer, and M. Hook, “The first 24 h: opioid administration in people with spinal cord injury and neurologic recovery,” Spinal Cord , vol. 58, no. 10, pp. 1080–1089, 2020. [6] R. Benyamin, A. M. Trescot, S. Datta, R. M. Buenaventura, R. Adlaka, N. Sehgal, S. E. Glaser, and R. Vallejo, “Opioid complications and side effects,” Pain physician , vol. 11, no. 2S, p. S105, 2008. [7] K. A. Puntillo, D. Stannard, C. Miaskowski, K. Kehrle, and S. Gleeson, “Use of a pain assessment and intervention notation (p.a.i.n.) tool in critical care nursing practice: Nurses’ evaluations,” Heart & Lung , vol. 31, no. 4, pp. 303–314, 2002. [8] D. Meehan, M. McRae, D. Rourke, C. Eisenring, and F. Imperial, “Analgesic administration, pain intensity, and patient satisfaction in cardiac surgical patients,” American Journal of Critical Care , vol. 4, no. 6, pp. 435–442, 1995. [9] R. A. H. Snijders, L. Brom, M. Theunissen, and M. H. J. van den Beuken-van Everdingen, “Update on prevalence of pain in patients with cancer 2022: A systematic literature review and meta-analysis,” Cancers ,vol. 15, no. 3, 2023. [10] T. Khera and V. Rangasamy, “Cognition and pain: A review,” Frontiers in Psychology , vol. Volume 12 - 2021, 2021. [11] J. Li, X. Lyu, X. Li, X. Yang, L. Weng, Y. Wang, and W. Peng, “Pain in focus: How persistent pain disrupts the attentional bias towards pain-related information,” NeuroImage , vol. 321, p. 121539, 2025. [12] D. J. Moore, S. M. Meints, A. Lazaridou, D. Johnson, O. Franceschelli, M. Cornelius, K. Schreiber, and R. R. Edwards, “The effect of induced and chronic pain on attention,” The Journal of Pain , vol. 20, no. 11, pp. 1353–1361, 2019. [13] R. Fernandez Rojas, N. Brown, G. Waddington, and R. Goecke, “A systematic review of neurophysiological sensing for the assessment of acute pain,” NPJ Digital Medicine , vol. 6, no. 1, p. 76, 2023. [14] S. Gkikas and M. Tsiknakis, “Automatic assessment of pain based on deep learning methods: A systematic review,” Computer Methods and Programs in Biomedicine , vol. 231, p. 107365, 2023. [15] R. F. Rojas, X. Huang, and K.-L. Ou, “Region of interest detection and evaluation in functional near infrared spectroscopy,” Journal of Near Infrared Spectroscopy , vol. 24, no. 4, pp. 317–326, 2016. [16] R. Fernandez Rojas, M. Liao, J. Romero, X. Huang, and K.-L. Ou, “Cortical network response to acupuncture and the effect of the hegu point: An fnirs study,” Sensors , vol. 19, no. 2, 2019. [17] S. Gkikas, “A pain assessment framework based on multimodal data and deep machine learning methods,” 2025, arXiv preprint arXiv:2505.05396. [Online]. Available: https://arxiv.org/abs/2505.05396 [18] D. Huang, X. Feng, H. Zhang, Z. Yu, J. Peng, G. Zhao, and Z. Xia, “Spatio-temporal pain estimation network with measuring pseudo heart rate gain,” IEEE Transactions on Multimedia , vol. 24, pp. 3300–3313, 2022. [19] G. Bargshady, C. Joseph, N. Hirachan, R. Goecke, and R. F. Rojas, “Acute pain recognition from facial expression videos using vision transformers,” in 2024 46th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC) , 2024, pp. 1–4. [20] S. Gkikas and M. Tsiknakis, “A full transformer-based framework for automatic pain estimation using videos,” in 2023 45th Annual International Conference of the IEEE Engineering in Medicine & Biology Society (EMBC) , 2023, pp. 1–6. [21] ——, “Synthetic thermal and rgb videos for automatic pain assessment utilizing a vision-mlp architecture,” in 2024 12th International Conference on Affective Computing and Intelligent Interaction Workshops and Demos (ACIIW) , 2024, pp. 4–12. [22] S. Gkikas., C. Chatzaki., E. Pavlidou., F. Verigou., K. Kalkanis., and M. Tsiknakis., “Automatic pain intensity estimation based on electrocardiogram and demographic factors.” SciTePress, 2022, pp. 155–162. [23] S. Gkikas, C. Chatzaki, and M. Tsiknakis, “Multi-task neural networks for pain intensity estimation using electrocardiogram and demographic factors,” in Information and Communication Technologies for Ageing Well and e-Health . Springer Nature Switzerland, 2023, pp. 324–337. [24] P. Thiam, P. Bellmann, H. A. Kestler, and F. Schwenker, “Exploring deep physiological models for nociceptive pain recognition,” Sensors ,vol. 19, p. 4503, 10 2019. [25] M. S. Patil and H. D. Patil, “Ensemble neural networks for multimodal acute pain intensity evaluation using video and physiological signals,” 
+
+Journal of Computational Analysis and Applications (JoCAAA) , vol. 33, no. 05, p. 779–791, Sep. 2024. [26] E. Pavlidou and M. Tsiknakis, “Multimodal pain assessment based on physiological biosignals: The impact of demographic factors on perception and sensitivity,” in Proceedings of the 11th International Conference on Information and Communication Technologies for Ageing Well and e-Health - ICT4AWE , INSTICC. SciTePress, 2025, pp. 320– 329. [27] X. Ji, T. Zhao, W. Li, and A. Zomaya, “Automatic pain assessment with ultra-short electrodermal activity signal,” in Proceedings of the 38th ACM/SIGAPP Symposium on Applied Computing , ser. SAC ’23. New York, NY, USA: Association for Computing Machinery, 2023, p. 618–625. [28] K. N. Phan, N. K. Iyortsuun, S. Pant, H.-J. Yang, and S.-H. Kim, “Pain recognition with physiological signals using multi-level context information,” IEEE Access , vol. 11, pp. 20 114–20 127, 2023. [29] Z. Lu, B. Ozek, and S. Kamarthi, “Transformer encoder with multiscale deep learning for pain classification using physiological signals,” Frontiers in Physiology , vol. 14, 2023. [30] J. Li, J. Luo, Y. Wang, Y. Jiang, X. Chen, and Y. Quan, “Automatic pain assessment based on physiological signals: Application of multi-scale networks and cross-attention cross-attention,” in Proceedings of the 2024 13th International Conference on Bioinformatics and Biomedical Science ,ser. ICBBS ’24. New York, NY, USA: Association for Computing Machinery, 2025, p. 113–122. [31] S. Aziz, C. Joseph, N. Hirachan, L. Murtagh, G. Chetty, R. Goecke, and R. Fernandez-Rojas, “A two-stage architecture for identifying and locating the source of pain using novel multi-domain binary patterns of eda,” Biomedical Signal Processing and Control , vol. 104, p. 107454, 2025. [32] S. Gkikas, I. Kyprakis, and M. Tsiknakis, “Multi-representation diagrams for pain recognition: Integrating various electrodermal activity signals into a single image,” in Companion Proceedings of the 27th International Conference on Multimodal Interaction , ser. ICMI Companion ’25. New York, NY, USA: Association for Computing Machinery, 2025, p. 162–171. [33] R. F. Rojas, J. Romero, J. Lopez-Aparicio, and K.-L. Ou, “Pain assessment based on fnirs using bi-lstm rnns,” in 2021 10th International IEEE/EMBS Conference on Neural Engineering (NER) , 2021, pp. 399– 402. [34] M. U. Khan, M. Sousani, N. Hirachan, C. Joseph, M. Ghahramani, G. Chetty, R. Goecke, and R. Fernandez-Rojas, “Multilevel pain assessment with functional near-infrared spectroscopy: Evaluating δhbo 2
+
+and δhhb measures for comprehensive analysis,” Sensors , vol. 24, no. 2, 2024. [35] R. Fernandez Rojas, C. Joseph, G. Bargshady, and K.-L. Ou, “Empirical comparison of deep learning models for fnirs pain decoding,” Frontiers in Neuroinformatics , 2024. [36] G. Bargshady, S. Aziz, S. Gkikas, M. Tsiknakis, R. Goecke, and R. Fernandez Rojas, “Pain assessment using multi-kernel-fcn-lstm and haemoglobin difference in fnirs,” ACM Trans. Comput. Healthcare , 2025. [37] R. F. Rojas, X. Huang, J. Romero, and K.-L. Ou, “fnirs approach to pain assessment for non-verbal patients,” in Neural Information Processing .Cham: Springer International Publishing, 2017, pp. 778–787. [38] R. Fernandez Rojas, X. Huang, and K.-L. Ou, “A machine learning approach for the identification of a biomarker of human pain using fnirs,” 
+
+Scientific reports , vol. 9, no. 1, p. 5645, 2019. [39] R. Fernandez Rojas, C. Joseph, G. Bargshady, and K.-L. Ou, “Empirical comparison of deep learning models for fnirs pain decoding,” Frontiers in Neuroinformatics , vol. 18, 2024. [40] J. Farmani, G. Bargshady, S. Gkikas, M. Tsiknakis, and R. Fernandez Rojas, “A crossmod-transformer deep learning framework for multi-modal pain detection through eda and ecg fusion,” Scientific Reports , vol. 15, no. 1, p. 29467, 2025. [Online]. Available: https://doi.org/10.1038/s41598-025-14238-y [41] S. Gkikas, N. S. Tachos, S. Andreadis, V. C. Pezoulas, D. Zaridis, G. Gkois, A. Matonaki, T. G. Stavropoulos, and D. I. Fotiadis, “Mul-timodal automatic assessment of acute pain through facial videos and heart rate signals utilizing transformer-based architectures,” Frontiers in Pain Research , vol. 5, 2024. [42] M. U. Khan, G. Chetty, S. Gkikas, M. Tsiknakis, R. Goecke, and R. Fernandez-Rojas, “Giaformer: A gradient-infused attention and transformer for pain assessment with eda-fnirs fusion,” Information Fusion , vol. 131, p. 104173, 2026. [43] H. Shi, B. Chikhaoui, and S. Wang, “Tree-based models for pain detection from biomedical signals,” in Participative Urban Health and Healthy Aging in the Age of AI . Springer International Publishing, 2022, pp. 183–195. [44] S. Jerritta, M. Murugappan, D. Manasa, and R. Gayathri, “Discrete wavelet transform based pain assessment using multiple physiological signals,” in 2022 First International Conference on Electrical, Electronics, Information and Communication Technologies (ICEEICT) , 2022, pp. 1–7. [45] Z. Liang, H. Luo, X. Chen, Z. Zhong, C. Fan, X. Song, B. Li, and J. Lv, “A multi-modal multi-expert framework for pain assessment in postoperative children,” IEEE Transactions on Affective Computing , vol. 16, no. 4, pp. 2828–2841, 2025. [46] S. Gkikas, I. Kyprakis, and M. Tsiknakis, “Efficient pain recognition via respiration signals: A single cross-attention transformer multi-window fusion pipeline,” in Companion Proceedings of the 27th International Conference on Multimodal Interaction , ser. ICMI Companion ’25. New York, NY, USA: Association for Computing Machinery, 2025, p. 70–79. [47] R. Fernandez–Rojas, C. Joseph, N. Hirachan, B. Seymour, and R. Goecke, “The ai4pain grand challenge 2024: Advancing pain assessment with multimodal fnirs and facial video analysis,” in 2024 12th International Conference on Affective Computing and Intelligent Interaction Workshops and Demos (ACIIW) , 2024, pp. 55–60. [48] R. Fernandez Rojas, N. Hirachan, N. Brown, G. Waddington, L. Murtagh, B. Seymour, and R. Goecke, “Multimodal physiological sensing for the assessment of acute pain,” Frontiers in Pain Research , vol. 4, 2023. [49] S. Gkikas and M. Tsiknakis, “Twins-painvit: Towards a modality-agnostic vision transformer framework for multimodal automatic pain assessment using facial videos and fnirs,” in 2024 12th International Conference on Affective Computing and Intelligent Interaction Workshops and Demos (ACIIW) , 2024, pp. 13–21. [50] P. Prajod, D. Schiller, D. W. Don, and E. Andr ´e, “Faces of experimental pain: Transferability of deep-learned heat pain features to electrical pain*,” in 2024 12th International Conference on Affective Computing and Intelligent Interaction Workshops and Demos (ACIIW) , 2024, pp. 31–38. [51] J. Vianto, A. Divakaran, H. Yang, S. Yeom, S. Kim, S. Kim, and J. Shin, “Multimodal model for automated pain assessment: Leveraging video and fnirs,” Applied Sciences , vol. 15, no. 9, 2025. [52] M. U. Khan, S. Aziz, L. Murtagh, G. Chetty, R. Goecke, and R. Fernandez Rojas, “Empirically transformed energy patterns: A novel approach for capturing fnirs signal dynamics in pain assessment,” Computers in Biology and Medicine , vol. 192, p. 110300, 2025. [53] M.-D. Nguyen, H.-J. Yang, S.-H. Kim, J.-E. Shin, and S.-W. Kim, “Transformer with leveraged masked autoencoder for video-based pain assessment,” 2024. [54] S. Gkikas, R. F. Rojas, and M. Tsiknakis, “Painformer: A vision foundation model for automatic pain assessment,” IEEE Transactions on Affective Computing , vol. 16, no. 4, pp. 3369–3386, 2025. [55] S. Gkikas, I. Kyprakis, and M. Tsiknakis, “Tiny-biomoe: a lightweight embedding model for biosignal analysis,” in Companion Proceedings of the 27th International Conference on Multimodal Interaction , ser. ICMI Companion ’25. New York, NY, USA: Association for Computing Machinery, 2025, p. 117–126. [56] D. Antonogiorgakis, A. Britzolakis, P. Chatziadam, A. Dimitriadis, S. Gikas, E. Michalodimitrakis, M. Oikonomakis, N. Siganos, E. Tzagkarakis, Y. Nikoloudakis, S. Panagiotakis, E. Pallis, and E. K. Markakis, “A view on edge caching applications,” 2019. [Online]. Available: https://arxiv.org/abs/1907.12359 [57] P. Chatziadam, A. Dimitriadis, S. Gikas, I. Logothetis, M. Michalodim-itrakis, M. Neratzoulakis, A. Papadakis, V. Kontoulis, N. Siganos, D. Theodoropoulos, G. Vougioukalos, I. Hatzakis, G. Gerakis, N. Pa-padakis, and H. Kondylakis, “Twifly: A data analysis framework for twitter,” Information , vol. 11, no. 5, 2020. [58] E. C. Montiel-Vazquez, C. Arzate Cruz, J. A. R. Uresti, and R. Gomez, “Empatheticexchanges: Toward understanding the cues for empathy in dyadic conversations,” IEEE Access , vol. 12, pp. 195 097–195 110, 2024. [59] C. Arzate Cruz, E. C. Montiel-Vazquez, C. Maeda, and R. Gomez, “When and how to express empathy in human-robot interaction scenarios,” in 2025 34th IEEE International Conference on Robot and Human Interactive Communication (RO-MAN) , 2025, pp. 1070–1077. [60] C. Arzate Cruz, E. C. Montiel-Vazquez, C. Maeda, D. Lam, and R. Gomez, “Empathetic robots using empathy classifiers in hri settings,” in 2025 20th ACM/IEEE International Conference on Human-Robot Interaction (HRI) , 2025, pp. 1211–1215. [61] C. A. Cruz, Y. Sechayk, T. Igarashi, and R. Gomez, “Data augmentation for 3dmm-based arousal-valence prediction for hri,” in 2024 33rd IEEE International Conference on Robot and Human Interactive Communica-tion (ROMAN) , 2024, pp. 2015–2022. [62] Y. Fang, J. M. P ´erez-Moler ´on, L. Merino, S.-L. Yeh, S. Nishina, and R. Gomez, “Enhancing social robot’s direct gaze expression through vestibulo-ocular movements,” Advanced Robotics , vol. 38, no. 19-20, pp. 1457–1469, 2024. [63] M. Kruger, Y. Oshima, and Y. Fang, “Virtual reflections on a dynamic 2-d eye model improve spatial reference identification,” IEEE Transactions on Human-Machine Systems , vol. 56, no. 2, pp. 203–212, 2026. [64] R. S. Hessels and Y. Fang, “A visual perceptual perspective on gaze in social robotics,” Psychonomic Bulletin & Review , vol. 33, no. 4, p. 131, 2026.
