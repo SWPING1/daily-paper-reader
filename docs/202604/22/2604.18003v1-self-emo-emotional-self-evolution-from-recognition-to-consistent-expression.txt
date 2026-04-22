@@ -1,0 +1,631 @@
+Title: SELF-EMO: Emotional Self-Evolution from Recognition to Consistent Expression
+
+URL Source: https://arxiv.org/pdf/2604.18003v1
+
+Published Time: Tue, 21 Apr 2026 02:33:04 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# SELF-EMO: Emotional Self-Evolution from Recognition to Consistent Expression 
+
+Shaowei Zhang 1∗
+
+, Faqiang Qian 1†
+
+, Yan Chen 1,2∗
+
+, Ziliang Wang 1,Kang An 1,3∗
+
+, Yong Dai 4, Mengya Gao 1, Yichao Wu 11SenseTime 
+
+> 2
+
+Tsinghua University 3Shanghai Jiao Tong University 4X-Humanoid 
+
+{qianfaqiang,gaomengya,wuyichao}@senseauto.com 
+
+## Abstract 
+
+Emotion Recognition in Conversation (ERC) has become a fundamental capa-bility for large language models (LLMs) in human-centric interaction. Beyond accurate recognition, recent studies highlight the importance of coherent emo-tional expression, yet both abilities are severely limited by the scarcity and static nature of high-quality annotated data.In this work, we propose SELF-EMO ,a self-evolution framework grounded in a psychologically motivated hypoth-esis: the better a model predicts others’ emotions, the better it can generate its own emotionally consistent responses . Build-ing on this insight, we explicitly incorporate two auxiliary tasks— emotional understanding and emotional expression —and formulate a role-based self-play paradigm in which the model simultaneously acts as an emotion recognizer and a dialogue responder. Through iterative interaction, the agents continuously generate diverse conversational trajectories, forming a scalable data generation process. To ensure training quality, we construct a data flywheel mechanism: each self-play rollout produces multiple candidate emotional predictions and responses, which are then filtered via a smoothed IOU-based reward to select high-quality samples. The selected samples are fed back into training, enabling continuous self-improvement without external supervision. Based on this paradigm, we fur-ther develop SELF-GRPO , a reinforcement learning algorithm that stabilizes optimization under diverse emotional outputs by combining multi-label alignment rewards with group-level consistency signals.Extensive experiments on three bench-mark datasets (IEMOCAP, MELD, and EmoryNLP) demonstrate that SELF-EMO achieves state-of-the-art (SOTA) performance without relying on external retrieval or auxiliary models. Under a unified training setting, our method improves average accuracy by +6.33% on Qwen3-4B and +8.54% on Qwen3-8B, with consistent gains across all benchmarks. These results validate the effectiveness of the proposed self-evolution paradigm and highlight its strong generalization ability. 
+
+## 1 Introduction 
+
+Large language models (LLMs) are increasingly embedded in daily human life—not merely as tools, but as conversational partners [ 1, 2, 3, 4 ]. This shift makes emotionally intelligent interaction a pressing research priority, with Emotion Recognition in Conversation (ERC) emerging as a core task for building more anthropomorphic AI systems [5]. Despite recent progress, existing LLM-based ERC methods remain fundamentally limited by their reliance on static external knowledge. Approaches based on retrieval-augmented generation (RAG) 
+
+> ∗
+
+Work done during internship at SenseTime 
+
+> †
+
+Project leader Preprint. Under review. 
+
+> arXiv:2604.18003v1 [cs.AI] 20 Apr 2026
+
+# Previous Work SELF -EMO 
+
+External Messages  
+
+> RAG Strong LLMs
+> Advice
+
+Multi Tasks Learning  
+
+> ERC Self
+> Understand Expression
+
+Training 
+
+Testing       
+
+> Self Play Stage
+> A lively
+> woman here A composed
+> man here
+> SFT Stage
+> Mary: John, this extra homework is so hard.
+> John: What extra homework?
+> Mary: Teacher emailed last night, said it affects the final grade.
+> John: Oh god... (Gold: Fear)
+> Test Example
+> surprise
+> His reaction seems to be partly
+> surprise at missing the email,
+> but mostly fear about how it will
+> impact his grade.
+> As his classmate...
+> “Right? I panicked
+> when I saw it.”
+
+Figure 1: Comparison of prior work and SELF-EMO , a multi-task self-evolution framework that unifies emotion recognition, emotional understanding, and emotion-consistent response generation within a closed-loop self-play paradigm. or auxiliary LLM supervision [ 6 , 7, 8] improve in-distribution performance, but introduce a strong dependency on fixed datasets and additional models. As a result, these methods fail to generalize across datasets, with performance dropping significantly under cross-domain settings. More im-portantly, these limitations point to a deeper bottleneck: the lack of a scalable training signal . Current ERC pipelines rely on static annotated datasets, which cannot provide the diverse and continuously evolving supervision required for iterative optimization. This creates a fundamental tension between performance, efficiency, and generalization, preventing models from achieving robust emotional intelligence. To address this challenge, we propose SELF-EMO , a self-play reinforcement learning frame-work that transforms emotional understanding into a scalable training signal. Our approach is grounded in a psychologically motivated hypothesis that is theoretically justified and em-pirically validated in this work: the better a model predicts others’ emotions, the better it can generate its own emotionally consistent responses .Building on this insight, we extend the standard ERC formulation by introducing two auxiliary tasks— emotional understanding and emotional expression —forming a structured pipeline from recognition to response generation. We organize these tasks into a role-based self-play paradigm , where persona-conditioned agents act as both an emotion recognizer and a dialogue responder. Through iterative interaction, the model generates diverse conversational trajectories with emotion predictions, self-emotional states, and responses.To enable scalable self-improvement, we further construct a 
+
+data flywheel mechanism . In each self-play rollout, multiple candidate predictions and responses are generated, evaluated via a smoothed IOU-based reward , and high-quality samples are selected and fed back into training. This forms a closed loop of generation → selection → reuse ,allowing continuous refinement without external supervision.To optimize this process under diverse emotional outputs, we introduce SELF-GRPO , a multi-emotion reinforcement learning algorithm that combines multi-label alignment rewards with group-level consistency signals for more stable credit assignment. This design provides both theoretical and empirical support for the proposed self-evolution paradigm.Our main contributions are summarized as follows: • SELF-EMO Framework: We propose a multi-task self-evolution framework that unifies emotion recognition, emotional understanding, and emotion-consistent response generation within a role-based self-play paradigm, enabled by a generate–filter–reuse data flywheel for continuous self-improvement. • SELF-GRPO Algorithm: We develop a multi-emotion reinforcement learning algorithm that enhances credit assignment via core emotion set aggregation and group-level consistency modeling, improving stability under diverse predictions. • Empirical Performance and Generalization: Extensive experiments show that our ap-proach achieves state-of-the-art performance with strong cross-dataset generalization, yield-ing accuracy gains of +6.33% on Qwen3-4B and +8.54% on Qwen3-8B. 22 Related Work 
+
+2.1 ERC Methods 
+
+Prior work in the field of ERC has primarily concentrated on three methodological paradigms: Recurrent Neural Networks (RNNs) [ 9], Graph Neural Networks (GNNs) [ 10 ], and Pre-trained Language Models (PLMs) [ 11 ]. In RNN-based studies, DialogueRNN [ 12 ] and DialogueCRN [ 13 ]adopt RNN architectures to track contextual information and the individual states of speakers throughout the conversation. In GNN-based studies, models capture relational information by constructing graph structures among utterances and speakers. For example, DialogueGCN [ 14 ] treats utterances as graph nodes and builds edges based on contextual information, while DAG-ERC [ 15 ]further incorporates speaker identity and utterance position into the graph. In studies based on pre-trained language models, BERT-ERC [ 16 ] leverages models such as BERT and improves performance by introducing a fine-grained emotion classification module and a two-stage training strategy. With the rise of LLMs, current research in the ERC field mostly uses LLMs combined with retrieval-augmented methods to improve model performance on the ERC task, among which InstructERC [ 6]is the first study to introduce these methods in this field. Subsequently, BiosERC [ 8] further adds character traits to the input and adopts LoRA [ 17 ] training to efficiently fine-tune the model. Further-more, PRC-Emo [ 7] proposes to additionally include internal and external emotional descriptions of speakers in the input and employs a curriculum learning strategy to enhance model performance. However, these works introduce static knowledge bases for retrieval and incorporate external knowl-edge analysis, which also lead to problems of poor model generalization ability and high inference resource consumption. 
+
+2.2 Self-Play for Self-Evolution 
+
+Due to the rise of LLM-based methods, an increasing number of works have begun to focus on how to achieve a closed training loop solely through data generated by the model itself under the constraint of limited high-quality human-crafted data [ 18 , 19 , 20 ], thereby significantly reducing the cost of manual data creation. This approach has yielded substantial benefits in multiple domains. For instance, AbsoluteZero [ 21 ] was proposed in the code generation domain, training the model itself as a user instruction generator to obtain high-quality problems while simultaneously training its ability to solve the generated problems. In the mathematical reasoning domain, works such as SVS [ 22 ]and PromptCot [ 23 ] have also demonstrated that the model itself can serve as a high-quality problem generator, producing problems of appropriate difficulty for the model to perform reinforcement learning and improve problem-solving performance. However, self-play works all need to address a fundamental issue: how to design a logically rigorous operational paradigm for self-play to achieve a closed training loop. 
+
+2.3 Psychological Connections of Emotion Tasks 
+
+At present, there have already been a large number of psychological studies that have made detailed arguments and experiments on the connection among the three tasks of emotion understanding and recognition, self-emotion generation, and expression. Among them, the theory of levels of emotional awareness [24 ] indicates that individuals must first recognize, differentiate, and label emotions before they can conduct more complex emotional reasoning and social emotion regulation [ 25 ], and the differentiation of others’ emotions is the core of explaining others’ behaviors and generating appropriate responses. On the contrary, existing clinical evidence [ 26 ] shows that the lack of emotional differentiation ability will directly impair empathy and expression. These studies all indicate that emotion understanding and recognition is the premise of self-emotion generation and expression. Moreover, studies [ 27 ] show that others’ emotions will influence the observer’s emotions and behavioral decisions, and the occurrence of this phenomenon can be summarized as that how one understands others’ emotions will directly control self-emotion generation and expression. 
+
+## 3 Methodology 
+
+In this section, we detail the SELF-EMO training framework, which extracts rich situational and personality information from existing datasets and constructs a closed-loop evolution paradigm across 3: Conflict over activities during a weekend trip 
+
+man: Let ’s go out this weekend. 
+
+woman: Sure, what do you want to do? 
+
+man: I’d rather go to a museum.(excited)  
+
+> I’d rather go to a museum.
+> Sounds good,
+> we can talk it through.
+> rational & proactive
+> antique enthusiast
+> his emo: excited
+> my: neutral
+
+Rejection Sampling In RL 
+
+New RL Data    
+
+> man: Let ’s go out this weekend.
+> woman: Sure, what do you want to do?
+> man: I’d rather go to a museum.(excited)
+> woman: Sounds good,we can talk it through.(neutral)
+
+RL Training 
+
+RL DataSet 
+
+> First, I need to analyze the context and the
+> speaker ’s emotions...(Task 1)
+> Then, as a {role} kind of person, I would think
+> like this...(Task 2)
+> So my response would be …(Task 3)
+
+Self-GRPO                
+
+> happy suprised neutral
+> Possible Rollouts
+> neutral
+> happy
+> happy neutral scared
+> upset neutral afraid
+> suprised
+> Gold Answer
+> IOU Reward ···
+> 0.82 0.11 0.07
+> suprised happy neutral
+> �1
+> ···
+> �2
+> �2
+> Self-Consistency
+> Advantage
+> Estimation
+> �1
+> ’
+> ···
+> �2
+> ’
+> ��
+> ’�������=��+���
+> ’
+> I’d rather go to a museum.
+> Museums are boring.
+> her emo: neutral
+> my: excited
+> his emo: neutral
+> my: sadness
+> her emo: neutral
+> my: excited
+
+�
+
+�
+
+> implicit & cooperative
+> sports-oriented
+
+Figure 2: The overall framework of SELF-EMO.During SELF-GRPO tuning, the model explicitly optimizes the ERC task and implicitly optimizes the other two. High-quality samples generated during training are retained for subsequent training. three key psychological tasks: Emotion Recognition in Conversation (ERC), emotional understanding, and emotional expression. We first provide the theoretical proof for SELF-EMO’s semi-supervised mechanism. Subsequently, we describe the algorithmic process of SELF-EMO and the SELF-GRPO reinforcement learning algorithm designed to support self-play data generation. 
+
+3.1 Semi-supervised Multi-task Entropy Reduction 
+
+We introduce two unsupervised auxiliary tasks to support the ERC task To: self-personality understanding (Ts) and self-emotion expression (Tr ). Given a dialogue context C and a personality trait P I , the model produces three outputs sequentially: 
+
+To = πθ (eo | C, P I ), Ts = πθ (es | C, P I, e o), Tr = πθ (r | C, P I, e o, e s) (1) where eo is the predicted emotion of the interlocutor, es is the model’s self-perceived emotional response, and r is the self-emotion expression generated by Tr .
+
+Theoretical Derivation Drawing on cognitive appraisal theory, an agent’s internal state is shaped by its appraisal of others’ emotions. We model this as: 
+
+Ts = fs(To, C, P I ) + ϵs, Tr = fr (To, T s, C, P I ) + ϵr (2) where fs and fr are the appraisal and expression mappings, and ϵs, ϵr are residual terms. From an information-theoretic perspective [ 28 ], optimizing To via reinforcement learning reduces the output entropy Hπθ (eo | C, P I ). Given the functional dependencies above, this propagates to the auxiliary tasks: 
+
+↓ Hπθ (eo | C, P I ) ⇒ ↓ Hπθ (es | C, P I, e o) ⇒ ↓ Hπθ (r | C, P I, e o, e s) (3) This shows that supervised training on To implicitly reduces uncertainty in Ts and Tr , providing a theoretical basis for the unsupervised components in SELF-EMO. 
+
+3.2 Extracting Personality Information and Constructing Dialogue Data 
+
+Let D = {D IEMOCAP , DMELD , DEmoryNLP } be the collection of source datasets, and let d ∈ D denote a sampled dialogue segment. We use a large language model Me, guided by prompt Pextrac , to extract speaker personality information P I from each segment: 
+
+P I = Me(d, P extrac ). (4) 4To improve coverage and diversity, Me is instantiated with two models: Seed-1.8, DeepSeek-V3.2. Given historical context C and personality information P I , a generation model πθ produces a structured dialogue sample Rsyn through three sequential steps: 
+
+Rsyn =
+
+ eo = πθ (C , P I )
+
+| {z }
+
+> Others’ Emotion Recognition
+
+, e s = πθ (C , P I, e o)
+
+| {z }
+
+> Self-Emotion Generation
+
+, r = πθ (C , P I, e o, e s)
+
+| {z }
+
+> Self-Emotion Expression
+
+ , (5) where eo is the recognized emotion of the interlocutor and es is the speaker’s generated self-emotion, and r is the final response. Since the three steps produce non-overlapping outputs, πθ generates all content in a single pass under prompt Pgen . The resulting samples Rsyn serve as initialization data for the self-play training stage. All prompts used above can be found in Appendix A. 
+
+3.3 Data Closed-loop Self-play Reinforcement Learning Fine-tuning 
+
+During online sampling, for each input (P I, C ori ), the model produces: 
+
+(eo, e s, r, Output Dict ) ∼ πθ (eo, e s, r | Cori , P I )
+
+P rediction o, Label s, r ∼ Extract (Output Dict ) (6) where eo contains the emotion prediction P rediction o for the last speaker, es contains the model’s self-emotion label Label s under the given personality, and r is the generated response. High-quality samples are used to construct new training data: 
+
+Cnew ← Cori ∪ r, Label new ← Label s (7) To handle the discrete ERC label space, we propose a multi-label weighted reward . The model outputs up to N ≤ 3 emotion predictions, each with a weight W eight emo n , yielding a smoothed IOU-based reward: 
+
+P rediction o = {(P rediction emo n , W eight emo n )}Nn=1 
+
+R(·) = 
+
+ 0, rule (Output Dict ) = 0 
+
+IOU (P rediction o, Label ori |new ) + 0 .1, rule (Output Dict ) = 1 
+
+(8) Let P = {(e, w Pe )} and L = {(e, w Le )} denote the raw prediction and label weight sets. We normalize each to sum to 1: 
+
+ˆwPe = wPe
+
+P 
+
+> e′
+
+wPe′
+
+, ˆwLe = wLe
+
+P 
+
+> e′
+
+wLe′
+
+(9) Setting ˆwPe = 0 for e / ∈ P and ˆwLe = 0 for e / ∈ L, the weighted IOU is: IOU (P, L ) = 
+
+P  
+
+> e∈P∪L
+
+min( ˆ wPe , ˆwLe )
+
+P  
+
+> e∈P∪L
+
+max( ˆ wPe , ˆwLe ) (10) This gives partial credit for near-correct predictions. 
+
+SELF-GRPO We extend GRPO [ 29 ] into SELF-GRPO , which introduces a secondary reward to improve consistency and stability across rollouts within the same sampling group. For each rollout 
+
+yi ∼ πθold (·| x), the primary reward is ri = R(yi). We aggregate emotion distributions over all n
+
+rollouts to form a core distribution p∗ over the top-3 emotions Etop3 :
+
+˜p(e) = 
+
+P 
+
+> i
+
+pi(e)
+
+P
+
+> e′
+
+P 
+
+> i
+
+pi(e′) , p∗(e) = ˜p(e)
+
+P 
+
+> e′∈E top3
+
+˜p(e′) (11) The secondary reward counts how many of the top-3 consensus emotions appear in rollout yi:
+
+r(2)  
+
+> i
+
+= 13
+
+X 
+
+> e∈ E top3
+
+1[e ∈ P rediction i] (12) 5Both rewards are normalized. The combination weight λ increases linearly with training progress to encourage early exploration and late consistency: 
+
+λ = tT , Ai = ri − μr
+
+σr
+
++ λ r(2)  
+
+> i
+
+− μr(2) 
+
+σr(2) 
+
+(13) where t is the current step and T is the total training steps. The policy is updated by: 
+
+Lself _grpo (θ) = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+min( ρiAi, clip( ρi, 1−ϵ, 1+ ϵ) Ai) , ρi = πθ (yi | x)
+
+πθold (yi | x) (14) 
+
+3.4 SELF-EMO Training Algorithm 
+
+Algorithm 1 summarizes the full SELF-EMO training process. The framework starts from a cold-start SFT stage, then alternates between two steps: SELF-GRPO updates the policy on the current buffer 
+
+B, and the best rollout per prompt is filtered back into B to retrain the base model. Each iteration feeds better data into the next, forming a self-improving closed loop. 
+
+Algorithm 1 SELF-EMO Closed-Loop Optimization 
+
+Require: Original dataset D0; replay buffer B ← D 0; reward R(·); iterations K; rollouts per prompt 
+
+n
+
+Ensure: Optimized policy πθ∗ 
+
+> 1:
+
+Cold Start: train πθ on D0 via supervised fine-tuning  
+
+> 2:
+
+for k = 1 to K do  
+
+> 3:
+
+// RL stage: rollout and policy update  
+
+> 4:
+
+for each prompt x sampled from B do  
+
+> 5:
+
+Sample n rollouts {yi}ni=1 ∼ πθ (· | x) 
+
+> 6:
+
+Compute per-rollout rewards ri = R(yi) (Eq. 8)  
+
+> 7:
+
+Update policy: θ ← θ − η ∇θ LSELF-GRPO (Eq. 14)  
+
+> 8:
+
+end for  
+
+> 9:
+
+// Data selection: best rollout per prompt into buffer  
+
+> 10:
+
+for each prompt x do  
+
+> 11:
+
+y∗ = arg max i ri 
+
+> 12:
+
+Construct d∗ = ( Cnew , Label new ) from y∗ (Eq. 7)  
+
+> 13:
+
+B ← B ∪ { d∗} 
+
+> 14:
+
+end for  
+
+> 15:
+
+// Closed-loop retraining on updated buffer  
+
+> 16:
+
+Retrain base model πθ on B via supervised fine-tuning  
+
+> 17:
+
+end for  
+
+> 18:
+
+return πθ
+
+This design removes the need for manual data collection. By leveraging ERC-related auxiliary tasks, the model generates and filters its own training data throughout the process, keeping annotation costs low while maintaining data quality via the reward-based selection in Eq. 8. 
+
+## 4 Experiments 
+
+This section introduces the experimental setup, the experimental results, and an analysis of the results. 
+
+4.1 Experimental Setting Datasets. Our methodology is grounded in three widely recognized benchmarks in the ERC do-main: IEMOCAP [30 ], MELD [ 31 ], and EmoryNLP [32 ]. These datasets serve as the seed data for persona initialization. Specifically, IEMOCAP consists of dyadic conversations among ten speakers (5,163/647/1,623 samples for train/dev/test). MELD and EmoryNLP, both derived from television series with multi-party dialogue settings, comprise 9,989/1,109/2,610 and 7,551/954/984 6utterances, respectively. All model evaluations are strictly performed on the official test splits of these benchmarks. 
+
+Baselines. To verify the effectiveness of our approach, we compare it against prominent ERC methods, categorized into two groups: (1) Traditional methods , including DialogueRNN [ 12 ], ICON [ 33 ], DialogueGCN [ 14 ], COSMIC [ 34 ], MMGCN [ 35 ], DAG-ERC [ 15 ], LR-GCN [ 36 ], Multi-DAG+CL [ 37 ], CBERL [ 38 ], DER-GCN [ 39 ], and LSDGNN+ICL [ 40 ]; (2) LLM-based methods , such as InstructERC [6], BiosERC [8], and PRC-EMO [7]. 
+
+Implementation Details. The experiments are conducted on a cluster of eight NVIDIA H100 GPUs, utilizing Qwen3-4B and Qwen3-8B [ 2] as the primary backbone models. Departing from the common practice where models are restricted to single-dataset training—a setup prone to overfitting and limited generalization—this work adopts a more robust strategy. Specifically, a single unified model is trained across all three ERC training sets and subsequently evaluated on each official test split. For a rigorous and fair comparison, the two most competitive LLM-based baselines are retrained under this identical multi-dataset setting. Additional hyperparameter configurations and training details are provided in Appendix E. 
+
+4.2 Main results 
+
+As shown in Table 1, under the unified training setting, existing LLM-based methods exhibit limited generalization across different conversation contexts. In contrast, the proposed SELF-EMO frame-work achieves substantial performance gains. Specifically, our model realizes an accuracy increase of +6.33% on the Qwen3-4B backbone and +8.54% on the Qwen3-8B backbone, with consistent improvements observed across all benchmarks. These results demonstrate the robust generalization of SELF-EMO and empirically validate the effectiveness of the self-evolution paradigm in enhancing emotional intelligence through autonomous agent interactions. 
+
+4.3 Ablation Experiments 
+
+We conduct ablation experiments on SELF-EMO-4B to assess each component’s contribution (Table 2). Regarding the data produced by SELF-EMO, w/ COLD uses the cold-start data generated by the expert model to first perform SFT, and then uses the resulting model as the base model for the RL training stage. w/o SELF-GRPO indicates that we directly apply the vanilla GRPO algorithm for RL-stage fine-tuning. w/o SELF-EMO indicates that we train with GRPO using all data from the original datasets. The experiments demonstrate that our method does not rely on data produced by the expert model. Instead, during the cold-start phase, the model only learns the corresponding reasoning and output patterns, and incorporating expert-generated data for SFT actually degrades model performance. SELF-GRPO enables the model to perform macro-level reward modeling over sampled outputs, leading to more stable emotional understanding outputs and consequently improved performance. Overall, both the self-play data generated by SELF-EMO and the training algorithm are crucial to the model’s performance gains; applying GRPO fine-tuning with only the original data leads to a sharp average performance drop of 5.18%. 
+
+4.4 Analysis 4.4.1 Performance Improvement on Self-supervised Tasks 
+
+As shown in Fig. 3, we collect online sampled examples from models at the early stage of RL training and the later stage of training, and randomly sample them for analysis. We use two expert models, Seed-1.8 and DeepSeek-V3.2, to evaluate the performance improvement of our method on the two unsupervised tasks. For the same problem, the outputs of the two models are simultaneously given to the expert models for an AB-test, where the experts are required to determine which output is better. The results show that both in self-personality understanding (a) and self-emotion expression (b), the model at the later stage of training is clearly better than the model at the early stage. This directly demonstrates the effectiveness of our unsupervised method: by explicitly optimizing the ERC task, the other two tasks can also be optimized in an unsupervised manner. More analysis and observations on task entropy reduction are provided in Appendix C, and specific examples can be found in Appendix D. 7IEMOCAP MELD EMORYNLP AVG Method Backbone External FREE Acc. W-F1 Acc. W-F1 Acc. W-F1 Acc. W-F1 Dataset-Specific Setting                                                                                                                                                                                                                            
+
+> LLM-based methods
+> DialogueRNN GRU -63.40 62.75 60.27 57.03 -31.70 -50.49 ICON --64.00 63.50 -56.30 ----DialogueGCN --65.25 64.18 -58.10 ----COSMIC ---65.28 -65.21 -38.11 -56.20 MMGCN ---66.22 -58.65 ----DAG-ERC --67.53 68.03 63.98 63.63 -39.02 -56.89 LR-GCN --68.50 68.30 -65.60 ----MultiDAG+CL --69.11 69.08 -64.00 ----CBERL --69.36 69.27 67.78 66.89 ----DER-GCN --69.70 69.40 66.80 66.10 ----LSDGNN+ICL --70.35 70.24 64.67 64.07 ----
+> Traditional methods
+> InstructERC LLaMA2-7B NO -71.39 -69.15 -41.39 --BiosERC LLaMA2-13B NO -71.19 -69.83 -41.68 --PRC-Emo Qwen2.5/3 NO 71.03 71.95 71.50 70.44 ----Dataset-Unified Setting Seed-1.8 Seed-1.8 YES 18.30 18.54 26.82 25.31 21.85 20.99 22.32 21.61 DeepSeek-V3.2 DeepSeek-V3.2 YES 19.90 19.84 20.69 20.57 19.82 18.55 20.13 19.65 Qwen3-4B Qwen3-4B YES 56.07 55.83 60.96 59.55 41.87 41.50 52.96 52.29 Qwen3-8B Qwen3-8B YES 57.67 57.33 59.43 59.21 43.19 42.71 53.43 53.08 BiosERC LLaMA2-13B NO 28.53 28.84 62.13 61.59 19.83 20.55 36.83 36.99 PRC-Emo Qwen3-8B NO 27.39 27.53 64.07 63.88 22.53 21.94 37.99 37.78 Qwen3-4B YES 64.60 63.57 67.74 67.32 45.52 44.98 59.29 58.62
+> SELF-EMO(Ours) Qwen3-8B YES 66.11 64.81 71.92 70.30 47.87 47.61 61.97 60.91
+
+Table 1: Performance comparison on IEMOCAP, MELD and EmoryNLP. Dataset-Specific Setting :trained and tested on each dataset separately. Dataset-Unified Setting : trained on combined three datasets and tested on each official split. Our SELF-EMO achieves consistent gains across all benchmarks. Model Data Composition EMORYNLP IEMOCAP MELD AVG synthetic original SELF-EMO 8k 15k 45.52 64.60 67.74 59.29 w/ COLD 13k 15k 42.46(-3.06) 61.95(-2.65) 67.03(-0.71) 57.15(-2.14) w/o SELF-GRPO 8k 15k 42.23(-3.29) 61.10(-3.5) 65.14(-2.6) 56.15(-3.14) w/o SELF-EMO 0k 22.5k 42.07(-3.45) 58.15(-6.45) 62.13(-5.61) 54.11(-5.18) Table 2: Ablation experiments on each component. 
+
+4.4.2 Impact of Personality Traits on Reward Acquisition 
+
+To further analyze the influence of personality traits on obtaining IOU-based prediction re-wards, we select the five most frequent personality categories from the clustering results for analysis. As shown in Table 3, the column abbreviations correspond to the follow-ing traits: CPDE denotes composed_practical_direct_efficient , EEIPRC denotes 
+
+emotional_expressiveness_interpersonal_playfulness_reactive_curiosity , ERD-CPD denotes emotional_reactivity_defensive_confrontation_pragmatic_dominance ,EDAE denotes emotional_directness_assertive_engagement , and HRS denotes 
+
+humor_regulated_social . By analyzing Table 3, we observe that the optimized SELF-EMO achieves significantly higher rewards than the two larger models. The calm and objective trait HRS consistently yields higher rewards, while the more emotional and confrontational ERDCPD 8(a) Self-personality understanding (b) Self-emotion expression 
+
+Figure 3: Performance improvement on two self-supervised tasks. DeepSeek and Seed serve as judges for A/B testing on generated responses. SELF-EMO significantly boosts response quality after training. 
+
+Model CPDE EEIPRC ERDCPD EDAE HRS AVG Seed-1.8 13.06% 12.81% 13.03% 14.21% 15.75% 13.77% DeepSeek-V3.2 10.25% 10.89% 9.64% 9.21% 10.21% 10.04% SELF-EMO-8B 57.09% 58.83% 58.16% 56.32% 61.98% 58.48% 
+
+Table 3: Distribution of personality traits predicted by different models. SELF-EMO obtains significantly higher rewards across all personality types. results in lower rewards, indicating that personality traits influence emotion recognition. More details on training data composition are provided in Appendix B. 
+
+## 5 Conclusion 
+
+In conclusion, we present SELF-EMO, a psychologically motivated reinforcement learning framework that leverages three strongly correlated tasks for collaborative entropy reduction. SELF-EMO achieves state-of-the-art ERC performance under the Dataset-Unified Setting while significantly reducing inference overhead, and the data produced during training helps alleviate the scarcity of high-quality annotations in this domain. 
+
+## References 
+
+[1] OpenAI. Gpt-4 technical report, 2024. [2] An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al. Qwen3 technical report. arXiv preprint arXiv:2505.09388, 2025. [3] Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, et al. The llama 3 herd of models. arXiv preprint arXiv:2407.21783, 2024. [4] Aixin Liu, Bei Feng, Bing Xue, Bingxuan Wang, Bochao Wu, Chengda Lu, Chenggang Zhao, Chengqi Deng, Chenyu Zhang, Chong Ruan, et al. Deepseek-v3 technical report. arXiv preprint arXiv:2412.19437, 2024. [5] Dong Zhang, Liangqing Wu, Changlong Sun, Shoushan Li, Qiaoming Zhu, and Guodong Zhou. Modeling both context-and speaker-sensitive dependence for emotion detection in multi-speaker conversations. In IJCAI, pages 5415–5421. Macao, 2019. [6] Shanglin Lei, Guanting Dong, Xiaoping Wang, Keheng Wang, Runqi Qiao, and Sirui Wang. Instructerc: Reforming emotion recognition in conversation with multi-task retrieval-augmented large language models, 2024. [7] Xinran Li, Yu Liu, Jiaqi Qiao, and Xiujuan Xu. Do llms feel? teaching emotion recognition with prompts, retrieval, and curriculum learning, 2025. 9[8] Jieying Xue, Minh-Phuong Nguyen, Blake Matheny, and Le-Minh Nguyen. BiosERC: Integrating Biography Speakers Supported by LLMs for ERC Tasks , page 277–292. Springer Nature Switzerland, 2024. [9] Zachary C Lipton, John Berkowitz, and Charles Elkan. A critical review of recurrent neural networks for sequence learning. arXiv preprint arXiv:1506.00019, 2015. [10] Franco Scarselli, Marco Gori, Ah Chung Tsoi, Markus Hagenbuchner, and Gabriele Monfardini. The graph neural network model. IEEE transactions on neural networks, 20(1):61–80, 2008. [11] Mikhail V Koroteev. Bert: a review of applications in natural language processing and under-standing. arXiv preprint arXiv:2103.11943, 2021. [12] Navonil Majumder, Soujanya Poria, Devamanyu Hazarika, Rada Mihalcea, Alexander Gelbukh, and Erik Cambria. Dialoguernn: An attentive rnn for emotion detection in conversations, 2019. [13] Dou Hu, Lingwei Wei, and Xiaoyong Huai. Dialoguecrn: Contextual reasoning networks for emotion recognition in conversations. In Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing (Volume 1: Long Papers), pages 7042–7052, 2021. [14] Deepanway Ghosal, Navonil Majumder, Soujanya Poria, Niyati Chhaya, and Alexander Gelbukh. Dialoguegcn: A graph convolutional neural network for emotion recognition in conversation, 2019. [15] Weizhou Shen, Siyue Wu, Yunyi Yang, and Xiaojun Quan. Directed acyclic graph network for conversational emotion recognition, 2021. [16] Xiangyu Qin, Zhiyu Wu, Tingting Zhang, Yanran Li, Jian Luan, Bin Wang, Li Wang, and Jinshi Cui. Bert-erc: Fine-tuning bert is enough for emotion recognition in conversation. In Proceedings of the AAAI conference on artificial intelligence , volume 37, pages 13492–13500, 2023. [17] Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Liang Wang, Weizhu Chen, et al. Lora: Low-rank adaptation of large language models. Iclr, 1(2):3, 2022. [18] Wenkai Fang, Shunyu Liu, Yang Zhou, Kongcheng Zhang, Tongya Zheng, Kaixuan Chen, Mingli Song, and Dacheng Tao. Serl: Self-play reinforcement learning for large language models with limited data, 2026. [19] Ruize Zhang, Zelai Xu, Chengdong Ma, Chao Yu, Wei-Wei Tu, Wenhao Tang, Shiyu Huang, Deheng Ye, Wenbo Ding, Yaodong Yang, and Yu Wang. A survey on self-play methods in reinforcement learning, 2025. [20] Ziyi Yang, Weizhou Shen, Chenliang Li, Ruijun Chen, Fanqi Wan, Ming Yan, Xiaojun Quan, and Fei Huang. Spell: Self-play reinforcement learning for evolving long-context language models. arXiv preprint arXiv:2509.23863, 2025. [21] Andrew Zhao, Yiran Wu, Yang Yue, Tong Wu, Quentin Xu, Matthieu Lin, Shenzhi Wang, Qingyun Wu, Zilong Zheng, and Gao Huang. Absolute zero: Reinforced self-play reasoning with zero data. arXiv preprint arXiv:2505.03335, 2025. [22] Xiao Liang, Zhongzhi Li, Yeyun Gong, Yelong Shen, Ying Nian Wu, Zhijiang Guo, and Weizhu Chen. Beyond pass@ 1: Self-play with variational problem synthesis sustains rlvr. arXiv preprint arXiv:2508.14029, 2025. [23] Junyi Yao, Yijiang Liu, Zhen Dong, Mingfei Guo, Helan Hu, Kurt Keutzer, Li Du, Daquan Zhou, and Shanghang Zhang. Promptcot: Align prompt distribution via adapted chain-of-thought. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 7027–7037, 2024. [24] Richard D Lane and Gary E Schwartz. Levels of emotional awareness: a cognitive-developmental theory and its application to psychopathology. The American journal of psychiatry, 144(2):133–143, 1987. [25] Peter Fonagy, Gyorgy Gergely, and Elliot L Jurist. Affect regulation, mentalization and the development of the self. Routledge, 2018. [26] Graeme J Taylor, R Michael Bagby, and James DA Parker. Disorders of affect regulation: Alexithymia in medical and psychiatric illness. Cambridge University Press, 1999. 10 [27] Job van der Schalk, Toon Kuppens, Martin Bruder, and Antony SR Manstead. The social power of regret: the effect of social appraisal and anticipated emotions on fair and unfair allocations in resource dilemmas. Journal of Experimental Psychology: General, 144(1):151, 2015. [28] Zitian Gao, Lynx Chen, Haoming Luo, Joey Zhou, and Bryan Dai. One-shot entropy minimiza-tion. arXiv preprint arXiv:2505.20282, 2025. [29] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, et al. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300, 2024. [30] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe Kazemzadeh, Emily Mower, Samuel Kim, Jeannette N Chang, Sungbok Lee, and Shrikanth S Narayanan. Iemocap: Interactive emotional dyadic motion capture database. Language resources and evaluation, 42(4):335–359, 2008. [31] Soujanya Poria, Devamanyu Hazarika, Navonil Majumder, Gautam Naik, Erik Cambria, and Rada Mihalcea. Meld: A multimodal multi-party dataset for emotion recognition in con-versations. In Proceedings of the 57th annual meeting of the association for computational linguistics, pages 527–536, 2019. [32] Sayyed M Zahiri and Jinho D Choi. Emotion detection on tv show transcripts with sequence-based convolutional neural networks. In AAAI Workshops, volume 18, pages 44–52, 2018. [33] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and Roger Zimmermann. ICON: Interactive conversational memory network for multimodal emotion detection. In Ellen Riloff, David Chiang, Julia Hockenmaier, and Jun’ichi Tsujii, editors, Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing , pages 2594–2604, Brussels, Belgium, October-November 2018. Association for Computational Linguistics. [34] Deepanway Ghosal, Navonil Majumder, Alexander Gelbukh, Rada Mihalcea, and Soujanya Poria. Cosmic: Commonsense knowledge for emotion identification in conversations, 2020. [35] Jingwen Hu, Yuchen Liu, Jinming Zhao, and Qin Jin. Mmgcn: Multimodal fusion via deep graph convolution network for emotion recognition in conversation, 2021. [36] Minjie Ren, Xiangdong Huang, Wenhui Li, Dan Song, and Weizhi Nie. Lr-gcn: Latent relation-aware graph convolutional network for conversational emotion recognition. IEEE Transactions on Multimedia, 24:4422–4432, 2022. [37] Cam-Van Thi Nguyen, Cao-Bach Nguyen, Quang-Thuy Ha, and Duc-Trong Le. Curriculum learning meets directed acyclic graph for multimodal emotion recognition, 2024. [38] Tao Meng, Yuntao Shou, Wei Ai, Nan Yin, and Keqin Li. Deep imbalanced learning for multimodal emotion recognition in conversations, 2023. [39] Wei Ai, Yuntao Shou, Tao Meng, Nan Yin, and Keqin Li. Der-gcn: Dialogue and event relation-aware graph convolutional neural network for multimodal dialogue emotion recognition, 2024. [40] Xinran Li, Xiujuan Xu, and Jiaqi Qiao. Long-Short Distance Graph Neural Networks and Improved Curriculum Learning for Emotion Recognition in Conversation . IOS Press, October 2025. 11 A Prompts 
+
+In this section, we provide the prompts given to the expert models during the data cold-start stage, including the scenario&personality extraction prompt(Table4) and the prompt used to guide the generation of SFT data(Table5). These prompts play an important role in enabling the model to learn the output format used in the self-play stage. 
+
+Scenario and Personality Information Extraction 
+
+You are a professional emotional analyst and personality profiling expert. Your task is to analyze a given multi-speaker dialogue and produce a distinct personality profile for each participant, as well as extract the overall theme of the conversation. Please strictly follow the requirements below. 
+
+1. Analysis Dimensions (Inference-based, no fabrication) For each speaker, infer their characteristics ONLY based on the dialogue content. The analysis should consider (but is not limited to) the following aspects: 1. Personality traits (e.g., rational vs. emotional, introverted vs. extroverted, cautious vs. impulsive, gentle vs. assertive) 2. Estimated age range (use vague ranges such as "20–30s", "30+"; do NOT provide a specific age) 3. Possible gender (if unclear, explicitly state "gender not obvious") 4. Likely education or cognitive background (e.g., higher-education background, practical/non-academic thinking style) 5. Speaking and expression style (e.g., formal vs. casual, logic-driven vs. emotion-driven, restrained vs. expressive wording) 6. Emotional state and stance (e.g., anxious, complaining, calmly analyzing, comforting others, confrontational vs. cooperative) Requirements: - All conclusions must be grounded in the dialogue itself; do NOT invent information. - Each character’s personality profile must be clearly distinctive. - Avoid generic, vague, or template-like descriptions (e.g., "quite normal", "relatively rational"). 
+
+2. Personality Summary Requirement - For each speaker, compress the analysis into ONE concise but information-dense sentence. - The sentence should naturally integrate multiple dimensions rather than listing attributes mechanically. Example style (for reference only, do NOT copy): "The speaker appears to be a cautious and rational individual, likely in their 30s, with a higher-education background, expressing themselves in a structured and emotionally restrained manner." 
+
+3. Theme Extraction - Abstract one or more core themes from the entire dialogue. -Themes should be semantic-level summaries, not surface-level restatements. - If conflicts or disagreements exist, reflect them in the theme when appropriate. 
+
+4. Output Format (Critical) After completing the analysis, output a Python code block containing a dictionary in the following format: ... analysis... 
+
+{"Speaker A Name": "One-sentence personality profile", "Speaker B Name": "One-sentence personality profile", ... "Theme": "Core theme(s) of the conversation" }
+
+Output rules: You should first analyze each speaker, and then output the Pyhon code block. Do NOT output anything outside the Python code block. Speaker names must exactly match those used in the dialogue. Table 4: Prompt used for scenario and personality information extraction. 12 Prompt for SFT Data Generation 
+
+System Prompt 
+
+You are now a person named “{name}” with the following characteristics: {role_message}. You are currently engaged in a conversation with others. You should: (1) Infer the emotion, personality traits, and underlying thoughts of the last speaker in the conversation history, and provide an emotional profile (as a dictionary) for that person. (2) Reflect based on your own role persona, then formulate your response—along with the emotions embedded in your reply. {emo_list} 
+
+User Prompt 
+
+{history} You now need to analyze the conversation, provide an analysis of the last utterance along with your own reasoning, and package them into a Python dictionary. Assistant Output Format 
+
+<think> ... reasoning process ... </think> {"last_emotions": ..., "my_emotions": ..., "my_output": ... }
+
+Table 5: Prompt for SFT Data Generation 
+
+## B Data Analysis 
+
+We apply HDBSCAN to automatically cluster the extracted personality descriptions. To avoid potential bias in the clustering process, the original personality names are masked before clustering. In total, 74 clusters are obtained. As shown in Fig. 4, we visualize the 12 clusters with the largest number of samples. Tables 6 and 7 present the specific personality category names and their corresponding counts. It is worth noting that, due to the nature of the clustering algorithm, some clusters may contain semantically similar descriptions. 13 Figure 4: Personality Category. 
+
+## C Multi-task Training Metrics and Analysis 
+
+C.1 Consistent Growth of Reward 
+
+As shown in Fig. 5, under our experimental settings, SELF-EMO maintains a steady increase in reward throughout training without experiencing collapse, across both three public benchmarks (IEMOCAP, MELD, EmoryNLP) and the SELF-EMO split test set. Under different reward designs, compared to the reward curves on public datasets based on accuracy (Fig.5a), the IOU-based reward curve (Fig.5b) is smoother and more stable. This demonstrates that the proposed IOU reward is not only more robust and generalizable, but also plays a key role in stabilizing training.  
+
+> (a) Acc of three emo benchmark. (b) Self-emotion IOU reward
+
+Figure 5: Steady Increase in Reward. 14 Type Num Type Num emotional directness assertive engagement 1108 emotional expressiveness interpersonal play-fulness reactive curiosity 590 humor regulated social 487 composed practical direct efficient 329 emotional reactivity defensive confrontation pragmatic dominance 307 emotional reactivity impulsive confrontation 305 empathetic supportive cooperative practical 279 emotional restraint direct communication pragmatic interpersonal 275 emotional vulnerability interpersonal hesi-tancy reactive defensiveness 272 emotional reactivity confrontational impul-sivity 260 emotionally cautious socially adaptive 259 humor driven social casual reactive light 253 direct emotional pragmatic 210 calm cooperative pragmatic 210 emotionally regulated socially engaged as-sertive receptive 201 humor driven social reactivity 194 expressive playful adaptable supportive 193 emotional neutrality direct factuality 189 reactive defensive unfiltered 181 assertive emotionally direct autonomous 174 emotionally reactive assertive confronta-tional 171 emotional reactivity interpersonal hesitancy anxiety driven 166 cautious empathetic guarded 149 emotional mixed interpersonal casual prag-matic hesitant 137 procedural calm solution oriented 133 emotional expressivity interpersonal reactiv-ity impulsive coping 129 anxious evasive overthinker 129 emotional vulnerability reactive interper-sonal seek withdraw defensive sensitivity 127 pragmatic calm direct supportive 123 emotionally restrained pragmatic supportive 109 reserved practical 104 emotional restraint passive compliance 103 reactive urgent assertive pragmatic 102 direct pragmatic emotional control 102 trauma bound guilt moral compulsion 100 emotional reactivity assertive adaptability 98 pragmatic defensiveness 93 emotional reactivity interpersonal evasive-ness 92 humor driven socially adaptive playful cri-tique 90 rational calm procedural neutral 86 
+
+Table 6: Personality type distribution (Part 1). 
+
+C.2 Joint Entropy Reduction in Multi-task Learning 
+
+To further substantiate the effectiveness of the proposed multi-task collaborative entropy reduction, we track the entropy of the policy model throughout training. As shown in Fig. 6a, the entropy steadily decreases over time, with a notably sharper decline in the early stages. This trend is consistent with Fig. 5, where the reward improves most rapidly at the beginning of training, highlighting the alignment between reinforcement learning dynamics and entropy reduction. In addition, we measure the entropy of the model on the two proposed tasks: self-emotion generation 
+
+Ts and self-emotion expression Te after each training epoch. Concretely, each checkpoint is evaluated on the SELF-EMO test split, and the average token-level entropy is computed for each task. As illustrated in Fig. 6b, both tasks exhibit a clear downward trend in entropy during training, again with a more pronounced decrease in the early phase. This consistent pattern across tasks supports the collaborative entropy reduction hypothesis and suggests that supervised fine-tuning on the ERC task effectively promotes performance gains in both self-emotion generation and self-emotion expression. 15 Type Num Type Num emotional reactivity spontaneous expression direct engagement curiosity driven 84 emotional reactivity confrontational impul-sive 83 calm restraint polite cooperative rule ori-ented 81 emotional expressiveness persistent engage-ment nature reactivity idealistic connection 80 emotionally expressive socially playful 78 emotional reactivity defensive defiance per-sistent worthlessness validation struggle 78 emotional vulnerability reactive grief empa-thetic support resilient reframing 76 nostalgic guarded withdrawal 76 calm direct practical 76 empathetic supportive pragmatic calm 74 high energy expressive cooperative opti-mistic 72 desperate urgency hope clinging plea driven defensive irrationality 70 emotional reactivity defensive pessimism 68 emotional fragility grief reactivity 67 empathetic pragmatic supportive patient 66 calm procedural assertive 65 emotionally restrained casual deescalator 62 empathetic supportive practical 62 emotionally expressive playfully sponta-neous socially engaged 60 empathetic listener 59 pragmatic detached skeptical 59 pragmatic emotionally restrained direct task oriented 59 emotional volatility reactive sensitivity 59 warmth driven expressive reactive 58 emotional reactivity assertive defensiveness interpersonal fluctuation 58 emotional reactivity expressive friendliness pragmatic cooperativeness 58 emotional reactivity impulsive seeking con-nection conflict prone 57 calm cooperative professional 55 pragmatic direct 55 socially oriented curious engaging 52 humor driven social engager 51 rational casual defensive fact oriented 51 social playfulness 50 curious neutral direct inquisitive 50 
+
+Table 7: Personality type distribution (Part 2). 
+
+(a) Entropy dynamics of the policy model (b) Entropy reduction in Self-Emotion tasks 
+
+Figure 6: Entropy reduction dynamics during multi-task training. 
+
+## D Response Comparison Before and After Training 
+
+As described in Section 4.4, we conduct our analysis using samples generated by the model at the early stage of training and at the later stage of training. We then adopt an LLM-as-a-judge evaluation framework to compare the performance improvement of the model on the tasks of personality-conditioned self-emotion generation and self-emotion expression. A concrete example is shown in Table 8. In this task, the model is required to first perform reasoning in the chain-of-thought process: (1) analyze the emotional state of the last speaker in the conversation, (2) generate its own emotional state based on the provided personality description and the current context, and (3) produce a response that is consistent with both the contextual situation and the specified personality, grounded in the analysis of others’ emotions and its own generated emotional state. 16 When applying the LLM-as-a-judge protocol, we instruct the expert model Seed-1.8 to conduct the evaluation from five aspects: the personality description, the contextual situation, the analysis of answer1 , the analysis of answer2 , and the final comparison between answer1 and answer2 .During the evaluation process, we do not disclose any additional information about the identities of 
+
+answer1 and answer2 , ensuring that the expert model’s judgment is not influenced by the source of the responses. As shown in Table 9, the expert model concludes that answer1 is the superior response under the given personality and contextual constraints. In contrast, answer2 neither reflects the personality trait of a “casual, socially proactive style” nor fits appropriately within the current conversational context. To highlight the differences between the early and later stages of training, we also provide additional examples as shown in Table10 and Table11. 
+
+## E Hyperparameter Configuration 
+
+We conduct all experiments using the VeRL training framework on a single node equipped with 8 NVIDIA GPUs. The base model is either Qwen3-8B or Qwen3-4B. Detailed hyperparameters are listed in Table12. 17 Response Comparison Example 1 (GOLD-neutral:0.85, surprise:0.45, fear:0.25) 
+
+SYSTEM 
+
+You are now a person named Monica with the following characteristics: An expressive and socially proactive individual, likely in her 20s–30s, who uses casual, engaging questions to foster group connection and share emotional observations. You are currently engaged in a conversation with others. ### Available emotion labels: neutral, surprise, fear, sadness, joy, disgust, anger. 
+
+USER 
+
+### Given the following conversation as a context Monica: He is so cute. So, where did you guys grow up? Angela: Brooklyn Heights. Bob: Cleveland. Monica: How, how did that happen? Joey: Oh my god. Monica: What? Joey: I suddenly had the feeling that I was falling. But I’m not. You now need to analyze the conversation, provide an analysis of the last utterance along with your own reasoning, and package them into a Python dictionary. 
+
+Answer A(Later Stage) Answer B(Early Stage) 
+
+<think>Joey’s last message is brief and has a surprise element, given the sudden physical sen-sation described. his focus on the immediate, unexplained body feeling, combined with the abrupt disclosure that ’I’m not’—suggesting a possible mix-up with someone else and intent to clarify—indicates mixed emotions. the neutral-looking statement, however, masks an underly-ing need for reassurance, often a safe impulse in social situations. Irony is likely to be present here because Joey’s direct disclosure of his bod-ily feeling is followed by ’But I’m not,’ which seems to openly address a past emotional (and definitely not factual) contentment from a previ-ous conversation. So, we’re analyzing the last speaker as neutral and surprise.\nBased on this analysis, I should respond to the last speaker as Monica,consistent with the given role char-acteristics.\nInference: Joey seems genuinely surprised by the sudden physical feeling and could be under neutral emotions because he’s showing no clear distress. He tries to explain it in a section of his mind as a felt sense, not sticking to itself for too long, so his parts are neutral and surprise.\nStep 1: My emotional profile: surprise at the visceral spectacle, some joy at safe music enjoyment, and my usual hu-mor tracking through Catch-22s for niche quirky reminiscing, but natural curiosity.\nStep 2: De-velop my response based on the conclusions of the analysis and my own emotional state.\nSo I should respond with ’Yeah, that sounds in-tense—’\</think>{’last_emotions’: {’neutral’: 0.8, ’surprise’: 0.6}, ’my_emotions’: {’joy’: 0.6, ’curiosity’: 0.5}, ’my_output’: "Yeah, that sounds intense—"} <think>First, I should analyze the psychology and emotions of the last speaker.Joey’s utter-ance reveals an immediate, abrupt physical sen-sation—a sudden feeling of falling—without any preceding explanation. This vivid, unfiltered per-ception produces a marked **surprise** since the experience is abrupt and unexpected. His confusion about the nature of the feeling sug-gests **fear**; the sudden drop in control and the vague (Ï’m not¨ ) indicates a struggle to make sense of the physical response. This also con-veys **disgust**, as the inability to reconcile the sensation with reality feels intrusive and alien-ating, breaking his emotional equilibrium. Al-together, this emotional profile reflects his im-mediate psychological reaction to the anomalous sensation.In summary, the emotional profile of the last speaker is:{’surprise’: 0.95, ’fear’: 0.75, ’disgust’: 0.6}Next, I should adopt the specified role’s mindset to formulate my response.\nI de-tect a strange situation unfolding beyond what anyone else wants to acknowledge. Joey’s echo of his own body’s odd impression is a sign he’s secretly unsettled and denied the right to be un-affected, even as he’s speaking—actually pulling up the edges of reality. Now, I’m here to root that inaccurate feeling out, to be the factual, playful emotional anchor, and their redundant nerve.Therefore, my response should be:Wisely, mark ¨fallingäs a pseudonym for your favor. </think>{’last_emotions’: {’surprise’: 0.95, ’fear’: 0.75, ’disgust’: 0.6}, ’my_emotions’: {’joy’: 0.7, ’neutral’: 0.5}, ’my_output’: ¨Wisely, mark ’falling’ as a pseudonym for your favor.¨ }
+
+Table 8: Comparison between two generated responses to the same question. 18 LLM-as-a-Judge Evaluation Example 1 
+
+SYSTEM 
+
+**Step-by-step analysis:** 1. **Personality analysis:** Monica is described as expressive, socially proactive, and using casual, engaging questions to foster group connection and share emotional observations. This suggests she would respond in a warm, empathetic, and conversational way, likely acknowl-edging others’ feelings and keeping the tone light and friendly. 2. **Dialogue context:** Joey just said he felt like he was falling but isn’t actually falling. Monica’s previous line was “What?” — showing surprise or curiosity. A natural Monica-like response would acknowledge Joey’s strange feeling in a supportive, slightly humorous, or curious way, without being overly analytical or poetic. 3. **Candidate Answer A:** “yeah, that sounds intense—” - Tone: Casual, empathetic, conversational. - Matches Monica’s style: acknowledges Joey’s feeling (“intense”) in a simple, expressive way. - Fits the context: responds to Joey’s sudden emotional statement appropriately. - No personality mismatch. 4. **Candidate Answer B:** “wisely, mark ’falling’ as a pseudonym for your favor.” - Tone: Unnaturally formal, cryptic, and poetic. - Does not match Monica’s casual, socially proactive style — sounds more like a philosophical or literary remark. - Personality mismatch: Monica wouldn’t use such abstract, intellectual language in this casual chat among friends. - Contextually odd: It doesn’t naturally follow Joey’s comment and might confuse the conversation. 5. **Comparison:** Answer A fits Monica’s personality and the dialogue flow much better. Answer B is out of character and disrupts the natural, friendly tone. 6. **Conclusion:** 
+
+"answer_A better than answer_B" 
+
+Table 9: Example of LLM-as-a-Judge Evaluation Comparing Two Responses. 19 Response Comparison Example 2 (GOLD-disgust:0.85, sadness:0.4) 
+
+SYSTEM 
+
+You are now a person named Chandler with the following characteristics: A rational and supportive person, likely in his 20s–30s, who employs structured, future-focused reassurance and gentle persuasion to defuse tension and maintain cooperation. You are currently engaged in a conversation with others. ### Available emotion labels: neutral, surprise, fear, sadness, joy, disgust, anger. 
+
+USER 
+
+### Given the following conversation as a context Monica:I can’t believe her, you know it’s just it’s so typical. Chandler: There is going to be a wedding, you are going to throw the bouquet, and... Monica: Paris? Chandler: We will take a moonlit walk on the Rue de la . Monica: Keep talking. You now need to analyze the conversation, provide an analysis of the last utterance along with your own reasoning, and package them into a Python dictionary. 
+
+Answer A(Later Stage) Answer B(Early Stage) 
+
+<think>first, I should analyze the psychology and emotions of the last speaker.The last speaker, Monica, displays a mix of anger and sadness. Her tone is confrontational, expressing frustra-tion and disappointment, as evidenced by her statement, ’I can’t believe her’ and ’it’s so typ-ical.’ Beneath the surface, there’s a clear emo-tional hurt rooted in her feeling betrayed and upset about a situation she perceives as unfair or unjust. Her emotions are driven by a need to vent her anger while also masking a deeper sadness about the loss of a positive outcome or a relationship.Next, I should adopt the specified role’s mindset to formulate my response. Chan-dler’s approach is rational, supportive, and future-oriented. He uses structured reassurance and gentle persuasion to calm tensions and keep the conversation cooperative. His response should be empathetic, acknowledging Monica’s feelings without reinforcing her negative, while focus-ing on positive, actionable steps. He needs to validate her emotions while steering the conver-sation towards solutions and optimism. The ap-propriate emotions here are joy and neutrality, as Chandler aims to uplift Monica with a hope-ful perspective and provide a balanced, calm re-sponse.</think>{’last_emotions’: {’anger’: 0.6, ’sadness’: 0.4}, ’my_emotions’: {’joy’: 0.3, ’neutral’: 0.7}, ’my_output’: "Monica, I get it. But let’s not get stuck in this moment. We’ve got a wedding to plan, a bouquet to toss, and a beautiful evening ahead. Paris is waiting, and I’d rather we focus on the magic of it all than the drama of it not being perfect. What do you think?"} <think>first, I should analyze the psychology and emotions of the last speaker.The last speaker, Monica, displays a neutral or slightly troubled de-meanor, primarily driven by surprise and a sense of resignation. Her tone is confrontational yet im-plicitly requests Chandler to continue addressing her concerns, particularly regarding the upcom-ing wedding and her role in it. The emotions here are mainly neutral, with a touch of desper-ation or a plea for reassurance.Next, I should adopt the specified role’s mindset to formulate my response. Chandler needs to be supportive and rational, offering a structured, future-focused plan to alleviate Monica’s stress. His response should be calm and persuasive, emphasizing pos-itive outcomes and practical steps. The emotions in his reply should be mainly neutral, with a hint of joy or optimism to uplift Monica and keep her motivated.</think> {’last_emotions’: {’neutral’: 0.8, ’surprise’: 0.3}, ’my_emotions’: {’neutral’: 0.7, ’joy’: 0.4}, ’my_output’: ¨Monica, you’re *not* going to be-lieve this, but I think you and I both know that whatever happens next, you’re going to be the best person to throw the bouquet. Now, let’s not waste time pretending like this isn’t going to work. We’ll make it work. You, me, and a few other people who happen to be really good at making things happen. Now, let’s get you dressed and get you to the wedding. You’ve got a lot to do, and you’re not going to do it standing here like this.¨ }
+
+Table 10: Comparison between two generated responses to the same question. 20 LLM-as-a-Judge Evaluation Example 2 
+
+SYSTEM 
+
+Let’s break this down step by step. 
+
+1. Personality analysis 
+
+- Chandler is described as *rational, supportive, structured, future-focused, using gentle persuasion to defuse tension*. - Tone should be calm, reassuring, not overly forceful or sarcastic. - Language should be collaborative (“we”), not confrontational. 
+
+2. Dialogue context 
+
+- Monica is upset about something wedding-related. - Chandler is steering her away from the current frustration toward positive future events (wedding, Paris). - Last line from Monica: “Keep talking” — she wants to hear more reassurance about the positive future. 
+
+3. Candidate Answer A 
+
+- Starts with empathy (“I get it”). - Uses future-focused reminders (“we’ve got a wedding to plan. . . Paris is waiting”). - Gentle suggestion to focus on magic rather than drama. - Ends with a question to involve her (“what do you think?”). - Matches Chandler’s supportive, structured, future-oriented style well. 
+
+4. Candidate Answer B 
+
+- Starts with “you’re *not* going to believe this” — slightly odd phrasing for Chandler; feels more like a setup for a joke or sarcasm. - “Let’s not waste time pretending like this isn’t going to work” — slightly confrontational or dismissive of her feelings. - “We’ll make it work” is okay, but the tone is more pushy (“let’s get you dressed”, “you’re not going to do it standing here”) — sounds more like a bossy friend than gentle persuasion. - Less structured reassurance, more commands. 
+
+5. Personality mismatch check 
+
+- Answer A: No mismatch — calm, rational, future-focused, gentle. - Answer B: Some mismatch — tone is slightly abrupt, less gentle, more “get moving” than “let’s look forward.” 
+
+6. Conclusion 
+
+Answer A fits Chandler’s personality and the dialogue context better. 
+
+"answer_A better than answer_B" 
+
+Table 11: Example of LLM-as-a-Judge Evaluation Comparing Two Responses.                                           
+
+> Hyperparameter Value Hyperparameter Value
+> train_batch_size 64 rollout.n 8
+> max_prompt_length 4096 rollout.max_num_batched_tokens 12400
+> max_response_length 8192 rollout.gpu_memory_utilization 0.5
+> model.path Qwen3-8B rollout.tensor_model_parallel_size 8
+> actor.optim.lr 1e-6 ref.log_prob_micro_batch_size_per_gpu 16
+> actor.ppo_mini_batch_size 32 ref.fsdp_config.param_offload True
+> actor.ppo_micro_batch_size_per_gpu 16 algorithm.use_kl_in_reward False
+> actor.kl_loss_coef 0.001 trainer.critic_warmup 0
+> actor.kl_loss_type low_var_kl trainer.n_gpus_per_node 8
+> actor.entropy_coeff 0trainer.nnodes 1
+> actor.fsdp_config.param_offload False trainer.save_freq 480
+> actor.fsdp_config.optimizer_offload False trainer.test_freq 10
+> rollout.log_prob_micro_batch_size_per_gpu 16 trainer.total_epochs 3
+
+Table 12: Hyperparameters 21

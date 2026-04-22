@@ -1,0 +1,526 @@
+Title: MEDN: Motion-Emotion Feature Decoupling Network for Micro-Expression Recognition
+
+URL Source: https://arxiv.org/pdf/2604.17899v1
+
+Published Time: Tue, 21 Apr 2026 02:20:52 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+> JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+
+# MEDN: Motion-Emotion Feature Decoupling Network for Micro-Expression Recognition 
+
+Chenxing Hu, Kun Xie, Qiguang Miao*, Senior Member, IEEE , Ruyi Liu, Quan Wang, and Zongkai Yang 
+
+Abstract —Unlike macro-expression, micro-expression does not follow a strictly consistent mapping rule between emotions and Action Units (AUs). As a result, some micro-expressions share identical AUs yet represent completely opposite emotional categories, making them highly visually similar. Existing micro-expression recognition (MER) methods mostly rely on explicit facial motion cues (e.g., optical flow, frame differences, AU features) while ignoring implicit emotion information. To tackle this issue, this paper presents a Motion-Emotion Feature De-coupling Network (MEDN) for MER. We design a dual-branch framework to separately extract motion and emotion features. In the motion branch, an AU-detection task restricts features to the explicit motion domain, and orthogonal loss is adopted to reduce motion–emotion feature coupling. For implicit emotion modeling, we propose a Sparse Emotion Vision Transformer (SEVit) that sparsifies spatial tokens to highlight local temporal variations with multi-scale sparsity rates. A Collaborative Fusion Module (CoFM) is further developed to fuse disentangled motion and emotion features adaptively. Extensive experiments on three benchmark datasets validate that MEDN effectively decouples motion and emotion features and achieves superior recognition performance, offering a new perspective for enhancing recogni-tion accuracy and generalization. 
+
+Index Terms —Emotion Learning, Micro-expression, Feature Decoupling, Sparse Attention, Collaborative Fusion. 
+
+I. I NTRODUCTION 
+
+# FACIAL expressions contain abundant emotional infor-mation and play a crucial role in affective analysis [1]. Generally, facial expressions are categorized into macro-expressions and micro-expressions. In contrast to macro-expressions, micro-expressions are characterized by tiny mo-tion amplitudes and extremely short durations, making them difficult to detect easily. Furthermore, macro-expressions can 
+
+This work was supported by The National Natural Science Foundations of China under grant No. 62272364, the provincial Key Research and Development Program of Shaanxi under grant No. 2024GH-ZDXM-47, the Higher Education Science Research Planning Project of China Association of Higher Education No. 24PG0101, the Fundamental Research Funds for the Central Universities, and the Postgraduate Innovation Fund of Xidian University No. YJSJ26014. (* Corresponding author: Qiguang Miao.) Chenxing Hu, Kun Xie, Qiguang Miao, and Ruyi Liu are with the School of Computer Science and Technology, Xidian University, Xi’an, Shaanxi 710071, China, Xi’an Key Laboratory of Big Data and Intelligent Vision, Xi’an, Shaanxi 710071, China and with Key Laboratory of Collaborative Intelligence Systems, Ministry of Education, Xidian University, Xi’an 710071, China (e-mail: huchenxing@stu.xidian.edu.cn; xiekun@xidian.edu.cn; qg-miao@xidian.edu.cn; ruyiliu@xidian.edu.cn). Quan Wang is with the School of Computer Science and Technology, Xidian University, Xi’an, Shaanxi 710071, China (e-mail: qwang@xidian.edu.cn). Zongkai Yang is with the National Engineering Research Center of Educational Big Data and the Faculty of Artificial Intelligence in Edu-cation, Central China Normal University, Wuhan 430079, China (e-mail: zkyang@mail.ccnu.edu.cn). Onset Frame 
+
+Apex Frame 
+
+AU1  
+
+> surprise sadness
+
+AU14  
+
+> repression happiness
+
+AU15         
+
+> repression happiness
+> *AU15 -Lip Corner Depressor *AU1 -Inner Brow Raiser *AU14 -Dimpler
+
+Fig. 1. Some samples exhibit identical Action Unit activation patterns yet correspond to distinct emotion categories, characterized by highly similar visual motion features. This phenomenon can even occur in the same subject, highlighting the challenge of emotion discrimination relying solely on visual motion features. 
+
+be deliberately faked to conceal genuine emotions, while micro-expressions are spontaneous emotional responses that usually occur involuntarily. Thus, micro-expression analysis has become an important means of revealing humans’ true emotions [2] and is widely applied in fields such as med-ical care, criminal interrogation, and affective analysis [3], [4]. Manual micro-expression analysis poses a high thresh-old—even professionally trained experts can only identify less than 50% of micro-expressions on average [5], which highlights the critical importance of developing automated micro-expression recognition algorithms. The task of micro-expression recognition aims to classify the time intervals where micro-expressions occur into specific emotional cate-gories. However, the transient and subtle physical properties of micro-expressions lead to inherent challenges such as inconspicuous visual features and high susceptibility to noise interference, imposing great obstacles on the micro-expression recognition task. The Facial Action Coding System (FACS) has exerted a profound influence on facial expression analysis [6]. Based on the anatomical structure of the human face, FACS en-codes and classifies each visually distinguishable facial mus-cle movement, which is referred to as facial action units (AUs). Through psychological research, FACS provides an AU-emotion correspondence table for macro-expressions, en-abling researchers to objectively label the emotional categories of macro-expressions according to AU combinations. For this reason, most datasets in micro-expression analysis also adopt AU labeling based on FACS. The key difference, however, is that the corresponding relationship between AU combinations and emotional categories in micro-expressions has not been strictly defined; researchers only take AUs as a reference rather 
+
+0000–0000/00$00.00 © 2021 IEEE  
+
+> arXiv:2604.17899v1 [cs.CV] 20 Apr 2026 JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 2
+
+# AUs 
+
+# Identical 
+
+# Emotion 
+
+# Previous Methods --- Based on  visual motion 
+
+# Our Methods --- Motion \Emotion Feature Decoupling 
+
+# Feature  Feature Space 
+
+Motion 
+
+Emotion 
+
+Orthogonal 
+
+Loss 
+
+# Feature 
+
+# Feature Space 
+
+AU -Detection 
+
+constraints  
+
+> Fig. 2. Previous MER methods focus on characterizing micro-expressions using explicit visual motion. In contrast, our method constrains motion feature extraction within a motion feature space via AU detection. Furthermore, an orthogonal loss is employed to prevent emotion features from attending to explicit motion features strongly correlated with AUs, thereby improving discrimination between micro-expressions that are visually similar but belong to different emotion categories.
+
+than a decisive factor for emotional labeling. AUs are highly consistent with the visual motion features of micro-expressions, providing explicit and reliable cues for visual motion feature extraction. For this reason, some micro-expression recognition methods [7]–[9] attempt to introduce AUs to assist in extracting micro-expression motion features, while others [10], [11], though not heavily reliant on AUs, only focus on extracting explicit visual motion features. These works have achieved considerable progress to a certain ex-tent, yet they all overlook a crucial issue: the non-strict correspondence between AUs and emotional categories in micro-expressions means that AU motion features cannot play a decisive role in the final emotional classification of all samples. There exist samples in micro-expressions that share identical AUs but represent completely different emotional categories. This phenomenon is particularly significant in large-scale datasets and fine-grained recognition tasks. Such samples possess highly similar visual motion features, and over-reliance on AUs and explicit visual motion features will impair the generalization ability of models for the micro-expression recognition task. In this case, the implicit emotion features in these samples become the vital decisive factors. In summary, the features that determine the emotional categories of micro-expressions consist of two components: explicit vi-sual motion features and implicit emotion features. Different samples vary in their feature dependence priorities. Thus, how to guide models to effectively extract and utilize these two types of features for micro-expression recognition has become a critical research problem. To address the aforementioned challenges, this paper proposes the Motion-Emotion Feature Decoupling Network (MEDN). Specifically, two branches are constructed in the feature extraction stage. One branch takes the AU detection task as the supervision signal and focuses on extracting visual motion features highly correlated with AUs. The other branch concentrates on the motion evolution of micro-expression occurrence sequences. By enforcing feature orthogonality with the AU detection branch, this branch is constrained from focusing on motion features and is thus dedicated to extracting implicit emotion-related features. Furthermore, different sam-ples rely on motion and emotion features with varying weights. The orthogonally decoupled features require more emphasis on exploring their collaborative information. To achieve better complementary fusion of the two-branch features, this paper designs a feature collaborative fusion module, which adap-tively mines and fuses the effective collaborative information between motion features and emotion features. In summary, the research contributions of this paper are summarized as follows:  
+
+> •
+
+To the best of our knowledge, this work is the first in JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3
+
+the field of MER to address samples where AUs are consistent, but the corresponding emotion categories are inconsistent. Such samples exhibit high visual similarity, making accurate micro-expression recognition difficult using only visual features. The proposed method focuses on modeling both explicit motion features and implicit emotion features. By means of orthogonal disentangle-ment, the emotion feature extraction branch is constrained to disregard explicit motion features.  
+
+> •
+
+The Sparse Emotion Vision Transformer (SEVit) module is designed for emotion feature extraction, in which multi-scale sparse attention is utilized to break the model’s excessive dependence on static facial motion features.  
+
+> •
+
+To achieve better collaboration and complementarity be-tween motion features and emotion features, a Collabo-rative Fusion Module (CoFM) is designed to adaptively mine the motion-emotion collaborative relationship in different samples, which significantly improves the recog-nition performance.  
+
+> •
+
+Extensive experiments are conducted on three micro-expression benchmark datasets, and the proposed method outperforms mainstream approaches on multiple tasks. Meanwhile, comprehensive ablation experiments also verify the effectiveness of the proposed method. The rest of this paper is organized as follows. Section II reviews the existing research on MER and its limitations, and introduces related work on AU detection. Section III describes our proposed MEDN method in detail. Section IV introduces the experimental settings and the adopted evaluation protocol. Section V presents and analyzes the experimental results of the proposed method comprehensively. Section VI concludes the paper and discusses future work. II. R ELATED WORK 
+
+A. Handcrafted Feature-based Methods 
+
+Early works on MER primarily relied on handcrafted visual descriptive features to classify micro-expressions into emo-tional categories. Such methods exhibit strong interpretability and are less susceptible to the issue of small-scale micro-expression datasets. Zhao et al. [12] proposed the Local Binary Pattern from Three Orthogonal Planes (LBP-TOP), which extracts LBP fea-tures from three orthogonal planes to fuse spatial appearance and temporal motion information while drastically reducing computational complexity. For this reason, LBP-TOP has been widely adopted as a baseline method in numerous MER studies, and a variety of improved methods [13], [14] based on this algorithm have also been proposed subsequently. Gradient-based features and optical flow features have also been widely applied. Representative include the histogram of gradients [15] and the histogram of image gradient orientation [16]. Such features primarily focus on the edge variations of local facial textures, can accurately characterize the facial grayscale gradient differences induced by micro-expressions, and exhibit favorable geometric invariance. However, handcrafted feature-based methods can only char-acterize shallow image semantic information and fail to cap-ture motion semantics that are highly correlated with micro-expressions. Furthermore, manually designed feature extrac-tors require sophisticated parameter tuning and detailed design, which results in extremely poor robustness and generalization ability of such methods. 
+
+B. Deep Learning-based Methods 
+
+Deep learning techniques have achieved remarkable progress in computer vision tasks. Deep neural networks enable the adaptive extraction of high-level facial features, and such methods have been widely applied in MER. Patel et al. [17] employed convolutional neural networks (CNNs) combined with transfer learning to transfer knowledge from macro-expressions to micro-expression recognition, represent-ing a milestone work in deep learning-based micro-expression recognition. Subsequently, deep learning has gradually re-placed handcrafted feature-based methods and become the mainstream approach. 
+
+1) Static motion-based Methods: Micro-expressions are characterized by being subtle and transient. Their occur-rence sequences contain a large amount of redundant infor-mation, and such irrelevant information can severely nega-tively affect emotion recognition. Therefore, numerous studies adopt keyframe-based static motion information for micro-expression representation. Liong et al. [18] computed the optical flow between the onset frame and apex frame as input to mitigate redundant information. This novel approach effectively integrates the superior motion representation capa-bility of optical flow with the powerful deep feature learning capacity of CNNs. Quang et al. [19] proposed CapsuleNet, which performs recognition using only the apex frames of micro-expressions. Li et al. [20] proposed a Muscle Motion-guided Network (MMNet), the main branch of the network extracts motion features via the frame difference between the onset frame and the apex frame, while the lightweight auxiliary branch takes the onset frame as input to generate facial position embeddings, which work with the main branch to map the motion features to specific facial regions. Some researchers [21]–[23] have also introduced self-supervised techniques to enable models to learn facial motion features from inter-frame motion differences. Zhai et al. [22] proposed FRL-DGT, which pre-trains the network via a gener-ative task-driven displacement generation module. It generates adaptive dynamic displacement features from the onset and apex frames to avoid reliance on optical flow computation. In the classification stage, it combines full-face feature extraction and AU-based local feature extraction for micro-expression classification. Similarly, Fan et al. [24] proposed SelfME, a self-supervised learning framework. By learning motion patterns, the model can generate the motion field between two frames and perform micro-expression recognition and classification based on the obtained motion field. Micro-expression recognition based on keyframes can sig-nificantly reduce information redundancy and eliminate inter-ference from irrelevant factors. Therefore, the vast majority of existing works rely on keyframes by default [10], [25]– [28]. However, this approach also has significant drawbacks. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4ME Video 
+
+Optical Flow AU L
+
+> AU1
+> AU2
+> AU4
+> AU17 1
+
+S
+
+SEVit 
+
+SEVit 
+
+SEVit 2S3S
+
+> Fusion 1
+
+2
+
+3
+
+
+
+## Visual Motion 
+
+## Feature Extraction Lorth 
+
+> CoFM
+> Classifier  sur
+> pos
+> neg
+
+# AU Detection -Guided Motion Feature Extraction cls L
+
+# Emotional Feature Extraction 
+
+## Preprocessing  
+
+> Fig. 3. The architecture of our MEDN. For a micro-expression sequence, optical flow is first calculated frame by frame with respect to the first frame to obtain an optical flow sequence as input to the model. The optical flow sequence is then fed into the emotion feature extraction branch and the motion feature extraction branch for feature extraction. Among them, the motion feature extraction branch is supervised by the AU detection task as an auxiliary objective. The emotion feature extraction branch leverages our proposed SEViT to extract multi-scale features, and orthogonal decoupling with the motion feature extraction branch enables SEViT to focus more on implicit emotion features. Finally, the extracted motion and emotion features are fed into the CoFM module to achieve collaborative feature fusion, and the fused features are used for micro-expression recognition.
+
+First, additional keyframe annotation is required in real-world scenarios, which severely limits its practicality. Second, keyframes only characterize the explicit motion differences of micro-expressions, ignoring the emotional cues implied in the temporal evolution process. The MEDN model proposed in this paper directly extracts features from the entire micro-expression sequence. This enables the model to capture deep emotional characteristics beyond static motion information, while also freeing it from reliance on keyframe annotation, thus yielding greater practical application value. 
+
+2) AU-assisted Methods: AU represents local facial move-ments and is highly correlated with the visual motion features of micro-expressions. Therefore, several studies employ AU information as guidance to assist MER. Several works adopt Graph Neural Networks (GNN) to capture the interaction relationships among action units, and perform joint modeling based on the dynamic correlations between AUs and facial regions. Lo et al. [29] proposed MER-GCN, which leverages AU-related annotations in the dataset to model the co-occurrence relationships among action units. By employing Graph Convolutional Networks (GCN) to capture the dependencies between AUs, they integrate such relational information into MER, thereby boosting recogni-tion performance. Lei et al. [8] introduced an approach that unifies facial graph representation learning and facial Action Unit fusion. In this method, AU information is finely fused according to different facial regions, which enables effective capture of the subtle local features and node correlations of micro-expressions, and facilitates a more thorough exploitation of AU cues. Notably, some works directly introduce AU detection as a branch task into micro-expression recognition. Xie et al. [7] first employed AU detection as an auxiliary task for MER, making full use of facial muscle movement information to im-prove micro-expression recognition performance. Meanwhile, they generated realistic micro-expression sequences based on AU intensities, which effectively expanded the scale of micro-expression datasets. Zhou et al. [30] obtained AU features supervised by the AU detection task, and fused the correlated features using GCN for MER. Wang et al. [9] proposed a dual-branch network, where the two branches separately extract enhanced spatiotemporal features and dynamic AU features. Finally, the features from the two branches are fused via dot product to perform micro-expression classification. However, existing AU-assisted methods only focus on using AU information to supplement or assist the extraction of visual motion features for micro-expressions, while ignoring affective cues beyond explicit motion features. Although our MEDN also takes AU detection as a separate branch, its purpose is to perform orthogonal disentanglement using motion strongly correlated features supervised by AU detection, so that the affective cue extraction branch no longer focuses on visual motion features. 
+
+C. Facial AU Detection 
+
+AU features are highly consistent with facial visual motion features and serve as an important representation for charac-terizing facial expression movements. Numerous studies have been conducted on AU detection [31]–[34]. Early AU detection methods were mostly based on handcrafted features [35], [36], which generally lack generalization ability and scalability. Liu et al. [37] first proposed modeling AUs using GCN. This method extracts implicit representations of AU regions via an autoencoder, takes each implicit representation vector as a JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5S=2 
+
+Vit 
+
+Vit 
+
+Vit 
+
+Vit   
+
+> Patch + Embedding
+> Fig. 4. The details of the proposed SEVit module. When the sparsity rate
+> S= 2 , the optical flow sequence is divided into 4 parts along the spatial dimension while the temporal dimension remains continuous. Then, patch partitioning, encoding, and attention computation are performed separately in the manner of ViT. Finally, the features are concatenated.
+
+node input to the GCN, and determines the connection mode of GCN nodes according to the interaction relationships among AUs. Jacob et al. [38] employed Transformers as the encoder to capture the interdependencies among various action units under different expressions. However, the above methods do not specifically focus on AU detection in micro-expressions. Macro-expressions can obtain effective information directly from static facial appearance, whereas micro-expressions in-volve extremely subtle facial movements, requiring greater attention to inter-frame dynamic changes. Several studies [39]– [41] have conducted AU detection specifically for micro-expressions, yet these methods still fail to fully exploit the rich information contained in facial dynamics. Varanka et al. [42] proposed Learnable Eulerian Dynamics (LED), which combines automatic differentiation and linearized Eulerian video magnification to efficiently extract motion change rep-resentations from subtly varying frame sequences. Zhang et al. [43] proposed the AC4AU framework for extracting dynamic features from frame sequences based on Regulatory Focus Theory, which integrates frequency-aware redundancy decomposition and an AU-specific expert routing mechanism. III. O UR METHOD 
+
+In this section, we elaborate on the proposed MEDN method, whose overall architecture is illustrated in Figure 3. Firstly, we introduce how to extract explicit motion features. Next, we present the designed SEVit module and orthogo-nal decoupling method, which work together to accomplish emotion feature extraction. Subsequently, the proposed CoFM module is adopted to achieve collaborative feature fusion of motion and emotion features, and the fused features are used for MER. Finally, the overall loss function is described. 
+
+A. Motion Feature Extraction 
+
+The motion feature extraction branch is designed to extract explicit visual motion features. Given the high correspondence between such features and the explicit motions of AU, which provide reliable and interpretable guidance for feature extrac-tion, this branch adopts the AU detection task as an auxiliary supervision signal to guide the model in learning motion-related features. In this work, the AU detection branch is implemented based on the Learnable Eulerian Dynamics (LED) model proposed by Varanka et al. [42], which has demonstrated strong per-formance in AU-related feature extraction. The LED model leverages both local and global facial features to enhance AU detection, making it well-suited for capturing the explicit motion patterns associated with Action Units. The AU detection task is formulated as a multi-label classi-fication problem, where each AU is treated as an independent binary classification sub-task. To supervise this task, we adopt the standard multi-task cross-entropy loss, which is widely used for multi-label AU detection. The loss is computed as the sum of cross-entropy losses over all target AUs: 
+
+Lau =
+
+> NAU
+
+X
+
+> i=1
+
+LCE (pi, y i), (1) where NAU is the number of Action Units, LCE (·, ·) denotes the cross-entropy loss, pi is the predicted probability for the 
+
+i-th AU, and yi is its ground-truth label (0 or 1). In practice, the cross-entropy loss for each AU sub-task quantifies the discrepancy between the model’s predicted like-lihood of the AU being activated/non-activated and the true label, ensuring that the model is penalized for misclassifying the activation state of each AU. By summing these losses across all AUs, the multi-task loss enforces the model to simultaneously learn discriminative features for all target AUs, rather than optimizing for a single AU in isolation. 
+
+B. Emotion Feature Extraction 1) Sparse Emotion Vision Transformer: Traditional global attention mechanisms [44] often lead models to overly focus on explicit static visual semantics. For the image manipula-tion localization task (IML), Su et al. [45] decomposed the global attention mechanism into sparse attention, enabling the model to better capture region-independent features within individual frames. The emotional cues of micro-expressions are often implicit in the temporal motion variations, rather than in static motion deformations themselves. Therefore, the model should focus more on local feature changes along the temporal dimension. Inspired by [45], we design the Sparse Emotion Vision Transformer (SEVit) as the basic module for emotion feature extraction. SEVit can break the dominance of static visual information in micro-expression sequence feature extraction and force the model to mine fine-grained emotional cues within the local temporal feature flow. As shown in Figure 4, given a micro-expression sequence tensor X ∈ RT ×H×W ×C (where T denotes the number of time steps, H/W represent the height/width of the feature map, and C is the number of channels), we no longer simply perform patch partitioning and global attention calculation in a naive manner. Instead, we first divide the features sequentially into s2 non-overlapping sub-tensors {Ni}s2 
+
+> i=1
+
+along the spatial dimension according to a sparsity rate s (degenerating to the standard global attention when s = 1), where each 
+
+Ni ∈ RT ×H/s ×W/s ×C . Then, self-attention is computed independently within each Ni. This approach can forcibly JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6
+
+suppress the model’s over-reliance on static spatial features and drive it to focus more on temporal variation information within local regions. SEVit (X, s ) = 
+
+> s2
+
+M
+
+> i=1
+
+SelfAttention (Ni), (2) where L denotes the operation of concatenating the outputs from all self-attention modules. Furthermore, we employ multi-scale feature fusion with parallel sparse rates. This prevents the destruction of the internal spatial correlations within critical local regions when dividing tensors using a single sparse rate, thereby improving the generalization ability of the model. Specifically, given a set of sparsity rates (where K is the number of sparsity rates), the feature extracted under the k-th sparsity rate is denoted as: 
+
+Fk = SEVit (X, s k), k = 1 , . . . , K. (3) Then, a learnable fusion weight γk is introduced for each feature Fk to balance the multi-scale emotion features under different sparsity rates. The final fused feature is given by: 
+
+Fe =
+
+> K
+
+X
+
+> k=1
+
+γkFk. (4) 
+
+2) Orthogonal Loss: To encourage the model to focus more on affective features rather than explicit motion features, we employ orthogonal loss to disentangle affective features from motion features supervised by AU detection in the feature space. This disentanglement guides the model to capture deep affective cues beyond explicit motion. By constructing a ded-icated constraint term, orthogonal loss effectively decouples implicit affective features and explicit motion features, reduces information redundancy between the two types of features, and ensures that the model can fully mine the core semantic cues related to affective expression. Specifically, the extracted motion and affective features are denoted as Fm and Fe (Fm, F e ∈ R1×D ), where D denotes the feature dimension. To eliminate the scale discrepancy between the two types of features and ensure the rationality of subsequent calculations, we first perform L2 normalization on the features. The specific formulation is given as follows. 
+
+ˆFm = Fm
+
+∥Fm∥2 + ϵ , ˆFe = Fe
+
+∥Fe∥2 + ϵ , (5) where ˆFm, ˆFe denote the normalized feature vectors and ϵ is a small constant for numerical stability. To quantify the degree of linear correlation between fea-tures, we calculate the projection coefficient between features, which is obtained by taking the dot product of the two types of normalized features. The specific expression is given as follows: 
+
+α = ⟨ ˆFm, ˆFe⟩. (6) Based on the above projection coefficient α, the orthogonal components of ˆFm and ˆFe with respect to each other can be solved respectively, thereby stripping the linear correlation Cross -Attention 
+
+> Split
+> Multi -head
+> Attention
+> Multi -head
+> Attention
+> Linear
+> GELU
+> Linear
+> Sigmoid
+> Linear
+> GELU
+> Linear
+> Sigmoid ewmwQ
+
+KVmix FeF ⊥mF ⊥  
+
+> C
+> Concatenation CAddition fusion FMultiplication '
+> eF'
+> m
+
+FeQmQ,col e K,col m K,col m V,col e Vcol F,col e F,col m F 
+
+> Fig. 5. The details of the proposed CoFM module. The CoFM module aims to model the collaboration between the orthogonalized features. Then, multi-head attention is computed using the queries and keys generated from the original features and the features after collaborative modeling. Finally, the collaboration-enhanced aggregated features are obtained via adaptive weight fusion.
+
+between the two types of features and preserving their respec-tive unique information. The specific calculations are given as follows: 
+
+F ⊥ 
+
+> m
+
+= ˆFm − α · ˆFe, F ⊥ 
+
+> e
+
+= ˆFe − α · ˆFm. (7) The core idea of orthogonal loss is to achieve feature disentanglement by constraining the orthogonal components of the two types of features to be as independent of each other as possible. It is defined as the mean square value of the inner product of the two types of features after orthogonalization, and scaled by the feature dimension to balance the relationship between the loss scale and the feature dimension. Therefore, the final specific loss function is expressed as follows: 
+
+Lorth = D · ⟨ F ⊥ 
+
+> m
+
+, F ⊥ 
+
+> e
+
+⟩2. (8) This loss function effectively strips redundant information from the two types of features by minimizing the sum of squared inner products between orthogonal components, ensuring that emotion features can break away from the dependence on explicit motion features, preserve the unique semantic information inherent to emotional expressions, and further guide the model to focus on deep emotional cues beyond explicit motions. 
+
+C. Collaborative Fusion Module 
+
+Different samples exhibit distinct dependencies on motion and emotion features; thus, we require a fusion mechanism to adaptively balance their contributions. Furthermore, since motion and emotion features are constrained to separate sub-spaces by the orthogonal loss, they present substantial feature-level disparities. Direct fusion of the two features may lead to semantic mismatches. To address this issue, we propose the Collaborative Fusion Module (CoFM), which aims to explore the collaborative patterns between features from the two independent branches and learn an optimal complemen-tary fusion strategy for collaborative features, as detailed in JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 7
+
+Figure 5. Unlike existing correlation-based methods, CoFM focuses on modeling collaborative interactions between the orthogonalized motion and emotion features, guiding them to complement each other and improve micro-expression recognition performance. Specifically, we first model the col-laborative information of the two features by concatenating the orthogonally decoupled motion features F ⊥ 
+
+> m
+
+and emotion features F ⊥ 
+
+> e
+
+along the feature dimension to construct the mixed feature tensor Fmix , expressed as: 
+
+Fmix = Concat (F ⊥ 
+
+> m
+
+, F ⊥ 
+
+> e
+
+). (9) To project the mixed feature tensor into a feature space suitable for collaborative modeling, linear layers are employed to map it to the query vector Q, key vector K, and value vector 
+
+V , respectively: 
+
+Q, K, V = Linear (Fmix ). (10) To accurately capture the fine-grained collaborative relation-ships between the two branches, we explore the collaborative patterns within the feature subspace via the attention mecha-nism, with the specific implementation detailed as follows: 
+
+Fcol = softmax 
+
+ QK ⊤
+
+√dk
+
+
+
+V, (11) where √dk is the scaling factor, denotes the mixed vector after collaborative modeling, and Fcol is finally split into two mixed sub-vectors Fcol,m and Fcol,e . This operation enables modeling of collaboratively enhanced features after orthogonal decoupling in separate feature spaces, allowing the model to adaptively align information according to the feature collaboration relationships. The collaboratively modeled features Fcol,m and Fcol,e con-tain collaborative information between motion and emotion. To generate the final collaboratively enhanced features, we map the original orthogonalized features F ⊥ 
+
+> m
+
+and F ⊥ 
+
+> e
+
+to query vectors Qm,Qe. Meanwhile, Fcol,m and Fcol,e are mapped to key vectors Kcol,m ,Kcol,e and value vectors Vcol,m ,Vcol,e ,based on which multi-head attention is computed for the motion and emotional branches separately to obtain the collab-oratively enhanced features F ′ 
+
+> m
+
+and F ′
+
+> e
+
+. Lightweight sequential networks are adopted to generate fusion weights wm and we:
+
+wm = Sigmoid (W1(GELU (W2(F ′
+
+> m
+
+)))) , (12) 
+
+we = Sigmoid (W3(GELU (W4(F ′
+
+> e
+
+)))) , (13) where W1,W2,W3,W4 are learnable weight matrices. To avoid weight imbalance, the weights wmand we are further normal-ized. The final feature fusion process is as follows: 
+
+Ff usion = wmF ′ 
+
+> m
+
++ weF ′
+
+> e
+
+. (14) The fused feature Ff usion for final classification prediction. The CoFM module adapts to feature fusion after orthogonal decoupling, dynamically adjusts the contributions of the two branches according to the specific features of the input sample, and fully explores and integrates the collaborative and com-plementary information between motion and emotion features. 
+
+D. Full Loss 
+
+To alleviate the severe sample imbalance problem of micro-expression data, we adopt Focal Loss [10], [46] as the classi-fication loss, and its formula is as follows: 
+
+Lcls (pt) = −(1 − pt)γ log( pt). (15) In this formula, pt denotes the predicted probability of each category, and γ is a constant. Focal Loss adopts a dynamic weighting approach, which enables models to pay more at-tention to difficult-to-categorize samples. This characteristic effectively avoids the problem of models overfitting to easily classified samples—note that the original description may have a typo, as Focal Loss essentially suppresses the impact of easily classified samples rather than hard-to-categorize ones, and the correction here is made to align with the fundamental principle of Focal Loss while retaining the core intent of the original text. In the proposed MEDN model, the total loss function is composed of three terms: the emotion classification loss Lcls ,the AU detection loss Lau , and the orthogonal disentanglement loss Lorth . The overall loss is formulated as: 
+
+Ltotal = Lcls + λau Lau + λorth Lorth , (16) where λau and λorth are hyperparameters that control the relative contributions of the AU detection and orthogonal losses. IV. EXPERIMENTAL SETUP In this section, we elaborate on the configuration and preparation of the experiments, including the dataset, prepro-cessing procedures, and the evaluation protocols adopted in the experiments. 
+
+A. Datasets 
+
+We validate our method on three mainstream datasets commonly used for micro-expression recognition. All these datasets contain authentic emotion labels and AU labels that our experiments rely on. 
+
+CASMEII [47] is a widely used spontaneous micro-expression dataset for micro-expression recognition research. The dataset contains 255 micro-expression videos from 26 subjects, selected from nearly 3,000 elicited facial movements. Each video has a resolution of 280×340 and a frame rate of 200 FPS. In our experiments, we mainly use 145 samples for the three-class classification task. 
+
+SAMM [48] comprises 159 ME videos collected from 29 subjects (covering 13 ethnicities) under controlled lighting conditions without flickering. Recorded at 200 FPS with a facial resolution of 400 ×400. In our experiments, we mainly use 133 samples for the three-class classification task. 
+
+CAS(ME) 3 [49] mainly consists of three parts, among which Part A is the primary subset adopted in our experiments. This part comprises 860 valid micro-expression samples with complete annotations, and the videos were captured at a frame rate of 30 fps. The samples are annotated with seven emo-tion labels, including happiness, disgust, surprise, fear, anger, JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8                                     
+
+> TABLE I THE NUMBER OF VIDEOS IN EACH CATEGORY FOR THE CASMEII AND
+> SAMM USED IN THE 3-CLASS CLASSIFICATION TASK .Label CASMEII SAMM Combined Positive 32 26 58 Negative 88 92 180 Surprise 25 15 40 Total 145 133 278 TABLE II THE NUMBER OF VIDEOS UNDER DIFFERENT CATEGORIES IN THE
+> CAS(ME) 3DATASET . ”H ARD ”DENOTES THE NUMBER OF HARD SAMPLES
+> (SAMPLES WITH THE SAME AU S BUT DIFFERENT EMOTIONAL CATEGORIES ), AND ”P ROPORTION ”REPRESENTS THE PROPORTION OF HARD SAMPLES .Task Total Hard Proportion 3-class 699 594 84.98% 4-class 860 755 87.79% 7-class 860 784 91.16%
+
+sadness, and others. For this dataset, we conduct comparative experiments on 3-class, 4-class, and 7-class classification tasks. For the CASMEII and SAMM datasets, we adopt the Composite Database Evaluation (CDE) protocol proposed in MEGC2019 to unify the emotion categories into three classes: 
+
+Negative {”Repression”, ”Anger”, ”Contempt”, ”Disgust”, ”Fear”, ”Sadness” }, Positive {”Happiness” }, and Surprise 
+
+{”Surprise” }. Details are shown in Table I. For the CAS(ME) 3
+
+dataset, we also divide the labels into three categories accord-ing to the above criteria. For the four-category task, we add an Other class, while for the seven-category task, we adopt the original emotion labels. Due to the larger scale of the CAS(ME) 3 dataset, the issue of samples sharing the same AUs but belonging to different emotion categories becomes much more prominent. Table II presents the total number of samples, the number of hard samples, and the proportion of hard samples under different classification tasks on CAS(ME) 3. It can be seen from the table that more than 80% of the samples have other easily confused samples with consistent AUs but inconsistent emotion labels. Accordingly, our ablation studies are mainly conducted on the CAS(ME) 3 dataset to verify the effectiveness of our proposed method. 
+
+B. Data Pre-processing 
+
+Our MEDN model takes video sequences as input. Thus, we uniformly sample T = 8 frame images from the micro-expression occurrence interval of each sample to form micro-expression sequences. We detect the 68 facial landmarks and align for each frame image using the Dlib [50] toolkit, and then crop all image frames to a size of 3 ×144 ×144. Next, the TV-L1 [51] optical flow method is adopted to calculate the optical flow between each frame and the first frame in the sequence; the optical flow in the horizontal and vertical directions is treated as two separate channels, yielding an optical flow sequence with a frame length of T − 1 and a size of 2 ×144 ×144. Ultimately, the size of a single sample input to the MEDN model is (T − 1, C, H, W ), where T − 1 = 7 ,
+
+C = 2 , and H = W = 144 .
+
+C. Evaluation Protocols and Metrics 
+
+Following existing research in the field of micro-expression recognition, we adopt the Leave-One-Subject-Out (LOSO) strategy for model evaluation. This strategy takes samples from a single individual subject as the test set for each round of cross-validation, and the final evaluation metrics are calculated by aggregating all prediction results from all rounds. Since class distribution imbalance is a prevalent issue in micro-expression datasets, using the traditional Accuracy met-ric alone is insufficient to comprehensively evaluate model performance. For this reason, we select the Unweighted Av-erage Recall (UAR) and Unweighted F1-score (UF1) as the core evaluation metrics to ensure the comprehensiveness of the experimental results. We can calculate as follows: UF1 = 1
+
+C
+
+> C
+
+X
+
+> i=1
+
+2 × TP i
+
+2 × TP i + FP i + FN i
+
+, (17) UAR = 1
+
+C
+
+> C
+
+X
+
+> i=1
+
+TP i
+
+Ni
+
+, (18) where C is the number of categories, TP i, FP i, and FN i
+
+denote the number of true positive, false positive, and false negative samples for category i, respectively, and Ni is the total number of samples in category i.
+
+D. Implementation Details 
+
+All experiments in this study were conducted on the NVIDIA RTX 5880 Ada Generation graphics card, and the model was implemented based on the PyTorch [61] frame-work. The γ of Focal Loss was set to 2.0, and the batch size was configured as 128. The initial learning rate of the entire model was set to 0.0001. To stabilize the extraction of explicit motion features, a learning rate decay strategy was applied to the motion feature extraction branch, with the learning rate decayed to 0.1 times the original value every 100 epochs. The AdamW optimizer was adopted for model training, which fixes the defect of unstable weight decay effect of Adam in adaptive optimization by decoupling weight decay, with the weight decay set to 0.001. V. R ESULTS AND DISCUSSION 
+
+In this section, we compare the proposed MEDN model with state-of-the-art methods on multiple ME datasets, and MEDN achieves strong competitive performance on various tasks. We also conduct sufficient ablation experiments to verify the effectiveness of each module in the model. 
+
+A. Comparison with State-of-the-Art Methods 
+
+Table III presents the quantitative comparison between the proposed MEDN and state-of-the-art methods on the CASMEII and SAMM datasets. It can be observed that MEDN achieves competitive performance on both datasets. In JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 9
+
+TABLE III COMPARISON WITH THE STATE -OF -THE -ART METHODS ON CASMEII AND SAMM FOR THE THREE -CATEGORY CLASSIFICATION TASK . T HE BEST RESULTS ARE HIGHLIGHTED IN BOLD , WHILE THE SECOND -BEST RESULTS ARE MARKED WITH AN UNDERLINE . ”A PEX FRAME ” INDICATES WHETHER THE METHOD RELIES ON APEX FRAME ANNOTATIONS , AND ”A VERAGE ” DENOTES THE AVERAGE RESULTS OVER THE TWO DATASETS .Methods Apex Frame CASMEII SAMM Average UF1 UAR UF1 UAR UF1 UAR CapsuleNet(2019) [19] √ 0.7068 0.7018 0.6209 0.5989 0.6639 0.6504 STSTNet(2019) [52] √ 0.8382 0.8686 0.6588 0.6810 0.7489 0.7748 Neural(2019) [53] √ 0.8293 0.8209 0.7754 0.7152 0.8024 0.7681 MTMNet(2020) [54] √ 0.8700 0.8720 0.8250 0.8190 0.8475 0.8455 AUGCN(2021) [8] √ 0.8798 0.8710 0.7751 0.7890 0.8271 0.8300 MERASTC(2021) [55] × 0.9330 0.9500 0.8300 0.8460 0.8815 0.8980 
+
+ME-PLAN(2022) [56] × 0.8941 0.8962 0.7358 0.7687 0.8149 0.8325 GLEFFN(2023) [57] × 0.8825 0.9110 0.7458 0.7843 0.8142 0.8477 Micron-BERT(2023) [23] √ 0.9034 0.8914 - - - -MFDAN(2024) [10] √ 0.9134 0.9326 0.7871 0.8196 0.8503 0.8761 MPFNet-P(2025) [58] √ 0.8790 0.8950 0.7910 0.8260 0.8350 0.8605 MER-CLIP(2025) [11] × 0.9409 0.9487 0.8321 0.8434 0.8865 0.8961 SODA4MER(2025) [21] × 0.8870 0.8809 - - - -GAMDSS(2026) [59] √ 0.9362 - 0.8523 - 0.8943 -MPFNet-C(2026) [60] √ 0.9110 0.9230 0.7950 0.8390 0.8530 0.8810 MEDN(ours) × 0.9118 0.8912 0.8835 0.8679 0.8977 0.8796 TABLE IV COMPARISON OF EXPERIMENTAL RESULTS WITH OTHER METHODS FOR 
+
+CAS(ME) 3 PART AMethods Classes UF1 UAR STSTNet(2019) [52] 3 0.3795 0.3792 Micron-BERT(2023) [23] 3 0.5604 0.6125 HTNet(2024) [26] 3 0.5767 0.5415 Lite-Point-GCN(2025) [27] 3 0.6819 0.7412 
+
+MEDN(ours) 3 0.7568 0.7294 Micron-BERT(2023) [23] 4 0.4718 0.4913 Lite-Point-GCN(2025) [27] 4 0.4764 0.5366 MEDN(ours) 4 0.6514 0.6102 
+
+Micron-BERT(2023) [23] 7 0.3264 0.3254 Lite-Point-GCN(2025) [27] 7 0.3564 0.4159 MEDN(ours) 7 0.4906 0.4631 
+
+particular, our method obtains significant advantages on the more challenging SAMM dataset: it outperforms the second-best method by 3.7% in UF1 and 2.6% in UAR, achieving comparable results to those on the CASME II dataset. This verifies the robustness and generalization ability of the pro-posed method in challenging scenarios. Among the methods that do not rely on the apex frame, our method also achieves the best performance on the CASME II dataset. We conducted experiments on the CAS(ME) 3 dataset for 3-class, 4-class, and 7-class classification tasks, with the results presented in Table IV. Compared with current mainstream methods, MEDN achieves significant performance improve-ments, especially in the finer-grained 4-class and 7-class tasks. MEDN improves the UF1 and UAR metrics by approximately 0.15, while suffering less performance degradation in even finer-grained emotion classification tasks. This demonstrates that in scenarios involving finer-grained emotion classification with highly consistent AUs but distinct emotions, the disen-tanglement of movement and emotion features by MEDN can significantly enhance the recognition accuracy and robustness of the model. Unlike macro-expressions, micro-expressions contain alarge number of visually confusing samples with consistent AU annotations within the same emotion category. Such samples pose challenges to the feature extraction paradigm in micro-expression recognition. Excessive focus on explicit motion features often makes the model more prone to confus-ing these ambiguous samples. Compared with other models, the proposed method guides the model to pay more attention to the implicit emotion features hidden under explicit motion features through orthogonal decoupling of motion and emotion features. It can adaptively exploit the collaborative relationship between motion and emotion features, achieving significant improvements in recognition accuracy. 
+
+B. Ablation Study 
+
+To evaluate the effectiveness of each component in MEDN and the influence of several key factors on model accuracy, this paper conducts a comprehensive ablation study. Due to its larger data scale and higher proportion of samples with consistent AUs but different emotion categories, the exper-iments are mainly performed on the CAS(ME) 3 dataset. A detailed introduction to the ablation results will be presented subsequently. 
+
+1) Effect of Proposed Model Components: Table V presents the ablation results for key components in MEDN, where Experiment No.5 presents the metrics of the complete MEDN method on the CAS(ME) 3 dataset. In Experiment No.1, we only adopt a plain ViT as the backbone for the affective feature extraction branch. It can be observed that the UF1 and UAR scores reach 0.6876 and 0.6324 respectively for the three-class classification task on the CAS(ME) 3 dataset, indicating a significant performance drop. This demonstrates that our JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 10                                                                     
+
+> TABLE V ABLATION STUDY OF KEY COMPONENTS IN THE PROPOSED MEDN METHOD .√INDICATES THAT THE COMPONENT IS USED ,AND ×INDICATES THAT THE COMPONENT IS NOT USED .Number SEVit Multi-scale Sparse Rates Orthogonal Loss CoFM CAS(ME) 3-3class( ↓)UF1 UAR No.1 ××√√0.6876(-0.0692) 0.6324(-0.0970) No.2 √×√√0.7032(-0.0536) 0.6543(-0.0751) No.3 √√√×0.7262(-0.0306) 0.6885(-0.0409) No.4 √√×√0.7463(-0.0105) 0.7043(-0.0251) No.5 √√√√0.7568 0.7294
+> TABLE VI THREE -CLASS CLASSIFICATION RESULTS OF THE MEDN M ETHOD ON THE CAS(ME) 3DATASET WITH DIFFERENT SPARSITY RATES
+> Type Sparse Rate UF1 UAR Single-scale [1] 0.6873 0.6324 [2] 0.7044 0.6429 [4] 0.7032 0.6543 [8] 0.6986 0.6534 Multi-scale [1,2,4] 0.7467 0.7058 [1,2,4,8] 0.7568 0.7294 [1,1,2,2,4,4,8,8] 0.7521 0.7301
+
+proposed SEVit module achieves superior micro-expression recognition accuracy by enforcing the dispersion of the global attention over static spatial features. In Experiment No.2, we adopt SEVit as the backbone of the affective feature extraction branch, yet only employ a single-scale sparsity rate( s = 4 ). Although performance is slightly improved compared with Experiment No.1, it still lags considerably behind the optimal results. This indicates that the de-global attention mechanism of SEVit on the spatial dimension is necessary, while multi-scale sparsity rates can further enhance the robustness of the model. To verify the effectiveness of the proposed CoFM module, in Experiment No.3, we only adopted a simple weighted summation method to fuse the orthogonally decoupled motion and emotion features. The model recognition performance de-creased by 0.03-0.04, which demonstrates that in our proposed MEDN method, the collaborative modeling of features by the CoFM module is crucial for improving micro-expression recognition accuracy. In Experiment No.4, we removed the Orthogonal Loss, which also led to varying degrees of per-formance degradation, especially a 0.0251 drop in UAR. This indicates that orthogonal loss is feasible for the decoupling of explicit motion features and implicit emotion features, providing an important reference for subsequent research on MER. 
+
+2) Effect of Sparse Rate: To evaluate how the sparsity ratio selection of SEVit affects our experiments, we conducted experiments on the CAS(ME) 3 dataset using single-scale spar-sity ratios and different multi-scale sparsity ratio combina-tions, respectively. The detailed results are shown in Table VI. Experimental results using multi-scale sparsity rates are significantly superior to those using only single-scale sparsity rates, with an improvement of more than 0.04 in the evaluation                      
+
+> TABLE VII RESULTS OF MEDN ON THE CAS(ME) 3DATASET FOR THE THREE -CLASS CLASSIFICATION TASK WITH DIFFERENT AU-D ETECTION BACKBONES .Methods UF1 UAR MEDN + Resnet-18 0.7223 0.6789 MEDN + Resnet-34 0.7134 0.6625 MEDN + ViT-B/16 0.7342 0.6987 MEDN + LED 0.7568 0.7294
+> Fig. 6. Impact of different λau and λorth on the performance of the MEDN method on the CAS(ME) 3dataset. To better illustrate the performance variations, the vertical axis ranges from 0.3 to 0.8.
+
+metric for each comparative experiment. In the single-scale sparsity rate experiments, when s = 1 , the model degenerates into a vanilla ViT and exhibits notably poor performance. The optimal performance is achieved when s = 4 , 8. In the multi-scale sparsity rate experiments, the sparsity combination 
+
+s = [1 , 2, 4, 8] yields the best overall performance. Although the configuration s = [1 , 1, 2, 2, 4, 4, 8, 8] shows no obvious performance gain, it nearly doubles the overall computational cost of the module. 
+
+3) Impact of different Motion Feature Extraction Back-bones: As shown in Table VII, to further validate the effec-tiveness of the MEDN method, we compare the experimental results of mainstream backbone networks with those of the LED model adopted in this work. Specifically, when using ResNet-18/34 and ViT-B/16, we only employ the optical flow between the onset frame and the apex frame as input for JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 11  
+
+> Fig. 7. The confusion matrix of our MEDN on the different ME datasets.
+
+the motion detection branch. In contrast, when using LED, we follow the original paper and take the micro-expression video sequence as input directly. It can be observed that using the LED method as the backbone for motion feature extraction yields significant performance advantages. More-over, this approach ensures that the overall MEDN framework remains independent of apex frame annotations. Particularly, the LED model also exhibits clear advantages in the micro-expression AU-detection task [42]. This indicates that the more accurately explicit motion features are extracted, the more effective the MEDN method becomes, which further verifies the effectiveness of our orthogonal disentanglement of explicit motion features and implicit affective features. 
+
+4) Selection of λau and λorth : In our method, MEDN is trained jointly with multiple loss functions, thus introducing two critical hyperparameters, λau and λorth . These hyperpa-rameters are used to balance the contribution weights between different losses and exert a significant influence on model training. To determine their optimal values, we conducted a series of comparative experiments, setting the search range for both λau and λorth to {0.0, 0.2, ..., 2.0 }.We set λau and λorth to 1.0 respectively, then conduct experiments with different values of the other parameter, and the experimental results are shown in Figure 6. Experiments show that when λorth is set around 1.0, the model achieves optimal performance across all classification tasks on the CAS(ME) 3 dataset. Either excessively low or high values lead to degraded model performance. Compared with λorth ,
+
+λau exhibits higher sensitivity to its value, and the overall optimal performance is obtained within the range of 0.6-1.2. We observe that finer-grained classification tasks tend to correspond to lower optimal λau values, implying a lower reliance on AU-guided explicit motion features. This indicates that in complex micro-expression recognition scenarios, one should not over-rely on explicit motion features, which further validates the overall effectiveness of MEDN. 
+
+C. Visual Analysis 1) Confusion matrices: To further analyze the proposed method, we visualize the confusion matrices of the evaluation results of MEDN on the CASMEII, SAMM, and CAS(ME) 3
+
+datasets, as shown in Fig. 7. It can be observed that MEDN achieves excellent classification performance on all three emo-tion categories on the CASMEII dataset, especially reaching 0.99 recognition accuracy for the negative category. On the SAMM dataset, MEDN obtains classification accuracy above 0.9 for both the negative and surprise categories, but shows relatively low accuracy for the positive category. This may be attributed to the large individual differences and the extremely small number of positive samples in the SAMM dataset, which makes it difficult for the model to effectively learn the common features of the positive category. On the CAS(ME) 3
+
+dataset, MEDN achieves excellent overall accuracy in the 3-class, 4-class, and 7-class classification tasks. However, it can be clearly observed from the figure that the model still tends to focus on emotion categories with more abundant JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 12 3-class  4-class 
+
+> Motion&Emotion
+> Feature
+> Fusion Feature
+
+# 7-class   
+
+> Fig. 8. The t-SNE visualization of our MEDN on the CAS(ME) 3datasets.
+
+samples. Especially in the 7-class task, the classification accu-racy of the dominant category Disgust reaches 0.82, whereas the accuracies for Fear and Anger are only 0.21 and 0.24 respectively. This is because although the CAS(ME) 3 dataset provides richer feature representations, the problem of severe class imbalance still exists. 
+
+2) Feature distribution visualization: For an intuitive demonstration of how the orthogonal loss decouples motion and emotion features, as well as the distribution of fusion features for classification, we employ the t-SNE method to reduce the dimensionality of sample features under different classification tasks on the CAS(ME) 3 dataset and visualize them in the form of scatter plots. As shown in Fig. 8, the or-thogonal loss enables motion features and emotion features to possess entirely distinct feature spatial distributions, allowing the extraction of emotion features to be independent of explicit motion features. With an increase in category granularity, the explicit motion features guided by AU detection become denser in distribution, while the implicit emotion features exhibit a more discrete and extensive spatial distribution. This indicates that richer emotion categories contain more diverse emotional information, whereas explicit motion features re-main globally consistent, further verifying the effectiveness of our method. Although the decoupled motion and emotion features lie in completely separate feature spaces, the figure shows that the aggregated features still maintain relatively clear classification boundaries among categories. This demon-strates that the CoFM module can effectively exploit the collaborative information of decoupled features and fuse the two types of features into a unified feature space, thereby improving MER performance. VI. C ONCLUSION 
+
+In this paper, we propose a Motion-Emotion Feature De-coupling Network for MER. We explore for the first time the issue of samples with consistent AUs but inconsistent emotional categories in micro-expressions. The motion and emotion features are effectively decoupled via orthogonal loss, and a multi-scale sparse attention mechanism is incorporated to guide the model to focus more on implicit emotional cues beyond explicit motion features. In addition, we perform collaborative fusion on the orthogonally decoupled motion and emotion features. Extensive experiments on multiple datasets demonstrate that MEDN achieves competitive performance compared with state-of-the-art methods, especially in challeng-ing scenarios with high AU-emotion inconsistency. Despite its promising performance, MEDN still has certain limitations: this method constrains motion feature extraction via facial action unit detection, which relies on the feature extraction capability of the AU detection algorithm itself. Moreover, the training phase requires high-quality action unit annotations, which are costly to label. In the future, we can reduce the dependence on manual annotations through semi-supervised or self-supervised learning, or explore better approaches for explicit motion feature extraction. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 13 
+
+REFERENCES [1] P. Ekman, “Darwin, deception, and facial expression,” Annals of the new York Academy of sciences , vol. 1000, no. 1, pp. 205–221, 2003. [2] S. Porter and L. Ten Brinke, “Reading between the lies: Identifying concealed and falsified emotions in universal facial expressions,” Psy-chological science , vol. 19, no. 5, pp. 508–514, 2008. [3] M. O’sullivan, M. G. Frank, C. M. Hurley, and J. Tiwana, “Police lie detection accuracy: The effect of lie scenario,” Law and human behavior ,vol. 33, no. 6, pp. 530–538, 2009. [4] J. Endres and A. Laidlaw, “Micro-expression recognition training in medical students: a pilot study,” BMC medical education , vol. 9, no. 1, p. 47, 2009. [5] X. Ben, Y. Ren, J. Zhang, S.-J. Wang, K. Kpalma, W. Meng, and Y.-J. Liu, “Video-based facial micro-expression analysis: A survey of datasets, features and algorithms,” IEEE transactions on pattern analysis and machine intelligence , vol. 44, no. 9, pp. 5826–5846, 2021. [6] P. Ekman and W. V. Friesen, “Facial action coding system,” Environ-mental Psychology & Nonverbal Behavior , 1978. [7] H.-X. Xie, L. Lo, H.-H. Shuai, and W.-H. Cheng, “Au-assisted graph attention convolutional network for micro-expression recognition,” in 
+
+Proceedings of the 28th ACM international conference on multimedia ,2020, pp. 2871–2880. [8] L. Lei, T. Chen, S. Li, and J. Li, “Micro-expression recognition based on facial graph representation learning and facial action unit fusion,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2021, pp. 1571–1580. [9] L. Wang, P. Huang, W. Cai, and X. Liu, “Micro-expression recognition by fusing action unit detection and spatio-temporal features,” in ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing . IEEE, 2024, pp. 5595–5599. [10] W. Cai, J. Zhao, R. Yi, M. Yu, F. Duan, Z. Pan, and Y.-J. Liu, “Mfdan: Multi-level flow-driven attention network for micro-expression recognition,” IEEE Transactions on Circuits and Systems for Video Technology , 2024. [11] S. Liu, X. Mao, S. Zhao, P. Li, T. Xu, and E. Chen, “Mer-clip: Au-guided vision-language alignment for micro-expression recognition,” 
+
+IEEE Transactions on Affective Computing , 2025. [12] G. Zhao and M. Pietikainen, “Dynamic texture recognition using local binary patterns with an application to facial expressions,” IEEE trans-actions on pattern analysis and machine intelligence , vol. 29, no. 6, pp. 915–928, 2007. [13] Y. Wang, J. See, R. C.-W. Phan, and Y.-H. Oh, “Efficient spatio-temporal local binary patterns for spontaneous facial micro-expression recognition,” PloS one , vol. 10, no. 5, p. e0124674, 2015. [14] X. Huang, G. Zhao, X. Hong, W. Zheng, and M. Pietik¨ ainen, “Sponta-neous facial micro-expression analysis using spatiotemporal completed local quantized patterns,” Neurocomputing , vol. 175, pp. 564–578, 2016. [15] N. Dalal and B. Triggs, “Histograms of oriented gradients for human detection,” in 2005 IEEE computer society conference on computer vision and pattern recognition , vol. 1. Ieee, 2005, pp. 886–893. [16] X. Li, X. Hong, A. Moilanen, X. Huang, T. Pfister, G. Zhao, and M. Pietik¨ ainen, “Towards reading hidden emotions: A comparative study of spontaneous micro-expression spotting and recognition methods,” 
+
+IEEE transactions on affective computing , vol. 9, no. 4, pp. 563–577, 2017. [17] D. Patel, X. Hong, and G. Zhao, “Selective deep features for micro-expression recognition,” in 2016 23rd international conference on pat-tern recognition . IEEE, 2016, pp. 2258–2263. [18] S.-T. Liong, W.-C. Yau, Y.-C. Huang, and L.-K. Tan, “Off-apexnet on micro-expression recognition system,” Signal Processing: Image Communication , vol. 74, pp. 129–139, 2019. [19] N. Van Quang, J. Chun, and T. Tokuyama, “Capsulenet for micro-expression recognition,” in 2019 14th IEEE international conference on automatic face & gesture recognition . IEEE, 2019, pp. 1–7. [20] H. Li, M. Sui, Z. Zhu, and F. Zhao, “Mmnet: Muscle motion-guided network for micro-expression recognition,” 2022. [Online]. Available: https://arxiv.org/abs/2201.05297 [21] B. Zhang, X. Wang, C. Wang, and G. He, “Dynamic stereotype theory induced micro-expression recognition with oriented deformation,” in 
+
+Proceedings of the Computer Vision and Pattern Recognition Confer-ence , 2025, pp. 10 701–10 711. [22] Z. Zhai, J. Zhao, C. Long, W. Xu, S. He, and H. Zhao, “Feature representation learning with adaptive displacement generation and trans-former fusion for micro-expression recognition,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2023, pp. 22 086–22 095. [23] X.-B. Nguyen, C. N. Duong, X. Li, S. Gauch, H.-S. Seo, and K. Luu, “Micron-bert: Bert-based facial micro-expression recognition,” in Pro-ceedings of the ieee/cvf conference on computer vision and pattern recognition , 2023, pp. 1482–1492. [24] X. Fan, X. Chen, M. Jiang, A. R. Shahid, and H. Yan, “Selfme: Self-supervised motion learning for micro-expression recognition,” in 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , June 2023, pp. 13 834–13 843. [25] H.-Q. Khor, J. See, S.-T. Liong, R. C. Phan, and W. Lin, “Dual-stream shallow networks for facial micro-expression recognition,” in 2019 IEEE international conference on image processing . IEEE, 2019, pp. 36–40. [26] Z. Wang, K. Zhang, W. Luo, and R. Sankaranarayana, “Htnet for micro-expression recognition,” Neurocomputing , vol. 602, p. 128196, 2024. [27] R. Zhang, J. Yin, C. Qi, Y. Dang, Z. Wang, Z. Zhang, and H. Liu, “Facial 3d regional structural motion representation using lightweight point cloud networks for micro-expression recognition,” IEEE Transactions on Affective Computing , pp. 1–15, 2025. [28] Z. Zhang, W. Tang, and H. Chen, “Rethinking key-frame-based micro-expression recognition: A robust and accurate framework against key-frame errors,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , October 2025, pp. 12 274–12 283. [29] L. Lo, H.-X. Xie, H.-H. Shuai, and W.-H. Cheng, “Mer-gcn: Micro-expression recognition based on relation modeling with graph convolu-tional networks,” in 2020 IEEE Conference on Multimedia Information Processing and Retrieval , 2020, pp. 79–84. [30] L. Zhou, Q. Mao, and M. Dong, “Objective class-based micro-expression recognition through simultaneous action unit detection and feature aggregation,” Tsinghua Science and Technology , vol. 30, no. 5, pp. 2114– 2132, 2025. [31] W. Li, F. Abtahi, and Z. Zhu, “Action unit detection with region adaptation, multi-labeling learning and optimal temporal fusing,” in 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition , 2017, pp. 1841–1850. [32] W. Zhang, L. Li, Y. Ding, W. Chen, Z. Deng, and X. Yu, “Detecting facial action units from global-local fine-grained expressions,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 34, no. 2, pp. 983–994, 2023. [33] Y. Chang, C. Zhang, Y. Wu, and S. Wang, “Facial action unit recognition enhanced by text descriptions of facs,” IEEE Transactions on Affective Computing , vol. 16, no. 2, pp. 814–826, 2024. [34] Y. Li, Y. Ren, Y. Zhang, W. Zhang, T. Zhang, M. Jiang, G.-S. Xie, and C. Guan, “Hierarchical vision-language interaction for facial action unit detection,” IEEE Transactions on Affective Computing , 2026. [35] Z. Wang, Y. Li, S. Wang, and Q. Ji, “Capturing global semantic relationships for facial action unit recognition,” in Proceedings of the IEEE International Conference on computer vision , 2013, pp. 3304– 3311. [36] B. Wu, S. Lyu, B.-G. Hu, and Q. Ji, “Multi-label learning with missing labels for image annotation and facial action unit recognition,” Pattern Recognition , vol. 48, no. 7, pp. 2279–2289, 2015. [37] Z. Liu, J. Dong, C. Zhang, L. Wang, and J. Dang, “Relation modeling with graph convolutional networks for facial action unit detection,” in 
+
+International Conference on Multimedia Modeling . Springer, 2019, pp. 489–501. [38] G. M. Jacob and B. Stenger, “Facial action unit detection with transform-ers,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2021, pp. 7680–7689. [39] Y. Li, X. Huang, and G. Zhao, “Micro-expression action unit detection with spatial and channel attention,” Neurocomputing , vol. 436, pp. 221– 231, 2021. [40] L. Zhang, O. Arandjelovic, and X. Hong, “Facial action unit detection with local key facial sub-region based multi-label classification for micro-expression analysis,” in Proceedings of the 1st workshop on facial micro-expression: advanced techniques for facial expressions generation and spotting , 2021, pp. 11–18. [41] Y. Li and G. Zhao, “Intra-and inter-contrastive learning for micro-expression action unit detection,” in Proceedings of the 2021 Interna-tional Conference on Multimodal Interaction , 2021, pp. 702–706. [42] T. Varanka, W. Peng, and G. Zhao, “Learnable eulerian dynamics for micro-expression action unit detection,” in Scandinavian Conference on Image Analysis . Springer, 2023, pp. 385–400. [43] B. Zhang, H. Xu, J. Lin, C. Wang, and G. He, “Regulatory focus theory induced micro-expression analysis with structured representation learning,” in Proceedings of the 33rd ACM International Conference on Multimedia , 2025, pp. 5863–5872. [44] A. Dosovitskiy, “An image is worth 16x16 words: Transformers for image recognition at scale,” arXiv preprint arXiv:2010.11929 , 2020. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 14 
+
+[45] L. Su, X. Ma, X. Zhu, C. Niu, Z. Lei, and J.-Z. Zhou, “Can we get rid of handcrafted feature extractors? sparsevit: Nonsemantics-centered, parameter-efficient image manipulation localization through spare-coding transformer,” in Proceedings of the AAAI Conference on Artificial Intelligence , vol. 39, no. 7, 2025, pp. 7024–7032. [46] T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll´ ar, “Focal loss for dense object detection,” in Proceedings of the IEEE international conference on computer vision , 2017, pp. 2980–2988. [47] W.-J. Yan, X. Li, S.-J. Wang, G. Zhao, Y.-J. Liu, Y.-H. Chen, and X. Fu, “Casme ii: An improved spontaneous micro-expression database and the baseline evaluation,” PloS one , vol. 9, no. 1, p. e86041, 2014. [48] A. K. Davison, C. Lansley, N. Costen, K. Tan, and M. H. Yap, “Samm: A spontaneous micro-facial movement dataset,” IEEE transactions on affective computing , vol. 9, no. 1, pp. 116–129, 2016. [49] J. Li, Z. Dong, S. Lu, S.-J. Wang, W.-J. Yan, Y. Ma, Y. Liu, C. Huang, and X. Fu, “Cas (me) 3: A third generation facial spontaneous micro-expression database with depth information and high ecological valid-ity,” IEEE Transactions on Pattern Analysis and Machine Intelligence ,vol. 45, no. 3, pp. 2782–2800, 2022. [50] D. E. King, “Dlib-ml: A machine learning toolkit,” The Journal of Machine Learning Research , vol. 10, pp. 1755–1758, 2009. [51] C. Zach, T. Pock, and H. Bischof, “A duality based approach for realtime tv-l 1 optical flow,” in Joint pattern recognition symposium . Springer, 2007, pp. 214–223. [52] S.-T. Liong, Y. S. Gan, J. See, H.-Q. Khor, and Y.-C. Huang, “Shal-low triple stream three-dimensional cnn (ststnet) for micro-expression recognition,” in 2019 14th IEEE International Conference on Automatic Face & Gesture Recognition , 2019, pp. 1–5. [53] Y. Liu, H. Du, L. Zheng, and T. Gedeon, “A neural micro-expression recognizer,” in 2019 14th IEEE international conference on automatic face & gesture recognition , 2019, pp. 1–4. [54] B. Xia, W. Wang, S. Wang, and E. Chen, “Learning from macro-expression: A micro-expression recognition framework,” in Proceedings of the 28th ACM international conference on multimedia , 2020, pp. 2936–2944. [55] P. Gupta, “Merastc: Micro-expression recognition using effective feature encodings and 2d convolutional neural network,” IEEE Transactions on Affective Computing , vol. 14, no. 2, pp. 1431–1441, 2021. [56] S. Zhao, H. Tang, S. Liu, Y. Zhang, H. Wang, T. Xu, E. Chen, and C. Guan, “Me-plan: A deep prototypical learning with local attention network for dynamic micro-expression recognition,” Neural networks ,vol. 153, pp. 427–443, 2022. [57] C. Guo and H. Huang, “Gleffn: A global-local event feature fusion network for micro-expression recognition,” in Proceedings of the 3rd Workshop on Facial Micro-Expression: Advanced Techniques for Multi-Modal Facial Expression Analysis , 2023, pp. 17–24. [58] C. Ma, S. Zhao, Y. Pei, L. Xie, E. Yin, and Y. Yan, “A multi-prior fusion network for video-based micro-expression recognition,” in 
+
+ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing . IEEE, 2025, pp. 1–5. [59] F. Liu, B. Nan, X. Qian, and X. Fu, “Evaluating and correcting human annotation bias in dynamic micro-expression recognition,” IEEE Transactions on Affective Computing , pp. 1–16, 2026. [60] C. Ma, S. Zhao, D. Zhou, Y. Pei, Z. Luo, L. Xie, Y. Yan, and E. Yin, “Mpfnet: A multi-prior fusion network with a progressive training strategy for micro-expression recognition,” IEEE Transactions on Affective Computing , vol. 17, no. 1, pp. 348–365, 2026. [61] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, T. Killeen, Z. Lin, N. Gimelshein, L. Antiga et al. , “Pytorch: An imperative style, high-performance deep learning library,” Advances in neural information processing systems , vol. 32, 2019. 
+
+Chenxing Hu received his B.S. degree in Computer Science and Technology from Xidian University, Xi’an, China, in 2023. He is currently pursuing his Ph.D. degree at the School of Computer Science and Technology, Xidian University. His research interests include micro-expression analysis, affective computing, and computer vision. 
+
+Kun Xie received her B.S. degree in Software En-gineering and M.S. and Ph.D. degrees in Computer System Architecture from Xidian University in 2003, 2007, and 2014, respectively. She is currently an professor with the School of Computer Science and Technology, Xidian University. 
+
+Qiguang Miao (Senior Member, IEEE) received the Ph.D. degree in computer application technology from Xidian University, Xi’an, China, in 2005. He is currently a Professor and Ph.D. Student Super-visor with the School of Computer Science and Technology, Xidian University. In recent years, he has authored and coauthored more than 100 papers in significant international journals or conferences. His research interests include intelligent image/video understanding and Big Data. 
+
+Ruyi Liu received the Ph.D. degree in computer ap-plication technology from Xidian University, Xi’an, China, in 2018. She is currently working as an asso-ciate professor at School of Computer Science and Technology, Xidian University. Her current interests include image classification and segmentation, and computer vision methods with applications in remote sensing. 
+
+Quan Wang received the B.Sc., M.Sc., and Ph.D. degrees in computer science and technology from Xidian University, Xi’an, China, in 1992, 1997, and 2008, respectively, all in computer science and technology. He is currently a Professor with the School of Computer Science and Technology, Xidian University. His research interests include input and output technologies and systems, image processing, and image understanding. 
+
+Zongkai Yang received the B.S. and M.S. degrees from the Huazhong University of Science and Tech-nology, Wuhan, China, in 1985 and 1988, respec-tively, and the Ph.D. degree from Xi’an Jiaotong University, Xi’an, China, in 1991. He devoted him-self to his postdoctoral research at the Huazhong University of Science and Technology from 1991 to 1993. He is currently a Director and a Professor with the National Engineering Research Center of Educational Big Data, Central China Normal Uni-versity, Wuhan. His research interests include ICT in education, Management of education.
