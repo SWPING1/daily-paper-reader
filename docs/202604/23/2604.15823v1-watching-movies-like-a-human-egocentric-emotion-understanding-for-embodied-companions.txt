@@ -1,0 +1,453 @@
+Title: Watching Movies Like a Human: Egocentric Emotion Understanding for Embodied Companions
+
+URL Source: https://arxiv.org/pdf/2604.15823v1
+
+Published Time: Mon, 20 Apr 2026 00:41:25 GMT
+
+Number of Pages: 28
+
+Markdown Content:
+# Watching Movies Like a Human: Egocentric Emotion Understanding for Embodied Companions 
+
+Dong Ze 1∗, Hao Shi 2,3∗, Zejia Gao 4, Zhonghua Yi 2, Kaiwei Wang 2†, and Lin Wang 1† 
+
+> 1
+
+Nanyang Technological University, Singapore 2 Zhejiang University, China  
+
+> 3
+
+Ant Group, China 4 MirrorMe, China 
+
+Abstract. Embodied robotic agents often perceive movies through an egocentric screen-view interface rather than native cinematic footage, introducing domain shifts such as viewpoint distortion, scale variation, illumination changes, and environmental interference. However, existing research on movie emotion understanding is almost exclusively conducted on cinematic footage, limiting cross-domain generalization to real-world viewing scenarios. To bridge this gap, we introduce EgoScreen-Emotion 
+
+(ESE), the first benchmark dataset for egocentric screen-view movie emotion understanding. ESE contains 224 movie trailers captured under controlled egocentric screen-view conditions, producing 28,667 tempo-rally aligned key-frames annotated by multiple raters with a confidence-aware multi-label protocol to address emotional ambiguity. We further build a multimodal long-context emotion reasoning framework that mod-els temporal visual evidence, narrative summaries, compressed historical context, and audio cues. Cross-domain experiments reveal a severe do-main gap: models trained on cinematic footage drop from 27.99 to 16.69 Macro-F1 when evaluated on realistic egocentric screen-view observa-tions. Training on ESE substantially improves robustness under realis-tic viewing conditions. Our approach achieves competitive performance compared with strong closed-source multimodal models, highlighting the importance of domain-specific data and long-context multimodal reason-ing. 
+
+Keywords: Egocentric emotion understanding · Embodied multimodal perception · Multimodal long-context reasoning 
+
+## 1 Introduction 
+
+In embodied perception, robots observing dynamic environments from an ego-centric perspective are increasingly expected to exhibit empathetic intelligence [16, 33]. For applications such as home companionship and social interaction, the abil-ity to understand emotional cues from visual context and respond appropriately 
+
+* Equal contribution. 
+
+† Corresponding authors: linwang@ntu.edu.sg, kaiweiwang@zju.edu.cn 
+
+> arXiv:2604.15823v1 [cs.CV] 17 Apr 2026
+
+2 Z.Dong et al. QwenSFT This part is really sad. I feel sad, the scene feels heartbreaking 
+
+Fig. 1: Overview of our embodied affective reasoning framework. An agent captures egocentric movie frames and multimodal context in real-world viewing scenar-ios. A fine-tuned Qwen-based model processes these inputs to predict intrinsic viewer emotions and generate empathetic feedback, supervised by structured human annota-tions from our dataset. 
+
+is fundamental to natural and harmonious human–robot coexistence [37, 38]. Recent advances in Multimodal Large Language Models (MLLMs) provide a strong technical foundation for this capability. By aligning vision and language representations, MLLMs enable cross-modal reasoning and complex video un-derstanding [1, 10, 42, 50], opening new avenues for embodied agents to interpret rich physical contexts and generate emotionally appropriate behaviors. To ground this capability, we focus on the compelling scenario of “robotic movie companionship,” where a robot must continuously interpret cinematic con-tent and generate empathic responses aligned with the semantic narrative [39]. While extensive research has addressed related sub-fields, existing paradigms fall short of the requirements for authentic embodied interaction. One line of work focuses on cinematic video understanding ( e.g. , narrative progression and event reasoning) using pristine movie clips [5,22,43,44]. Another line emphasizes objec-tive emotion recognition—identifying the affective states of characters depicted on screen from either third- or first-person views [29, 31, 32, 53]. Concurrently, datasets in egocentric vision predominantly target action recognition and behav-ioral forecasting, largely overlooking affective modeling [8, 12, 19]. Critically, deploying emotion understanding in physical human-robot inter-actions introduces severe domain and task discrepancies. First, regarding data distribution, an embodied agent typically observes media through a physical screen from an egocentric perspective. This visual input is inherently degraded by viewpoint shifts, viewing distance variations, screen glare, and environmen-tal interference [36, 45], presenting a stark contrast to the perfect digital frames used in conventional benchmarks. Second, and more fundamentally, regarding Egocentric Emotion Understanding 3
+
+task formulation, the objective of an empathic agent is not merely to passively recognize the emotions of on-screen characters, but to actively generate its own subjective affective response conditioned on the observed content. Consequently, existing datasets and paradigms are misaligned with embodied viewing tasks and cannot directly support authentic emotion modeling for realistic, egocentric movie-watching scenarios. To address this limitation, we introduce EgoScreen-Emotion (ESE) , a dataset specifically designed for emotion understanding under egocentric screen-view movie-watching conditions. ESE is constructed through physically recorded ego-centric screen-view captures in real-world environments, with systematic control over camera height, viewing distance, and illumination, thereby simulating the perceptual input of embodied agents in realistic companionship scenarios. Unlike conventional movie emotion datasets that treat emotion as an attribute of the video content itself, ESE defines emotion as the affective response of the view-ing agent to the observed scene and employs multi-rater annotations to ensure consistency and reliability. Building upon ESE , we further develop a multimodal fine-tuning frame-work tailored to the perceptual characteristics of embodied viewing. To effec-tively balance narrative completeness and computational efficiency, we propose a memory-inspired hierarchical context modeling strategy. Instead of directly processing unbounded visual histories, our framework compresses long-term vi-sual observations into structured textual abstractions, drastically reducing the visual token burden. This long-term narrative background is then dynamically integrated with short-term temporally sampled visual frames and synchronized audio windows. Furthermore, by introducing supervision with explicit reason-ing rationales, we encourage the model to learn structured affective inference patterns. Through comprehensive evaluations, we demonstrate that this mul-timodal integration and structured supervision substantially improves emotion understanding performance. Compared with a single-frame baseline (1F), in-corporating multi-frame context, audio cues, and narrative summaries improves Accuracy from 57.66 to 63.01 and Macro-F1 from 18.95 to 25.95, demonstrat-ing the effectiveness of structured multimodal context for embodied affective reasoning. Our egocentric embodied movie emotion understanding framework is illus-trated in Fig. 1. In summary, our contributions are as follows: 
+
+– We introduce EgoScreen-Emotion (ESE) , the first benchmark multimodal dataset for egocentric screen-view movie emotion understanding. Captured under realistic embodied viewing conditions and annotated by multiple raters, 
+
+ESE provides reliable supervision for modeling the affective responses of viewing agents. 
+
+– We propose a novel multimodal affective reasoning framework tailored for embodied movie-watching. Our approach uniquely integrates multi-frame vi-suals, semantic narratives, and audio signals, supervised by explicit reasoning rationales to learn structured inference patterns. 4 Z.Dong et al. 
+
+– We establish a comprehensive benchmark for egocentric screen-view movie emotion understanding. Extensive experiments and ablation studies show that our framework outperforms existing baselines in accuracy, stability, and interpretability under realistic egocentric screen-view conditions. 
+
+## 2 Related Work 
+
+MLLMs in Embodied agents. Recent advancements in Multimodal Large Language Models (MLLMs), such as LLaVA [34], GPT-5 [46], and Qwen-VL [48], have demonstrated unprecedented capabilities in integrating multimodal infor-mation with profound semantic reasoning. By aligning pre-trained vision en-coders with powerful large language models, MLLMs excel at open-vocabulary visual understanding [35], spatial reasoning [57], and complex visual question answering [51]. Driven by these breakthroughs, a growing body of literature has begun integrating MLLMs into embodied applications to serve as the central cognitive core for robotic agents in fundamental tasks such as Vision-Language-Action (VLA) control [15, 58] and Vision-Language Navigation (VLN) [2]. Be-yond acting as direct policy controllers, recent literature explores increasingly novel paradigms. For instance, MLLMs are now being leveraged as high-level semantic planners for long-horizon reasoning [23] and spatial-aware cognitive cores integrated with 3D scene representations [20] to enable self-correction in complex physical environments. 
+
+Multimodal Emotion Understanding. Emotion understanding plays a vi-tal role in applications such as human-computer interaction, educational assis-tance, and psychological counseling [24, 37, 55]. While early research primarily focused on single modalities [18, 25, 30], recent works have shifted towards com-plex affective reasoning using multimodal data. Emotion-LLaMA [9] integrates audio, visual, and textual inputs for multimodal emotion recognition and rea-soning. HumanOmni [56] and OmniEmotion [54] scale training with large video corpora to capture omni-modal interactions. The recently proposed Emotion-LLaMAv2 [40] further introduces a large-scale unified multimodal dataset and proposes a model that supports structured affective perception within a unified architecture. However, these approaches or datasets [28,29,32,53] predominantly process pristine digital videos and focus on objectively recognizing the emotions of human subjects, leaving a critical void in modeling how embodied agents themselves perceive and react to visual stimuli in physical environments. As a result, existing literature lacks a naturalistic embodied setup where MLLMs can genuinely perceive and generate their own emotional responses to observed videos. We bridge this divide by introducing EgoScreen-Emotion , pio-neering the transition to subjective agent empathy. Concurrently, we propose a multimodal fine-tuning framework equipped with structured reasoning supervi-sion, enabling accurate and stable emotion feedback generation under egocentric physical viewing conditions. Egocentric Emotion Understanding 5
+
+Table 1: Comparison across cinematic, emotion, and egocentric datasets. 
+
+Emotion is divided into viewer-level and character-level modeling. Conf. and Rat. de-note confidence scores and textual rationales. #Anno. indicates the annotator number. Emb. (Embodied) indicates whether the dataset is designed for embodied perception or robot-centric interaction scenarios.                                                                                                                                                   
+
+> Dataset Domain Ego Emb. Emotion Modality Annot. #Anno. #Annotated Units Viewer Char. Conf. Rat.
+> AFEW [27] movie ✗✗✗✓V,A ✗✗130,000 MovieNet [22] movie ✗✗✗✗V,A,T ✗✗––InfiniBench [4] movie ✗✗✗✗V,T ✗✗–87,700 CineTechBench [49] movie ✗✗✗✗V✗✗–720 MELD [41] movie ✗✗✗✓V,A,T ✗✗313,708 SEWA [28] adverts ✗✗✗✓V,A ✗✗51,990 EMOTIC [29] diverse ✗✗✗✓V✗✗323,788 EmoSet [53] social ✗✗✗✓V✗✗10 118,102 E3 [32] diverse ✓✓✗✓V,A,T ✗✓381,248 VidEgoThink [8] daily ✓✗✗✗V,T ✗✗14,993 Ego4D [19] diverse ✓✗✗✗V,A,T ✗✗–74,000 EgoLife [52] daily ✓✗✗✗V,A,T ✗✗13,000 EPIC-KITCHENS [13] kitchen ✓✗✗✗V,A,T ✗✗–39,564
+> ESE (Ours) movie ✓✓✓✗V,A,T ✓✓528,667
+
+## 3 EgoScreen-Emotion Dataset 
+
+While extensive multimodal and affective datasets exist across several domains, they predominantly suffer from two critical limitations: they either rely on non-egocentric viewpoints [27,28], or they focus entirely on recognizing the objective emotions of third-party characters [32]. Consequently, there is a complete ab-sence of datasets dedicated to the subjective, intrinsic emotional responses of an agent from an egocentric perspective. To bridge this critical gap, we intro-duce EgoScreen-Emotion (ESE) , comprising 224 movie trailer clips and 28 , 667 
+
+keyframes for frame-level emotion analysis. Each frame is annotated by five independent raters with multi-label confidence scores, yielding over 143 , 000 hu-man emotion annotations, with 10% of samples additionally including textual rationales for interpretability. A detailed comparison with existing datasets is provided in Tab. 1. 
+
+3.1 Data Collection and Preprocessing 
+
+The construction and preprocessing of ESE dataset contains the following parts: movie clip curation, controlled first-person recording, temporal alignment, and frame-level sampling with annotation file generation, as illustrated in Fig. 2. 
+
+Movie Clip Curation. To ensure comprehensive content and structured affec-tive coverage, ESE collects 224 publicly available movie trailers from YouTube, spanning 8 representative emotion categories, as illustrated in Fig. 3. Each cate-gory contains a comparable number of films, providing balanced representation across emotional types. To ensure cinematic quality and narrative richness, the selected trailers are primarily drawn from Academy Award–winning or nomi-nated films. Trailers are selected instead of full-length movies due to their con-densed narrative structure and intensified emotional progression, which typically exhibit richer emotional transitions and broader affective diversity within shorter 6 Z.Dong et al. (b) Controlled First-Person Recording 
+
+(d) Annotation and Construction 
+
+FPV Capture 
+
+> Annotators
+> Hight
+> 0.8m/1.3m
+> Distance
+> near/middle/far
+> Angle
+> left/center/right Lighting
+> day/night/light
+> Frame Extraction
+> (1 FPS)
+
+(a) Movie Clip Curation 
+
+> Internet Raw Movie
+
+(c) Frame-level Temporal Alignment  
+
+> Raw Movie Frame
+> Temporal Synchronization
+> FPV Frame
+> Optional Rationales (10%) Confidence Voting Multi-label (0-5)
+> Annotation
+> Emotion
+> FPV Video
+> Confidence Aggregation
+
+EgoScreen-Emotion 
+
+Fig. 2: EgoScreen-Emotion dataset construction pipeline. (a) Movie clip cura-tion and frame extraction from raw movies. (b) Controlled first-person recording under simulated viewing conditions. (c) Frame-level temporal alignment between FPV and raw movie frames. (d) Emotion annotation with confidence aggregation. 40 60 80 100 120 140 160 180 200 220 010 20 30 40 50 60 70 80 90 Number of Movies Movie Duration (s) 
+
+(a) 12.1 %10.8 %13.7 %13.4 %13.6 %11.8 %10.3 %14.3 % Action_Tense  Comedy_Cheerful  Depressive_Dark  Inspirational_Hopeful  Mystery_Reflective  Romantic_Warm  Thriller_Horror  Tragic_Sad 28,667 frames (b) 
+
+Fig. 3: Movie trailer statistics in EgoScreen-Emotion (ESE) . (a) Trailer dura-tion distribution. (b) Distribution of movie clips across emotion categories. 
+
+durations. This design facilitates fine-grained frame-level annotation while main-taining manageable temporal length. 
+
+Controlled First-Person Recording. Embodied viewers operate in real-world environments and typically perceive movie content on a display from first-person view (FPV) at a natural viewing distance. Consequently, raw movie trailers alone are insufficient to capture the perceptual characteristics of embodied observation. To model embodied egocentric emotion understanding, each trailer is played on a display screen and recorded using a physically situated egocentric camera. The viewing configuration is systematically varied along multiple factors, including camera height ( 0.8m and 1.3m), distance (near, middle, far), horizontal angle (left, center, right), and lighting condition (day, night, light on, light off). The selected camera heights are designed to approximate typical perception levels of embodied robots in companionship scenarios, corresponding to seated and standing viewpoints (e.g., similar to the height range of humanoid robots such as Unitree G1). This setup introduces realistic viewpoint distortion, perspective Egocentric Emotion Understanding 7
+
+shift, and illumination variation compared to raw cinematic footage, forming a distinct egocentric screen-view visual domain. 
+
+Temporal Alignment and Frame Sampling. The recorded FPV videos are then temporally synchronized with the original movie streams at the frame level to ensure accurate correspondence. After alignment, frames are uniformly sam-pled at 1 FPS to balance temporal coverage and annotation feasibility. This process results in 28,667 aligned frames across all clips. In this procedure, the data are further processed via cropping and quality filtering to remove transitional or erroneous frames. 
+
+Annotation File Construction. For each sampled frame, we generate a struc-tured JSON annotation template containing predefined emotion categories and confidence fields. The finalized annotation files store multi-label emotion scores, annotator confidence levels, and optional textual rationales, forming the com-plete ESE dataset. The annotation construction procedure are detailed in Sec. 3.2. 
+
+3.2 Annotation Construction 
+
+As illustrated in Fig. 2(d), to systematically capture affective perception in first-person movie watching, we adopt a versioned, structured annotation schema and store all annotations in a unified JSON format. Each JSON file explicitly records the emotion class set, the confidence scale definition, video metadata (e.g., source video name and sampling rate), and per-frame annotation entries, ensuring traceability and extensibility. We support two complementary modes: simple 
+
+(confidence-only) and rationale (confidence and overall textual justification). Both modes share the same emotion taxonomy with 10 categories [17,26,29] (in-cluding angry , funny , fear , happy , sad , surprised , neutral , excited , touched 
+
+and tense ) and a discrete confidence scale. For each frame, annotators may select one or multiple emotions and assign a confidence score in  [0 , 5] , where  0 denotes 
+
+not selected (i.e ., no evidence for that emotion) and  1–5 indicate increasing certainty from “most uncertain” to “most certain”. This multi-label confidence design preserves the inherent ambiguity and mixed affect commonly observed in cinematic scenes, providing richer supervision than rigid one-hot labels and enabling subsequent uncertainty-aware modeling. 
+
+Annotation Protocol. Each frame is independently annotated by 5 human annotators following a standard guideline. Annotators are instructed to label the 
+
+dominant emotion experienced as a viewer when observing the current frame, rather than describing characters’ facial expressions or objective scene semantics, to avoid conflating visual semantics with subjective affect. The interface pre-fills all emotion categories for every frame; annotators only need to assign scores to selected emotions, while unselected categories remain  0, resulting in sparse yet interpretable records. In rationale mode, a subset of frames additionally includes a concise free-text justification that summarizes key visual cues (e.g., lighting, color tone, composition, posture, and atmosphere). These rationales are not used for label aggregation but serve as auxiliary signals for explainable and reasoning-oriented models. 
+
+Confidence-Summed Voting. To derive a single evaluation label per frame, we perform confidence-summed voting across annotators. Let  si,c ∈ [0 , n ] be 8 Z.Dong et al. 0.87 0.39 0.42 0.94 0.73 0.55 0.5 1.54 0.46 15.52 1.21 4.07 0.63 7.03 0.33 2.39 9.51 2.3 10.08 2.39 9.85 2.81 22.37 5.79 1.26 12.36 3.71 12.34 2.47 17.08 2.1 9.25 4.23 0.19 6.46 4.48 2.29 4.43 0.87 6.29 3.34 3.72 2.25 2.59 33.6 4.31 4.07 29.76 53.17 46.71 41.71 43 48.6 34.84 47.77 2.89 3.6 2.13 10.88 6.56 4.95 1.03 3.66 0.35 0.16 0.53 2.61 0.24 2.09 0.25 2.51 47.34 8.59 26.51 18 31.23 8.86 33.39 16.72 Action_Tense Comedy_Cheerful Depressive_Dark Inspirational_Hopeful Mystery_Reflective Romantic_Warm Thriller_Horror Tragic_Sad Angry Funny Fear Happy Sad Surprised Neutral Excited Touched Tense Emotion Category 0.000 10.00 20.00 30.00 40.00 50.00 60.00 Percentage (%) 
+
+(a) 0.9 0.46 0.88 0.19 1.35 3.05 1.9 7.11 2.38 3.66 6.05 7.7 7.04 5.34 13.88 4.15 6.94 14.09 3.14 9.21 1.89 9.92 2.29 1.31 2.51 3.73 2.34 1.58 8.43 0.95 48.85 29.34 45.39 55.65 37.34 1.97 9.69 3.82 34.12 1.1 1.43 0.58 0.57 1.92 28.32 30.29 17.22 20 25.07 ABCDEAngry Funny Fear Happy Sad Surprised Neutral Excited Touched Tense Emotion Annotator 0.000 10.00 20.00 30.00 40.00 50.00 60.00 Percentage (%) (b) (c) Fig. 4: Statistical analysis of the EgoScreen-Emotion dataset. (a) Distribution of emotion categories across movie genres. (b) Emotion distribution annotated by dif-ferent annotators. (c) Overall emotion category distribution in the dataset. 
+
+annotator  i’s score for emotion class  c (with  0 for unselected). We compute the aggregated score for each class: 
+
+Sc =
+
+nX
+
+i=1 
+
+si,c . (1) The final dominant emotion label is determined by the highest aggregated score: 
+
+L = arg max 
+
+c Sc. (2) This aggregated approach systematically incorporates both support frequency 
+
+and support strength , thereby conferring enhanced stability compared to rudi-mentary majority voting. For instance, strong high-confidence votes originating from a minority contingent of annotators are not arbitrarily dismissed. We pre-serve the full per-frame confidence distributions and optional rationales, enabling in-depth uncertainty analysis and future research beyond single-label assessment. 
+
+3.3 Dataset Analysis 
+
+We conduct further statistical analysis on the EgoScreen-Emotion dataset to ensure the reliability of its annotations, including emotion category distribution, multi-emotion ratio and annotator bias analysis. The statistics regarding the emotion distributions across different cinematic genres, inter-annotator bias, and the overall emotion label distribution of the ESE dataset are visualized in Fig 4. 
+
+Emotion Category Distribution. The overall statistics exhibit a naturally long-tailed distribution consistent with cinematic narrative structure. The neut-ral category accounts for the largest proportion (over 40% ), followed by tense 
+
+and fear . This pattern aligns with the prevalence of transitional and context-setting shots in movie trailers. Across movie categories ( e.g. , Action, Comedy, Depressive, Romantic), dominant emotion categories vary systematically. For instance, in Action subsets, the proportions of tense and fear increase sig-nificantly, whereas in Romantic and Inspirational subsets, happy and excited 
+
+appear more frequently. This consistency between thematic intent and anno-tated emotion distribution suggests that the labels capture semantic affective tendencies rather than random assignment. Egocentric Emotion Understanding 9
+
+Multi-Emotion Ratio. Our analysis of label density reveals that over 80% of frames contain a single dominant emotion ( k = 1 ), approximately 15%–20% include two emotion labels ( k = 2 ), and fewer than 1% involve three or more labels. These statistics indicate that most frames convey relatively clear emo-tional signals, while a meaningful subset reflects mixed or transitional emotional states. The multi-label confidence mechanism therefore preserves nuanced cine-matic emotions without enforcing artificial single-label constraints. 
+
+Annotator Bias Analysis. To examine potential systematic personal bias, we compute emotion selection proportions for each annotator. All annotators assign a relatively high percentage of neutral labels, and their overall distribu-tion structures remain consistent. Minor differences exist in specific categories (e.g. , happy , tense , fear ), but no annotator shows abnormal dominance in a single category ( e.g. , exceeding 70%). These results suggest normal individual variability without systematic bias, indicating good group-level stability. 
+
+3.4 Privacy Protection 
+
+The dataset is constructed from publicly available movie trailers collected from YouTube and is released for academic research purposes only. The released data consist of processed egocentric recordings (video, audio, frames, and annota-tions) captured during controlled viewing conditions, rather than the original movie trailer files. No real viewers are recorded and no personally identifiable information (PII) is collected. 
+
+Dataset Contribution. We introduce EgoScreen-Emotion (ESE) , the first cross-domain visual dataset for embodied emotion understanding in movie-watching scenarios. ESE captures movie content from a realistic ego-centric screen-view setting and provides viewer-level emotion annotations. 
+
+## 4 Baseline Modeling Framework 
+
+In embodied movie companionship scenarios, emotion responses are not only determined by instantaneous perceptual stimuli, but are also shaped by the accumulated narrative context. Instead of classifying the emotions of on-screen characters, we aim to generate the viewing agent’s intrinsic affective response under egocentric conditions. We formulate this task as a multimodal conditional prediction problem: 
+
+ˆyt = fθ (Vt, At, St), (3) where ˆyt denotes the viewer-oriented emotion at time t, Vt represents visual keyframes, At denotes an audio window, and St encodes structured narrative context. The function fθ (·) is instantiated by Qwen2.5-Omni-7B [50] and adapted to the egocentric movie-viewing domain via LoRA-based fine-tuning on the ESE 
+
+dataset. Fig. 5 illustrates the overall baseline modeling framework. 
+
+Short-Term Perceptual Modeling (V and A). To capture local emotional triggers, we construct temporally aligned visual and auditory inputs. Visual ob-servations are sampled at 5-second intervals. Let t denote the current timestamp. 10 Z.Dong et al.               
+
+> Fig. 5: Baseline framework for egocentric screen-view movie emotion un-derstanding. At each timestamp t, we predict the viewer-oriented emotion ˆytby conditioning Qwen2.5-Omni on a multimodal triplet (Vt,At,St): visual keyframes Vt
+> sampled at 5-second intervals (up to three frames at t,t−5s, t−10 s), an audio window
+> Atcovering the previous 10 seconds, and a memory-inspired narrative context Stthat combines a recent detailed 20-second segment summary with a compressed long-term background (premise, entities, conflict, global tone) produced every 20 seconds and further abstracted over time. The backbone is kept frozen and adapted to the ESE domain via LoRA fine-tuning, enabling long-context affective reasoning under realistic screen-view observations.
+
+The visual input is defined as 
+
+Vt = {It−ℓ | ℓ ∈ L t}, (4) where Lt expands progressively with time: for t < 5, only the current frame is used; for 5 ≤ t < 10 , the current frame and the frame 5 seconds earlier are used; for t ≥ 10 , three frames are included: the current frame, the frame 5 seconds earlier, and the frame 10 seconds earlier. This design captures short-term temporal dynamics while maintaining a bounded visual token budget. The audio input is defined as a sliding window covering at most the previous 10 seconds: 
+
+At = A[max(0 , t − 10) , t ], (5) which provides complementary affective cues such as speech tone, dialogue inten-sity, and background music. When t < 10 , the window is truncated accordingly. 
+
+Long-Term Narrative Modeling (S). Emotional responses during movie watching are influenced by long-term narrative progression. Inspired by human memory patterns—where recent events are remembered in detail while earlier events are abstracted into higher-level summaries—we adopt a two-level narra-tive representation consisting of a recent detailed summary and a compressed long-term background. We divide each video into 20-second segments and gen-erate segment-level summaries automatically using Qwen2.5-Omni-7B given the video input. Let 
+
+k =
+
+ t
+
+20 
+
+
+
+(6) Egocentric Emotion Understanding 11                 
+
+> Table 2: Overall performance across four training/testing settings, illustrating the domain gap between raw cinematic frames and first-person screen-view (FPV) obser-vations. Setting Acc Macro-F1 Weighted-F1 FPV →FPV 57.74 20.61 55.18 Raw →Raw 63.33 27.99 60.76 Raw →FPV 55.75 16.69 46.47 FPV →Raw 61.19 25.19 58.68
+
+denote the number of completed 20-second segments at time t. If t < 20 , no sum-mary is available. If t ≥ 20 , the most recently completed segment is treated as the recent detailed summary. If t ≥ 40 , all earlier segments are further compressed— again using the same backbone model—into a long-term background abstraction capturing story premise, key entities, conflict relations, and global narrative tone. The final textual context is constructed as: 
+
+St = Φ(Slong  
+
+> t
+
+, Srecent  
+
+> t
+
+), (7) where Φ(·) denotes structured concatenation under a fixed prompt template. 
+
+Unified Multimodal Input. The triplet (Vt, At, St) is jointly fed into Qwen2.5-Omni-7B, which is fine-tuned using LoRA [21] adapters to generate viewer-conditioned emotional responses. This design offers two advantages. First, the hierarchical textual abstraction mirrors human narrative memory, preserving coherence while preventing context explosion. Second, directly replaying long visual histories would cause visual tokens to grow linearly with time, increasing computational cost and inference latency. By compressing historical context into token-efficient textual summaries, we achieve a practical balance between nar-rative completeness and computational efficiency for embodied movie-watching interaction. 
+
+## 5 Experiments 
+
+In this section, we evaluate the EgoScreen-Emotion dataset and our proposed framework. We formulate emotion prediction as a 10-class classification task, deriving ground-truth labels via the confidence-summed aggregation detailed in Sec. 3.2. To rigorously account for the long-tailed distribution, we report Accu-racy, Macro-F1, and Weighted-F1. Our experiments systematically investigate: (i) the cross-domain generalization between raw cinematic footage and first-person view (FPV) data to justify FPV-specific supervision (Sec. 5.1); (ii) the effectiveness of our structured temporal and multimodal modeling for embod-ied movie-watching scenarios (Sec. 5.2); and (iii) a comprehensive benchmark against strong open- and closed-source baselines (Sec. 5.3). 
+
+5.1 Cross-Domain Generalization Analysis 
+
+To assess whether FPV-specific supervision is required for egocentric movie emotion understanding, we perform controlled cross-domain experiments using 12 Z.Dong et al.           
+
+> Table 3: Effect of rationale supervision under single-frame input. Both settings use identical visual input (1F), while the second setting incorporates rationale-based su-pervision on 10% of training samples. Setting Acc Macro-F1 Weighted-F1 1F 57.66 18.95 53.65 1F + Rationale (10%) 58.32 20.78 55.52
+
+Qwen3-VL-8B [6] as a unified backbone. The model is fine-tuned under each training domain and evaluated on the designated test domain. We construct four training-testing combinations across Raw cinematic footage and physically recorded egocentric screen-view data: FPV →FPV, Raw →Raw, Raw →FPV, and FPV →Raw. As shown in Table 2, the Raw →Raw setting achieves strong in-domain per-formance. However, when evaluated on FPV data (Raw →FPV), both Accuracy and Macro-F1 decrease markedly, with Macro-F1 dropping by over 40% rela-tive to the in-domain counterpart. This performance degradation indicates lim-ited cross-domain transfer from clean cinematic footage to realistic first-person viewing conditions. Conversely, the FPV →FPV configuration substantially miti-gates this drop, demonstrating the importance of domain-consistent supervision. A comparable discrepancy is observed in the FPV →Raw setting, further con-firming a systematic distribution shift between Raw and FPV domains. These results collectively suggest that viewpoint variation, reflection artifacts, illumi-nation changes, and environmental interference alter the visual statistics and contextual cues of movie frames, making Raw-only supervision insufficient for robust emotion understanding in embodied egocentric scenarios. 
+
+5.2 Structured Temporal and Multimodal Context Modeling 
+
+In egocentric movie-watching scenarios, a viewer’s affective response is rarely determined by an isolated frame. Instead, emotions are shaped by short-term visual dynamics (e.g., sudden motion or tension escalation), long-term narrative context (e.g., prior events that explain the current conflict), and audio cues 
+
+(e.g., dialogue tone and background music). Motivated by this observation, we study how structured temporal and multimodal context helps adapt a strong multimodal backbone, Qwen2.5-Omni-7B [50], to realistic egocentric screen-view emotion understanding. 
+
+Rationale supervision as structured affective reasoning. We first isolate the effect of rationale-based supervision while keeping the visual input identical. As shown in Table 3,both settings use the same single-frame visual input (1F), while the second additionally introduces rationale supervision on 10% of the training samples. We observe consistent improvements across Accuracy, Macro-F1, and Weighted-F1, suggesting that rationale supervision improves prediction reliability. This lightweight supervision acts as a reasoning scaffold, encouraging Egocentric Emotion Understanding 13 
+
+Table 4: Ablation study of structured temporal and multimodal context modeling based on Qwen2.5-Omni-7B. All 3F-based configurations use three frames sampled at 5-second intervals. Setting Acc Macro-F1 Weighted-F1 1F 57.66 18.95 53.65 3F 61.06 23.42 57.17 3F+Aud 61.92 25.55 58.97 3F+Aud+Narr 63.01 25.95 60.70 
+
+Table 5: Comparison on the EgoScreen-Emotion test set. All baselines are evaluated in a zero-shot manner with a unified prompt, while ours is fine-tuned on training set.                                         
+
+> Model Params Acc Macro-F1 Weighted-F1
+> Qwen2.5-Omni [50] 7B 55.22 16.36 46.76 Qwen3VL [6] 8B 49.00 20.71 50.26 LLaVA-1.6 [34] 13B 52.55 8.75 40.38 LLaVA-OneVision-1.5 [3] 8B 39.18 14.08 37.23 InternVL2 [7] 8B 27.47 11.92 34.38 Qwen3.5-plus –54.07 16.88 49.58 GPT-5.2 [46] –56.87 18.36 52.85 Gemini-2.5-flash [11] –52.62 23.50 53.52
+> QwenSFT (Ours, 1F) 7B 57.66 18.95 53.65
+
+the model to associate emotion predictions with explicit evidence rather than relying on superficial correlations. 
+
+Ablating temporal and multimodal context. Next, we progressively eval-uate the components of our structured context modeling framework (Table 4). Compared to 1F, using three frames sampled at 5-second intervals (3F) im-proves performance, suggesting that short-term temporal cues already provide useful signals for affective inference under egocentric recording noise. Building upon this temporal context, we further introduce synchronized audio input ( 3F + Aud ). The additional improvement suggests that acoustic signals such as dia-logue intensity, speech prosody, and background music provide complementary emotional evidence that cannot be captured by visual information alone. Fi-nally, incorporating narrative summaries ( 3F + Aud + Narr ) leads to the best overall performance. This result highlights the importance of long-horizon narra-tive context, as many emotional reactions depend not only on immediate visual stimuli but also on accumulated story context that explains the current scene. 
+
+5.3 Quantitative Comparison with Strong Baselines Quantitative comparison. We compare our model with representative open-source and closed-source multimodal models on the EgoScreen-Emotion test set (Table 5). To ensure a fair comparison with existing models that perform emo-tion inference from a single visual input, we report the single-frame version of our model (1F) in this table. All baselines are evaluated in a zero-shot set-ting using a unified prompt, while our model ( QwenSFT ) is fine-tuned on the 14 Z.Dong et al.   
+
+> Fig. 6: Qualitative comparison under real-world egocentric screen-view con-ditions. From top to bottom: (1) representative movie scenes, (2) human emotion annotations, (3) physically recorded egocentric screen-view observations, (4) emotion feedback generated by QwenSFT (Ours) , and (5) emotion feedback generated by ChatGPT-5.2. All models are evaluated under identical real-world observations.
+
+ESE training set. Among open-source models, Qwen2.5-Omni [50], Qwen3VL [6], LLaVA-1.6 [34], LLaVA-OneVision [3], and InternVL2 [7] show varying levels of performance, highlighting the difficulty of egocentric screen-view emotion under-standing under a long-tailed label distribution. In contrast, our fine-tuned model achieves the best overall accuracy (57.66) and the highest Weighted-F1 (53.65) with a comparable parameter scale (7B). Compared with strong closed-source systems such as GPT-5.2 [46] and Gemini-2.5-flash [11], our model achieves com-petitive performance, demonstrating the effectiveness of domain-specific fine-tuning on ESE. 
+
+Qualitative comparison in real-world screen-view scenarios. To further examine model behavior in realistic settings, we present a qualitative comparison under real-world egocentric screen-view conditions (Fig. 6). In this setup, a robot observes movie content from a physical screen and generates emotion feedback based on the perceived scene. Compared with responses generated by ChatGPT-5.2 under identical observations, our model produces emotion predictions that are more consistent with human annotations. These results indicate that the proposed framework can generate coherent viewer-oriented emotional responses in practical robotic movie companionship scenarios. Egocentric Emotion Understanding 15 
+
+## 6 Conclusion and Future Work 
+
+In this work, we presented EgoScreen-Emotion (ESE) , the first benchmark dataset for egocentric screen-view movie emotion understanding, shifting the focus from cinematic footage-based emotion analysis to viewer-centered affective under-standing in embodied settings. To address the perceptual and computational challenges of realistic embodied movie-watching scenarios, we further proposed a memory-inspired multimodal framework. By compressing long-term visual his-tories into structured textual summaries and incorporating explicit reasoning supervision, our approach improves the accuracy, stability, and interpretability of emotion understanding. We hope that ESE and the proposed framework will provide a useful benchmark and facilitate future research on emotion under-standing under realistic egocentric perception for embodied agents. 
+
+Future Work: Building upon the current framework, future research could fur-ther incorporate viewer-centric signals, such as the audience’s facial expressions and vocal reactions during movie watching. Integrating these cues with screen-view observations may enable a more holistic understanding of both movie se-mantics and the surrounding affective context, ultimately supporting richer emo-tion interaction for embodied agents. 16 Z.Dong et al. 
+
+## References 
+
+1. Alayrac, J.B., Donahue, J., Luc, P., Miech, A., Barr, I., Hasson, Y., Lenc, K., Men-sch, A., Millican, K., Reynolds, M., Ring, R., El-Nouby, A., Tingedah, Z., Zhao, Z., Samangoeei, S., Monteiro, M., Menick, J., Borgeaud, S., Brock, A., Dehghani, M., Kabi, S., Shirzad, S., Mikolov, T., Binkowski, M., Barreira, R., Vinyals, O., Zisser-man, A., Simonyan, K.: Flamingo: a visual language model for few-shot learning. In: NeurIPS (2022) 2. An, D., Qi, Y., Li, Y., Huang, Y., Wang, L., Tan, T., Shao, J.: Bevbert: Multimodal map pre-training for language-guided navigation. arXiv preprint arXiv:2212.04385 (2022) 3. An, X., Xie, Y., Yang, K., Zhang, W., Zhao, X., Cheng, Z., Wang, Y., Xu, S., Chen, C., Wu, C., Tan, H., Li, C., Yang, J., Yu, J., Wang, X., Qin, B., Wang, Y., Yan, Z., Feng, Z., Liu, Z., Li, B., Deng, J.: Llava-onevision-1.5: Fully open framework for democratized multimodal training (2025) 4. Ataallah, K., Gou, C., Abdelrahman, E., Pahwa, K., Ding, J., Elhoseiny, M.: In-finibench: A comprehensive benchmark for large multimodal models in very long video understanding (2024) 5. Ataallah, K., Bakr, E.M., Ahmed, M., Gou, C., Pahwa, K., Ding, J., Elhoseiny, M.: Infinibench: A benchmark for large multi-modal models in long-form movies and tv shows. In: Conf. Empir. Methods Nat. Lang. Process. (2025) 6. Bai, S., Cai, Y., Chen, R., Chen, K., Chen, X.H., Cheng, Z., Deng, L., Ding, W., Fang, R., Gao, C., et al.: Qwen3-vl technical report (2025) 7. Chen, Z., Wu, J., Wang, W., Su, W., Chen, G., Xing, S., Muya, Z., Zhang, Q., Zhu, X., Lu, L., Li, B., Luo, P., Lu, T., Qiao, Y., Dai, J.: Internvl: Scaling up vision foundation models and aligning for generic visual-linguistic tasks. In: CVPR (2024) 8. Cheng, S., Fang, K., Yu, Y., Zhou, S., Li, B., Tian, Y., Li, T., Han, L., Liu, Y.: Videgothink: Assessing egocentric video understanding capabilities for embodied ai. arXiv (2024), arXiv:2410.11623 9. Cheng, Z., Cheng, Z.Q., He, J.Y., Wang, K., Lin, Y., Lian, Z., Peng, X., Haupt-mann, A.: Emotion-llama: Multimodal emotion recognition and reasoning with in-struction tuning. Advances in Neural Information Processing Systems 37 , 110805– 110853 (2024) 10. Cheng, Z., Leng, S., Zhang, H., Xin, Y., Li, X., Chen, G., Zhu, Y., Zhang, W., Luo, Z., Zhao, D., Bing, L.: Videollama 2: Advancing spatial-temporal modeling and audio understanding in video-llms. arXiv (2024), arXiv:2406.07476 11. Comanici, G., Bieber, E., Schaekermann, M., Pasupat, I., Sachdeva, N., Dhillon, I., Blistein, M., Ram, O., Zhang, D., Rosen, E., et al.: Gemini 2.5: Pushing the frontier with advanced reasoning, multimodality, long context, and next generation agentic capabilities (2025) 12. Damen, D., Doughty, H., Farinella, G.M., Fidler, S., Furnari, A., Kazakos, E., Moltisanti, D., Munro, J., Perrett, T., Price, W., Wray, M.: Scaling egocentric vision: The EPIC-KITCHENS dataset. In: ECCV (2018) 13. Damen, D., Doughty, H., Farinella, G.M., Fidler, S., Furnari, A., Kazakos, E., Moltisanti, D., Munro, J., Perrett, T., Price, W., Wray, M.: Scaling egocentric vision: The EPIC-KITCHENS dataset. In: ECCV. pp. 720–736 (2018) 14. Dao, T., Fu, D.Y., Ermon, S., Rudra, A., Re, C.: Flashattention: Fast and memory-efficient exact attention with io-awareness. In: Advances in Neural Information Processing Systems (2022) Egocentric Emotion Understanding 17 15. Driess, D., Xia, F., Sajjadi, M.S., Lynch, C., Chowdhery, A., Ichter, B., Wahid, A., Tompson, J., Vuong, Q., Yu, T., et al.: Palm-e: An embodied multimodal language model. arXiv preprint arXiv:2303.03378 (2023) 16. Duan, J., Yu, S., Li, T., Zhu, H., Tan, C.: A survey of embodied ai: From simulators to research tasks. IEEE Trans. Emerg. Topics Comput. Intell. (2021) 17. Ekman, P.: An argument for basic emotions. Cognition & Emotion 6(3-4), 169–200 (1992) 18. Fan, W., Xu, X., Xing, X., Chen, W., Huang, D.: Lssed: a large-scale dataset and benchmark for speech emotion recognition. In: ICASSP 2021-2021 IEEE In-ternational Conference on Acoustics, Speech and Signal Processing (ICASSP). pp. 641–645. IEEE (2021) 19. Grauman, K., Westbury, A., Byrne, E., Chavis, Z., Furnari, A., Girdhar, R., Ham-burger, J., Jiang, H., Liu, X., Martin, M., Nagarajan, T., Radosavovic, I., Ramakr-ishnan, S.K., Ryan, F., Sharma, J., Wray, M., et al.: Ego4d: Around the world in 3,000 hours of egocentric video. In: CVPR (2022) 20. Gu, Q., Kuwajerwala, A., Morin, S., Jatavallabhula, K.M., Sen, B., Agarwal, A., Rivera, C., Paul, W., Ellis, K., Chellappa, R., et al.: Conceptgraphs: Open-vocabulary 3d scene graphs for perception and planning. In: 2024 IEEE Inter-national Conference on Robotics and Automation (ICRA). pp. 5021–5028. IEEE (2024) 21. Hu, E.J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., Chen, W.: Lora: Low-rank adaptation of large language models. In: International Conference on Learning Representations (ICLR) (2022) 22. Huang, Q., Xiong, Y., Rao, A., Wang, J., Lin, D.: Movienet: A holistic dataset for movie understanding. In: European Conference on Computer Vision (ECCV) (2020) 23. Huang, W., Wang, C., Zhang, R., Li, Y., Wu, J., Fei-Fei, L.: Voxposer: Composable 3d value maps for robotic manipulation with language models. arXiv preprint arXiv:2307.05973 (2023) 24. Imani, M., Montazer, G.A.: A survey of emotion recognition methods with em-phasis on e-learning environments. Journal of network and computer applications 
+
+147 , 102423 (2019) 25. Jiang, X., Zong, Y., Zheng, W., Tang, C., Xia, W., Lu, C., Liu, J.: Dfew: A large-scale database for recognizing dynamic facial expressions in the wild. In: Pro-ceedings of the 28th ACM international conference on multimedia. pp. 2881–2889 (2020) 26. Koelstra, S., Mühl, C., Soleymani, M., Lee, J.S., Yazdani, A., Ebrahimi, T., Pun, T., Nijholt, A., Patras, I.: Deap: A database for emotion analysis using physiological signals. IEEE Transactions on Affective Computing 3(1), 18–31 (2012) 27. Kossaifi, J., Tzimiropoulos, G., Todorovic, S., Pantic, M.: AFEW-VA database for valence and arousal estimation in-the-wild. Image and Vision Computing 65 , 23–36 (2017) 28. Kossaifi, J., Walecki, R., Panagakis, Y., Shen, J., Schmitt, M., Ringeval, F., Han, J., Pandit, V., Schuller, B., Star, K., Hjelm, E., Pantic, M.: Sewa db: A rich database for audio-visual emotion and sentiment research in the wild. IEEE Transactions on Pattern Analysis and Machine Intelligence 43 (3), 1022–1040 (2019). https: //doi.org/10.1109/TPAMI.2019.2944808 
+
+29. Kosti, R., Álvarez, J., Recasens, A., Lapedriza, A.: Emotic: Emotions in context dataset. In: CVPRW (2017) 18 Z.Dong et al. 30. Lei, S., Dong, G., Wang, X., Wang, K., Qiao, R., Wang, S.: Instructerc: Reform-ing emotion recognition in conversation with multi-task retrieval-augmented large language models. arXiv preprint arXiv:2309.11911 (2023) 31. Li, P., Cao, L., Wu, X.M., Yu, X., Yang, R.: Ugotme: An embodied system for affective human-robot interaction. In: IEEE Int. Conf. Robot. Autom. (2025) 32. Lin, W., Feng, Y., Han, W., Jin, T., Zhao, Z., Wu, F., Yao, C., Chen, J.: E3: Exploring embodied emotion through a large-scale egocentric video dataset. In: NeurIPS (2024) 33. Lin, X., Li, S., Li, B., Yan, B., Yan, R., Shen, Z., Wu, C., Miao, Y., Yuan, Y., Shi, Y., He, J., Huang, C., Chen, B., Cai, K.: Physbrain: Human egocentric data as a bridge from vision language models to physical intelligence. arXiv (2026), arXiv:2512.16793 34. Liu, H., Li, C., Lee, Y.J.: Improved baselines with visual instruction tuning. In: CVPR (2024) 35. Mangalam, K., Akshulakov, R., Malik, J.: Egoschema: A diagnostic benchmark for very long-form video language understanding. Advances in Neural Information Processing Systems 36 , 46212–46244 (2023) 36. Martín-Martín, R., Patel, M., Rezatofighi, H., Shenoy, A., Gwak, J., Frankel, E., Sadeghian, A., Savarese, S.: Jrdb: A dataset and benchmark of egocentric robot visual perception of humans in built environments. IEEE TPAMI 43 (11), 4009– 4025 (2021) 37. Mathur, L., Liang, P.P., Morency, L.P.: Advancing social intelligence in ai agents: Technical challenges and open questions. In: Conf. Empir. Methods Nat. Lang. Process. (2024) 38. de Melo, C.M., Gratch, J., Marsella, S., Pelachaud, C.: Social functions of machine emotional expressions. Proc. IEEE 111 (10), 1353–1372 (2023) 39. Paiva, A., Leite, I., Boukricha, H., Wachsmuth, I.: Empathy in virtual agents and robots: A survey. ACM Trans. Interact. Intell. Syst. 7(3), 11:1–11:40 (2017). https: //doi.org/10.1145/2912150 
+
+40. Peng, X., Chen, J., Cheng, Z., Peng, B., Wu, F., Dong, Y., Tu, S., Hu, Q., Huang, H., Lin, Y., et al.: Emotion-llamav2 and mmeverse: A new framework and bench-mark for multimodal emotion understanding. arXiv preprint arXiv:2601.16449 (2026) 41. Poria, S., Hazarika, D., Majumder, N., Naik, G., Cambria, E., Mihalcea, R.: Meld: A multimodal multi-party dataset for emotion recognition in conversations. In: Annu. Meet. Assoc. Comput. Linguistics. pp. 527–536 (2018) 42. Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., Krueger, G., Sutskever, I.: Learning transferable visual models from natural language supervision. In: ICML (2021) 43. Rao, A., Chou, J.P., Agrawala, M.: Scriptviz: A visualization tool to aid scriptwrit-ing based on a large movie database. In: ACM Symposium on User Interface Soft-ware and Technology (UIST) (2024) 44. Rawal, R., Saifullah, K., Basri, R., Jacobs, D., Somepalli, G., Goldstein, T.: Cinepile: A long video question answering dataset and benchmark (2024) 45. Sigurdsson, G.A., Gupta, A., Schmid, C., Farhadi, A., Alahari, K.: Actor and observer: Joint modeling of first and third-person videos. In: CVPR (2018) 46. Singh, A., Fry, A., Perelman, A., Tart, A., Ganesh, A., El-Kishky, A., McLaughlin, A., Low, A., Ostrow, A., Ananthram, A., et al.: Openai gpt-5 system card. arXiv preprint arXiv:2601.03267 (2025) Egocentric Emotion Understanding 19 47. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L., Polosukhin, I.: Attention is all you need. In: Advances in Neural Information Processing Systems (NeurIPS) (2017) 48. Wang, P., Bai, S., Tan, S., Wang, S., Fan, Z., Bai, J., Chen, K., Liu, X., Wang, J., Ge, W., et al.: Qwen2-vl: Enhancing vision-language model’s perception of the world at any resolution. arXiv preprint arXiv:2409.12191 (2024) 49. Wang, X., Xu, S., Shan, X., Zhang, Y., Diao, M., Duan, X., Huang, Y., Liang, K., Ma, Z.: Cinetechbench: A benchmark for cinematographic technique understanding and generation (2025) 50. Xu, J., Guo, Z., He, J., Hu, H., He, T., Bai, S., Chen, K., Wang, J., Fan, Y., Dang, K., Zhang, B., Wang, X., Chu, Y., Lin, J.: Qwen2.5-omni technical report. arXiv (2025), arXiv:2503.20215 51. Xu, P., Shao, W., Zhang, K., Gao, P., Liu, S., Lei, M., Meng, F., Huang, S., Qiao, Y., Luo, P.: Lvlm-ehub: A comprehensive evaluation benchmark for large vision-language models. IEEE Transactions on Pattern Analysis and Machine Intelligence 
+
+47 (3), 1877–1893 (2024) 52. Yang, J., Liu, S., Guo, H., Dong, Y., Zhang, X., Zhang, S., Wang, P., Zhou, Z., Xie, B., Wang, Z., Ouyang, B., Lin, Z., Cominelli, M., Cai, Z., Li, B., Zhang, Y., Zhang, P., Hong, F., Widmer, J., Gringoli, F., Yang, L., Liu, Z.: Egolife: Towards egocentric life assistant. In: CVPR. pp. 28885–28900 (2025) 53. Yang, J., Huang, Q., Ding, T., Lischinski, D., Cohen-Or, D., Huang, H.: Emoset: A large-scale visual emotion dataset with rich attributes. In: ICCV (2023) 54. Yang, Q., Bai, D., Peng, Y.X., Wei, X.: Omni-emotion: Extending video mllm with detailed face and audio modeling for multimodal emotion analysis. arXiv preprint arXiv:2501.09502 (2025) 55. Zadeh, A.B., Liang, P.P., Poria, S., Cambria, E., Morency, L.P.: Multimodal lan-guage analysis in the wild: Cmu-mosei dataset and interpretable dynamic fusion graph. In: Proceedings of the 56th Annual Meeting of the Association for Compu-tational Linguistics (Volume 1: Long Papers). pp. 2236–2246 (2018) 56. Zhao, J., Yang, Q., Peng, Y., Bai, D., Yao, S., Sun, B., Chen, X., Fu, S., Wei, X., Bo, L., et al.: Humanomni: A large vision-speech language model for human-centric video understanding. arXiv preprint arXiv:2501.15111 (2025) 57. Zhou, G., Hong, Y., Wu, Q.: Navgpt: Explicit reasoning in vision-and-language navigation with large language models. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol. 38, pp. 7641–7649 (2024) 58. Zitkovich, B., Yu, T., Xu, S., Xu, P., Xiao, T., Xia, F., Wu, J., Wohlhart, P., Welker, S., Wahid, A., et al.: Rt-2: Vision-language-action models transfer web knowledge to robotic control. In: Conference on Robot Learning. pp. 2165–2183. PMLR (2023) 20 Z.Dong et al. 
+
+## Supplementary Material A Additional Dataset Statistics 
+
+To further analyze the annotation characteristics of the EgoScreen-Emotion 
+
+(ESE) dataset, we present additional statistical results in Fig. 7.    
+
+> 0.2
+> %
+> k=2
+> 18.9
+> %
+> k=1
+> 80.9
+> %
+
+(a) 4274 (2.5%) 40261 (23.2%) 88994 (51.3%) 26219 (15.1%) 13685 (7.9%) 123450.0 20.0k 40.0k 60.0k 80.0k 100.0k Number of Annotations Confidence Score (b) 
+
+Fig. 7: Additional statistics of the EgoScreen-Emotion dataset. (a) Distribu-tion of the number of emotion selections per frame ( k). (b) Distribution of annotator confidence scores. 
+
+Fig. 7(a) shows the distribution of the number of emotion selections per frame ( k). Most frames contain a single dominant emotion (80.9%), indicating that viewers typically exhibit a clear primary emotional response when watching movie scenes. Meanwhile, a smaller portion of frames contain multiple emotion labels (18.9% for two emotions and 0.2% for three or more), reflecting that cer-tain scenes may evoke mixed emotional reactions. This observation highlights the importance of supporting multi-emotion annotations when modeling viewer-level affective responses. Fig. 7(b) presents the distribution of annotator confidence scores. Medium-confidence annotations account for the largest proportion, while the frequency gradually decreases toward higher certainty levels. Extremely un-certain and extremely certain annotations are both relatively rare. This pattern is consistent with the general characteristics of human emotion judgment: in most cases, annotators can identify a plausible emotional tendency, but only a smaller portion of samples evoke highly certain or very strong emotional responses. 
+
+## B Narrative Compression Details 
+
+Emotional responses during movie watching depend not only on the current frame, but also on accumulated narrative memory. However, directly concate-nating all historical segment summaries causes the textual context to grow lin-early with time, introduces substantial redundancy, and makes the prompt in-creasingly difficult for the model to use effectively. More importantly, human narrative memory is inherently hierarchical: events from the distant past are usually retained as a few key story points, while recently observed events can still be remembered in much greater detail. Motivated by this short-term/long-term memory pattern, we compress earlier narrative history into a fixed-schema Egocentric Emotion Understanding 21 
+
+long-term background, while preserving the most recent segment as a detailed local context. 
+
+B.1 Compression Objective and Schema 
+
+The compressed long-term background is organized around four core dimensions: 
+
+– Story Premise : the high-level situation and story setup accumulated so far; 
+
+– Key Entities : recurring characters, objects, or forces that remain relevant; 
+
+– Conflict : stable antagonism, danger, or emotional tension that drives the scene; 
+
+– Global Tone : the dominant affective tendency of the preceding narrative. In addition, we maintain an auxiliary field Turning Points to record major state changes or salient events that explain why the current scene should be interpreted in a particular way. This schema preserves affect-relevant narrative structure while discarding redundant segment-level details, thereby providing a more compact and stable form of narrative memory for emotion prediction. 
+
+B.2 Rolling Compression Procedure 
+
+We divide each video into fixed 20-second segments and generate one raw seg-ment summary for each segment, denoted as  summary i, where  i = 1 , 2, . . . , n .Instead of concatenating all previous summaries, we recursively compress earlier history into a structured long-term background. To make the compression schema explicit, we represent the compressed back-ground after the first  i completed segments as 
+
+Bi = {Pi, E i, C i, T i}, (8) where  Pi denotes the accumulated premise , Ei the set of salient entities , Ci the dominant conflict relations or threats , and  Ti the global narrative tone .Let the structured information extracted from the current segment summary 
+
+summary i be 
+
+G(summary i) = { ˆPi, ˆEi, ˆCi, ˆTi}, (9) where  ˆPi, ˆEi, ˆCi, ˆTi denote the newly identified premise-level description, entities, conflict cues, and tone from the current segment. The rolling compression is then defined as 
+
+B1 = G(summary 1), (10) 
+
+Bi = Ψ (Bi−1, G (summary i)) , i ≥ 2, (11) where  Ψ (·) is a schema-aware compression operator that updates each dimension: 
+
+Pi = ψP (Pi−1, ˆPi), (12) 22 Z.Dong et al. 
+
+Ei = ψE (Ei−1, ˆEi), (13) 
+
+Ci = ψC (Ci−1, ˆCi), (14) 
+
+Ti = ψT (Ti−1, ˆTi). (15) Here,  ψP integrates the high-level story setup,  ψE retains recurring charac-ters, objects, or forces,  ψC updates stable conflict or threat relations, and  ψT
+
+summarizes the dominant affective tendency of the preceding narrative. At time step  t, let 
+
+k =
+
+ t
+
+20 
+
+
+
+(16) denote the index of the most recently completed 20-second segment. The narra-tive context is then constructed as 
+
+St = Φ(Bk−1, summary k), (17) where  Bk−1 is the compressed long-term background summarizing earlier history, and  summary k is the most recent detailed segment summary. When  k = 1 , no long-term background is available yet, and only the current segment summary is used. This design follows a memory-inspired principle: older events are retained in a low-resolution structured form, whereas the most recent segment remains uncompressed and detailed. As a result, the prompt length remains controlled even for long videos, while the model still receives both global narrative context and local scene-level evidence. 
+
+B.3 Before-vs.-After Example 
+
+To make the compression behavior more concrete, Table 6 presents an illustrative example using Avatar at  t = 160 s. Before compression, all preceding segment summaries are injected as cumulative plain narrative text. After compression, earlier history is reorganized into a fixed-schema background, while the current 20-second segment is retained as a detailed narrative description. 
+
+B.4 Ablation on Narrative Summary Compression 
+
+To evaluate the effect of narrative summary compression itself, we conduct a text-only ablation that compares two contextual representations: the original narrative summary ( Summary ) and the compressed narrative summary ( Com-pressed Summary ). In this setting, no additional visual frames or audio inputs are provided; the model receives only the narrative text and is trained to predict the emotion label at the corresponding time step. The first setting directly uses the Egocentric Emotion Understanding 23 
+
+Table 6: Illustrative example of narrative context injection at  t = 160 s for Avatar .Compared with cumulative segment summaries, the compressed representation pre-serves global narrative structure while reducing prompt length by approximately 72%.                     
+
+> Before: cumulative plain narrative After: structured compressed back-ground + current segment
+> All previous segment summaries from 0–160 sare concatenated as cumulative narrative text. For example: “a wheelchair user appears in a crowded bar . . . soldiers prepare for military action . . . blue-skinned aliens stand on a bat-tlefield while soldiers panic in a control room . . . ”. This representation preserves local narra-tive details, but introduces substantial redun-dancy as the history grows. Earlier history is compressed into afixed schema:
+> story premise : humans and Na’vi gradually move toward military conflict.
+> conflict : escalating military tension and im-pending attack.
+> key entities : soldiers, scientists, blue-skinned aliens, aircraft, robots.
+> global tone : tense. The most recent 160 –180 s segment is retained as a detailed narrative description. Approx. 401 words (cumulative summaries) Approx. 112 words (compressed background + current segment)
+> Word reduction: ∼72%
+
+original narrative summary as input, while the second replaces it with the com-pressed narrative summary, which reorganizes earlier history into a fixed-length structured representation. All other training configurations remain unchanged, so that the comparison directly isolates the impact of the narrative compression strategy. 
+
+Table 7: Effect of narrative summary compression on the EgoScreen-Emotion test set.          
+
+> Setting Acc Macro-F1 Weighted-F1
+> Summary 55.50 12.12 46.61
+> Compressed Summary 59.72 15.82 54.76
+
+As shown in Table 7, the compressed narrative summary consistently im-proves performance across all metrics. Accuracy increases from 55.50 to 59.72, Macro-F1 from 12.12 to 15.82, and Weighted-F1 from 46.61 to 54.76. These results suggest that the compressed representation provides a more stable and effective high-level narrative context for emotion prediction. We attribute this improvement to the fact that the original narrative summaries often contain re-dundant segment-level details that are not always useful for emotion inference. In contrast, the compressed summaries preserve long-term narrative structure in a more compact form, allowing the model to focus more effectively on globally relevant contextual cues. 
+
+## C Annotation Details 
+
+C.1 Confidence Voting Details 
+
+Fig. 8 illustrates the aggregation process with three representative scenarios. When one emotion obtains a clearly higher aggregated confidence score, it is 24 Z.Dong et al.  
+
+> Fig. 8: Illustration of the confidence-based emotion aggregation process. The examples demonstrate three representative scenarios: dominant emotion, close scores, and tie cases where multiple emotions may be retained.
+
+selected as the final label ( dominant emotion ). When several emotions obtain similar scores, the emotion with the highest score is still chosen ( close scores ). If multiple emotions obtain identical highest scores, multiple labels may be retained (tie case ). 
+
+C.2 Annotation Rationales 
+
+Fig. 9 presents representative examples of annotation rationales in the EgoScreen-Emotion dataset. During annotation, annotators are required to provide a short textual explanation describing the reasoning behind their emotional judgment. These rationales typically summarize the cues or contextual factors that lead to the perceived emotional response. 
+
+## D Prompt and Training Details 
+
+This section provides additional details about the training prompts and im-plementation settings used in our experiments. We first present representative Egocentric Emotion Understanding 25 
+
+Fig. 9: Examples of annotation rationales in the EgoScreen-Emotion dataset. 
+
+prompt templates for different model configurations, including the single-frame baseline and the multimodal setting with temporal frames, audio, and com-pressed narrative context. We then describe the key training configurations used for model fine-tuning. 
+
+D.1 Prompt Single-frame Prompt Example (1F Baseline) 
+
+Training prompt used for the single-frame baseline. 
+
+{"messages": [ {"role": "user", "content": "<image> The image above is a frame from a movie clip. Determine the primary emotion you experience as a viewer based on the visual content of this frame. Emotion categories: angry, excited, fear, funny, happy, neutral, sad, surprised, tense, touched Select the single emotion that best describes your response. Only output the emotion label. Output format: {\"emotion\":\"<label>\"}" }, {"role": "assistant", "content": "{\"emotion\":\"happy\"}"} ], "images": ["<frame_t>"] 26 Z.Dong et al. 
+
+}
+
+Multimodal Prompt (3F + Audio + Compressed Narrative) 
+
+Training prompt used for the multimodal model. 
+
+{"messages": [ {"role": "user", "content": "Frame t-10s: <image> Frame t-5s: <image> Frame t (current): <image> Audio segment: <audio> The frames above are key visual moments from the same movie clip arranged in chronological order. [Narrative Context] [Compressed Long-Term Background] story: A humanoid robot in black armor rapidly moves through a parking lot and attacks a man using a mechanical arm. The man attempts to escape but is eventually struck. entities: police officers, robotic threat, man, woman, child conflict: pursuit, armed confrontation, close combat, vehicle collision, physical attack tone:tense [Current Segment: 80–100s] A woman and a man stand near a body of water and appear to be talking. The scene then shifts to a helicopter pilot wearing a reflective vest inside a cockpit filled with instruments. Later, a person in a dimly lit room holds a black gun while remaining alert. The scene moves to a prison corridor where a uniformed officer walks while escorting a woman. Finally, another officer rushes into the prison as if attempting to pursue or rescue someone. Determine the primary emotion experienced by the viewer. Emotion categories: angry, excited, fear, funny, happy, neutral, sad, surprised, tense, touched Output format: {\"emotion\":\"<label>\"}" }, {"role": "assistant", "content": "{\"emotion\":\"neutral\"}"} ], "images": ["<frame_t-10>", "<frame_t-5>", "<frame_t>"], "audios": ["<audio_segment>"] }
+
+D.2 Training Details 
+
+We fine-tune Qwen2.5-Omni-7B [50] and Qwen3-VL-8B [6] with parameter-efficient LoRA adaptation [21]. For all experiments, training is performed for 4 epochs with a learning rate of 1e-4. The per-device batch size is set to 1, and gradient accumulation steps are set to 2, resulting in an effective batch size of 2. We adopt bfloat16 mixed-precision training and enable gradient checkpoint-ing to reduce GPU memory consumption. For Qwen2.5-Omni-7B, we use the Egocentric Emotion Understanding 27 
+
+SDPA attention [47] implementation, while for Qwen3-VL-8B, we use FlashAt-tention [14]. Model checkpoints are evaluated and saved at the end of each epoch. All experiments are conducted on NVIDIA RTX 5090 GPUs, and validation is performed on the corresponding test split of each setting. The dataset is split at the movie level to prevent narrative leakage, ensuring that clips from the same movie never appear in both the training and test sets. 
+
+## E Detailed Evaluation Results 
+
+E.1 Per-class Performance 
+
+As shown in Table 8, there are clear performance differences across emotion categories. In particular, neutral and tense achieve substantially higher perfor-mance, while angry and touched obtain F1 scores of 0. This is mainly caused by the long-tailed distribution of the dataset: neutral and tense account for approx-imately 53.4% and 29.3% of the samples, whereas rare emotions such as angry 
+
+and touched constitute only about 1% and 0.5%, respectively. As a result, the number of test samples for these rare categories is very limited, making the F1 score sensitive to small prediction changes. Importantly, this distribution is consistent with the typical emotional re-sponse patterns of viewers during movie watching. Neutral is a common viewing state, as viewers do not continuously experience strong emotional fluctuations throughout a film, leading to its relatively high proportion in the dataset. Mean-while, tense represents a broad and composite emotional state that can arise in a wide range of narrative situations, such as conflict, suspense, or potential threats, and therefore also appears frequently. In contrast, stronger emotions such as an-gry or touched usually emerge only at specific narrative moments and thus occur less frequently overall. Therefore, the long-tailed emotion distribution observed in the ESE dataset reflects a natural pattern of viewer emotional responses rather than an artificial imbalance introduced during dataset construction. 
+
+E.2 Confusion Matrix Analysis 
+
+Fig. 10 reveals several meaningful confusion patterns. Many emotions are fre-quently predicted as neutral , suggesting that when emotional cues are weak or ambiguous, the model tends to default to a neutral interpretation, which is con-sistent with viewer-level emotional perception during movie watching. Fig. 10 reveals several meaningful confusion patterns. Many emotions are frequently predicted as neutral , suggesting that when emotional cues are weak or ambiguous, the model tends to default to a neutral interpretation, which is consistent with viewer-level emotional perception during movie watching. A strong interaction is observed between fear and tense , where many fear 
+
+samples are predicted as tense . This reflects the close semantic relationship be-tween fear and tension in cinematic scenes involving danger or suspense. 28 Z.Dong et al. 
+
+Table 8: Per-class performance (%) of the multimodal model (3F + audio + com-pressed narrative) on the ESE test set. The last column shows the proportion of each emotion category in the test set. Emotion Precision (%) Recall (%) F1 (%) Proportion (%) angry 0.00 0.00 0.00 1.01 excited 24.64 16.04 19.43 1.98 fear 40.48 10.12 16.19 3.14 funny 24.59 17.05 20.13 1.64 happy 33.85 44.67 38.52 4.56 neutral 70.33 83.29 76.26 53.41 sad 38.20 19.10 25.47 3.32 surprised 12.50 6.78 8.79 1.10 tense 59.40 50.67 54.69 29.34 touched 0.00 0.00 0.00 0.50 Acc 63.01 Macro-F1 25.95 Weighted-F1 60.70 000459 22 4011 00210242 1151 00302344 2739 00120726 19 045 10101483 1010 0040145 44 005101017 844 0525 00010 1227 1060 0016 0230 29 0616 10000772 0020 0Angry Excited Fear Funny Happy Neutral Sad Surprised Tense Touched Touched Tense Surprised Sad Neutral Happy Funny Fear Excited Angry True emotion Predicted emotion 0.000 13.83 27.67 41.50 55.33 69.17 90.00 Percentage (%) 
+
+Fig. 10: Confusion matrix of the multimodal model on the ESE test set. Rows represent true emotion labels and columns represent predicted labels. 
+
+Although the F1 scores of angry and touched are 0 due to their extremely low frequency, the confusion matrix shows that the model still captures their seman-tic characteristics. For example, angry samples are mainly predicted as neutral 
+
+or tense , while touched samples are often predicted as happy . These predictions remain semantically reasonable and fall within the affective neighborhood of the target emotions.
