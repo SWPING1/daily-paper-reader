@@ -1,0 +1,580 @@
+Title: UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection
+
+URL Source: https://arxiv.org/pdf/2604.21227v1
+
+Published Time: Fri, 24 Apr 2026 00:23:33 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection 
+
+# Yuze Li 
+
+School of Artificial Intelligence Tianjin University Tianjin, China 2024244204@tju.edu.cn 
+
+# Zhilei Liu ∗
+
+School of Artificial Intelligence Tianjin University Tianjin, China zhileiliu@tju.edu.cn 
+
+## Abstract 
+
+Facial action unit (AU) detection remains challenging because it involves heterogeneous, AU-specific uncertainties arising at both the representation and decision stages. Recent methods have im-proved discriminative feature learning, but they often treat the AU representations as deterministic, overlooking uncertainty caused by visual noise, subject-dependent appearance variations, and ambigu-ous inter-AU relationships, all of which can substantially degrade robustness. Meanwhile, conventional point-estimation classifiers often provide poorly calibrated confidence, producing overconfi-dent predictions, especially under the severe label imbalance typical of AU datasets. We propose UAU-Net , an Uncertainty-aware AU de-tection framework that explicitly models uncertainty at both stages. At the representation stage, we introduce CV-AFE , a conditional VAE (CVAE)-based AU feature extraction module that learns prob-abilistic AU representations by jointly estimating feature means and variances across multiple spatio-temporal scales; condition-ing on AU labels further enables CV-AFE to capture uncertainty associated with inter-AU dependencies. At the decision stage, we design AB-ENN , an Asymmetric Beta Evidential Neural Network for multi-label AU detection, which parameterizes predictive un-certainty with Beta distributions and mitigates overconfidence via an asymmetric loss tailored to highly imbalanced binary labels. Extensive experiments on BP4D and DISFA show that UAU-Net achieves strong AU detection performance, and further analyses indicate that modeling uncertainty in both representation learning and evidential prediction improves robustness and reliability. 
+
+## CCS Concepts 
+
+• Computing methodologies → Computer vision tasks .
+
+## Keywords 
+
+Uncertainty Modeling, AU Detection, Evidential Classification 
+
+ACM Reference Format: 
+
+Yuze Li and Zhilei Liu. 2026. UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection. In 
+
+International Conference on Multimedia Retrieval (ICMR ’26), June 16–19, 2026, Amsterdam, Netherlands. ACM, New York, NY, USA, 9 pages. https: //doi.org/10.1145/3805622.3810735  
+
+> ∗Corresponding author.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> ICMR ’26, Amsterdam, Netherlands
+> ©2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2617-0/2026/06 https://doi.org/10.1145/3805622.3810735
+
+## 1 Introduction 
+
+Facial action unit (AU) detection recognizes fine-grained facial muscle activations defined by the Facial Action Coding System (FACS) [ 7 ] and is a core problem in affective computing and human-centered multimedia understanding [ 17 ]. Compared to categorical recognition, AU detection involves reasoning about small, local-ized changes and is therefore sensitive to nuisance factors such as motion blur, occlusion, changes in illumination, and differences between subjects. These factors introduce substantial uncertainty 
+
+into both learned representations and final predictions, resulting in ambiguous AU cues and poorly calibrated confidence estimates. Most AU detectors can be abstracted as two sequential stages: (i) AU representation learning/feature extraction—often coupled with explicit inter-AU relationship modeling—and (ii) AU prediction with a multi-label classifier. Uncertainty is intrinsic to both stages. Despite progress, methods remain vulnerable under challenging conditions because they are typically trained as point-estimation 
+
+pipelines that do not model heterogeneous uncertainty [15, 34]. 
+
+Representation uncertainty . Early AU detectors relied on hand-crafted cues such as landmarks or region-based pooling to obtain static AU features [ 29 ]. Recent approaches improve discrim-inability by modeling contextual dependencies among AUs [ 23 , 30 ,33 ] using transformers [ 10 , 43 ] or graph-based models [ 21 , 34 ], and by incorporating temporal dynamics across frames [ 18 ]. However, inter-AU reasoning can be unreliable when evidence is weak or conflicting, and most methods do not explicitly quantify the uncer-tainty introduced by relationship modeling. In addition, although VAE-based formulations can capture data uncertainty [ 48 ], they are often tailored to a single source of uncertainty and do not account for uncertainty amplified by inter-AU dependency modeling. 
+
+Predictive uncertainty and label imbalance . Uncertainty also manifests at the prediction stage [ 38 ]. Most AU detectors are trained with cross-entropy and produce deterministic probabilities [ 14 , 29 ], which often yields overconfident outputs under distribution shifts or low-quality inputs. Although multi-branch architectures can partially alleviate overconfidence [ 28 ], they still do not provide an explicit probabilistic characterization of predictive uncertainty. This limitation is further amplified by the severe class imbalance of AU datasets, where negative labels dominate. Existing solutions typically rely on manually tuned re-weighting [ 31 , 41 ], and some recent work adjusts weights based on uncertainty from relationship learning [ 34 ]. However, such uncertainty primarily reflects inter-AU reasoning rather than the classifier’s predictive uncertainty, leaving its role in both training and inference insufficiently explored.  
+
+> arXiv:2604.21227v1 [cs.CV] 23 Apr 2026 ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands Yuze Li and Zhilei Liu
+
+To address these limitations, we propose UAU-Net , an 
+
+Uncertainty-aware AU detection framework that jointly models 
+
+representation uncertainty and predictive uncertainty . At the rep-resentation stage, we introduce CV-AFE , a conditional variational autoencoder (CVAE)-based AU feature extractor that learns proba-bilistic AU representations by estimating feature means and vari-ances across multiple spatio–temporal scales. By conditioning the latent distribution on AU labels, CV-AFE captures AU-specific un-certainty as well as uncertainty induced by inter-AU dependencies. At the prediction stage, we formulate AU detection as a multi-label binary task and propose an Asymmetric Beta Evidential Neural Net-work (AB-ENN). AB-ENN models each AU’s occurrence probability with a Beta distribution, enabling joint estimation of likelihood and predictive uncertainty via subjective opinions rather than determin-istic probabilities. To handle extreme positive–negative imbalance, we further derive an asymmetric evidential loss that down-weights easy negatives while emphasizing positives. The major contributions of this work are summarized as follows: 
+
+• We propose CV-AFE , a CVAE-based AU feature extraction module that introduces explicit uncertainty modeling into AU representations. By jointly learning feature means and variances across multiple spatio-temporal scales, CV-AFE captures both data uncertainty (e.g., visual noise) and rela-tional uncertainty induced by label-conditioned inter-AU dependency modeling. 
+
+• We introduce AB-ENN , an Asymmetric Beta Evidential Neu-ral Network for AU prediction, which models AU occurrence with Beta distributions instead of conventional point esti-mates. This formulation enables principled predictive uncer-tainty estimation and alleviates overconfident predictions. We further derive an asymmetric Beta loss to address severe class imbalance by emphasizing positive AU instances while down-weighting easy negatives. 
+
+• Extensive experiments on BP4D [ 44 ] and DISFA [ 22 ] show that UAU-Net achieves competitive performance, and that explicitly modeling uncertainty at both the representation and prediction stages yields consistent improvements. 
+
+## 2 Related Work 
+
+This section reviews work most relevant to our framework, focus-ing on facial AU detection and uncertainty-aware learning. We summarize how existing methods learn AU representations and model inter-AU dependencies, and highlight their limitations in explicitly quantifying uncertainty at both the representation and prediction stages. 
+
+## 2.1 Facial Action Unit Detection 
+
+Facial AU detection pipelines typically consist of representation learning and AU prediction, and can be broadly categorized into static image-based and spatio-temporal methods [ 1]. Early static ap-proaches improved AU feature quality by exploiting global context and local facial regions with attention mechanisms. For instance, Shao et al. [ 30 ] employed adaptive channel-wise and spatial atten-tion to focus on AU-relevant cues. Given that AUs are inherently in-terdependent [ 45 ], many works further incorporate explicit relation-ship modeling. LP-Net [ 23 ] leverages sequential models to capture AU dependencies, while Jacob et al. [ 10 ] proposed a transformer-style AU correlation network. Graph-based methods [ 13 , 21 ] treat AUs as nodes and encode pairwise dependencies as edges, enabling structured reasoning over AU relations. To capture temporal dynamics, recent methods combine spatial relationship modeling with temporal aggregation. HSTR-Net [ 35 ]constructs frame-level AU graphs and models AU evolution across frames. Transformer-based approaches [ 2 , 16 ] similarly capture inter-AU dependencies and temporal context via multi-head at-tention. Yang et al. [ 42 ] introduced a Temporal Difference Net-work (TDN) to extract facial dynamics at specific spatial scales, and MDHR [ 39 ] further hierarchically models both local and cross-regional spatio-temporal relationships among AUs for robust occur-rence recognition. Although these designs improve discriminability, relationship encoding is typically deterministic, and the uncertainty introduced by inter-AU reasoning is rarely quantified explicitly. Recently, several studies have begun to explicitly quantify un-certainty and have reported promising improvements for AU detec-tion. Song et al. [34] proposed an uncertainty-aware graph neural network with a probabilistic masking mechanism to model and reweight AU dependencies. Zhu et al. [ 48 ] learned stochastic rep-resentations for each sample and estimated feature variance via uncertainty-aware score assignment. UA-FER [ 47 ] modeled and rectified uncertainty in visual–textual relationships using eviden-tial deep learning (EDL) [ 26 ], improving robustness and reliability. Chen et al. [ 5 ] introduced data uncertainty learning together with a context-aware contrastive objective for robust pedestrian repre-sentation learning. Nevertheless, most existing methods focus on a single uncer-tainty source (e.g., feature noise or output uncertainty) and do not jointly account for uncertainty introduced by inter-AU reasoning 
+
+and the highly imbalanced multi-label prediction setting. In con-trast, our framework provides a unified uncertainty-aware design that covers both representation learning and evidential decision making for AU detection. 
+
+## 2.2 Uncertainty Modeling 
+
+Uncertainty modeling or uncertainty-aware learning aims to quan-tify prediction reliability, and is commonly discussed in terms of data (aleatoric) uncertainty and model (epistemic) uncertainty [9]. A prevalent strategy is to learn probabilistic latent representations using likelihood-based generative models such as variational au-toencoders (VAEs) [ 11 ]. Chang et al. [ 3] applied VAE-style modeling to jointly learn feature means and variances, enabling uncertainty estimation under noisy inputs. To model uncertainty in inter-label relationships, conditional VAEs (CVAEs) [ 32 ] have been adopted; Probabilistic U-Net [ 12 ] further integrates CVAE modeling with U-Net to produce stochastic outputs. Beyond representation learning, recent studies indicate that con-ventional cross-entropy training can produce overconfident predic-tions in classification [ 38 ]. Motivated by evidential theory, eviden-tial neural networks (ENNs) [ 26 ] have been explored to represent uncertainty in the output space. For example, Zhao et al. [ 46 ] pro-posed an ENN that estimates multi-action uncertainty using Beta distributions. Related works also incorporate uncertainty into multi-view learning and robust cross-modal retrieval [ 24 ]. ETMC [ 8]UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands Backbone      
+
+> Adaptive
+> Weighting
+> ×+
+> Positive Evidence
+> Negative Evidence
+> Beta( ,)
+> Beta( ,)
+
+... 
+
+... AFE CVAE           
+
+> CVAE
+> CVAE AFE
+> AFE
+> ACP AU Combination (up)
+> AFE CVAE
+> CVAE
+> CVAE AFE
+> AFE
+> ACP AU Combination (mid)
+> AFE CVAE
+> CVAE
+> CVAE AFE
+> AFE
+> ACP AU Combination (low)
+> GAP FC AU Combination
+> [000100000]
+
+GAT 
+
+TCN   
+
+> GDA
+> CS
+> Pointwize
+> convolution E
+> E
+> ×
+> Vertical Direction
+> Horizontal Direction
+> Attention map
+> Temporal Difference
+
+... 
+
+...       
+
+> AU
+> Prediction
+> T*C*H*W
+> Spatio-Temporal Feature Extraction Asymmetric Beta-ENN (AB-ENN )Global Relationship Modeling CVAE-based Feature Extractor (CV-AFE)
+> ACP (AU combination prediction)
+> region feature one-hot label
+> GDA (global dual-directional attention)
+
+Figure 1: Architecture of our UAU-Net framework, in which CVAE-based feature extraction (CV-AFE) and asymmetric Beta-ENN (AB-ENN) are the core modules for AU detection. After spatio-temporal global feature extraction, the CV-AFE module learns uncertainty-aware features for each AU from local facial regions. With inter-AU dependencies across regions modeled, AB-ENN formulates AU prediction as a binary evidential learning problem, explicitly capturing predictive uncertainty for robust AU classification. ⊗ and ⊕ denote element-wise multiplication and addition, respectively; 𝐶 , 𝑆 , and 𝐸 in circles indicate concatenation, split, and expansion. 
+
+provided a new multi-view classification paradigm with reliable integration and decision explainability. However, most existing evi-dential formulations are developed for single-label or multi-view classification, and are not directly aligned with the multi-label, highly imbalanced binary setting of AU detection. 
+
+## 3 Methods 3.1 Overview 
+
+Given a sequence of 𝑇 consecutive frames, our goal is to predict the occurrence of each target AU for the central frame, together with a reliable estimate of predictive uncertainty. As shown in Figure 1, our UAU-Net comprises four components: (i) a spatio-temporal feature extraction module, (ii) a CVAE-based AU-specific feature extractor (CV-AFE), (iii) a global AU relationship modeling module, and (iv) an Asymmetric Beta Evidential Neural Network (AB-ENN) for uncertainty-aware AU prediction. Following common practice [ 39 ], we adopt a ResNet backbone to extract frame-level features. The spatio-temporal feature extraction module aggregates facial dynamics and global spatial context across neighboring frames to form a compact representation for the target frame. Conditioned on this representation, CV-AFE maps AU-specific features to proba-bilistic embeddings by estimating both feature means and variances, thereby quantifying representation uncertainty. We then perform global relationship modeling to capture cross-regional inter-AU de-pendencies and refine AU features with contextual evidence. Finally, AB-ENN formulates AU prediction as a binary evidential learning problem with Beta distributions, producing calibrated occurrence estimates together with explicit predictive uncertainty. 
+
+## 3.2 Spatio-Temporal Feature Extraction 
+
+Facial muscle movements evolve continuously, making short-term changes between adjacent frames particularly informative for AU detection [ 18 ]. In addition, AUs exhibit strong spatial dependencies, which should be taken into account during representation learn-ing. To jointly capture temporal dynamics and long-range spatial context, we design a spatio-temporal feature extraction module that integrates multi-scale temporal differencing, adaptive scale-aware weighting to encode facial motion across neighboring frames, and global directional attention to model interactions across facial regions. 
+
+Multi-scale Temporal Differencing and Adaptive Weighting. 
+
+We first capture multi-scale facial dynamics by computing pixel-wise temporal differences between consecutive frames: 
+
+𝑑 𝑡 𝑙 = 𝑥 𝑡 𝑙 − 𝑥 𝑡 −1 
+
+> 𝑙
+
+, (1) where 𝑥 𝑡 𝑙 denotes the feature map from the 𝑙 -th backbone layer at frame 𝑡 . This operation captures short-term motion patterns at different resolutions. To enable effective cross-scale fusion, scale-specific convolution layers with kernel size and stride proportional to 8/𝑙 are applied to align spatial resolutions across different backbone layers. Tempo-rally aggregated features within a local temporal window centered at the target frame produce summarized dynamic representations 
+
+¯𝑑 𝑡 𝑙 .Rather than treating all scales equally, an adaptive weighting mechanism emphasizes AU-relevant motion cues. Temporally ag-gregated features from all scales are concatenated and passed through a 1 × 1 convolution followed by Softmax normalization to generate scale-wise spatial weighting maps. The final motion-aware feature is obtained by a weighted summation: ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands Yuze Li and Zhilei Liu 
+
+x𝑡  
+
+> motion
+
+=
+
+> 𝐿
+
+∑︁ 
+
+> 𝑙 =1
+
+w𝑡 𝑙 ⊗ ¯𝑑 𝑡 𝑙 , (2) where w𝑡 𝑙 denotes the learned scale-wise weights and ⊗ indicates element-wise multiplication. 
+
+Global Depthwise Dual-Directional Attention (GDA) . To cap-ture long-range dependencies among facial regions, we propose a Global Depthwise Dual-Directional Attention (GDA) module. Un-like standard global pooling, GDA employs depthwise convolutions to encode global context along both horizontal and vertical direc-tions, enabling more expressive modeling of spatial interactions that are informative for AU relationship reasoning. Given a backbone feature map, horizontal and vertical depthwise convolutions extract directional context features. These features are concatenated and projected through a pointwise convolution to generate directional attention maps. After an element-wise combi-nation of horizontal and vertical attention, the resulting attention is then applied to the original feature map to enhance AU-relevant regions. Finally, we combine the motion-aware feature x𝑡  
+
+> motion
+
+with the globally attended spatial feature F′ via element-wise summation to obtain the final spatio-temporal representation: 
+
+F𝑡 = x𝑡  
+
+> motion
+
++ F′ . (3) This representation jointly encodes multi-scale facial dynamics and long-range spatial context, providing a strong foundation for uncertainty-aware AU representation learning and evidential pre-diction. 
+
+## 3.3 CVAE-based AU-specific Feature Extractor with Uncertainty Quantification 
+
+As discussed in section 1, uncertainty in AU detection task arises from both visual evidence (e.g., blur and occlusion) and context-dependent dependencies among AUs. We refer to these two sources as data uncertainty and relational uncertainty , respectively. To ex-plicitly characterize both, we propose the CV-AFE module, which learns a probabilistic AU-specific representations by mapping de-terministic features to a conditional latent distribution. The VAE formulation captures data uncertainty by modeling the variability in the input facial features [ 3]. Moreover, conditioning the latent distribution on AU labels enables CV-AFE to account for relational uncertainty induced by inter-AU dependencies, improv-ing robustness when contextual evidence is weak or ambiguous. Given the spatio-temporal feature map F𝑡 ∈ R𝐶 ×𝐻 ×𝑊 , we first partition it into three overlapping facial regions following common practice: (1) upper (brows/eyes), (2) middle (nose/cheeks), and (3) lower (mouth/chin). These three regional subsets of F𝑡 are defined along the height dimension 𝐻 as: 
+
+Fup  
+
+> 𝑡
+
+= F𝑡 [0 : 37 𝐻 ],
+
+Fmid  
+
+> 𝑡
+
+= F𝑡 [ 27 𝐻 : 57 𝐻 ],
+
+Flow  
+
+> 𝑡
+
+= F𝑡 [ 47 𝐻 : 𝐻 ],
+
+(4) We then apply 𝑁 AU-specific feature extractors (AFEs), each implemented as a convolution layer followed by global average pooling (GAP). For the 𝑛 -th AU, the extractor produces an AU-specific feature x𝑡 𝑛 ∈ R1×𝑏 from its corresponding regional subset, where 𝑏 denotes the AU feature dimension. Because each x𝑡 𝑛 is computed from a region shared by multiple spatially adjacent AUs, the resulting features naturally encode intra-regional contextual cues. Consequently, each AU feature is extracted under the context of its neighboring AUs, which provides an implicit and lightweight way to model intra-regional AU dependencies at the representation stage. Next, each AU-specific feature x𝑡 𝑛 is fed into the CVAE, allowing the model to capture both data uncertainty and relational uncer-tainty among AUs. Within the CVAE framework, each AU-specific feature x𝑡 𝑛 is mapped to a conditional latent distribution rather than a deterministic point in the embedding space. Specifically, the en-coder network infers a Gaussian posterior over the latent variable conditioned on the input: 
+
+𝑞 𝜙 (z𝑡 𝑛 | x𝑡 𝑛 ) = N ( z𝑡 𝑛 | 𝝁 𝑡 𝑛 , (𝝈 𝑡 𝑛 )2I), (5) where the mean 𝝁 𝑡 𝑛 and standard deviation 𝝈 𝑡 𝑛 are predicted by two parallel branches of the encoder: 
+
+𝝁 𝑡 𝑛 = 𝑓 𝜃 1 (x𝑡 𝑛 ), 𝝈 𝑡 𝑛 = 𝑓 𝜃 2 (x𝑡 𝑛 ). (6) The posterior distribution is modeled as a diagonal multivariate Gaussian. The mean vector encodes the AU-specific representation of the 𝑛 -th AU at frame 𝑡 , while the variance explicitly quantifies the uncertainty associated with the inferred latent code. As a result, the latent representation is no longer a point estimate; instead, it is described by a stochastic latent variable drawn from the learned posterior distribution: 
+
+z𝑡 𝑛 ∼ 𝑞 𝜙 (z𝑡 𝑛 | x𝑡 𝑛 ). (7) This stochastic modeling enables the network to capture intra-class variability as well as noise inherent in facial images. Since direct sampling from the posterior 𝑞 𝜙 (z𝑡 𝑛 | x𝑡 𝑛 ) is not differentiable, we adopt the standard reparameterization trick [11]: 
+
+z𝑡 𝑛 = 𝝁 𝑡 𝑛 + 𝝈 𝑡 𝑛 𝝐 , 𝝐 ∼ N ( 0, I), (8) where 𝝐 is independent noise, enabling gradient backpropagation through sampling. Given the sampled latent representation z𝑡 𝑛 , an auxiliary classification head is used to supervise CV-AFE. The clas-sification loss is defined as: 
+
+Lcls = − 1
+
+𝑛 
+
+> 𝑛
+
+∑︁ 
+
+> 𝑖 =1
+
+log exp (w⊤ 
+
+> 𝑦 𝑖
+
+z𝑡 𝑖 )
+
+Í𝐶 𝑐 =1 exp (w⊤ 
+
+> 𝑐
+
+z𝑡 𝑖 ) , (9) where w𝑦 𝑖 denotes the classifier weight corresponding to the ground-truth label. To prevent trivial collapse of the predicted uncertainty 𝝈 𝑡 𝑛 , we regularize the latent distribution toward a standard normal prior using the KL divergence: 
+
+LKL = KL  N ( 𝝁 𝑡 𝑛 , (𝝈 𝑡 𝑛 )2) ∥ N ( 0, I). (10) The total training loss combines the classification and KL losses: 
+
+LCV −AFE = Lcls + 𝜆 1 LKL . (11) UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands 
+
+where 𝜆 1 is a trade-off hyperparameter balancing the classification loss and the KL divergence. In addition to feature-level modeling, spatio-temporal relation-ships among AUs within the same facial region are further captured at the intra-regional AU dependency modeling. To this end, an ACP (AU combination prediction) is introduced during training. For each sliced regional feature Fsub  
+
+> 𝑡
+
+∈ { Fup  
+
+> 𝑡
+
+, Fmid  
+
+> 𝑡
+
+, Flow  
+
+> 𝑡
+
+}, the ACP branch predicts a joint AU occurrence pattern Ysub  
+
+> 𝑡
+
+= {𝑦 sub  
+
+> 𝑡, 1
+
+, . . . , 𝑦 sub  
+
+> 𝑡, 2𝑁 sub
+
+},where 𝑁 sub denotes the number of target AUs in the corresponding facial sub-region. Formally, the AU combination prediction is defined as 
+
+Psub  
+
+> 𝑡
+
+= Softmax  FC sub (GAP (Fsub  
+
+> 𝑡
+
+)) , (12) where FC sub (·) denotes a fully connected layer. Training this branch encourages the network to encode local AU co-occurrence patterns into regional features, thereby enhancing AU-relevant representa-tions. After the first-stage training, our CV-AFE module extracts the feature v𝑡 𝑛 for each AU ( 𝑘 1 AUs for the up region), while simultane-ously capturing both data uncertainty and relational uncertainty among AUs, enhancing the model’s robustness to noise and the relationship uncertainty. 
+
+## 3.4 Global Relationship Modeling 
+
+Beyond intra-regional dependencies, AU activations can correlate across facial regions [ 36 ]. To capture such cross-regional relation-ships, we construct a graph at each time step 𝑡 in which each AU-specific feature v𝑡 𝑛 is treated as a node. We then adaptively connect each node to a subset of AUs from other region that are predicted to be activated by the ACP branch. This design is motivated by the observation that activated AUs provide stronger and more reliable contextual cues for reasoning about other AUs, while filtering out spurious connections induced by irrelevant or inactive AUs. The cross-regional relationships are modeled using a Graph Attention Network (GAT) [ 37 ]. The attention coefficient between the 𝑛 -th and 𝑚 -th AU nodes at time 𝑡 is computed as: 
+
+𝑒 𝑡 𝑛,𝑚 = LeakyReLU  r⊤ [Wv 𝑡 𝑛 ∥ Wv 𝑡 𝑚 ], (13) followed by normalized attention weights: 
+
+𝛼 𝑡 𝑛,𝑚 = exp (𝑒 𝑡 𝑛,𝑚 )
+
+Í𝑞 ∈ N 𝑡 𝑛 exp (𝑒 𝑡 𝑛,𝑞 ) , (14) where W ∈ R𝑏 ×𝑏 is a shared linear transformation, r ∈ R2𝑏 denotes the attention weight vector, ∥ represents concatenation, and N𝑡 𝑛 
+
+denotes the neighbor set of node 𝑛 .The updated AU representation is obtained via: 
+
+ˆv𝑡 𝑛 = 𝜙 ©«∑︁ 𝑚 ∈ N 𝑡 𝑛 
+
+𝛼 𝑡 𝑛,𝑚 Wv 𝑡 𝑚 
+
+ª®¬
+
+, (15) where 𝜙 (·) denotes a non-linear activation function. The GAT outputs are then passed to a temporal convolutional network (TCN) to aggregate temporal context and obtain a set of spatio-temporal relationship-aware AU features ˆV𝑡 = { ˆv𝑡 
+
+> 1
+
+, . . . , ˆv𝑡 𝑁 }
+
+for frame 𝑡 .
+
+## 3.5 Asymmetric Beta-ENN for Multi-label AU Classification 
+
+In this section, multi-label AU classification is performed after obtaining the relationship-aware feature for each AU in frame 𝑡 .To explicitly quantify predictive uncertainty and mitigate over-confident point estimates of conventional methods, we adopt an evidential learning formulation. This choice is motivated by the observation that the predicted likelihood of AU occurrence is a Bernoulli (binomial) variable, whose conjugate prior is a Beta distribution. Accordingly, we de-sign an Asymmetric Beta Evidential Neural Network (AB-ENN) that models each AU as a binary evidential learning problem with a Beta posterior. Specifically, for the 𝑛 -th AU, there are two mutually exclu-sive hypotheses (active/inactive) with associated masses 𝑏 𝑛 , 𝑑 𝑛 , 𝑢 𝑛 ,where 𝑏 𝑛 and 𝑑 𝑛 are the belief masses for positive and negative labels, and 𝑢 𝑛 denotes the uncertainty mass. These masses satisfy 
+
+𝑏 𝑛 + 𝑑 𝑛 + 𝑢 𝑛 = 1 and 𝑏 𝑛 , 𝑑 𝑛 , 𝑢 𝑛 ≥ 0.Given a prediction function 𝑓 (·) , for an instance x, we obtain evidences (𝑒 + 
+
+> 𝑛
+
+, 𝑒 − 
+
+> 𝑛
+
+) = 𝑓 𝑛 (x) for the positive and negative classes. Based on these evidences, the corresponding masses are given as: 
+
+𝑏 𝑛 = 𝑒 +
+
+> 𝑛
+
+𝑆 𝑛 
+
+, 𝑑 𝑛 = 𝑒 −
+
+> 𝑛
+
+𝑆 𝑛 
+
+, 𝑢 𝑛 = 2
+
+𝑆 𝑛 
+
+(16) where 𝑆 𝑛 = 𝑒 + 
+
+> 𝑛
+
++ 𝑒 − 
+
+> 𝑛
+
++ 2 refers to the Beta strength. The predicted probability 𝑝 𝑛 ∈ [ 0, 1] for the 𝑛 -th AU is modeled by a Beta distribution, Beta (𝑝 𝑛 | 𝛼 𝑛 , 𝛽 𝑛 ), with parameters 𝛼 𝑛 =
+
+𝑒 + 
+
+> 𝑛
+
++ 1 and 𝛽 𝑛 = 𝑒 − 
+
+> 𝑛
+
++ 1. The expected probability for the 𝑛 -th AU is then the mean of the Beta distribution: ¯𝑝 𝑛 = 𝛼 𝑛   
+
+> 𝛼 𝑛 +𝛽 𝑛
+
+.
+
+Although evidential binary cross-entropy (EBCE) [ 26 ] has achieved promising results in evidential learning, its performance in AU detection is limited by the severe class imbalance of AU datasets, where negative labels dominate and positive labels are sparse. To mitigate this, we adopt the Asymmetric Focal Loss (ASL) [ 25 ], which down-weights easy negatives and emphasizes positive classes. For a predicted probability 𝑝 and label 𝑦 ∈ { 0, 1}, ASL is defined as: 
+
+LASL (𝑝, 𝑦 ) =
+
+( − ( 1 − 𝑝 )𝛾 +
+
+log (𝑝 ), 𝑦 = 1,
+
+− ( 𝑝 − 𝑚 )𝛾 −
+
+log (1 − 𝑝 ), 𝑦 = 0. (17) where 𝑚 = min (𝑝, 𝑐 ) is a small shift to ignore very easy negatives, 
+
+𝑐 is a constant probability shift parameter used for neglecting very easy negative examples, and 𝛾 +, 𝛾 − are focus parameters, typically set with 𝛾 − > 𝛾 + to emphasize positive examples. Following the same evidential principle, we define the Asym-metric Beta Loss (ABL) by taking the Bayesian risk of ASL under the Beta-distributed prediction. For 𝑦 = 1, the integral admits a closed-form solution. For 𝑦 = 0, the probability-shifting technique requires a modification since the output is a distribution rather than a point estimate. For the 𝑛 -th AU, we define a shifted random variable 𝑝 𝑛𝑐 ∼ Beta (𝛼 𝑛𝑐 , 𝛽 𝑛 ) with 𝛼 𝑛𝑐 = max  𝛼 𝑛 − 𝑐  
+
+> 1−𝑐
+
+𝛽 𝑛 , 0.The ABL for frame 𝑡 is defined as follows:                                     
+
+> L𝑡
+> AB =
+> 
+> −𝑤 𝑛
+> ∫10
+> (1−𝑝 𝑡 𝑛 )𝛾 +log (𝑝 𝑡 𝑛 )Beta (𝑝 𝑡 𝑛 |𝛼 𝑡 𝑛 , 𝛽 𝑡 𝑛 )𝑑𝑝 𝑡 𝑛 ,𝑦 𝑡 𝑛 =1,
+> −𝑤 𝑛
+> ∫10
+> (𝑝 𝑡 𝑛𝑐 )𝛾 −log (1−𝑝 𝑡 𝑛𝑐 )Beta (𝑝 𝑡 𝑛𝑐 |𝛼 𝑡 𝑛𝑐 , 𝛽 𝑡 𝑛 )𝑑𝑝 𝑡 𝑛𝑐 ,𝑦 𝑡 𝑛 =0.
+> (18) ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands Yuze Li and Zhilei Liu
+
+which admits the analytical solution: 
+
+L𝑡  
+
+> AB
+
+=
+
+(𝑤 𝑛 𝑤 + 𝜓 (𝛼 𝑡 𝑛 + 𝛽 𝑡 𝑛 + 𝛾 +) − 𝜓 (𝛼 𝑡 𝑛 ), 𝑦 𝑡 𝑛 = 1,𝑤 𝑛 𝑤 − 𝜓 (𝛼 𝑡 𝑛𝑐 + 𝛽 𝑡 𝑛 + 𝛾 − ) − 𝜓 (𝛽 𝑡 𝑛 ), 𝑦 𝑡 𝑛 = 0. (19) where 𝑤 𝑛 is calculated for each AU based on the training set, the weighting coefficients 𝑤 + and 𝑤 − are formulated as: 
+
+𝑤 + = 
+
+> 𝛾 +−1
+
+∑︁  
+
+> 𝑟 =0
+
+𝛽 𝑡 𝑛 + 𝑟 𝛼 𝑡 𝑛 + 𝛽 𝑡 𝑛 + 𝑟 ,𝑤 − =  
+
+> 𝛾 −−1
+
+∑︁  
+
+> 𝑟 =0
+
+𝛼 𝑡 𝑛 + 𝑟 𝛼 𝑡 𝑛𝑐 + 𝛽 𝑡 𝑛 + 𝑟 .
+
+(20) To reduce the influence of highly uncertain predictions, we down-weight the per-frame loss using the predicted uncertainty mass, thereby emphasizing more reliable samples. Specifically, for frame 
+
+𝑡 , we compute the uncertainty as 𝑢 𝑡 = 2𝑁      
+
+> Í𝑁 𝑗 =1(𝛼 𝑡 𝑗 +𝛽 𝑡 𝑗 )
+
+and weight the loss by (1 − 𝑢 𝑡 ).Finally, the overall ABL 𝐿 AB is defined as: 
+
+LAB =
+
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+(1 − 𝑢 𝑡 ) L 𝑡  
+
+> AB
+
+(21) In addition, we apply a cross-entropy loss 𝐿 sub to supervise the regional AU combination predictions for each frame in the first stage of the ACP module: 
+
+Lsub =
+
+> 𝑇
+
+∑︁ 
+
+> 𝑡 =1
+
+∑︁ sub ∈ { up ,mid ,low }
+
+CE (𝑃 𝑡 
+
+> sub
+
+, 𝑌 𝑡 
+
+> sub
+
+), (22) where 𝑃 𝑡  
+
+> sub
+
+and 𝑌 𝑡  
+
+> sub
+
+denote the predicted AU combination and the corresponding ground-truth for a given facial region in frame 𝑓 𝑡 ,and CE (·) is the cross-entropy function. By predicting combinations of multiple AUs within the same facial region, the network is encouraged to capture local co-occurrence patterns among spatially adjacent AUs. Consequently, the overall loss function for the second training stage combines the two losses as: 
+
+L = LAB + 𝜆 2 Lsub , (23) where 𝜆 2 balances the contributions of the two losses. 
+
+## 4 Experiments 4.1 Experimental Setup 
+
+4.1.1 Datasets. We evaluate the proposed method on two widely used facial action unit benchmarks, BP4D [ 44 ] and DISFA [ 22 ]. Both datasets provide frame-level AU occurrence annotations and are widely used to benchmark AU detection methods, enabling a fair and comprehensive evaluation. 
+
+• BP4D [ 44 ] consists of 328 facial video sequences collected from 41 subjects (23 females and 18 males), resulting in ap-proximately 140,000 annotated frames. Each frame is labeled with the occurrence status of 12 AUs, covering a diverse range of spontaneous facial expressions. 
+
+• DISFA [ 22 ] contains 27 facial video sequences with a total of 130,815 frames, recorded from 27 subjects (12 females and 15 males) while they watched online videos. Compared with BP4D, DISFA focuses on 8 AUs and exhibits more subtle facial motions, making AU detection particularly challenging. 
+
+4.1.2 Implementation Details. Following prior approaches in AU detection [ 45 ], we employ MTCNN [ 43 ] to detect, crop, and align faces in each frame. Specifically, a face area of size 224 × 224 is extracted for subsequent processing. For both datasets, we adopt subject-independent three-fold cross-validation, and the final per-formance is reported by averaging the results over all three folds. To ensure temporal consistency, we pad each input sequence by duplicating the first and last frames at the beginning and end of each video, respectively, so that all frames can be processed uniformly by the proposed model. The network is optimized using the AdamW [ 20 ] optimizer with parameters 𝛽 1 = 0.9 and 𝛽 2 = 0.999 .The training procedure consists of two stages. In Stage I, we train CV-AFE independently to learn uncertainty-aware AU representa-tions, where the weighting parameter 𝜆 1 in Eq. 11 is set to 0.01 . In Stage II, we jointly optimize the local and global AU classifiers; we set the trade-off parameter 𝜆 2 in Eq. 23 to 0.01 , and the probability shift parameter 𝑐 in Eq. 17 to 0.2. A cosine decay learning-rate scheduler is adopted with an initial learning rate of 1 × 10 −4. The backbone network is initialized with ImageNet pretraining [6]. All experiments are conducted on NVIDIA RTX 4090 GPUs. 
+
+4.1.3 Evaluation Metric. Consistent with prior AU recognition studies, frame-level F1-score is adopted as the primary evaluation metric, defined as 
+
+F1 = 2𝑃𝑅 𝑃 + 𝑅 , (24) where 𝑃 and 𝑅 denote precision and recall, respectively. Under class imbalance, this metric captures the trade-off between performance on both positive (active) and negative (inactive) predictions. 
+
+## 4.2 Comparison with State-of-the-Art Methods 
+
+Table 1 and Table 2 compare UAU-Net with representative AU detection methods under the same subject-independent three-fold cross-validation protocol. Various modeling paradigms include static image-based models (e.g., EAC-Net [ 14 ], JAA-Net [ 29 ], ARL [ 30 ]), static AU-relation modeling methods(e.g., SR-ERL [ 13 ], ME-GraphAU [ 21 ], SACL [ 19 ], AC2D [ 31 ], AUNCE [ 27 ]), spatio-temporal approaches (e.g., HSTR-Net [ 35 ], WSRTL [ 41 ], MDHR [ 39 ]), the uncertainty-aware graph neural network model UGN [ 34 ], as well as more recent extensions such as test-time train-ing (AU-TTT [40]) and text-enhanced modeling (RETD [4]). 
+
+Overall performance . Our UAU-Net achieves the best aver-age frame-based F1-score on both benchmarks, reaching 66.8% on BP4D and 66.6% on DISFA. Compared with the strongest published competitors reported in the tables, our method yields consistent gains in the overall average (i.e., +0.2 on DISFA and +0.3 on BP4D). While these margins are modest—which is expected given that performance on these datasets is already approaching saturation— the improvement is observed on both datasets and under the same subject-independent evaluation setting, suggesting that the pro-posed uncertainty modeling brings complementary benefits beyond architectural choices. 
+
+Per-AU analysis and robustness. In addition to improving the overall mean, UAU-Net shows competitive or best performance UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands 
+
+Table 1: Frame-based F1-score (%) comparison on the BP4D dataset. The best result for each AU and the overall average are highlighted in bold. 
+
+Method AU1 AU2 AU4 AU6 AU7 AU10 AU12 AU14 AU15 AU17 AU23 AU24 Avg EAC-Net [14] 39.0 35.2 48.6 76.1 72.9 81.9 86.2 58.8 37.5 59.1 35.9 35.8 55.6 JAA-Net [29] 47.2 44.0 54.9 77.5 74.6 84.0 86.9 61.9 43.6 60.3 42.7 41.9 60.0 ARL [30] 45.8 39.8 55.1 75.7 77.2 82.3 86.6 58.8 47.6 62.1 47.4 55.4 61.2 SMA-Net [15] 56.5 45.1 57.0 79.5 79.5 84.5 86.4 66.1 55.8 64.2 48.7 56.8 65.0 SRERL [13] 46.9 45.3 55.6 77.1 78.4 83.5 87.6 63.9 52.2 63.9 47.1 53.3 62.9 ME-GraphAU [21] 52.7 44.3 60.9 79.9 80.1 85.3 89.2 69.4 55.4 64.4 49.8 55.1 65.5 SACL [19] 57.8 48.8 59.4 79.1 78.8 84.0 88.2 65.2 56.1 63.8 50.8 55.2 65.6 AC2D [31] 54.2 54.7 56.5 77.0 76.2 84.0 89.0 63.6 54.8 63.6 46.5 54.8 64.6 AUNCE [27] 53.6 49.8 61.6 78.4 78.8 84.7 89.6 67.4 55.1 65.4 50.9 58.0 66.1 HSTR-Net [35] 55.5 49.5 61.9 76.6 80.2 84.2 87.4 62.6 54.8 64.1 47.1 52.1 64.7 WSRTL [41] 59.7 51.7 61.6 80.3 80.9 85.2 89.7 67.8 52.2 63.4 51.4 46.9 65.9 MDHR [39] 58.3 50.9 58.9 78.4 80.3 84.9 88.2 69.5 56.0 65.5 49.5 59.3 66.6 UGN [34] 54.2 46.4 56.8 76.2 76.7 82.4 86.1 64.7 51.2 63.1 48.5 53.6 63.3 AU-TTT [40] – – – – – – – – – – – – 65.6 RETD [4] 54.7 50.8 57.1 78.8 79.6 84.6 88.0 67.0 54.9 62.9 48.6 54.5 65.1 Ours 57.9 51.3 61.9 79.9 78.9 85.9 88.8 65.9 56.3 64.4 51.3 60.1 66.8 
+
+Table 2: Frame-based F1-score (%) comparison on the DISFA dataset. Best results for each AU are highlighted in bold. 
+
+Method AU1 AU2 AU4 AU6 AU9 AU12 AU25 AU26 Avg EAC-Net [14] 41.5 26.4 66.4 50.7 80.5 89.3 88.9 15.6 48.5 JAA-Net [29] 43.7 46.2 56.0 41.4 44.7 69.6 88.3 58.4 56.0 ARL [30] 43.9 42.1 63.6 41.8 40.0 76.2 95.2 66.8 58.7 SMA-Net [15] 53.4 54.2 64.0 57.0 47.0 76.6 92.0 55.2 64.2 SRERL [13] 45.7 47.8 59.6 47.1 45.6 73.5 84.3 43.6 55.9 ME-GraphAU [21] 54.6 47.1 72.9 54.0 55.7 76.7 91.1 53.0 63.1 SACL [19] 62.0 65.7 74.5 53.2 43.1 76.9 95.6 53.1 65.5 AC2D [31] 57.8 59.2 70.1 50.1 54.4 75.1 90.3 66.2 65.4 AUNCE [27] 61.8 58.9 74.9 49.7 56.2 73.5 92.1 64.2 66.4 HSTR-Net [35] 54.3 50.8 70.1 66.6 59.6 68.0 97.9 69.8 62.9 WSRTL [41] 57.3 51.8 74.3 49.8 44.8 79.3 94.6 64.6 64.6 MDHR [39] 65.4 60.2 75.2 50.2 52.4 74.3 93.7 58.2 66.2 UGN [34] 43.3 48.1 63.4 49.5 48.2 72.9 90.8 59.0 60.0 AU-TTT [40] – – – – – – – – 66.4 RETD [4] 62.6 54.7 70.8 46.3 51.7 76.3 94.4 59.8 64.6 
+
+Ours 66.3 58.4 75.7 53.4 52.0 72.6 91.8 62.5 66.6 
+
+on multiple individual AUs across the two datasets. Notably, the gains are more pronounced on AUs that are challenging because of subtle appearance changes and/or low positive rates (e.g., AU24 on BP4D, and AU1/AU4 on DISFA), indicating that explicitly account-ing for uncertainty helps reduce overconfident errors on ambigu-ous samples. On AUs where competing methods already perform strongly (e.g., highly frequent AUs), our method remains competi-tive, suggesting that uncertainty-aware training does not sacrifice performance on easier labels. 
+
+## 4.3 Ablation Study 
+
+We conduct comprehensive ablation experiments on DISFA [ 22 ]dataset to evaluate the effectiveness of each proposed component in UAU-Net. All variants are trained and evaluated under the same subject-independent three-fold cross-validation protocol, and we 
+
+Table 3: Ablation study of different components on the DISFA dataset (frame-based F1-score, %). 
+
+Baseline CV-AFE Beta-ENN AB-ENN F1-score (%) 
+
+✓ 65.2 
+
+✓ ✓ 66.1 
+
+✓ ✓ 65.7 
+
+✓ ✓ 66.1 
+
+✓ ✓ ✓ 66.4 
+
+✓ ✓ ✓ 66.6 
+
+report the average frame-based F1-score in Table 3. The baseline corresponds to the same backbone and AU prediction pipeline but ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands Yuze Li and Zhilei Liu 
+
+without uncertainty-aware representation learning (CV-AFE) and 
+
+without evidential classification (ENN). 
+
+Effect of uncertainty-aware representation learning . Adding CV-AFE on top of the baseline improves the average F1 from 65.2% to 66.1% ( +0.9 ). This gain supports our motivation that modeling feature-level uncertainty helps the network learn more stable AU representations by reducing the impact of noisy frames and am-biguous AU co-occurrences, which are prevalent in DISFA. 
+
+Effect of evidential classification . Replacing the conventional point-estimation classifier with Beta-ENN alone increases the F1-score to 65.7% ( +0.5 over the baseline). This result suggests that explicitly parameterizing a predictive distribution (Beta posterior) yields better-calibrated confidence and reduces overconfident er-rors, which is particularly beneficial when positive AU labels are sparse. 
+
+Effect of Asymmetric loss for imbalance . Using AB-ENN fur-ther boosts performance to 66.1% ( +0.9 over the baseline), matching the gain brought by CV-AFE when applied individually. Compared with Beta-ENN, AB-ENN brings an additional +0.4 improvement (66.1 vs. 65.7), indicating that the asymmetric treatment of positives and negatives better aligns the training signal with the long-tailed AU label distribution. 
+
+Complementarity of the modules . Combining CV-AFE with Beta-ENN yields 66.4%, and combining CV-AFE with AB-ENN achieves the best result of 66.6% . Overall, integrating both uncertainty-aware representation learning and evidential classifica-tion leads to a +1.4 absolute gain over the baseline (66.6% vs. 65.2%). The consistent improvements across combinations indicate that CV-AFE and (AB-)ENN address different sources of uncertainty (rep-resentation vs. decision), and are therefore complementary rather than redundant. 
+
+## 4.4 Analysis of Uncertainty Impact 
+
+This section analyzes how the proposed uncertainty modeling in-fluences training behavior and final AU detection performance on DISFA. We leverage the feature uncertainty estimated by CV-AFE (i.e., the learned posterior variance) to stratify training frames into three groups with low , medium , and high uncertainty 1. Intuitively, low-uncertainty samples correspond to clear facial evidence and reliable AU co-occurrence cues, while high-uncertainty samples are more likely to contain occlusions, motion blur, extreme poses, or ambiguous/weak AU activations. 
+
+Error distribution across uncertainty strata . We first com-pare the normalized distribution of misclassified labels produced by the baseline and by UAU-Net (see Figure 2). UAU-Net yields fewer errors on the low- and medium-uncertainty strata across AUs, indicating that explicitly modeling uncertainty improves the effective learning signal for samples that are inherently learnable. In contrast, the relative share of errors on the high-uncertainty stratum becomes larger after introducing uncertainty modeling. Importantly, this does not imply that the model degrades on hard 
+
+> 1We form the three groups by splitting samples according to the uncertainty quantiles computed on the training set. 0.17 0.53 0.3 0.12 0.46 0.25 <0.5 0.5-0.7 >0.7 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 high uncertainty medium uncertainty low uncertainty Normalized Frequency
+
+Uncertainty  Baseline  UAU-Net 
+
+Figure 2: Failure-case analysis of the baseline and UAU-Net 
+
+samples; rather, it reflects a shift in where the remaining errors concentrate once performance on easier strata improves. 
+
+Interpretation and training dynamics . This behavior is con-sistent with our design: both CV-AFE and AB-ENN reduce the influence of unreliable evidence (e.g., by down-weighting highly uncertain predictions in the loss), thereby preventing the network from being dominated by noisy or ambiguous frames. As a result, the model can focus more on learning robust AU patterns instead of overfitting high-uncertainty outliers, which improves overall generalization and leads to more reliable predictions. 
+
+## 5 Conclusion 
+
+In this paper, we proposed UAU-Net, an uncertainty-aware frame-work for facial action unit detection that explicitly models un-certainty at both the representation and decision stages. At the representation stage, CV-AFE learns probabilistic AU embeddings by estimating feature means and variances, and captures relational uncertainty via label-conditioned modeling of inter-AU dependen-cies. At the decision stage, AB-ENN performs evidential multi-label prediction with Beta distributions and an asymmetric Beta loss to mitigate overconfident predictions under severe class imbalance. Ex-tensive experiments on BP4D and DISFA demonstrate that UAU-Net achieves state-of-the-art performance under the standard subject independent protocol. Ablation studies verify the effectiveness and complementarity of CV-AFE and (AB-)ENN, and the uncertainty im-pact analysis further shows that our framework improves learning robustness by concentrating errors on genuinely high-uncertainty samples rather than overfitting them. Overall, UAU-Net offers a practical uncertainty-aware perspective for building robust AU de-tectors and provides a useful reference point for future research on reliable facial behavior understanding. 
+
+## References    
+
+> [1] R Rashmi Adyapady and B Annappa. 2023. A comprehensive review of facial expression recognition techniques. Multimedia Systems 29, 1 (2023), 73–103.
+
+UAU-Net: Uncertainty-aware Representation Learning and Evidential Classification for Facial Action Unit Detection ICMR ’26, June 16–19, 2026, Amsterdam, Netherlands 
+
+[2] Jiyuan Cao, Zhilei Liu, and Yong Zhang. 2022. Cross-subject Action Unit Detection with Meta Learning and Transformer-based Relation Modeling. In International Joint Conference on Neural Networks, IJCNN 2022, Padua, Italy, 2022 . IEEE, 1–8. [3] Jie Chang, Zhonghao Lan, Changmao Cheng, and Yichen Wei. 2020. Data uncer-tainty learning in face recognition. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 5710–5719. [4] Yanan Chang, Caichao Zhang, Yi Wu, and Shangfei Wang. 2024. Facial Action Unit Recognition Enhanced by Text Descriptions of FACS. IEEE Transactions on Affective Computing (2024). [5] Lei Chen, Muheng Li, Yueqi Duan, Jie Zhou, and Jiwen Lu. 2022. Uncertainty-Aware Representation Learning for Action Segmentation.. In IJCAI , Vol. 2. 6. [6] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. 2009. Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition . Ieee, 248–255. [7] Paul Ekman and Wallace V Friesen. 1978. Facial action coding system. Environ-mental Psychology & Nonverbal Behavior (1978). [8] Zongbo Han, Changqing Zhang, Huazhu Fu, and Joey Tianyi Zhou. 2022. Trusted multi-view classification with dynamic evidential fusion. IEEE transactions on pattern analysis and machine intelligence 45, 2 (2022), 2551–2566. [9] Wenchong He, Zhe Jiang, Tingsong Xiao, Zelin Xu, and Yukun Li. 2025. A survey on uncertainty quantification methods for deep learning. Comput. Surveys (2025). [10] Geethu Miriam Jacob and Bjorn Stenger. 2021. Facial action unit detection with transformers. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 7680–7689. [11] Diederik P. Kingma and Max Welling. 2014. Auto-Encoding Variational Bayes. In 
+
+2nd International Conference on Learning Representations, ICLR 2014, Banff, AB, Canada, April 14-16, 2014, Conference Track Proceedings .[12] Simon Kohl, Bernardino Romera-Paredes, Clemens Meyer, Jeffrey De Fauw, Joseph R Ledsam, Klaus Maier-Hein, SM Eslami, Danilo Jimenez Rezende, and Olaf Ronneberger. 2018. A probabilistic u-net for segmentation of ambiguous images. Advances in neural information processing systems 31 (2018). [13] Guanbin Li, Xin Zhu, Yirui Zeng, Qing Wang, and Liang Lin. 2019. Semantic relationships guided representation learning for facial action unit recognition. In 
+
+Proceedings of the AAAI conference on artificial intelligence , Vol. 33. 8594–8601. [14] Wei Li, Farnaz Abtahi, Zhigang Zhu, and Lijun Yin. 2018. Eac-net: Deep nets with enhancing and cropping for facial action unit detection. IEEE transactions on pattern analysis and machine intelligence 40, 11 (2018), 2583–2596. [15] Xiaotian Li, Zhihua Li, Huiyuan Yang, Geran Zhao, and Lijun Yin. 2021. Your “attention” deserves attention: A self-diversified multi-channel attention for facial action analysis. In 2021 16th IEEE International Conference on Automatic Face and Gesture Recognition (FG 2021) . IEEE, 01–08. [16] Xiaotian Li, Xiang Zhang, Taoyue Wang, and Lijun Yin. 2023. Knowledge-spreader: Learning semi-supervised facial action dynamics by consistifying knowledge granularity. In Proceedings of the IEEE/CVF international conference on computer vision . 20979–20989. [17] Yante Li, Jinsheng Wei, Yang Liu, Janne Kauttonen, and Guoying Zhao. 2022. Deep learning for micro-expression recognition: A survey. IEEE Transactions on Affective Computing 13, 4 (2022), 2028–2046. [18] Zhihua Li, Xiang Deng, Xiaotian Li, and Lijun Yin. 2021. Integrating semantic and temporal relationships in facial action unit detection. In Proceedings of the 29th ACM international conference on multimedia . 5519–5527. [19] Xin Liu, Kaishen Yuan, Xuesong Niu, Jingang Shi, Zitong Yu, Huanjing Yue, and Jingyu Yang. 2024. Multi-scale promoted self-adjusting correlation learning for facial action unit detection. IEEE Transactions on Affective Computing (2024). [20] Ilya Loshchilov and Frank Hutter. 2018. Decoupled Weight Decay Regularization. In International Conference on Learning Representations .[21] Cheng Luo, Siyang Song, Weicheng Xie, Linlin Shen, and Hatice Gunes. 2022. Learning Multi-dimensional Edge Feature-based AU Relation Graph for Facial Action Unit Recognition. In Proceedings of the Thirty-First International Joint Conference on Artificial Intelligence, IJCAI-22 , Lud De Raedt (Ed.). International Joint Conferences on Artificial Intelligence Organization, 1239–1246. Main Track. [22] S Mohammad Mavadati, Mohammad H Mahoor, Kevin Bartlett, Philip Trinh, and Jeffrey F Cohn. 2013. Disfa: A spontaneous facial action intensity database. IEEE Transactions on Affective Computing 4, 2 (2013), 151–160. [23] Xuesong Niu, Hu Han, Songfan Yang, Yan Huang, and Shiguang Shan. 2019. Local relationship learning with person-specific shape regularization for facial action unit detection. In Proceedings of the IEEE/CVF Conference on computer vision and pattern recognition . 11917–11926. [24] Yang Qin, Dezhong Peng, Xi Peng, Xu Wang, and Peng Hu. 2022. Deep evidential learning with noisy correspondence for cross-modal retrieval. In Proceedings of the 30th ACM International Conference on Multimedia . 4948–4956. [25] Tal Ridnik, Emanuel Ben-Baruch, Nadav Zamir, Asaf Noy, Itamar Friedman, Matan Protter, and Lihi Zelnik-Manor. 2021. Asymmetric Loss For Multi-Label Classification. In 2021 IEEE/CVF International Conference on Computer Vision (ICCV) . 82–91. [26] Murat Sensoy, Lance Kaplan, and Melih Kandemir. 2018. Evidential deep learning to quantify classification uncertainty. Advances in neural information processing systems 31 (2018). [27] Ziqiao Shang, Bin Liu, Fengmao Lv, Fei Teng, Tianrui Li, and Lan-Zhe Guo. 2026. Learning contrastive feature representations for facial action unit detection. 
+
+Pattern Recognition 173 (2026), 112746. [28] Zhiwen Shao, Bikuan Chen, Yong Zhou, Xuehuai Shi, Canlin Li, Lizhuang Ma, and Dit-Yan Yeung. 2026. Constrained and directional ensemble attention for facial action unit detection. Pattern Recognition 169 (2026), 111904. [29] Zhiwen Shao, Zhilei Liu, Jianfei Cai, and Lizhuang Ma. 2021. Jaa-net: joint facial action unit detection and face alignment via adaptive attention. International Journal of Computer Vision 129, 2 (2021), 321–340. [30] Zhiwen Shao, Zhilei Liu, Jianfei Cai, Yunsheng Wu, and Lizhuang Ma. 2019. Facial action unit detection using attention and relation learning. IEEE transactions on affective computing 13, 3 (2019), 1274–1289. [31] Zhiwen Shao, Hancheng Zhu, Yong Zhou, Xiang Xiang, Bing Liu, Rui Yao, and Lizhuang Ma. 2025. Facial action unit detection by adaptively constraining self-attention and causally deconfounding sample. International Journal of Computer Vision 133, 4 (2025), 1711–1726. [32] Kihyuk Sohn, Honglak Lee, and Xinchen Yan. 2015. Learning structured output representation using deep conditional generative models. Advances in neural information processing systems 28 (2015). [33] Juan Song and Zhilei Liu. 2023. Self-Supervised Facial Action Unit Detection with Region and Relation Learning. In IEEE International Conference on Acoustics, Speech and Signal Processing ICASSP 2023, Rhodes Island, Greece, June 4-10, 2023 .IEEE, 1–5. [34] Tengfei Song, Lisha Chen, Wenming Zheng, and Qiang Ji. 2021. Uncertain graph neural networks for facial action unit detection. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 35. 5993–6001. [35] Wenyu Song, Shuze Shi, Yu Dong, and Gaoyun An. 2022. Heterogeneous spatio-temporal relation learning network for facial action unit detection. Pattern Recognition Letters 164 (2022), 268–275. [36] Yan Tong, Wenhui Liao, and Qiang Ji. 2007. Facial action unit recognition by exploiting their dynamic and semantic relationships. IEEE transactions on pattern analysis and machine intelligence 29, 10 (2007), 1683–1699. [37] Petar Velikovi, Guillem Cucurull, Arantxa Casanova, Adriana Romero, Pietro Liò, and Yoshua Bengio. 2017. Graph Attention Networks. CoRR (2017). [38] Haoran Wang, Weitang Liu, Alex Bocchieri, and Yixuan Li. 2021. Can multi-label classification networks know what they don’t know? Advances in Neural Information Processing Systems 34 (2021), 29074–29087. [39] Zihan Wang, Siyang Song, Cheng Luo, Songhe Deng, Weicheng Xie, and Linlin Shen. 2024. Multi-scale dynamic and hierarchical relationship modeling for facial action units recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 1270–1280. [40] Bohao Xing, Kaishen Yuan, Zitong Yu, Xin Liu, and Heikki Kälviäinen. 2025. AU-TTT: Vision Test-Time Training model for Facial Action Unit Detection. In 
+
+2025 IEEE International Conference on Multimedia and Expo (ICME) . 1–6. [41] Jingwei Yan, Jingjing Wang, Qiang Li, Chunmao Wang, and Shiliang Pu. 2022. Weakly supervised regional and temporal learning for facial action unit recogni-tion. IEEE Transactions on Multimedia 25 (2022), 1760–1772. [42] Jing Yang, Yordan Hristov, Jie Shen, Yiming Lin, and Maja Pantic. 2023. Toward robust facial action units’ detection. Proc. IEEE 111, 10 (2023), 1198–1214. [43] Jing Yang, Jie Shen, Yiming Lin, Yordan Hristov, and Maja Pantic. 2023. Fan-trans: Online knowledge distillation for facial action unit detection. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision . 6019–6027. [44] Xing Zhang, Lijun Yin, Jeffrey F Cohn, Shaun Canavan, Michael Reale, Andy Horowitz, Peng Liu, and Jeffrey M Girard. 2014. Bp4d-spontaneous: a high-resolution spontaneous 3d dynamic facial expression database. Image and Vision Computing 32, 10 (2014), 692–706. [45] Yong Zhang, Weiming Dong, Bao-Gang Hu, and Qiang Ji. 2018. Classifier learning with prior probabilities for facial action unit recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition . 5108–5116. [46] Chen Zhao, Dawei Du, Anthony Hoogs, and Christopher Funk. 2023. Open set action recognition via multi-label evidential learning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 22982–22991. [47] Haoliang Zhou, Shucheng Huang, and Yuqiao Xu. 2025. UA-FER: Uncertainty-aware representation learning for facial expression recognition. Neurocomputing 
+
+621 (2025), 129261. [48] Qing Zhu, Qirong Mao, Jialin Zhang, Xiaohua Huang, and Wenming Zheng. 2025. Towards a robust group-level emotion recognition via uncertainty-aware learning. IEEE Transactions on Affective Computing (2025).
