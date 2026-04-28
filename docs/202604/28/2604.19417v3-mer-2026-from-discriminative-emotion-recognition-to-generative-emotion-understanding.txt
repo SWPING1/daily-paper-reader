@@ -1,0 +1,395 @@
+Title: MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding
+
+URL Source: https://arxiv.org/pdf/2604.19417v3
+
+Published Time: Tue, 28 Apr 2026 00:50:36 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+# MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding 
+
+# Zheng Lian 
+
+Institute of Automation, CAS Beijing, China 
+
+# Xiaojiang Peng 
+
+Shenzhen Technology University Shenzhen, China 
+
+# Kele Xu 
+
+National University of Defense Technology Changsha, China 
+
+# Ziyu Jia 
+
+Institute of Automation, CAS Beijing, China 
+
+# Xinyi Che 
+
+Sichuan University Sichuan, China 
+
+# Zebang Cheng 
+
+Shenzhen University Shenzhen, China 
+
+# Fei Ma 
+
+Guangdong Lab of Artificial Intelligence and Digital Economy (SZ) Shenzhen, China 
+
+# Laizhong Cui 
+
+Shenzhen University Shenzhen, China 
+
+# Yazhou Zhang 
+
+Tianjin University Tianjin, China 
+
+# Xin Liu 
+
+Shanghai Jiao Tong University Shanghai, China 
+
+# Liang Yang 
+
+Dalian University of Technology Dalian, China 
+
+# Jia Li 
+
+Hefei University of Technology Hefei, China 
+
+# Fan Zhang 
+
+The Chinese University of Hong Kong Hong Kong, China 
+
+# Liumeng Xue 
+
+Nanjing University Nanjing, China 
+
+# Erik Cambria 
+
+Nanyang Technological University Singapore 
+
+# Guoying Zhao 
+
+University of Oulu Oulu, Finland 
+
+# Björn W. Schuller 
+
+Technical University of Munich Munich, Germany 
+
+# Jianhua Tao 
+
+Tsinghua University Beijing, China 
+
+## Abstract 
+
+MER2026 marks the fourth edition of the MER series of challenges. The MER series provides valuable data resources to the research community and offers tasks centered on recent research trends, establishing itself as one of the largest challenges in the field. Throughout its history, the focus of MER has shifted from dis-criminative emotion recognition to generative emotion understand-ing . Specifically, MER2023 concentrated on discriminative emotion recognition , restricting the emotion recognition scope to fixed basic labels. In MER2024 and MER2025, we transitioned to generative emotion understanding and introduced two new tasks: fine-grained emotion recognition and descriptive emotion analysis, aiming to leverage the extensive vocabulary and multimodal understanding capabilities of Multimodal Large Language Models (MLLMs) to facilitate fine-grained and explainable emotion recognition. Build-ing on this trajectory, MER2026 continues to follow these research  
+
+> Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> MM ’26, Rio de Janeiro, Brazil
+> ©2026 Copyright held by the owner/author(s). Publication rights licensed to ACM. ACM ISBN 978-x-xxxx-xxxx-x/YYYY/MM https://doi.org/XXXXXXX.XXXXXXX
+
+trends and contains four tracks: MER-Cross shifts the focus from individual to dyadic interaction scenarios; MER-FG centers on fine-grained emotion recognition; MER-Prefer aims to predict human preferences regarding different emotion descriptions; MER-PS focuses on emotion recognition based on physiological signals. More details regarding the dataset and baselines are available at https://zeroqiaoba.github.io/MER-Challenge/. 
+
+## CCS Concepts 
+
+• Human-centered computing → Human computer interac-tion (HCI) .
+
+## Keywords 
+
+MER2026, interlocutor emotion, fine-grained emotion, emotion preference, emotion recognition from physiological signals 
+
+ACM Reference Format: 
+
+Zheng Lian, Xiaojiang Peng, Kele Xu, Ziyu Jia, Xinyi Che, Zebang Cheng, Fei Ma, Laizhong Cui, Yazhou Zhang, Xin Liu, Liang Yang, Jia Li, Fan Zhang, Liumeng Xue, Erik Cambria, Guoying Zhao, Björn W. Schuller, and Jianhua Tao. 2026. MER 2026: From Discriminative Emotion Recognition to Gen-erative Emotion Understanding. In Proceedings of Proceedings of the 34th ACM International Conference on Multimedia (MM ’26). ACM, New York, NY, USA, 7 pages. https://doi.org/XXXXXXX.XXXXXXX  
+
+> arXiv:2604.19417v3 [cs.HC] 26 Apr 2026 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Lian et al.
+
+## 1 Introduction 
+
+With the recent advancements in embodied AI, enabling robots to better understand human emotions and enhance their emotional intelligence has emerged as a significant research focus [ 1 , 2 ]. This development can facilitate their seamless integration into human society. Emotion is an internal human state expressed through various modalities, including audio, video, text, and physiological signals [ 3 , 4]. This has spurred the growth of Multimodal Emotion Recognition (MER), which seeks to integrate diverse cues to achieve a more comprehensive understanding of human emotions [5]. Given the significance of this task, we launched the MER se-ries of challenges in 2023. MER2023@ACM Multimedia [ 6] was our first organized challenge, aiming to advance the recognition of basic emotions through semi-supervised and multi-label learn-ing techniques. MER2024@IJCAI [ 7] shifted the focus from basic emotions to fine-grained emotions and introduced a new track dedi-cated to open-vocabulary emotions [8]. Building on this progression, MER2025@ACM Multimedia [ 9 ] added another track, descriptive emotions , which moves beyond simple emotion label prediction by emphasizing evidence-based emotion understanding [ 10 ]. Re-flecting on this developmental trajectory, MER challenges have transitioned from discriminative emotion recognition to generative emotion understanding : the former emphasizes basic emotion la-bels, whereas the latter prioritizes fine-grained, descriptive emotion representations. MER2026 represents the fourth installment of the MER challenge series. Aligned with current research trends, this year’s iteration introduces four tracks: 
+
+Track 1. Interlocutor Emotion (MER-Cross). This track in-augurates a shift from individual scenarios to dyadic interactions. Unlike prior works that focused on isolated speakers, MER-Cross targets the interlocutor’s emotions. By integrating this focus with traditional tasks, we can capture the emotional states of both speak-ers in dyadic interactions. More details are illustrated in Figure 1. 
+
+Track 2. Fine-grained Emotion (MER-FG). This track was initially proposed at MER2024, and this year marks our third time organizing it. Human emotions are relatively complex, extending far beyond basic labels. In this track, participants can predict any number of emotion labels across diverse categories, expanding the recognition scope from basic emotions to more nuanced ones. This task helps in better understanding the nuanced emotional states. 
+
+Track 3. Emotion Preference (MER-Prefer). This is a newly introduced track designed to predict human preferences toward different emotion descriptions. The concept of emotion preference was first introduced in EmoPrefer [ 11 ], playing a crucial role in training models capable of understanding human emotions. 
+
+Track 4. Physiological Signal-Based Emotion (MER-PS). 
+
+Beyond human behavioral signals, emotions can also be recognized via physiological signals. In this track, we utilize synchronized EEG–fNIRS signals to predict dynamic emotions. Reflecting on the history of the MER challenges, participation has steadily increased from MER2023 to MER2025. To date, the MER dataset has been downloaded over 20K times, establishing it as one of the largest emotion recognition challenges in the research community. This year, we aim to further expand the influence and attract more participants to join the challenge. Dataset and baselines are available at https://zeroqiaoba.github.io/MER-Challenge/. 
+
+Figure 1: MER-Cross. Unlike previous tasks that focus on isolated speakers, we aim to predict the emotions of inter-locutors. Thus, we can capture the emotions of both speakers. 
+
+## 2 MER-Cross: Interlocutor Emotion 
+
+MER-Cross is a newly introduced track that shifts the focus from individual scenarios to dyadic interactions. As shown in Figure 1, in such dyadic scenarios, each speaker talks in different turns. Specifi-cally, consider two characters denoted as 𝑠 1 and 𝑠 2. In the first turn, 
+
+𝑠 1 is speaking, and multimodal clues are available for 𝑠 1, while 𝑠 2 is listening and only visual clues are accessible. Previous MER tasks focused primarily on individual emotions (i.e., the emotions of 𝑠 1). In contrast, MER-Cross shifts the focus to the interlocutor’s emo-tions (i.e., the emotions of 𝑠 2). Therefore, by integrating traditional tasks with MER-Cross, we can capture the emotional states of both characters in dynamic interaction scenarios. 
+
+## 2.1 Dataset 
+
+Sample Selection. Taking turn #1 in Figure 1 as an example, we re-quire samples containing 𝑠 1’s audio and text information alongside 
+
+𝑠 2’s visual information. To this end, we employ TalkNet [ 12 ] for au-tomatic active speaker detection and select samples with unmatched audio and video streams. However, manual inspection reveals that these automatic detections contain some errors. Meanwhile, there are some cases where a character seems not to speak, but the voice represents their inner thoughts, rather than coming from another speaker. Therefore, we implement an additional manual checking process to filter out these improper samples. 
+
+Annotation. In our annotation process, we first conduct a prelimi-nary assessment in which three annotators (undergraduate students from our institution) label 12 samples; annotators exhibiting sig-nificant discrepancies with the majority are filtered out. Then, we hire the filtered annotators to label the characters’ emotional states and use the majority vote as the final label. Finally, we obtain 574 samples, with dataset statistics provided in Table 1. In this track, we provide 9,395 samples with individual emotions for training, en-couraging participants to investigate whether leveraging individual emotion data can enhance interlocutor emotion recognition. 
+
+## 2.2 Evaluation Metric 
+
+This track focuses on basic emotion recognition, where predictions are limited to six predefined categories: neutral , anger , happiness ,MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+Table 1: Dataset statistics for MER-Cross. In MER-Cross, we provide 9,395 samples with individual emotions for train-ing and 574 samples with interlocutor emotions for testing. Participants can investigate whether leveraging individual emotion data can enhance interlocutor emotion recognition. Train&Val Test                    
+
+> Type #Samples Type #Samples MER-SEMI (2023) [6] Individual 3,373 Individual 834 MER-SEMI (2024) [7] Individual 5,030 Individual 1,169 MER-SEMI (2025) [9] Individual 7,369 Individual 2,026 MER-Cross (2026) Individual 9,395 Iterlocutor 574
+
+Table 2: Baseline results (%) for MER-Cross. We report both unimodal and multimodal results. For the Train&Val set, we present five-fold cross-validation results. We then select the best-performing model based on the Train&Val set and report its performance on the test set. The grey column indicates the evaluation metric used for final ranking. Features Train &Val Test                        
+
+> WAF (↑) ACC (↑) WAF (↑) ACC (↑)
+> Acoustic Modality
+> WavLM-base 58.44 ±0.09 58.83 ±0.10 30.14 ±0.50 32.70 ±0.34 wav2vec 2.0-base 67.38 ±0.27 67.52 ±0.28 31.84 ±0.28 33.40 ±0.23 wav2vec 2.0-large 67.64 ±0.42 67.77 ±0.47 32.63 ±0.24 34.25 ±0.21 HUBERT-large 76.51 ±0.15 76.60 ±0.15 35.25 ±0.16 36.60 ±0.15 HUBERT-base 72.78 ±0.08 72.85 ±0.11 35.74 ±0.41 37.26 ±0.32
+> Lexical Modality
+> RoBERTa-base 53.63 ±0.16 53.82 ±0.16 31.93 ±0.40 32.23 ±0.34 RoBERTa-large 54.61 ±0.22 54.73 ±0.22 32.19 ±0.51 32.70 ±0.33 MacBERT-base 53.42 ±0.13 53.58 ±0.14 32.24 ±0.36 32.27 ±0.20 MacBERT-large 54.14 ±0.12 54.20 ±0.09 33.68 ±0.25 33.95 ±0.39
+> Visual Modality
+> VideoMAE-large 56.66 ±0.21 57.34 ±0.14 41.08 ±0.71 45.89 ±0.35 ResNet-FER2013 56.57 ±0.17 57.88 ±0.20 45.86 ±0.54 48.03 ±0.59 EmoNet 52.17 ±0.34 53.58 ±0.30 47.03 ±0.68 49.95 ±0.56 SENet-FER2013 57.01 ±0.16 58.23 ±0.23 51.55 ±0.41 51.92 ±0.58 CLIP-base 60.86 ±0.25 61.83 ±0.29 52.43 ±0.41 55.16 ±0.28 CLIP-large 65.28 ±0.13 65.84 ±0.14 58.88 ±0.43 60.61 ±0.44
+> Acoustic + Lexical + Visual
+> Top1 80.91 ±0.10 80.98 ±0.10 57.44 ±0.25 57.94 ±0.33 Top2 82.01 ±0.12 82.07 ±0.13 55.24 ±0.32 55.87 ±0.51
+
+sadness , worry , and surprise . Following previous work [ 5 , 9], we adopt the weighted F1-score (WAF) as the primary evaluation met-ric. Additionally, we report accuracy (ACC) as a secondary metric. 
+
+## 2.3 Baselines 
+
+Table 2 presents both unimodal and multimodal results. For the multimodal experiments, we selected the best-performing unimodal features for fusion. Specifically, “Top-1” denotes the selection of the best unimodal feature per modality (i.e., HUBERT-base, MacBERT-large, and CLIP-large ); “Top-2” indicates the use of the top two 
+
+Figure 2: MER-FG. Unlike previous MER tasks that focus on basic emotions, MER-FG extends the recognition scope to encompass any emotion category. 
+
+features per modality (i.e., HUBERT-large, HUBERT-base, MacBERT-base, MacBERT-large, CLIP-base, and CLIP-large ). To mitigate the impact of randomness, we ran each experiment multiple times and reported the average scores accompanied by standard deviations. Experimental results reveal a considerable performance gap be-tween individual and interlocutor emotions. For instance, while acoustic features achieve the best performance for individual emo-tions, they perform poorly for interlocutor emotions. Furthermore, although multimodal fusion yields noticeable performance gains for individual emotions, it does not improve performance on interlocu-tor emotions. Therefore, participants are encouraged to develop novel strategies to bridge this gap. 
+
+## 3 MER-FG: Fine-grained Emotion 
+
+MER-FG was first introduced at MER2024 [ 7 ], and this year marks its third edition. The primary motivation behind MER-FG is that human emotion encompasses a vast array of emotion words, extend-ing far beyond basic emotions [ 13 ]. Confining such rich emotional expression within a fixed label set can result in inaccurate emo-tion representation. Therefore, MER-FG aims to go beyond basic emotions and enable fine-grained emotion recognition [ 8 ]. Figure 2 illustrates the differences between MER-FG and previous tasks. 
+
+## 3.1 Dataset 
+
+Challenge Tendency. Table 3 summarizes the dataset statistics for MER-FG across previous challenges and the current edition. In MER 2024, we utilized OV-MERD for training and provided an additional 200 manually labeled samples for testing. In MER 2025, we introduced the large-scale, automatically labeled MER-Caption+ dataset for training and expanded the test set to 1,200 samples. For this year’s challenge, we merged OV-MERD with the MER2025-FG test set to form the new Human-OV dataset, while also providing an additional 1,000 samples for testing. 
+
+Annotation. We follow the annotation pipeline in previous work [9 ]. Specifically, we utilize the submission results from MER2025-FG, where participating teams were required to predict open-vocabulary labels for 20,000 samples. We merge the predictions from the top-performing teams to construct candidate label sets for each sample. Subsequently, we randomly select 1,000 samples for a two-round manual validation process. In the first round, we retain all labels selected by at least one annotator to ensure completeness; in the MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Lian et al. 
+
+Table 3: Dataset statistics for MER-FG. This year, we provide two training datasets: Human-OV with manual labels and MER-Caption+ with automatic labels. Additionally, we pro-vide 1,000 manually labeled samples for testing. Train&Val Test             
+
+> Dataset #Samples MER2024-FG [7] OV-MERD [6] 332 200 MER2025-FG [9] OV-MERD [6] 332 1,200 MER-Caption+ [14] 31,327 MER2026-FG Human-OV 1,532 1,000 MER-Caption+ [14] 31,327
+
+second round, we preserve only the majority-voted labels to ensure accuracy. For this purpose, we recruit five annotators (master’s students from our Dataset Chairs’ Group) and randomly assign each sample to three annotators. Finally, we obtain an additional 1,000 manually labeled samples for testing. 
+
+## 3.2 Evaluation Metric 
+
+This relaxed label space imposes new requirements on evaluation metrics. In this track, we utilize emotion wheel-based (EW-based) metrics for the final ranking, following official guidelines [14, 15]: 
+
+Grouping. Since we do not restrict the label space, the model may generate synonyms. Following prior works [ 14 ], we use group-ing information from emotion wheels to mitigate the effects of synonymy. Specifically, we define a three-level grouping strategy: (L1) We normalize different forms of emotion words to their base form. This function is denoted as 𝐴 (·) .(L2) We map synonyms to a unified label. For example, we map 
+
+happy and joyful to happy . We denote this function as 𝐵 (·) .(L3) In emotion wheels, basic emotions reside in the innermost layer, while more nuanced labels are arranged in the outer layers. Following prior works [ 14 ], we employ five emotion wheels {𝑤 𝑖 }5
+
+> 𝑖 =1
+
+.For each wheel 𝑤 𝑖 , we define a mapping function 𝐶 𝑖 (·) that trans-forms labels from outer layers to their corresponding innermost layer. These three-level grouping functions can be summarized as: 
+
+F𝑖 (·) = 𝐶 𝑖 (𝐵 (𝐴 (·))) , 𝑖 ∈ [ 1, 5]. (1) 
+
+Metric. Let the dataset consist of 𝑁 samples. For sample 𝑥 𝑗 , the true labels are denoted as Y𝑗 and the predicted labels are denoted as ˆY𝑗 . We use the average F-scores across five wheels for ranking: Precision 𝑖 
+
+s = 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑗 =1
+
+F𝑖 (Y𝑗 ) ∩ F 𝑖 ( ˆY𝑗 )
+
+F𝑖 ( ˆY𝑗 ) , (2) Recall 𝑖 
+
+s = 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑗 =1
+
+F𝑖 (Y𝑗 ) ∩ F 𝑖 ( ˆY𝑗 )
+
+F𝑖 (Y𝑗 ) , (3) F𝑖 
+
+s = 2 × Precision 𝑖 
+
+s × Recall 𝑖 
+
+sPrecision 𝑖 
+
+s + Recall 𝑖 
+
+s
+
+, (4) Metric = Avg [F𝑖 
+
+s], 𝑖 ∈ [ 1, 5]. (5) 
+
+Table 4: Baseline results (%) for MER-FG. We report the perfor-mance of both zero-shot baselines and post-training models. For the zero-shot setting, no additional post-training is con-ducted; for the post-training setting, we adopt AffectGPT as the backbone and perform additional training. Model Post-Training Data Test Performance                 
+
+> Zero-shot Baselines
+> Video-LLaVA –30.83 Qwen-Audio –34.90 Video-ChatGPT –36.51 Chat-UniVi –43.03 LLaMA-VID –44.34 SALMONN –47.38
+> Post-training Models
+> AffectGPT Human-OV 59.54 AffectGPT MER-Caption+ 60.27
+
+## 3.3 Baselines 
+
+Table 4 presents the performance of both zero-shot baselines and post-training models. For the zero-shot setting, no additional post-training is conducted; for the post-training setting, we adopt Affect-GPT as the base model and perform further training. We observe that post-training models achieve noticeable performance gains over zero-shot baselines, primarily because they are specifically optimized for open-vocabulary emotion recognition. Furthermore, among the post-training models, there are no considerable differ-ences between those trained on Human-OV versus MER-Caption+. This suggests a trade-off between data quality and quantity: Human-OV contains fewer samples but offers higher-quality labels than MER-Caption+. Consequently, increasing data quantity or improv-ing data quality can both lead to better performance. 
+
+## 4 MER-Prefer: Emotion Preference 
+
+MER-Prefer is a newly introduced track. The concept of emotion preference was first proposed in EmoPrefer [ 11 ], which predicts, for a given video, which of two emotion descriptions is preferred by human annotators. This task plays a crucial role in training reward models capable of understanding human emotions. Figure 3 illustrates the input and output for this track. 
+
+## 4.1 Dataset 
+
+We provide two preference datasets, EmoPrefer-Data [ 11 ] and EmoPrefer-Data-V2 [ 11 ], and summarize their statistics in Table 5. The primary distinction is that the former utilizes majority-voted preferences, while the latter relies on single-annotator preferences. For the test set, we collected additional samples. Specifically, we hired five annotators who had passed a preliminary qualification test to ensure annotation quality (aligned with Section 2.1). We then collected 1,000 samples, denoted as {( 𝑥 𝑛 , 𝑑 𝑛  
+
+> 1
+
+, 𝑑 𝑛  
+
+> 2
+
+)} 𝑁 𝑖 =1, where 𝑥 𝑛 is a video and 𝑑 𝑛  
+
+> 1
+
+and 𝑑 𝑛  
+
+> 2
+
+are the corresponding descriptions. For each sample, three annotators were randomly selected to choose their preferred description. Annotations fell into one of three categories: (1) 𝑑 𝑛  
+
+> 1
+
+is preferred, (2) 𝑑 𝑛  
+
+> 2
+
+is preferred, or (3) tie . Finally, only samples with consensus were retained, resulting in 380 samples. Since the MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+Figure 3: MER-Prefer. Given a video, the model needs to de-termine which emotion description is preferred by humans. Table 5: Dataset statistics for MER-Prefer. We provide two training datasets: EmoPrefer-Data with majority-voted labels and EmoPrefer-Data-V2 with single-annotator labels. For testing, we provide 379 samples with majority-voted labels. Train&Val Test           
+
+> Dataset Label #Samples Label #Samples EmoPrefer-Data [11] Major 574 Major 379 EmoPrefer-Data-V2 [11] Single 2,096
+
+Table 6: Baseline results (%) for MER-Prefer. We report the performance of zero-shot baselines. The grey column indi-cates the evaluation metric used for final ranking. Model Test                
+
+> WAF (↑) ACC (↑)
+> Qwen2-Audio 36.08 49.08 Video-LLaVA 36.76 53.03 LLaMA-VID 36.76 53.03 LLaVA-Next-Video 41.31 55.15 Qwen2.5-VL 76.77 77.84 Qwen2.5-Omni 78.74 78.89
+
+tie category is ambiguous [ 11 ], we removed the samples labeled as such, ultimately obtaining a test set of 379 samples. 
+
+## 4.2 Evaluation Metric 
+
+We adopt the official evaluation metric [ 11 ] for performance assess-ment. Specifically, we focus on two-class preference classification, where the task is to determine whether 𝑑 𝑛  
+
+> 1
+
+or 𝑑 𝑛  
+
+> 2
+
+is preferred. We employ the weighted F1-score (WAF) as the primary metric and accuracy (ACC) as the secondary metric. These metrics quantify the consistency between model predictions and human preferences. 
+
+## 4.3 Baselines 
+
+Table 6 presents the performance of zero-shot baselines on MER-Prefer. We observe that the multimodal model, Qwen2.5-Omni, achieves the best performance. This suggests a strong correlation between human preferences and the multimodal cues inherent in videos. Consequently, integrating all modalities is essential for accu-rately capturing human preferences between different descriptions. EEG: Neuroscan   
+
+> fNIRS : LABNIRS
+> Synchronization
+> module
+> Emotion Label
+> EEG -fNIRS Cap
+
+Figure 4: MER-PS. EEG and fNIRS signals are synchronously recorded during emotion elicitation, while participants con-tinuously report their affective states via joystick-based valence–arousal annotation. This track enables physiological signal-based continuous emotion prediction with temporally aligned multimodal recordings and dynamic labels. 
+
+## 5 MER-PS: Physiological Signal-Based Emotion 
+
+MER-PS shifts multimodal emotion recognition from observable behavioral signals to physiological evidence, with a particular em-phasis on brain activity. Compared with conventional behavioral cues, physiological signals provide a more direct window into the internal affective state and are less dependent on explicit facial or vocal expressions. To support this track, we introduce MER-PS, which focuses on predicting continuous affective dynamics from synchronized EEG and fNIRS signals. This track extends the scope of MER from external multimodal behaviors to internal physio-logical responses, and opens up new opportunities for studying emotion recognition under more implicit and fine-grained settings. 
+
+## 5.1 Dataset 
+
+Data Collection. The dataset used in this track is a synchro-nized EEG–fNIRS emotion dataset collected under realistic emotion-elicitation scenarios. Specifically, 30 participants watched 15 emotion-eliciting video clips, together with baseline sessions recorded before formal stimulation. During the experiment, EEG and fNIRS signals were synchronously acquired, enabling the joint observation of neu-roelectrical activity and hemodynamic responses associated with human emotions. The overall recording and annotation framework of MER-PS is illustrated in Figure 4. In addition to physiological recordings, the dataset also provides continuous affect annotations as well as post-trial self-assessment labels, forming a comprehen-sive benchmark for physiological signal-based emotion analysis. 
+
+Signal and Annotation. The MER-PS dataset contains 64-channel EEG signals recorded at 1000 Hz and 51-channel fNIRS signals MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Lian et al. 
+
+recorded at 47.62 Hz, covering cortical regions that are closely re-lated to affective processing. Specifically, the EEG signals were acquired using an ESI Neuroscan 64-channel wet-electrode system, with electrodes positioned according to the international 10–10 EEG system and the default reference electrode placed at AFz. The fNIRS signals were recorded using a Shimadzu LABNIRS system with three near-infrared wavelengths (780, 805, and 830 nm). In our recordings, the fNIRS optodes were arranged to cover three major cortical regions, i.e., the prefrontal lobes, the left temporal lobes, and the right temporal lobes. To support synchronized multimodal acquisition, an EEG–fNIRS joint cap and a signal synchronization module developed by FiStar were used to achieve joint acquisition and precise temporal alignment between the two modalities. A key characteristic of this dataset is that it provides real-time dy-namic emotion annotations. During video viewing, each participant continuously reported their affective state through joystick-based valence and arousal trajectories sampled at 1 Hz, where each time step is associated with a two-dimensional affect label. In addition to these dynamic annotations, the dataset also includes post-trial self-assessments, which can serve as supplementary references for affective analysis. In this track, we focus on the continuous affect prediction setting and require participants to estimate the valence– arousal trajectory from synchronized physiological signals. 
+
+## 5.2 Evaluation Metric 
+
+We formulate emotion recognition as a regression problem over continuous affective dynamics. Given synchronized EEG-fNIRS signals, we predict the valence and arousal values at each time step: 
+
+ˆy1: 𝑇 = 𝑓 
+
+
+
+xEEG  
+
+> 1: 𝐿 𝑒
+
+, xfNIRS 
+
+> 1: 𝐿 𝑓
+
+
+
+, y𝑡 = [𝑣 𝑡 , 𝑎 𝑡 ], (6) where xEEG and xfNIRS denote the EEG and fNIRS time series, re-spectively, and y𝑡 denotes the affect label at time step 𝑡 . In the original annotation space, both valence and arousal are recorded at 1 Hz as integer values in [1, 255 ], with the neutral point centered at 
+
+(128 , 128 ). Moreover, the emotion-eliciting materials are designed to cover five targeted affective tendencies, namely high valence– high arousal, high valence–low arousal, low valence–high arousal, low valence–low arousal, and medium valence–medium arousal, thereby providing broad coverage in the valence–arousal space. Following the official setting of this track, we normalize both valence and arousal labels into [0, 1] and evaluate the regression performance using the mean absolute error (MAE): MAE = 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑛 =1
+
+|𝑦 𝑛 − ˆ𝑦 𝑛 | . (7) To provide a unified ranking score, we use the average MAE over the two affect dimensions: Score = MAE 𝑣 + MAE 𝑎 
+
+2 , (8) where MAE 𝑣 and MAE 𝑎 denote the mean absolute errors for valence and arousal, respectively. Lower score indicates better performance. 
+
+## 5.3 Baselines 
+
+Table 7 reports the baseline results for MER-PS. In this track, we adopt two baseline models, i.e., EEGNet [ 16 ] and ASAC-Net [ 17 ], 
+
+Table 7: Baseline results for MER-PS. We report the regression performance for valence and arousal prediction, together with the final ranking score. The grey column indicates the evaluation metric used for final ranking. Architecture Features Test Test                        
+
+> MAE 𝑣 (↓) MAE 𝑎 (↓) Score (↓)
+> EEGNet [16] EEG-only 0.2682 0.2319 0.2501 fNIRS-only 0.2567 0.2245 0.2406 EEG + fNIRS 0.2494 0.2280 0.2387 ASAC-Net [17] EEG-only 0.2613 0.2472 0.2543 fNIRS-only 0.2465 0.2254 0.2360 EEG + fNIRS 0.2307 0.2020 0.2164
+
+and evaluate them under three input settings: EEG-only, fNIRS-only, and EEG+fNIRS. Specifically, EEGNet serves as a classical baseline for physiological signal modeling, while ASAC-Net repre-sents a recent EEG–fNIRS-based method for emotion analysis. In this way, we can examine both the effect of model architecture and the contribution of multimodal physiological fusion. Experimental results provide initial benchmarks for this track. Since studies on continuous affect prediction from synchronized EEG and fNIRS signals are still limited, especially for effective bimodal collaboration, participants are encouraged to explore novel strategies for EEG–fNIRS coordination, such as temporal alignment, cross-modal interaction, correlation modeling, and fusion learning, in order to achieve better performance in MER-PS. 
+
+## 6 Challenge Guidance 
+
+The MER2026 datasets are strictly for academic research purposes. Users are prohibited from modifying the source videos or uploading them to the internet. For MER-Cross , MER-FG , and MER-Prefer ,we provide a list covering the test set for each track, requiring participants to submit predictions for all samples in the list. This process ensures that participants cannot directly access the test samples and engage in result exhaustion to achieve a higher ranking. For MER-PS , the local Institutional Review Board approved the ethical conduct of this study (IA11-2504-020201). All procedures involving human participants strictly adhered to established ethical standards, with particular emphasis on ensuring participant safety, privacy, and informed consent. Prior to participation, all subjects were fully informed about the study’s purpose, procedures, and data usage policies. Thus, no ethical issues exist for this track. 
+
+## 7 Conclusions 
+
+MER2026 marks our fourth edition of the MER challenges. Cen-tered on the theme “From Discriminative Emotion Recognition to Generative Emotion Understanding”, this year’s event aligns with current research trends. MER2026 comprises four tracks: MER-Cross focuses on interlocutor emotion recognition, MER-FG targets fine-grained emotion detection, MER-Prefer aims to mimic human emotion preference, and MER-PS introduces physiological signals for emotion recognition. This paper presents the task definition, dataset, metrics, and baselines for each track, providing partici-pants with essential guidance. We hope MER2026 will attract more MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+researchers to join us. Let us work together to build a reliable and trustworthy future of affective computing systems. 
+
+## Acknowledgement 
+
+We would like to express our sincere gratitude to our annotation team for their efforts: Zelin Yan (Tongji University), Liyi Liu (Tongji University), Chenxi Zhou (National University of Defense Tech-nology), Yuan Cao (National University of Defense Technology), Kaiyao Li (Shenzhen University), Dawei Huang (Shenzhen Univer-sity), and Hanwen Du (Shenzhen University). 
+
+## References 
+
+[1] Michael A Arbib and Jean-Marc Fellous. Emotions: from brain to robot. Trends in Cognitive Sciences , 8(12):554–561, 2004. [2] Jiafei Duan, Samson Yu, Hui Li Tan, Hongyuan Zhu, and Cheston Tan. A survey of embodied ai: From simulators to research tasks. IEEE Transactions on Emerging Topics in Computational Intelligence , 6(2):230–244, 2022. [3] Robert Plutchik. A general psychoevolutionary theory of emotion. Emotion: Theory, research, and experience , 1, 1980. [4] Rosalind W Picard. Affective computing . MIT press, 2000. [5] Zheng Lian, Licai Sun, Yong Ren, Hao Gu, Haiyang Sun, Lan Chen, Bin Liu, and Jianhua Tao. Merbench: A unified evaluation benchmark for multimodal emotion recognition. IEEE Transactions on Pattern Analysis and Machine Intelligence , 2026. [6] Zheng Lian, Haiyang Sun, Licai Sun, Kang Chen, Mngyu Xu, Kexin Wang, Ke Xu, Yu He, Ying Li, Jinming Zhao, et al. Mer 2023: Multi-label learning, modal-ity robustness, and semi-supervised learning. In Proceedings of the 31st ACM International Conference on Multimedia , pages 9610–9614, 2023. [7] Zheng Lian, Haiyang Sun, Licai Sun, Zhuofan Wen, Siyuan Zhang, Shun Chen, Hao Gu, Jinming Zhao, Ziyang Ma, Xie Chen, et al. Mer 2024: Semi-supervised learning, noise robustness, and open-vocabulary multimodal emotion recognition. In Proceedings of the 2nd International Workshop on Multimodal and Responsible Affective Computing , pages 41–48, 2024. [8] Zheng Lian, Haiyang Sun, Licai Sun, Haoyu Chen, Lan Chen, Hao Gu, Zhuo-fan Wen, Shun Chen, Zhang Siyuan, Hailiang Yao, et al. Ov-mer: Towards open-vocabulary multimodal emotion recognition. In Forty-second International Conference on Machine Learning , 2025. [9] Zheng Lian, Rui Liu, Kele Xu, Bin Liu, Xuefei Liu, Yazhou Zhang, Xin Liu, Yong Li, Zebang Cheng, Haolin Zuo, et al. Mer 2025: When affective computing meets large language models. In Proceedings of the 33rd ACM International Conference on Multimedia , pages 13837–13842, 2025. [10] Zheng Lian, Licai Sun, Mingyu Xu, Haiyang Sun, Ke Xu, Zhuofan Wen, Shun Chen, Bin Liu, and Jianhua Tao. Explainable multimodal emotion reasoning. 
+
+arXiv preprint arXiv:2306.15401 , 2023. [11] Zheng Lian, Licai Sun, Lan Chen, Haoyu Chen, Zebang Cheng, Fan Zhang, Ziyu Jia, Ziyang Ma, Fei Ma, Xiaojiang Peng, et al. Emoprefer: Can large language mod-els understand human emotion preferences? In Proceedings of the International Conference on Learning Representations, ICLR , 2026. [12] Ruijie Tao, Zexu Pan, Rohan Kumar Das, Xinyuan Qian, Mike Zheng Shou, and Haizhou Li. Is someone speaking? exploring long-term temporal features for audio-visual active speaker detection. In Proceedings of the 29th ACM international conference on multimedia , pages 3927–3935, 2021. [13] Paul Ekman. Are there basic emotions? 1992. [14] Zheng Lian, Haoyu Chen, Lan Chen, Haiyang Sun, Licai Sun, Yong Ren, Zebang Cheng, Bin Liu, Rui Liu, Xiaojiang Peng, et al. Affectgpt: A new dataset, model, and benchmark for emotion understanding with multimodal large language models. In Forty-second International Conference on Machine Learning , 2025. [15] Zheng Lian, Fan Zhang, Yazhou Zhang, Jianhua Tao, Rui Liu, Haoyu Chen, and Xiaobai Li. Affectgpt-r1: Leveraging reinforcement learning for open-vocabulary multimodal emotion recognition. arXiv preprint arXiv:2508.01318 , 2026. [16] Vernon J Lawhern, Amelia J Solon, Nicholas R Waytowich, Stephen M Gordon, Chou P Hung, and Brent J Lance. Eegnet: a compact convolutional neural network for eeg-based brain–computer interfaces. Journal of neural engineering ,15(5):056013, 2018. [17] Kaining Fang, Jing Qu, Zixing Ding, Junhang Ding, and Lingguo Bu. Asac-net: A novel multimodal alignment-complementary fusion framework for eeg-fnirs emotion recognition. Information Fusion , 134:104329, 2026.

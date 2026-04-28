@@ -6,67 +6,70 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-04-27
-- 运行时间：2026-04-27 20:47:03 UTC
+- 最新运行日期：2026-04-28
+- 运行时间：2026-04-28 20:39:02 UTC
 - 运行状态：成功
-- 本次总论文数：15
-- 精读区：4
+- 本次总论文数：16
+- 精读区：5
 - 速读区：11
 
 ### 今日简报（AI）
-今日精选 15 篇前沿成果，深度复盘多模态表征学习与阿尔茨海默症预测的鲁棒性突破。
-核心推荐因果推理驱动的不变性表征研究，以及利用数字孪生技术精准预测认知衰退的创新框架。
-建议优先研读多模态在医疗领域的落地实践，并关注 CLIP 特征聚合与潜空间去噪对视觉对齐的优化。
-- 详情：[/202604/27/README](/202604/27/README)
+今日深挖 16 篇多模态前沿进展，重点攻克复杂场景下的学习鲁棒性与数据缺失难题。
+满分论文揭示了因果推断在模态表示中的核心作用，并提出联邦学习环境下高效的缺失数据补全策略。
+建议关注多模态大模型在文档重建与情感计算中的落地表现，探索语义推理的新边界。
+- 详情：[/202604/28/README](/202604/28/README)
 
 ### 精读区论文标签
-1. [Learning Invariant Modality Representation for Robust Multimodal Learning from a Causal Inference Perspective](/202604/27/2604.18460v1-learning-invariant-modality-representation-for-robust-multimodal-learning-from-a-causal-inference-perspective)  
+1. [Learning Invariant Modality Representation for Robust Multimodal Learning from a Causal Inference Perspective](/202604/28/2604.18460v1-learning-invariant-modality-representation-for-robust-multimodal-learning-from-a-causal-inference-perspective)  
+   标签：评分：10.0/10、query:missing-modality
+   evidence：噪声模态下鲁棒多模态情感计算的解耦表示
+2. [Conditional Imputation for Within-Modality Missingness in Multi-Modal Federated Learning](/202604/28/2604.23112v1-conditional-imputation-for-within-modality-missingness-in-multi-modal-federated-learning)  
+   标签：评分：9.5/10、query:missing-modality
+   evidence：多模态学习中缺失数据的条件插补
+3. [WiFo-MiSAC: A Wireless Foundation Model for Multimodal Sensing and Communication Integration via Synesthesia of Machines (SoM)](/202604/28/2604.18255v1-wifo-misac-a-wireless-foundation-model-for-multimodal-sensing-and-communication-integration-via-synesthesia-of-machines-som)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：针对鲁棒多模态情感计算和噪声模态的解耦方法
-2. [CognitiveTwin: Robust Multi-Modal Digital Twins for Predicting Cognitive Decline in Alzheimer's Disease](/202604/27/2604.22428v1-cognitivetwin-robust-multi-modal-digital-twins-for-predicting-cognitive-decline-in-alzheimers-disease)  
+   evidence：多模态信号的解耦专家混合与掩码重建
+4. [MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding](/202604/28/2604.19417v3-mer-2026-from-discriminative-emotion-recognition-to-generative-emotion-understanding)  
    标签：评分：9.0/10、query:missing-modality
-   evidence：对多模态纵向临床数据中缺失数据的鲁棒性
-3. [WiFo-MiSAC: A Wireless Foundation Model for Multimodal Sensing and Communication Integration via Synesthesia of Machines (SoM)](/202604/27/2604.18255v1-wifo-misac-a-wireless-foundation-model-for-multimodal-sensing-and-communication-integration-via-synesthesia-of-machines-som)  
-   标签：评分：8.5/10、query:missing-modality
-   evidence：用于模态解耦和掩码重建的解耦专家混合架构
-4. [Uni-Encoder Meets Multi-Encoders: Representation Before Fusion for Brain Tumor Segmentation with Missing Modalities](/202604/27/2604.22177v1-uni-encoder-meets-multi-encoders-representation-before-fusion-for-brain-tumor-segmentation-with-missing-modalities)  
-   标签：评分：8.0/10、query:missing-modality
-   evidence：缺失模态下的脑肿瘤分割
+   evidence：多模态情感识别与生成式情感理解挑战赛
+5. [Federated Cross-Modal Retrieval with Missing Modalities via Semantic Routing and Adapter Personalization](/202604/28/2604.22885v1-federated-cross-modal-retrieval-with-missing-modalities-via-semantic-routing-and-adapter-personalization)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：缺失模态下的联邦跨模态检索
 
 ### 速读区论文标签
-1. [Emotion-Cause Pair Extraction in Conversations via Semantic Decoupling and Graph Alignment](/202604/27/2604.19547v1-emotion-cause-pair-extraction-in-conversations-via-semantic-decoupling-and-graph-alignment)  
+1. [Modeling Induced Pleasure through Cognitive Appraisal Prediction via Multimodal Fusion](/202604/28/2604.23753v1-modeling-induced-pleasure-through-cognitive-appraisal-prediction-via-multimodal-fusion)  
    标签：评分：7.5/10、query:missing-modality
-   evidence：通过语义解耦实现情感导向语义的解耦
-2. [Latent Denoising Improves Visual Alignment in Large Multimodal Models](/202604/27/2604.21343v1-latent-denoising-improves-visual-alignment-in-large-multimodal-models)  
+   evidence：多模态情感计算与情绪预测
+2. [Emotion-Cause Pair Extraction in Conversations via Semantic Decoupling and Graph Alignment](/202604/28/2604.19547v1-emotion-cause-pair-extraction-in-conversations-via-semantic-decoupling-and-graph-alignment)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：多模态模型中用于恢复损坏视觉标记的潜空间去噪
-3. [From Global to Local: Rethinking CLIP Feature Aggregation for Person Re-Identification](/202604/27/2604.22190v1-from-global-to-local-rethinking-clip-feature-aggregation-for-person-re-identification)  
+   evidence：将情感导向语义与原因导向语义解耦
+3. [ShredBench: Evaluating the Semantic Reasoning Capabilities of Multimodal LLMs in Document Reconstruction](/202604/28/2604.23813v1-shredbench-evaluating-the-semantic-reasoning-capabilities-of-multimodal-llms-in-document-reconstruction)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：抑制损坏或缺失区域，处理身份信号缺失的合成掩码情况
-4. [Air-Know: Arbiter-Calibrated Knowledge-Internalizing Robust Network for Composed Image Retrieval](/202604/27/2604.19386v1-air-know-arbiter-calibrated-knowledge-internalizing-robust-network-for-composed-image-retrieval)  
-   标签：评分：6.5/10、query:missing-modality
-   evidence：鲁棒多模态表示的解耦范式
-5. [Coevolving Representations in Joint Image-Feature Diffusion](/202604/27/2604.17492v1-coevolving-representations-in-joint-image-feature-diffusion)  
+   evidence：在显著内容不连续的情况下从碎片中恢复内容
+4. [Psychologically-Grounded Graph Modeling for Interpretable Depression Detection](/202604/28/2604.24126v1-psychologically-grounded-graph-modeling-for-interpretable-depression-detection)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：多模态抑郁检测与临床证据编码
+5. [Majorization-Guided Test-Time Adaptation for Vision-Language Models under Modality-Specific Shift](/202604/28/2604.24602v1-majorization-guided-test-time-adaptation-for-vision-language-models-under-modality-specific-shift)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：模态特定偏移和不可靠模态下的测试时自适应
+6. [Multimodal embodiment-aware navigation transformer](/202604/28/2604.19267v1-multimodal-embodiment-aware-navigation-transformer)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：具有演化表示的图像-特征联合生成建模
-6. [Context-Aware Search and Retrieval Under Token Erasure](/202604/27/2604.18424v1-context-aware-search-and-retrieval-under-token-erasure)  
+   evidence：RGB与LiDAR的多模态融合以实现鲁棒导航
+7. [Can MLLMs "Read" What is Missing?](/202604/28/2604.21277v2-can-mllms-read-what-is-missing)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：令牌擦除和部分保留表示下的检索
-7. [Disentangling Damage from Operational Variability: A Label-Free Self-Supervised Representation Learning Framework for Output-Only Structural Damage Identification](/202604/27/2604.19658v1-disentangling-damage-from-operational-variability-a-label-free-self-supervised-representation-learning-framework-for-output-only-structural-damage-identification)  
+   evidence：直接从视觉上下文中重建缺失的文本
+8. [Inter-Stance: A Dyadic Multimodal Corpus for Conversational Stance Analysis](/202604/28/2604.22739v1-inter-stance-a-dyadic-multimodal-corpus-for-conversational-stance-analysis)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：用于鲁棒识别的解耦表示学习
-8. [Can MLLMs "Read" What is Missing?](/202604/27/2604.21277v1-can-mllms-read-what-is-missing)  
+   evidence：用于对话立场和行为分析的多模态语料库
+9. [Bridging the Pose-Semantic Gap: A Cascade Framework for Text-Based Person Anomaly Search](/202604/28/2604.23282v1-bridging-the-pose-semantic-gap-a-cascade-framework-for-text-based-person-anomaly-search)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：直接从视觉上下文中重建遮蔽文本
-9. [Discriminative-Generative Synergy for Occlusion Robust 3D Human Mesh Recovery](/202604/27/2604.21712v1-discriminative-generative-synergy-for-occlusion-robust-3d-human-mesh-recovery)  
+   evidence：多模态搜索的结构-语义解耦框架
+10. [MMEB-V3: Measuring the Performance Gaps of Omni-Modality Embedding Models](/202604/28/2604.23321v1-mmeb-v3-measuring-the-performance-gaps-of-omni-modality-embedding-models)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：3D人体恢复中遮挡区域的生成先验
-10. [Source-Modality Monitoring in Vision-Language Models](/202604/27/2604.22038v1-source-modality-monitoring-in-vision-language-models)  
+   evidence：将语义相似性与模态特定特征解耦
+11. [EmoTrans: A Benchmark for Understanding, Reasoning, and Predicting Emotion Transitions in Multimodal LLMs](/202604/28/2604.23348v1-emotrans-a-benchmark-for-understanding-reasoning-and-predicting-emotion-transitions-in-multimodal-llms)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：研究多模态模型中的源模态监控和绑定
-11. [Distilling Vision Transformers for Distortion-Robust Representation Learning](/202604/27/2604.22529v1-distilling-vision-transformers-for-distortion-robust-representation-learning)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：在清晰观测稀缺时的失真鲁棒表示学习
+   evidence：多模态大模型情感转移理解基准
 
 
 <div class="dpr-home-promo-card">
