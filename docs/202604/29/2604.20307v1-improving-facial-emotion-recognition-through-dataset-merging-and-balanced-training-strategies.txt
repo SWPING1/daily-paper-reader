@@ -1,0 +1,226 @@
+Title: Improving Facial Emotion Recognition through Dataset Merging and Balanced Training Strategies
+
+URL Source: https://arxiv.org/pdf/2604.20307v1
+
+Published Time: Thu, 23 Apr 2026 00:38:47 GMT
+
+Number of Pages: 25
+
+Markdown Content:
+# Highlights 
+
+Improving Facial Emotion Recognition through Dataset Merging and Balanced Training Strategies 
+
+Serap Kırbız 
+
+• Proposed an automatic facial emotion recognition (FER) method 
+
+using deep convolutional networks , combining data merging, online/offline augmentation, and random weighted sampling for improved classifica-tion performance. 
+
+• Merged three distinct facial emotion datasets (CK+, FER+ and KDEF) to create a comprehensive training dataset, enabling more robust learning and better generalization. 
+
+• Face alignment and landmark detection were applied using Reti-naFace, significantly enhancing the quality of facial images and ensuring consistency across datasets. 
+
+• Implemented both offline and online data augmentation tech-niques , including RandAugment, which boosted model generalization and classification accuracy, especially for minority emotion classes. 
+
+• Random weighted sampling was applied to address class imbalance, improving precision, recall, and F1 score for underrepresented classes such as disgust and fear. 
+
+> arXiv:2604.20307v1 [cs.CV] 22 Apr 2026
+
+# Improving Facial Emotion Recognition through Dataset Merging and Balanced Training Strategies 
+
+Serap Kırbız 
+
+> aMEF University,Department of Electrical and Electronics Engineering, Huzur Mah. Maslak Ayaza˘ ga Cad. No:4 Sarıyer, ˙Istanbul, 34396, T¨ urkiye
+
+Abstract 
+
+In this paper, a deep learning framework is proposed for automatic facial emotion based on deep convolutional networks. In order to increase the generalization ability and the robustness of the method, the dataset size is increased by merging three publicly available facial emotion datasets: CK+, FER+ and KDEF. Despite the increase in dataset size, the minority classes still suffer from insufficient number of training samples, leading to data im-balance. The data imbalance problem is minimized by online and offline augmentation techniques and random weighted sampling. Experimental re-sults demonstrate that the proposed method can recognize the seven basic emotions with 82% accuracy. The results demonstrate the effectiveness of the proposed approach in tackling the challenges of data imbalance and im-proving classification performance in facial emotion recognition. 
+
+Keywords: facial emotion recognition, convolutional neural networks, face alignment, data augmentation, facial landmarks, random weighted sampling, 
+
+1. Introduction 
+
+In interpersonal communication, facial expressions are the most impor-tant signs of emotions. Emotion recognition is the process of detecting emo-tions, a task that humans can perform with a large variability depending on their abilities and experiences. In recent decades, automatic recognition of emotions has been a popular research area in machine learning, since it has practical use in many applications such as healthcare [1], marketing [2], human-computer interaction [3], and security [4].  
+
+> Preprint submitted to Journal of the Franklin Institute April 23, 2026
+
+In automatic facial emotion recognition (FER) systems, the aim is to clas-sify the features extracted from facial expressions into seven basic emotions: anger, fear, happiness, surprise, sad, disgust and neutral [5, 6]. Traditional FER systems consist of two distinct tasks: feature extraction and classi-fication of the extracted features into seven emotion categories. The first step extracts facial features using methods such as Local Binary Patterns [7], Scale-Invariant Feature Transform (SIFT) [8], and Non-negative Matrix Factorization [9]. The second step classifies the extracted features into seven basic emotions using a classifier such as Support Vector Machines (SVM) [10] and K-Nearest Neighbor (KNN) [11]. The traditional methods work fine on simple datasets in which the intra-class variation is low. The limitation of traditional FER systems is that it is challenging to improve the performance of the system when feature extraction and classification are separate tasks. With the improvements obtained in computational power and deep learn-ing methods, particularly in Convolutional Neural Network (CNN) archi-tectures used in image classification applications, several models have been developed for deep-learning-based FER. CNNs [12, 13, 14, 15] have signifi-cantly improved FER performance, as they can extract hierarchical features directly from raw pixel data. However, many FER datasets still have many limitations in terms of size, diversity, and imbalances in class distributions. In this work, we propose a deep learning based facial emotion recogni-tion method to improve FER accuracy using several strategies. Our main contributions are summarized as follows: 
+
+• We present a novel FER approach based on deep CNN architectures that combines data merging, online/offline augmentation, and random weighted sampling for improved classification performance. 
+
+• To address the challenges of data scarcity and imbalance in FER datasets, we propose creating a larger and more comprehensive training set by merging three publicly available datasets: Extended Cohn-Kanade (CK+) [16], Karolinska Directed Emotional Faces (KDEF) [17] and Facial Emotion Recognition (FER+) [18]. 
+
+• To enhance feature extraction and minimize the impact of variations in lighting and background, we employ RetinaFace [19], a robust facial landmark detection method. RetinaFace helps isolate the most infor-mative facial regions (such as eyes, eyebrows, and mouth) and min-imizes variations in lightning and background, contributing to more 2accurate emotion classification. 
+
+• Despite the increase in data size, dataset imbalance problem continues to affect model performance. To increase robustness and variations in the dataset, we first apply on-the-fly data augmentation using the random augmentation method, RandAug [20]. 
+
+• The aligned faces and faces obtained from cropped landmarks using RetinaFace can be viewed as new data generated by applying some transformations to the original images. Therefore, we have also con-sidered adding these images to the existing dataset to create a larger dataset before training. This process can be viewed as an offline aug-mentation strategy that enhances both flexibility and efficiency. 
+
+• In imbalanced datasets, the majority classes often dominate the train-ing process, causing the model to overfit to these classes. To address this issue and improve learning for minority classes, we propose using random weighted sampling [21]. The rest of the paper is organized as follows: Section 2 reviews related studies on deep learning-based FER systems. Section 3 introduces the pro-posed method. Section 4 evaluates the performance of the proposed method, and Section 5 summarizes the key findings and discusses potential future research directions. 
+
+2. Related Work 
+
+In this section, the main steps in facial emotion recognition is explained: pre-processing, feature extraction through deep learning and classification of emotions. 
+
+2.1. Preprocessing 
+
+In order to reduce the variations within the images in the dataset, pre-processing is applied before training the deep neural network for feature extraction. 32.1.1. Face Alignment 
+
+Automatic face localization is applied prior to many image analysis tasks such as age analysis [22], facial expression recognition [23] and face recogni-tion [24]. The aim of face detection is to identify the face within an image and eliminate background data. The Viola-Jones algorithm [25] has been widely used for face detection in many tasks due to its robustness and computational efficiency. In FER applications, face detection is the only required preprocessing that needs to be applied before feature learning. However, aligning faces using facial landmarks can greatly enhance FER performance. By localizing facial landmarks, face alignment determines the distinctive and precise parts of faces [26], reducing the impact of background, lighting conditions, facial size, and face rotation. Traditional face alignment methods rely on geometric and statistical mod-els. Some of the most commonly used methods in the literature are Active Appearance Models (AAMs) [27], Active Shape Models (ASMs) [28], and Active Contour Models [29]. These models require extraction of features manually and, they are computationally expensive. Moreover, their perfor-mance is poor in the presence of variations in facial expressions, illumination, and head pose. Deep learning based approaches enable end-to-end learning, enhancing face alignment accuracy by extracting hierarchical features directly from the data. Chen et al. [30] proposes to jointly detect and align faces with ran-dom forest on differences of pixel intensities. Inspired by [30], faces and five facial landmarks are detected jointly using multitask cascaded convolutional networks (MTCCN) [31]. However, it has not been proved whether MTCNN performs well with small face images. The method described in [32] incor-porates an additional branch for object mask prediction, alongside the main branch, which performs bounding box classification and regression. The in-corporated additional branch improves the detection performance. Similarly, Chaudhuri et al. [33] propose an end-to-end network to predict the bound-ing box locations and 3D morphable model (3DMM) simultaneously. This method achieves better face detection performance in-the-wild by combining 2D information from bounding boxes and 3D information from 3DMM pa-rameters. In [19], a single-shot method, RetinaFace, is proposed to jointly learn various face localisation tasks, e.g. face detection, 3D face reconstruc-tion and 2D face alignment. RetinaFace [19] accurately detects faces, per-4forms 2D face alignment and 3D face recognition and yields faster speed. 
+
+2.1.2. Data Augmentation 
+
+Deep neural networks need a large dataset of labeled data to perform good generalization capabilities for a specific task. However, the publicly available FER datasets do not have sufficient labeled training data. Data augmentation becomes vital if increasing the dataset size is not possible. Generally, the data augmentation is performed on-the-fly to avoid overfit-ting. The training samples are randomly cropped, shifted, scaled, flipped horizontally or rotated by a degree to increase the variations in the dataset. In addition to on-the-fly augmentation, offline augmentation is also com-monly used. In offline augmentation, some transformations are applied offline prior to training, thus saved as additional data in the dataset. As a result, the dataset then includes multiple augmented versions of each image, enriching the training data and improving model robustness. Recently, automated augmentation techniques have been developed which automatically selects one of the several augmentation techniques on the fly, such as AutoAugment [34], RandAugment [20] and AugMix [35]. Augmix [35] combines geometric and photometric transformations into a single image using pixel-wise operations. AutoAugment [34] uses reinforcement learning to select the optimal augmentation from several augmentation techniques, while RandAugment [20] applies one or more techniques randomly. Among these, RandAugment [20] increases the FER accuracy significantly [36]. 
+
+2.2. Feature Extraction Using Deep Neural Networks 
+
+The aim in feature extraction is to extract key facial expression features from facial images. The extracted features are given as input to the classifier to classify the features into one of the seven basic emotions. Traditional methods typically focus on geometric or textual properties of the face. Geometric features are extracted from the spatial relationships between facial landmarks such as eyes, eyebrows, nose, and mouth [27]. Even these methods are computationally efficient for small datasets, they are sen-sitive to variations in head pose and occlusions. On the other hand, texture-based features are extracted from variations in pixel intensities, with Local Binary Patterns (LBP) [37] and Histogram of Gradients (HOG) [15] being the most commonly used features. These methods are simple to implement and effective under small variations, but their performance degrades with more challenging databases where the intra-class variation is high. 5In recent years, deep learning methods, especially Convolutional Neu-ral Networks (CNNs) [13, 12] have revolutionized FER performance. Unlike traditional methods, deep learning based methods extract facial features au-tomatically in an end-to-end manner, capturing both low-level features like mouth and eyes, and high-level features, such as overall facial expressions si-multaneously through the hierarchical layers. This improves robustness and generalization. However, CNNs require a large labeled dataset to avoid over-fitting and their performance can decrease in the presence of some challenges such as gender, age, and cultural differences in facial expressions; imbal-anced datasets; variations in lightning, pose, and image quality. To over-come the overfitting problem encountered with deep learning based meth-ods, many studies benefit from pre-trained models that have been trained on large datasets for other tasks such as face recognition. These models are then fine-tuned on smaller size FER datasets to adapt the learned features specifically for the emotion recognition task. Kaya et al. [38] showed that VGG-Face trained on the large-scale ImageNet dataset and fine-tuned on the FER2013 dataset, improves the accuracy of FER. This approach allows the transfer of the existing knowledge from another task; thus converges faster and generalizes better. Some CNN-based methods further enhance performance by focusing on the most relevant facial features using attention mechanisms [39, 40]. These mechanisms assign greater weight to the most relevant regions of the face, such as the mouth, eyes, and eyebrows. While most research in FER focuses on still images, there are some works that combine facial features in consecutive frames. For instance, Zhang et al. proposed the Parallel Hierarchical Recurrent Neural Network (PHRNN) [41] that can learn complex temporal and spatial features from facial structures in videos and improves FER accuracy. These temporal dependencies can also be used to recognize micro-expressions. Another method, Hierarchical Transformer Network (HTNet) [42] uses a transformer layer that captures local temporal features and an aggregation layer that extracts local and global facial features, especially for micro-expression recognition in videos. A more recent approach, the Four Player GroupGAN [43], has been proposed for recognizing weak facial expressions. 
+
+2.3. Classification of Facial Expressions 
+
+In the final stage, the learned features are classified into one of the seven basic emotions. 6In traditional methods, feature extraction and classification are applied independently. In deep learning based approaches, the learned features are classified using an additional layer in an end-to-end way. In CNN-based methods, softmax loss is used generally to minimize the cross-entropy be-tween the ground-truth distribution and the estimated distribution of the classes [23]. 
+
+3. Proposed Work 
+
+The proposed method first detects and align the faces in order to remove the redundant part of the facial images that do not convey any information about the emotion. The preprocessed images are then trained by deep CNN models using data augmentation and random weighted sampling. 
+
+3.1. Data Preprocessing 
+
+RetinaFace [19] has been preferred for face detection since RetinaFace achieves high detection accuracy even in difficult conditions where MTCNN [31] fails such as small faces, low lightning conditions etc. RetinaFace allows to detect faces with high accuracy and also enables to automatically discard the images that do not contain faces, herey improving the quality of the dataset. RetinaFace [19] is a single-shot multi-level face localization method that was trained on the WIDER FACE dataset [44]. The algorithm detects faces and outputs five facial landmarks: right eye, left eye, nose, left mouth corner and right mouth corner. It is particularly effective in handling small and chal-lenging faces due to its robustness and accuracy among various image sizes and orientations. The method uses Feature Pyramid Networks (FPNs) to de-tect multi-scale features and a high-resolution backbone network, ResNet50, to extract detailed feature maps which is crucial for detecting small faces. The preprocessing steps applied to input images before training are dis-played in Figure 1. The input image is already a facial image. RetinaFace [19] detects faces and creates a bounding box around the detected faces, which is then cropped. The pixel coordinates of the five facial landmarks are detected in the next stage. In the proposed work, we use a rectangular box around each landmark and apply a mask to the facial image to remove the parts of the face which is not included in these regions. The cropped image is displayed in the last step of Figure 1. 7Figure 1: The preprocessing steps applied to images for face alignment and landmark detection.  
+
+> (a) (b)
+> Figure 2: The distribution of the data: (a) for each class and for each stage of the data preprocess, (b) for the augmented merged dataset consisting of original, aligned, cropped images.
+
+The distribution of the dataset has been displayed in Figure 2. Figure 2a displays the distribution of the original dataset, aligned and cropped dataset. The original dataset contains the images from three datasets: FER+, CK+ and KDEF. The aligned dataset is obtained from the detected faces in the original dataset using RetinaFace. If the face is not detected, the image is removed from the dataset. This is the reason of the decrease in dataset size. The cropped dataset is created by masking the areas outside the five facial landmarks. If the landmarks are not detected, the image is discarded. The original, aligned, and cropped datasets are merged to form a larger dataset. Although this larger dataset contains some repeated images (ei-ther original, aligned, or cropped versions), it increases the dataset size and variation by a process like offline augmentation. We call this dataset as the augmented merged dataset to avoid confusion. The data distribution of 8the augmented merged dataset can be seen in Figure 2b. Even though the dataset is large enough in total, the minority classes disgust and fear are still underrepresented. To avoid the overfitting of the learning algorithm to the majority classes, the following techniques have been applied: 
+
+• Early stopping [45] is used to prevent the model from overfitting by halting training when performance on the validation set stops improv-ing. 
+
+• On-the-fly data augmentation [20] is applied during training to introduce more variations in the dataset, improving the model’s ro-bustness. 
+
+• Weighted random sampling [21] is used to reduce the class imbal-ance. This technique first calculates a weight for each class c using 
+
+weight c = 1
+
+nc/N , (1) where nc is the number of samples in class c and N is the total number of samples in the dataset. The method then assigns different proba-bilities to each sample during batch sampling based on class weights 
+
+weight c. The high weight assigned to minority classes ensures that these images are selected more frequently during training, helping bal-ance the dataset and improve the learning of underrepresented classes. 
+
+3.2. Feature Learning 
+
+In this study, we propose to use powerful CNN architectures for FER which allow deeper models while overcoming the vanishing gradient problem. Among several CNN architectures, we have used DenseNet [46] , EfficientNet [47] and ResNet [48, 36]. DenseNet’s dense connections allow the feature values to propagate more effectively and enable deeper networks with improved performance on com-plex facial features [46]. EfficientNet [47] uses a compound scaling method to optimize depth, width, and resolution, ensuring high accuracy and compu-tational efficiency. ResNet [48], with its residual connections, addresses the vanishing gradient problem directly which enables to train very deep net-works without losing valuable information during backpropagation. Using these architectures, we can build deeper CNN models capable of capturing 9Properties FER+ CK+ KDEF # of channels 1 1 3Image size 48 × 48 48 × 48 562 × 762 Total images 35,269 927 2,938 # of classes 8 7 7
+
+> Table 1: Comparison of the dataset properties
+
+more complex patterns in facial expressions, which is crucial for the accuracy of FER systems. 
+
+4. Experimental Results 
+
+In this section, we evaluate the performance of the proposed method. We first introduce the datasets for this experiment, followed by the explanation of the evaluation criteria and experimental setup. Finally, the evaluation results are reported. 
+
+4.1. Dataset 
+
+We merged three distinct datasets, FER+ [18], CK+ [16], and KDEF [17] to evaluate the proposed methods. Table 1 presents the details of the three datasets in terms of number of channels, image size, number of images, and number of emotions. The proposed FER approach recognizes seven main emotions: Angry, Disgust, Fear, Happy, Neutral, Sad and Surprise. The FER+ dataset originally contains images from 8 emotion classes, the 7 main emotions and an additional contempt class. The contempt class was removed from the dataset for data consistency. The images in FER+ and CK+ are grayscale images of size 48 ×48. The images in the KDEF database are colored images of size 562 × 762. The distribution of each dataset is presented in Table 2. While CK+ consists of images from 7 classes, it does not have the neutral class, instead the contempt class, which was also removed. The FER+ dataset is an imbal-anced dataset, with happy and neutral classes being oversampled, whereas disgust and fear classes are undersampled. In CK+, the fear and sad classes are undersampled, whereas the other classes have more balanced distribu-tion. Unlike FER+ and CK+, KDEF is a balanced dataset, with each class containing 419 or 420 images. 10 Emotion FER+ CK+ KDEF Total 
+
+Anger 3,110 135 420 3,665 Disgust 248 177 420 845 Fear 819 75 420 1,314 Happy 9,355 207 420 9,982 Neutral 12,905 0 420 13,325 Sad 4,370 84 419 4,873 Surprise 4,462 249 419 5,130 
+
+Total 35,269 927 2,938 39,134 
+
+> Table 2: Category distribution between the datasets.
+> Figure 3: The images from three different datasets: FER+ (first row), CK+ (second row), KDEF (last row).
+
+11 Figure 4: The seven basic emotions (happy, angry, neutral, fear, disgust, surprise, sad) from the training dataset. The images in the first row are original images, the images in the second row are aligned images, the images in the thid row are the aligned and landmarked images, the images in the fourth line are face images cropped around the landmarks. 
+
+Figure 3 displays the sample images from seven basic emotions of the FER+ (first row), CK+ (second row), KDEF(last row). It can be seen from Figure 3, that three datasets differ in lighting conditions, background, resolution and color space. To ensure consistency, all images are converted to gray-scale and resized to 48 × 48 pixels. To minimize the variations, preprocessing is applied before merging them into a single dataset. After merging, the resulting dataset includes 39,134 facial images from the seven basic emotions. Figure 4 illustrates example facial images from the merged dataset (happy, angry, neutral, fear, disgust, surprise, sad). Reti-naFace [19] is applied to the facial images of the merged dataset to align the faces and remove the background. The second row of Figure 4 displays the images after alignment. These aligned faces are then resized to 48 × 48. In the third row of Figure 4, facial landmarks are displayed together with the face boundary. The last row displays the images where a 10 × 14 rectangular mask around each landmark is applied which discards the rest of the pixels. The dataset is split into 80% for training, 10% for validation and 10% for testing. 12 4.2. Evaluation Criteria 
+
+The performance of the proposed method is evaluated using several met-rics: precision, recall, F1 score, accuracy and confusion matrix. Precision is defined as the ratio of the true positive predictions (TP) to all positive predictions (TP + FP): 
+
+P recision = T P T P + F P (2) Recall is the proportion of true positive predictions (TP) relative to the sum of true positive predictions (TP) and false negative predictions (FN): 
+
+Recall = T P T P + F N (3) F1 score is computed as the harmonic mean of recall and precision: 
+
+F 1Score = 2 × Recall × P recision Recall + P recision (4) The confusion matrix is used to demonstrate the number of correctly and incorrectly predicted samples by a classifier. It is calculated based on four items: TP, TN, FP, FN. Finally, the accuracy rate represents the proportion of correct predictions made on the given test set. 
+
+4.3. Experimental Details 
+
+All experiments are conducted for 100 epochs, optimizing the cross en-tropy loss function. The image dataset is shuffled, and samples are selected randomly and entered into the training, validation, and test sets to ensure the reproducibility of the experiment. The Adam optimizer is employed with a learning rate of 0.001. To prevent overfitting, the model parameters are saved for the best validation accuracy. The experiments are performed on an NVIDIA Tesla K80 GPU and implemented with PyTorch. 
+
+4.4. Results 
+
+We report the classification performance of the proposed method us-ing state-of-the-art CNN architectures: ResNet, DenseNet and EfficientNet. Sprecifically, ResNet models with depths 18, 34 and 50 have been used to investigate the effect of network depth on classification accuracy. 13 Method Face Alignment Landmarks Accuracy Rate (%) DenseNet 
+
+# #
+
+77.07 EfficientNet 68.64 ResNet18 73.81 ResNet34 73.38 ResNet50 74.45 DenseNet 
+
+! #
+
+78.49 EfficientNet 73.01 ResNet18 76.87 ResNet34 75.77 ResNet50 75.95 DenseNet 
+
+! !
+
+76.33 EfficientNet 68.94 ResNet18 73.42 ResNet34 74.76 ResNet50 74.68 
+
+> Table 3: Classification Accuracies on Test Set of the merged dataset
+
+Table 3 lists the accuracy rate of the FER evaluated on the merged dataset. The first five rows reports the accuracy obtained by EfficientNetb0, DenseNet121, and ResNet models (ResNet18, ResNet34, and ResNet50). When face alignment is applied using RetinaFace [19] to all data, the classifi-cation accuracy has increased by 1 − 5%. When the aligned faces are masked around the facial landmarks, the classification accuracy increased by less 1%. We can conclude that, the best FER performance can be obtained on the aligned faces. The accuracy rate is similar for the three different depths of ResNet. Thus, we will conduct the remaining tests of ResNet only using ResNet18. In order to see the effect of data augmentation and random weighted sampling, we have performed the tests using the ResNet18, Densenet and EfficientNet models. In [36], we have compared various agmentation meth-ods and observed that RandAugment [20] increases the generalization and outperforms the other augmentation techniques. Thus, we have only applied RandAugment for on-the-fly augmentation. We have also applied random weighted sampling to overcome the imbalance data problem. Table 4 reports the classification accuracy obtained by ResNet18, DenseNet and EfficientNet 14 Method Rnd. Weight. Samp. Augmentation Accuracy (%) ResNet18 
+
+# #
+
+76.87 EfficientNet 73.01 DenseNet 78.49 ResNet18 
+
+# !
+
+80.85 EfficientNet 75.39 DenseNet 81.35 ResNet18 
+
+! #
+
+74.99 EfficientNet 72.52 DenseNet 78.83 ResNet18 
+
+! !
+
+78.69 EfficientNet 75.75 DenseNet 80.85  
+
+> Table 4: Classification Accuracies on the face aligned merged dataset using weighted random sampling and augmentation
+
+with and without random weighted sampling and augmentation. We have seen that applying only random weighted sampling without augmentation does not increase the overall classification accuracy. If only augmentation is applied, the classification increases by around 2 − 4%. If both augmenta-tion and random weighted sampling is applied during training, the accuracy increases by less than 2%. In order to see the effect of cross-dataset performance, we conducted sev-eral experiments. We first trained our models on the training datasets of FER+, CK+, KDEF and the merged dataset separately. Then, using the obtained four models, we evaluated the test accuracy on the test set of FER+, CK+, KDEF and the merged set. The classification accuracies obtained on the four different training sets and four different test sets are reported in Table 5. We can see that, merging the dataset enhances the classification ac-curacies obtained on CK+ and KDEF databases. The classification accuracy obtained on the FER+ dataset has not changed. To further increase the dataset size, we merged the original, aligned and cropped images of the FER+, CK+ and KDEF datasets, leveraging offline augmentation. The distribution of the augmented merged dataset has been displayed in Figure 2b. The classification accuracies obtained on the test set of the aligned facial images has been reported in Table 6, where we compare 15 Testset Trainset FER+ CK+ KDEF Merged FER+ 82.46 60.61 48.31 79.03 CK+ 23.84 64.65 27.70 25.29 KDEF 33.47 59.60 83.78 38.37 Merged 82.43 66.67 87.5 82.05  
+
+> Table 5: Performance obtained on single dataset and cross-dataset experiments using DenseNet and Random Augmentation
+
+the classification accuracies of ResNet18, DenseNet and EfficientNet with and without random weighted sampling and augmentation. The merging of the datasets for offline augmentation increases accuracy by 2 − 8% in all test cases. Random weighted sampling does not improve overall accuracy, but applying random augmentation during training increases accuracy by 1–4% as shown in Tables 4 and 6. In order to see the effect of face alignment, on-the-fly augmentation, ran-dom weighted sampling and offline augmentation in terms of the classifica-tion accuracies for each class, we represent the confusion matrices in Figure 5. Figure 5a represents classification accuracies obtained by the baseline DenseNet architecture on the merged dataset. We can see the effect of our contributions by comparing the confusion matrices in Figure 5b- 5d with the baseline in Figure 5a. Face alignment enhances the classification accura-cies for angry, disgust, happy, and surprise classes whereas the performance does not change for the other classes. Random Augmentation enhances the classification accuracy for the minority class fear and random weighted sam-pling applied together with random augmentation enhances the classification accuracy for the minority class sad. Finally, we analyze the effect of random weighted sampling on the preci-sion, recall and F1 scores for for each emotion class and report in Table 7. The tests are conducted with and withot random weighted sampling on the test set. Although random weighted sampling does not increase the overall classification accuracy, it increases the precision, recall and F1 score for the minority classes disgust and fear. 16 (a) Baseline tested on merged dataset (b) Baseline tested on aligned merged dataset 
+
+(c) RandAug tested on aligned merged dataset 
+
+(d) RandAug and RandomWeighted Sampler tested on aligned merged dataset 
+
+(e) RandAug tested on augmented merged dataset (Orig-inal + Aligned + Cropped) 
+
+Figure 5: The confusion matrices obtained by the DenseNet121 model 17 Method Rnd. Weight. Samp. Augmentation Accuracy (%) ResNet18 
+
+# #
+
+80.85 EfficientNet 75.11 DenseNet 81.01 ResNet18 
+
+# !
+
+82.05 EfficientNet 77.03 DenseNet 81.50 ResNet18 
+
+! !
+
+80.79 EfficientNet 76.05 DenseNet 80.93  
+
+> Table 6: Classification Accuracies on the face aligned merged dataset trained on the augmented merged dataset using weighted random sampling and augmentation
+
+Without Rnd Weight Samp. With Rnd Weight Samp. Emotion Precision Recall F1 Score Precision Recall F1 Score 
+
+Angry 0.809 0.758 0.782 0.806 0.774 0.789 Disgust 0.800 0.790 0.795 0.849 0.816 0.832 Fear 0.807 0.628 0.707 0.845 0.628 0.721 Happy 0.897 0.920 0.908 0.892 0.903 0.898 Neutral 0.806 0.879 0.841 0.804 0.862 0.832 Sad 0.725 0.572 0.640 0.677 0.594 0.633 Surprise 0.854 0.837 0.855 0.856 0.837 0.846 
+
+> Table 7: Classification performance in terms of Precision, Recall and F1 Score
+
+5. Conclusion 
+
+In this work, we proposed an automatic facial emotion recognition (FER) method using deep CNN architectures DenseNet, ResNet and EfficientNet. We enhanced the training process by integrating several strategies, including data merging from three different datasets (FER+, CK+, and KDEF), face alignment using RetinaFace, and the application of both online and offline data augmentation techniques. Additionally, we addressed the class imbal-ance problem by incorporating random weighted sampling during training. Our experimental results show that all the architectures benefit signif-icantly from both online/offline data augmentation and random weighted sampling. These techniques improved classification accuracy and enhanced 18 the model’s generalization ability, especially for minority classes such as dis-gust and fear. The combination of augmented data and face alignment pro-vided the best results, leading to higher classification accuracy. In future work, we plan to extend our dataset to include more realistic and diverse real-world datasets to evaluate the model’s robustness in challenging, real-world scenarios. Additionally, we aim to explore the potential of deeper network architectures and incorporate transfer learning to further improve model performance. Another important direction for future research will be integrating interpretability methods, such as Gradient-weighted Class Acti-vation Mapping (Grad-CAM) [49] and SHAP [50], to gain deeper insights into the model’s decision-making process and enhance its transparency. Further-more, we recognize the dynamic and context-dependent nature of emotions, and as part of future work, we plan to explore temporal modeling tech-niques to capture the evolving nature of emotions in video-based or real-time scenarios. We also aim to incorporate context-aware methods to improve recognition accuracy by considering surrounding cues, such as environmental or physiological data. 
+
+References 
+
+[1] M. Dhuheir, A. Albaseer, E. Baccour, A. Erbad, M. Abdallah, M. Hamdi, Emotion recognition for healthcare surveillance systems us-ing neural networks: A survey, in: 2021 International Wireless Commu-nications and Mobile Computing (IWCMC), IEEE, 2021, pp. 681–687. [2] B. Ribeiro, G. Oliveira, A. Laranjeira, J. P. Arrais, Deep learning in digital marketing: brand detection and emotion recognition, Interna-tional Journal of Machine Intelligence and Sensory Signal Processing 2 (2017) 32–50. [3] F. Abdat, C. Maaoui, A. Pruski, Human-computer interaction using emotion recognition from facial expression, in: 2011 UKSim 5th Euro-pean Symposium on Computer Modeling and Simulation, IEEE, 2011, pp. 196–201. [4] Y. An, J. Lee, E. Bak, S. Pan, Deep facial emotion recognition using local features based on facial landmarks for security system., Computers, Materials & Continua 76 (2023). 19 [5] P. Ekman, W. V. Friesen, Constants across cultures in the face and emotion., Journal of personality and social psychology 17 (1971) 124. [6] D. Matsumoto, More evidence for the universality of a contempt ex-pression, Motivation and Emotion 16 (1992) 363–368. [7] C. Shan, S. Gong, P. W. McOwan, Facial expression recognition based on local binary patterns: A comprehensive study, Image and vision Computing 27 (2009) 803–816. [8] Y. Shi, Z. Lv, N. Bi, C. Zhang, An improved sift algorithm for robust emotion recognition under various face poses and illuminations, Neural Computing and Applications 32 (2020) 9267–9281. [9] J. Zhou, S. Zhang, H. Mei, D. Wang, A method of facial expression recognition based on gabor and nmf, Pattern Recognition and Image Analysis 26 (2016) 119–124. [10] M. Abdulrahman, A. Eleyan, Facial expression recognition using sup-port vector machines, in: 2015 23nd signal processing and communica-tions applications conference (SIU), IEEE, 2015, pp. 276–279. [11] P. P. Thakare, P. S. Patil, Facial expression recognition algorithm based on knn classifier, International Journal of Computer Science and Net-work 5 (2016) 941. [12] B. Kayao˘ glu, T. Tokta¸ s, S. Kırbız, Cnn-based emotion recognition using data augmentation and preprocessing methods, in: 2023 Innovations in Intelligent Systems and Applications Conference (ASYU), IEEE, 2023, pp. 1–4. [13] ¨O. Ezerceli, M. T. Eskil, Convolutional neural network (cnn) algorithm based facial emotion recognition (fer) system for fer-2013 dataset, in: 2022 International Conference on Electrical, Computer, Communica-tions and Mechatronics Engineering (ICECCME), IEEE, 2022, pp. 1–6. [14] M. R. A. Borgalli, S. Surve, Deep learning for facial emotion recogni-tion using custom cnn architecture, in: Journal of Physics: Conference Series, volume 2236, IOP Publishing, 2022, p. 012004. 20 [15] S. Z. Jumani, F. Ali, S. Guriro, I. A. Kandhro, A. Khan, A. Zaidi, Facial expression recognition with histogram of oriented gradients using cnn, Indian Journal of Science and Technology 12 (2019) 1–8. [16] P. Lucey, J. F. Cohn, T. Kanade, J. Saragih, Z. Ambadar, I. Matthews, The extended cohn-kanade dataset (ck+): A complete dataset for ac-tion unit and emotion-specified expression, in: 2010 ieee computer so-ciety conference on computer vision and pattern recognition-workshops, IEEE, 2010, pp. 94–101. [17] M. G. Calvo, D. Lundqvist, Facial expressions of emotion (kdef): Iden-tification under different display-duration conditions, Behavior research methods 40 (2008) 109–115. [18] E. Barsoum, C. Zhang, C. C. Ferrer, Z. Zhang, Training deep networks for facial expression recognition with crowd-sourced label distribution, in: Proceedings of the 18th ACM international conference on multi-modal interaction, 2016, pp. 279–283. [19] J. Deng, J. Guo, E. Ververas, I. Kotsia, S. Zafeiriou, Retinaface: Single-shot multi-level face localisation in the wild, in: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, 2020, pp. 5203–5212. [20] E. D. Cubuk, B. Zoph, J. Shlens, Q. V. Le, Randaugment: Practical automated data augmentation with a reduced search space, in: Pro-ceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops, 2020, pp. 702–703. [21] M. Shekelyan, G. Cormode, P. Triantafillou, A. Shanghooshabad, Q. Ma, Weighted random sampling over joins, arXiv preprint arXiv:2201.02670 (2022). [22] Y. H. Kwon, N. da Vitoria Lobo, Age classification from facial images, Computer vision and image understanding 74 (1999) 1–21. [23] S. Li, W. Deng, Deep facial expression recognition: A survey, IEEE transactions on affective computing 13 (2020) 1195–1215. [24] A. Tolba, A. El-Baz, A. El-Harby, Face recognition: A literature review, International Journal of Signal Processing 2 (2006) 88–103. 21 [25] M. N. Chaudhari, M. Deshmukh, G. Ramrakhiani, R. Parvatikar, Face detection using viola jones algorithm and neural networks, in: 2018 Fourth International Conference on Computing Communication Control and Automation (ICCUBEA), IEEE, 2018, pp. 1–6. [26] D. Merget, M. Rock, G. Rigoll, Robust facial landmark detection via a fully-convolutional local-global context network, in: Proceedings of the IEEE conference on computer vision and pattern recognition, 2018, pp. 781–790. [27] T. F. Cootes, G. J. Edwards, C. J. Taylor, Active appearance mod-els, IEEE Transactions on pattern analysis and machine intelligence 23 (2001) 681–685. [28] T. F. Cootes, C. J. Taylor, D. H. Cooper, J. Graham, Active shape models-their training and application, Computer vision and image un-derstanding 61 (1995) 38–59. [29] M. Kass, A. Witkin, D. Terzopoulos, Snakes: Active contour models, International journal of computer vision 1 (1988) 321–331. [30] D. Chen, S. Ren, Y. Wei, X. Cao, J. Sun, Joint cascade fac detection and alignment, in: Computer Vision–EECV 2014: 13th European Con-frence, Zurich, Switzerland, September 6-12, 2014, Proceedings, part VI 13, Springer, 2014, pp. 109–122. [31] K. Zhang, Z. Zhang, Z. Li, Y. Qiao, Joint face detection and alignment using multitask cascaded convolutional networks, IEEE signal process-ing letters 23 (2016) 1499–1503. [32] K. He, G. Gkioxari, P. Doll´ ar, R. Girshick, Mask r-cnn, in: Proceedings of the IEEE international conference on computer vision, 2017, pp. 2961– 2969. [33] B. Chaudhuri, N. Vesdapunt, B. Wang, Joint face detection and facial motion retargeting for multiple faces, in: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2019, pp. 9719–9728. [34] E. D. Cubuk, B. Zoph, D. Mane, V. Vasudevan, Q. V. Le, Autoaug-ment: Learning augmentation strategies from data, in: Proceedings of 22 the IEEE/CVF conference on computer vision and pattern recognition, 2019, pp. 113–123. [35] D. Hendrycks, N. Mu, E. D. Cubuk, B. Zoph, J. Gilmer, B. Laksh-minarayanan, Augmix: A simple data processing method to improve robustness and uncertainty, arXiv preprint arXiv:1912.02781 (2019). [36] S. Kırbız, Facial emotion recognition using residual neural networks, Electrica 24 (2024) 818–825. [37] E. Prakasa, Texture feature extraction by using local binary pattern, INKOM Journal 9 (2016) 45–48. [38] H. Kaya, F. G¨ urpınar, A. A. Salah, Video-based emotion recognition in the wild using deep transfer learning and score fusion, Image and Vision Computing 65 (2017) 66–75. [39] K. Wang, X. Peng, J. Yang, D. Meng, Y. Qiao, Region attention net-works for pose and occlusion robust facial expression recognition, IEEE Transactions on Image Processing 29 (2020) 4057–4069. [40] S. Minaee, M. Minaei, A. Abdolrashidi, Deep-emotion: Facial expression recognition using attentional convolutional network, Sensors 21 (2021) 3046. [41] K. Zhang, Y. Huang, Y. Du, L. Wang, Facial expression recognition based on deep evolutional spatial-temporal networks, IEEE Transactions on Image Processing 26 (2017) 4193–4203. [42] Z. Wang, K. Zhang, W. Luo, R. Sankaranarayana, Htnet for micro-expression recognition, Neurocomputing 602 (2024) 128196. [43] W. Niu, K. Zhang, D. Li, W. Luo, Four-player groupgan for weak expression recognition via latent expression magnification, Knowledge-Based Systems 251 (2022) 109304. [44] S. Yang, P. Luo, C.-C. Loy, X. Tang, Wider face: A face detection benchmark, in: Proceedings of the IEEE conference on computer vision and pattern recognition, 2016, pp. 5525–5533. 23 [45] S. Garatti, A. Car` e, M. C. Campi, Complexity is an effective observable to tune early stopping in scenario optimization, IEEE Transactions on Automatic Control 68 (2022) 928–942. [46] A. Patwal, M. Diwakar, A. Joshi, P. Singh, Facial expression recognition using densenet, in: 2022 OITS International Conference on Information Technology (OCIT), IEEE, 2022, pp. 548–552. [47] P. Utami, R. Hartanto, I. Soesanti, The efficientnet performance for facial expressions recognition, in: 2022 5th International Seminar on Research of Information Technology and Intelligent Systems (ISRITI), IEEE, 2022, pp. 756–762. [48] Z. Zhong, J. Li, L. Ma, H. Jiang, H. Zhao, Deep residual networks for hy-perspectral image classification, in: 2017 IEEE international geoscience and remote sensing symposium (IGARSS), IEEE, 2017, pp. 1824–1827. [49] T. A. Araf, A. Siddika, S. Karimi, M. G. R. Alam, Real-time face emotion recognition and visualization using grad-cam, in: 2022 Second International Conference on Advances in Electrical, Computing, Com-munication and Sustainable Technologies (ICAECT), IEEE, 2022, pp. 1–5. [50] S. Lorch, J. Gebele, P. Brune, Towards trustworthy ai: Evaluating shap and lime for facial emotion recognition (2025). 24

@@ -1,0 +1,772 @@
+Title: Personalized Cross-Modal Emotional Correlation Learning for Speech-Preserving Facial Expression Manipulation
+
+URL Source: https://arxiv.org/pdf/2604.25255v1
+
+Published Time: Wed, 29 Apr 2026 00:39:52 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+> 1
+
+# Personalized Cross-Modal Emotional Correlation Learning for Speech-Preserving Facial Expression Manipulation 
+
+Tianshui Chen, Yujie Zhu, Jianman Lin, Zhijing Yang, Chunmei Qing, Feng Gao, and Liang Lin, Fellow, IEEE 
+
+Abstract —Speech-preserving facial expression manipulation (SPFEM) aims to enhance human expressiveness without alter-ing mouth movements tied to the original speech. A primary challenge in this domain is the scarcity of paired data—aligned frames of the same individual with identical speech but differing expressions—which impedes direct supervision for emotional manipulation. While current Visual-Language Models (VLMs) can extract aligned visual and semantic features, making them a promising source of supervision, their direct application is limited. To this end, we propose a Personalized Cross-Modal Emotional Correlation Learning (PCMECL) algorithm that re-fines VLM-based supervision through two major improvements. First, standard VLMs rely on a single, generic prompt for each emotion, failing to capture expressive variations among indi-viduals. PCMECL addresses this by conditioning on individual visual information to learn personalized prompts, thereby estab-lishing more fine-grained visual-semantic correlations. Second, even with personalization, inherent discrepancies persist between the visual and semantic feature distributions. To bridge this modality gap, PCMECL employs feature differencing to correlate the modalities, providing more precisely aligned supervision by matching the change in visual features to the change in semantic features. As a plug-and-play module, PCMECL can be seamlessly integrated into existing SPFEM models. Extensive experiments across various datasets demonstrate the superior efficacy of our algorithm. 
+
+Index Terms —Expression Manipulation, Visual-Language Models, Cross-Modal Correlations, Video Manipulation, Speech-Preserving Animation 
+
+I. I NTRODUCTION 
+
+# SPEECH-PRESERVING facial expression manipulation (SPFEM) is a crucial technology that modifies facial expressions without affecting the mouth movements syn-chronized with speech. This innovation significantly boosts human expressiveness and offers substantial advantages for applications like virtual avatars and film and television pro-duction. Traditionally, achieving accurate emotional portrayal in film requires extensive visual effects and numerous retakes, which are both costly and time-consuming. Conversely, an advanced SPFEM system can efficiently alter expressions in post-production, achieving high-quality results more easily 
+
+Tianshui Chen, Yujie Zhu, and Zhijing Yang are with Guangdong University of Technology (Emails: tianshuichen@gmail.com, 2112303087@mail2.gdut.edu.cn, yzhj@gdut.edu.cn). Jianman Lin and Chunmei Qing are with South China University of Technology (Emails: linjianmancjx@gmail.com, qchm@scut.edu.cn). Feng Gao is with Peking University (Email: gaof@pku.edu.cn). Liang Lin is with Sun Yat-Sen University (Email: linliang@ieee.org). Feng Gao is the corresponding author. This work was supported by the Natural Science Foundation of Guangdong Province(Grant 2025A1515010454) Source Reference NED Ours (NED) 
+
+Fig. 1: Motivating examples showing baseline (NED) failures and our improvements. From left to right: source identity image, reference emotion image, the baseline’s result, and our result. Red boxes highlight key areas for comparison. and effectively. These systems are eagerly awaited for their ability to enhance creative processes and deepen the emotional resonance of visual media. A fundamental challenge in advancing Speech-Preserving Facial Expression Manipulation (SPFEM) is the scarcity of paired supervision. The logistical difficulty of collecting large-scale datasets where an individual utters identical speech with varied emotions makes direct training intractable. Early attempts [1]–[4] sought to bypass this limitation by leverag-ing face reenactment techniques, using reference images for frame-by-frame guidance. However, this paradigm is often plagued by attribute leakage, where unintended features from the reference image compromise the fidelity of the target expression. Subsequent methods [5] employed cycle consis-tency to establish correspondence between unpaired images, yet the reliance on global constraints struggles to model the subtle, localized facial changes inherent to emotional expression. Consequently, existing approaches face a critical trade-off: they either fail to accurately convey the intended emotion or struggle to preserve crucial, speech-synchronized mouth movements, as shown in Fig. 1. This highlights a key open challenge: the need to construct effective, fine-grained supervision signals in the absence of paired data. Intuitively, the rise of Visual-Language Models (VLMs) [6], [7] presents a promising avenue. By aligning visual features 
+
+> arXiv:2604.25255v1 [cs.CV] 28 Apr 2026 2
+
+with rich semantic representations, they offer a potential source of supervision for generating images that match a target emotion. However, directly leveraging off-the-shelf VLMs for SPFEM is hindered by two fundamental challenges. First, standard VLMs employ generic, one-size-fits-all prompts for emotions. As depicted in Fig. 2 (b), this approach fails to cap-ture the nuanced and unique ways different individuals express the same emotion, overlooking critical expressive variations. Second, and more fundamentally, even if personalization were addressed, a significant modality gap persists between the visual and text feature spaces. Due to their inherent structural differences, their distributions remain misaligned even after contrastive pre-training, as illustrated in Fig. 2 (a). This misalignment leads to imprecise and unreliable supervision signals. In this work, we propose the Personalized Cross-Modal Emotional Correlation Learning (PCMECL) algorithm, aframework designed to generate fine-grained and robust su-pervision for SPFEM methods by refining cutting-edge VLMs [6]. Our approach begins by addressing the lack of person-alization through a Personalized Emotional Prompt Learn-ing (PEPL) module. Specifically, PEPL employs a textual inversion-like process to embed an individual’s unique appear-ance into the VLM’s semantic space. This technique learns a new, personalized token that represents the subject’s iden-tity, which is then combined with standard emotion prompts (e.g., ”happy,” ”sad”). By conditioning on this identity-aware prompt, the PEPL module effectively captures the expressive variations unique to each subject and yields highly specific, fine-grained correlations between visual expressions and their semantic representations. With these personalized features, we then tackle the underlying modality gap using Visual-Text Emotional Differencing Correlation (VTEDC) regularization. Instead of directly matching disparate feature distributions, VTEDC provides supervision by enforcing consistency be-tween their differences. During SPFEM model training, we correlate the change between the source and target visual representations with the corresponding change between their semantic representations. This differencing technique provides a precise and stable supervisory signal, ensuring more accurate and expressive emotional manipulation. The contribution can be summarized into four folds:  
+
+> •
+
+We pioneer the use of VLM-based supervision for the SPFEM task, a contribution that also involves being the first to systematically identify and address the dual chal-lenges of the modality gap and lack of personalization.  
+
+> •
+
+We introduce the PEPL module, which solves the per-sonalization problem by utilizing individual visual infor-mation to learn personalized emotional prompts.  
+
+> •
+
+We propose the VTEDC module, which pioneers a new difference alignment paradigm to bypass the modality gap by aligning feature differences rather than absolute features.  
+
+> •
+
+We demonstrate through extensive experiments that our plug-and-play PCMECL framework significantly en-hances the performance of SPFEM models. Gap  
+
+> Happy
+> Sad
+> Angry
+> Gap
+> Gap
+> Text Feature
+> Image Feature
+> (a) Angry
+> Happy
+> Sad (b)
+
+Fig. 2: Challenges in Applying Pre-trained VLMs, vi-sualized via t-SNE of CLIP features from MEAD. (a) 
+
+The inherent modality gap between image (circles) and text (triangles) feature distributions, which remain structurally separated. (b) The limitation of fixed prompts : current VLMs use a ”one-size-fits-all” approach, mapping diverse visual expressions of an emotion to a single cluster defined by a fixed text prompt, thereby failing to capture individual styles. II. R ELATED WORKS 
+
+A. Speech-preserving facial expression manipulation 
+
+Traditional face reenactment [8]–[16] involve an actor repli-cating both the speech and facial expressions as depicted in a reference video. The main methods for face reenactment involve the parameterization of facial images [1], [17]–[22], such as 3DMM parameters and action units, and then adjusting these parameters to achieve the desired facial configurations. For instance, ICface [2] manipulates the pose and expression of a given face image through interpretable control signals, which include head pose angles and action unit values. GAN-imation [23] utilizes adversarial learning, guided by action unit (AU) annotations [24], to represent facial movements in a continuous space. This method allows for the fine-tuning of each AU’s activation intensity and the blending of multiple AUs. Concurrently, there are some works [25]–[31] employ StyleGAN [32], [33] to convert facial images into latent space and then modify latent code to achieve face reenactment. For example, StyleHEAT [25] extends StyleGAN’s latent code to enable motion and expression animation by incorporat-ing video-based and audio-based motion generation modules, along with a calibration network to correct transformation distortions. While current face reenactment technology has advanced significantly, it still falls short of meeting the require-ments for the SPFEM task, which demands the synchroniza-tion of manipulated facial expressions with the oral movements of the original audio. SPFEM focuses on transforming a source video to express a specific emotion while retaining the facial movements aligned with the speech content. For this purpose, previous studies have leveraged facial reenactment techniques. For instance, ICface [2] enables control over head poses and facial ex-pressions by adjusting head pose angles and action units. However, these methods, while adept at replicating expressions and mouth shapes, often fail to retain the essence of speech. Wav2Lip-Emotion [34] enhances traditional lip synchroniza-tion architectures by incorporating advanced emotional mod-3
+
+ulation capabilities. This approach achieves facial emotion manipulation through a combination of L1 reconstruction loss and pre-trained emotion objectives, ensuring accurate synchronization of lip movements while integrating expres-sive emotional cues into the generated outputs. Nevertheless, these methods face significant challenges in maintaining the consistency of facial identity in test images, often resulting in noticeable discrepancies between the generated and original appearances. These limitations hinder their applicability in scenarios where preserving facial identity and achieving high-fidelity visual representation are critical. NED [5] deals with this shortcoming by merging 3DMM parameters for source identification with those for target emotion expression. In addition to these methods, recent frameworks like SSERD [31] have made significant strides by creating syn-thetic paired data for pseudo-supervised training. Similarly, learning spatial-temporal coherent correlations has recently been proposed to better preserve localized facial dynamics during expression manipulation [35]. The success of these ap-proaches underscores a critical insight: access to fine-grained, paired-like supervision is key to achieving high-quality results. This motivates our work to explore a novel paradigm for generating such supervision directly from real data using VLMs, rather than relying on synthetic data generation. Despite these advancements, most methods still lack the mechanisms for precise and personalized emotional supervi-sion, a key challenge that remains open in the SPFEM domain. 
+
+B. Visual-language model 
+
+Visual-Language Models (VLMs) [6], [7], [36], [37] repre-sent a powerful integration of techniques from both computer vision and natural language processing, enabling the process-ing of both visual content and associated textual information. These models are typically trained on vast datasets, which allows them to develop a robust capacity for semantic under-standing across multiple domains. Their advanced semantic capabilities position VLMs to serve as foundational models for a variety of tasks [38]–[41], or to be fine-tuned for specific downstream tasks [42]–[45], enhancing performance through additional supervision. For example, research like [46] employs the CLIP model [6] to leverage contrastive learning, establishing meaningful connections between images and text in a shared embedding space. This approach has proven effective for generating emotional talking head models that convey lifelike expressions and behaviors. Similarly, work such as [47] demonstrates how CLIP can be used to adapt pre-trained image generators across domains. By leveraging CLIP’s semantic understanding, the method enables text-driven image editing without requiring ex-tensive training data, extending the applicability of generative models to new domains. In [48], a novel method is introduced for transferring high-level semantic attributes from a target image to a source image. This method integrates the StyleGAN generator with CLIP’s semantic encoder, ensuring both iden-tity preservation and high-level feature transfer. It surpasses existing techniques in style transfer, domain adaptation, and text-based semantic editing, underscoring CLIP’s versatility in guiding complex image transformations. These approach highlights CLIP’s potential in bridging semantic understanding and generative modeling for flexible domain adaptation. These works highlight the immense potential of VLMs for semantic image manipulation. However, directly applying them to fine-grained supervision tasks like SPFEM introduces specific challenges, such as the inherent modality gap and the need for personalization, which have not been systematically addressed. III. P RELIMINARIES 
+
+Our proposed method, PCMECL, serves as a plug-and-play supervisory framework for existing Speech-Preserving Facial Expression Manipulation (SPFEM) models. In our experi-ments, we demonstrate its effectiveness on two representative baselines with distinct underlying mechanisms: NED [5] and ICface [2]. To provide the necessary context for our work, we briefly introduce their core concepts to provide context for our contributions. 
+
+a) NED: NED is a two-stage model that leverages a 3D Morphable Model (3DMM) for disentanglement. Its first stage analyzes the input video to extract 3DMM parameters representing identity and expression. The second stage, an Emotion Manipulator inspired by StarGANv2 [49], translates the expression parameters to a target emotion before the final rendering. The training is guided by a composite loss function, 
+
+LNED , which includes adversarial, style reconstruction, cycle consistency, and speech-preserving terms. This parameter-based manipulation offers explicit control but is highly de-pendent on the accuracy of the initial 3DMM parameter estimation. 
+
+b) ICface: In contrast, ICface is a single-stage, GAN-based model for face reenactment, controlled via interpretable Action Units (AUs). It consists of two main generators: one to create a neutral face representation and another to perform the reenactment based on target AUs. Its composite loss function, 
+
+LICface , is designed around this GAN framework and includes adversarial, cycle consistency, AU control, and identity losses. The expressiveness of this approach is therefore tied to the quality of the driving AUs, which can be challenging to decouple from other facial attributes. 
+
+c) SSERD: SSERD is a recent framework that focuses on self-supervised emotion representation disentanglement. A key innovation of SSERD is its paired data construction module, which leverages a pretrained StyleGAN to generate synthetic paired data. This allows for a form of detailed, pseudo-supervised training. The model is trained with a hybrid strat-egy, combining this synthetic paired data with real unpaired data to enhance realism. 
+
+d) Core Limitation of Baselines: Despite their differ-ent architectures and supervisory sources (e.g., the self-supervision in NED and ICface, and the pseudo-supervision 4𝐀 𝐀 
+
+SPFEM 
+
+> 𝐀 𝐀
+> 𝐀 𝐀
+> 𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> 𝐀
+> Constraint
+> Consistency
+
+VTEDC  
+
+> 𝐀 𝐀 →𝐀
+> 𝐀 𝐀 𝐀 →𝐀
+> 𝐀
+> 𝐀 𝐀
+> source / target
+> prompt
+> 𝐀 s
+
+PEPL     
+
+> 𝐀 𝐀
+> 𝐀 /𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> 𝐀 /𝐀 𝐀
+> 𝐀
+
+PCMECL  
+
+> Visual
+> Guider
+> Emotion
+> Projector
+> Text
+> Encoder
+> Personalized
+> prompt
+> : Learnable : Fixed
+> Visual
+> Encoder 𝐀𝐀
+> 𝐀 𝐀
+> correspondence
+
+Fig. 3: Overview of the PCMECL supervisory framework. During SPFEM training, the frozen PCMECL module computes a supervisory loss from the source ( Is) and target ( It) images. Its PEPL module process each image via two parallel branches: a visual branch extracts an emotion-centric visual embedding ( If ), while a textual branch uses a neutral reference image Ir
+
+to create a personalized text embedding ( T f ). The VTEDC mechanism then aligns the difference vectors between the source and target embeddings ( Ifs→t and T fs→t) to provide a supervisory signal for optimizing the SPFEM model. Visual   
+
+> Guider
+> Visual
+> Guider
+> Emotion
+> Projector
+> Personalized
+> prompt
+> Text
+> Encoder
+> Visual
+> Encoder
+> 𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> 𝐀
+> 𝐀 𝐀
+> Fixed prompt
+> e.g. “happy”
+> Text
+> Encoder
+> 𝐀 𝐀
+> 𝐀
+> Personalized
+> prompt
+> 𝐀 𝐀
+> Fixed prompt
+> e.g. “angry”
+> correspondence
+> non-correspondence
+> Contrastive
+> Learning
+
+Fig. 4: Overview of the PEPL module’s contrastive pre-training. The learnable Emotion Projector extracts an emotion-centric visual embedding Ifs from an emotional im-age Is. Concurrently, the learnable Visual Guider extracts a personalized embedding from a reference image Ir , which is then concatenated with a corresponding text prompt to form the positive pair T fs , and with a non-corresponding prompt for the negative pair T fk . The training objective is to align the positive pair (Ifs , T fs ) while separating the negative pair 
+
+(Ifs , T fk ).in SSERD), all three baselines are fundamentally constrained by the lack of large-scale, real paired data for emotional su-pervision. Consequently, they rely on indirect, self-supervised signals (e.g., cycle-consistency). As we illustrate in our mo-tivating examples (Fig. 1), this weak form of supervision can only optimize for geometric plausibility, not semantic accuracy, leading to artifacts and inaccurate expressions. Our PCMECL framework is specifically designed to address this supervisory gap. For a detailed breakdown of the complete loss functions for both NED and ICface, please refer to Section I of the Supplementary Material. IV. M ETHOD 
+
+A. Personalized Emotional Prompt Learning 
+
+To address the dual challenges of providing emotional supervision and ensuring it is personalized, which repre-sents a key limitation of existing approaches, we propose the Personalized Emotional Prompt Learning (PEPL) module. PEPL is designed to overcome the ”one-size-fits-all” nature of standard VLM supervision by generating identity-aware emotional prompts. It achieves this by introducing a learnable Visual Guider and an Emotion Projector by exploring the intrinsic relationships between the modalities within the VLM, as illustrated in Fig. 4. The Visual Guider is responsible for capturing individual appearance information, which refers to the stable, identity-defining characteristics of a person extracted from a neutral reference image ( Ir ). This includes features like bone struc-ture, inherent skin texture or subtle facial lines that define how a specific person uniquely expresses emotions. By using a neutral image, we enable effective feature disentanglement, providing a clean and unbiased identity baseline, free from the influence of any emotional muscle activation. This prevents the identity representation from being contaminated by features from an emotional reference, which would otherwise create conflicts and artifacts when generating a different target emo-tion. The Emotion Projector is designed to extract fine-grained 5
+
+visual features corresponding to a specific emotion from the source image Is.Our goal is to harness the inherent correlation between the visual and semantic modalities within a VLM to learn emotion-centric visual embeddings and personalized text em-beddings. Recognizing that each individual expresses the same emotion uniquely, and acknowledging the difficulty of using existing pre-trained identity feature extractors to capture iden-tity information and embed it into the latent space of the VLM due to domain gaps, we propose a dynamic and condi-tional adaptation of textual inversion to generate personalized emotional prompts. While standard Textual Inversion learns a single, fixed pseudo-word for a visual concept, our approach trains the Visual Guider module to generate a unique, identity-aware embedding for each individual. This dynamically gen-erated embedding functions as a conditional pseudo-word that represents the person’s unique expressive style. Crafting this personalized emotional target signal is the core innovation of our PEPL module, which is then used to guide the SPFEM model. Formally, for the PEPL pre-training stage, we utilize an emotional image Is, its corresponding text prompt Ts, anon-corresponding prompt Tk, and a neutral facial image 
+
+Ir of the same identity as. Crucially, the PEPL module is trained via a cross-modal contrastive learning objective, not direct supervision using emotion labels. This objective leverages carefully constructed positive and negative pairs to learn discriminative features. The process to generate these personalized embeddings is formalized as follows. Specifically, we first tokenize the individual’s appearance information using a Visual Guider and then concatenate it with the tokenized results of the corresponding and non-corresponding emotion text prompts: 
+
+T ps = concat (E(Ir ), F t(Ts)) 
+
+T pk = concat (E(Ir ), F t(Tk)) (1) Here, T ps and T pk represents personalized text prompt, concat (·) represents the concatenation operation, Ft(·) refers to the process of converting text prompt into a sequence of tokens within the VLM, and E(·) denotes a learnable Visual Guider, which utilizes a IResNet-based face recognition network to process a reference image, designed to extract individual-specific information. The inclusion of Ir serves to prevent emotional leakage. Next, we feed the concatenated tokens into the VLM’s semantic encoder to generate the personalized text embeddings: 
+
+T fs = Et(T ps )
+
+T fk = Et(T pk ) (2) where Et(·) represents the semantic encoder in the VLM, which remains fixed during the learning process. For emotion-centric visual embedding, while the VLM’s visual encoder can capture emotional cues from images, these cues are not always specific to facial features due to biases in the training data. Various elements, such as colors, can also evoke emotions. To address this, we propose using an Emotion Projector to isolate and emphasize emotion-related information within the visual data: 
+
+Ifs = Fp(Ev (Is)) (3) Among them, Ev (·) denotes the fixed visual encoder in the VLM, while Fp(·) is learnable. To enhance the learning of emotion-centric visual and personalized text embeddings, we leverage the inherent connections between visual and semantic modalities within the VLM. Specifically, embeddings correctly paired with their respective emotions are designated as positive samples, while incorrectly paired embeddings are treated as negative samples. Through cross-modal emotional correlation learning, we maximize the similarity between positive samples and minimize it for negative ones: 
+
+L1 = (1 − sim (T fs , I fs )) + sim (T fk , I fs ) (4) where sim (·) represents the similarity calculation. Through backpropagation, we can guide E(·) to leverage the visual priors from the VLM’s visual encoder to learn information about how a specific individual expresses emotions from visual images. Simultaneously, we can guide Fp(·) to utilize the emotional semantic priors from the VLM’s semantic encoder to further capture emotional cues from the visual information. 
+
+B. Visual-Text Emotional Differencing Correlation Regular-ization 
+
+Once the PEPL module is pre-trained, it can extract aligned, personalized emotional embeddings from image-text pairs. A straightforward approach to supervise the SPFEM model would be to enforce consistency between the visual features of its output image and the textual features of the target emo-tion prompt—a strategy we term absolute feature alignment. However, this intuitive idea faces a fundamental challenge: the inherent modality gap. As illustrated in Fig. 2 (a) and substan-tiated by our high-dimensional feature analysis in Section III of the Supplementary Material, a structural discrepancy exists between the visual and textual feature manifolds. Forcing a direct, absolute alignment between features from these distinct spaces can introduce biases and hinder learning. To address this, we propose the Visual-Text Emotional Differencing Correlation Regularization (VTEDC), a novel paradigm that focuses on difference alignment instead. This approach offers two key advantages. First, by aligning the relative change from a source to a target emotion (i.e., the difference vector) rather than the absolute states, it cleverly bypasses the need to align absolute positions across disparate modalities. We only require the direction of change to be consistent, which is a more robust and achievable objective. Second, this process implicitly performs feature disentangle-ment. The visual difference vector, computed between two images of the same individual, naturally cancels out static, emotion-irrelevant factors such as identity and background. This yields a purer representation of the emotional variation, reducing noise and enhancing the precision of the supervision. This makes the supervision signal robust not only to the modality gap but also to intra-subject variations. 6“Neutral ” “Angry ”“Neutral ” “Happy ”
+
+Fig. 5: A t-SNE visualization of the learned feature dif-ference space, using features extracted from the MEAD dataset. Each point is a difference vector from a ”neutral” source: blue circles ( Ifs→t) are visual differences; green tri-angles ( T fs→t) are their corresponding text differences; and orange triangles ( T fs→k) are non-corresponding text differences (e.g., ”neutral” →”angry” text vs. ”neutral” →”happy” image). The tight clustering of corresponding blue/green pairs (e.g., ”happy”) and their clear separation from non-corresponding orange pairs (e.g., ”angry”) demonstrates a discriminative and cross-modally consistent feature difference space. Our ablation study in Table IV provides strong empirical evidence for this paradigm, showing a significant performance drop when VTEDC is removed. Formally, the input image, output image, source emotion prompt, and target emotion prompt of the SPFEM model are denoted as Is, It, Ts, and Tt, respectively. We sequentially feed the visual-text pair Is and Ts, and the visual-text pair 
+
+It and Tt into the PEPL module to obtain their correspond-ing personalized text embeddings and emotion-centric visual embeddings: 
+
+Ifs , T fs = Fpepl (Is, T s)
+
+Ift , T ft = Fpepl (It, T t) (5) Next, we calculate the difference between Ifs and Ift , and the difference between T fs and T ft in the aligned embedding space: 
+
+Ifs→t = Ifs − Ift
+
+T fs→t = T fs − T ft
+
+(6) We enforce that the difference between Ifs and Ift in the embedding space aligns with the difference between T fs and 
+
+T ft to guide the SPFEM model in generating visual images that more accurately reflect the target emotion: 
+
+L2 = 1 − sim (Ifs→t, T fs→t) (7) 
+
+L2 is built upon PEPL and VTEDC. The former enhances the current VLM by incorporating a learnable Visual Guider and an Emotion Projector to obtain personalized text embed-dings and emotion-centric visual embeddings. The latter, lever-aging the visual-semantic embedding pairs learned through PEPL, further reduces the gap within modalities using the difference technique. Through backpropagation, L2 serves as a more precise supervisory signal for emotion generation in the SPFEM model. 
+
+C. SPFEM Training with PCMECL Supervision 
+
+With the PEPL module pre-trained (Section IV-A) and the L2 loss defined (Section IV-B), we now formulate the complete end-to-end training objective for an SPFEM model supervised by our PCMECL framework. 
+
+Overall Objective. The training of the SPFEM model is guided by a composite loss function, Ltotal , which combines the baseline’s original objective LSPFEM with our proposed cross-modal regularization term L2:
+
+Ltotal = LSPFEM + λL2 (8) where LSPFEM (defined in Section III) ensures the fundamen-tal generation quality, such as identity preservation and lip-synchronization. Our L2 loss provides the crucial emotional-semantic guidance. The hyperparameter λ balances these two objectives. 
+
+Training Pipeline. The end-to-end training process pro-ceeds as follows. In each training step, a batch of data is passed through the SPFEM model’s generator to produce a set of output images It. Subsequently, these generated images 
+
+It, along with the corresponding source images Is and text prompts Ts, T t, are fed into the frozen, pre-trained PEPL module. The PEPL module computes the feature embeddings required to calculate the L2 loss, as detailed in Section IV-B. Finally, the total loss Ltotal is computed, and its gradients are backpropagated to update the parameters of the SPFEM generator. This joint optimization process steers the generator towards producing results that are not only high-fidelity but also emotionally accurate and consistent with the textual guidance. A key advantage of our framework is its robustness and practicality. Once pre-trained, the PCMECL module operates as a frozen, plug-and-play supervisory block. This paradigm of pre-training the module only once ensures a highly consistent application method that requires no further tuning during the main SPFEM training. As demonstrated in our experiments (Section V), this single frozen module shows consistent effec-tiveness across different baseline architectures and datasets, validating its robustness. 
+
+D. Implementation Details 
+
+PEPL Details. The PEPL module is composed of two key components: the Visual Guider and the Emotion Projector. Besides, the PEPL module is built upon the pre-trained CLIP-ViT-B/32 model as its VLM backbone. The Visual Guider employs a hybrid ”frozen backbone + learnable head” architecture. The backbone is a pre-trained and frozen IResNet50-based network, while the learnable MLP head is trained jointly with PEPL’s contrastive learning objective. This design leverages powerful priors for robust identity representation with adaptability for personal nuances. 7
+
+The Emotion Projector is designed to extract fine-grained visual features corresponding to a specific emotion from the source image Is. To achieve high precision and avoid feature entanglement between different emotions, we implement it as seven distinct and specialized networks corresponding to the seven emotions in dataset. Each projector is a three-layer MLP with hidden dimensions of [512, 256, 512] and a ReLU acti-vation function. This multi-network design is an engineering trade-off for high fidelity in emotion representation, validated by our ablation study in Section V of the Supplementary Material, as it captures nuanced differences better than a single network. During pre-training, the parameters of the Visual Guider’s MLP and Emotion Projectors are jointly optimized via a cross-modal contrastive learning objective, guided by carefully constructed positive and negative pairs. We construct positive pairs from matching image-text em-beddings and negative pairs using a structured sampling strat-egy that selects semantically distant emotions. This strategy, detailed in Section VI of the Supplementary Material, ensures a robust learning signal. The contrastive learning objective, as described in Eq. (4), leverages these pairs to maximize positive similarity and minimize negative similarity. Through backpropagation, the model’s parameters are updated to learn discriminative features. Once pre-trained, all learnable parameters within the PEPL module are frozen. The module then combines with VTEDC to provide supervisory signals for the SPFEM model. 
+
+Training Details. During the training phase of PEPL module, we leveraged the GeForce RTX 3090 which the amount of memory is 24G, and implemented a Stochastic Gradient Descent (SGD) [50] optimizer. We initiated the training with an SGD optimizer learning rate set at 0.1. Strategically, we reduced the learning rate by an order of magnitude, decrementing it by a factor of 10 at the second, fourth, and sixth epochs. This approach was part of a 10-epoch training regimen designed to refine the model’s learning efficiency and convergence. Following the training of the PEPL module, we incorporate it with the VTEDC strategy into the SPFEM model’s training process for the supervision of emotional manipulation. In the SPFEM model training process, we fine-tune the key hyperparameter λ in our overall loss function (Ltotal in Eq. 8) balances the baseline loss and our PCMECL supervision. Based on a sensitivity analysis detailed in Section IV of the Supplementary Material, we found that different baselines require different optimal values. For all our experi-ments, we set ( λNED = 0.4) for the NED baseline and ( λICface 
+
+= 0.05) for the ICface baseline. These values were chosen as they provided the best trade-off between FAD, LSE-D and CSIM on our validation set. V. E XPERIMENTS 
+
+A. Experiment Setting 
+
+Datasets. MEAD [51] comprises 60 speakers, which each speaker records 30 videos in each emotional state (i.e., angry, disgusted, fear, happy, neutral, sad, surprised). For the training of our PEPL module, we selected videos from 36 speakers that contain 7560 videos. To evaluate its performance, we incorpo-rate it into SPFEM models, NED and ICface. And chose 6 dis-tinct speakers (M003, M009, M012, M030, W015 and W029) that contain 1260 videos to train SPFEM models. We randomly assigned 90% of these video for training and the remaining 10% for testing. Furthermore, to evaluate the generalization capability of our framework, we conducted experiments on the RAVDESS dataset [52]. Crucially, these experiments were performed in a zero-shot, cross-dataset setting: the entire model, including both the SPFEM baseline (NED/ICface) and our PCMECL module, was trained exclusively on MEAD and then directly tested on RAVDESS without any retraining or fine-tuning. Specifically, we also chose 6 speakers (actors 1-6), including 168 videos. 
+
+Evaluation Metrics. We demonstrate the performance of our method through a comprehensive evaluation on multiple metrics, which have been widely used in previous research. We employ these metrics for evaluation: 1) Frechet Arcface Distance (FAD) [53] evaluate realism of video by calculating the divergence between the feature vectors of generated and authentic videos, utilizing current advanced face recognition technology [54]. A lower FAD score signifies a higher degree of realism; 2) Lip Sync Error Distance (LSE-D) [55] gauges the precision of lip-audio synchronization, employ-ing a pre-trained model [56] to quantify the discrepancies between lip movements and audio tracks. A lower LSE-D value corresponds to higher lip-audio synchronization; 3) Consine similarity (CSIM) [57] evaluate emotional similarity by comparing similarity of the embeddings extracted from a state-of-the-art expression recognition network in both gener-ated and real videos. A higher CSIM score indicates a greater level of emotional similarity. Our results are represent under two settings: inter-identification, where emotion reference and source video share the same speaker, and cross-identification, involving difference speakers. For a more rigorous treatment of these metrics, including their precise mathematical formu-lations and step-by-step calculation procedures, please refer to Section II of the Supplementary Materials. 
+
+B. Quantitative Comparisons 
+
+We begin by presenting the comprehensive performance comparisons on the MEAD dataset in Table I. Our framework demonstrates consistent improvements across distinct architec-tures, from the two-stage method (NED) and the single-stage method (ICface) to the latest state-of-the-art method (SSERD). 
+
+Performance on the MEAD Dataset. Integrating PCMECL into NED significantly enhances the resulting image se-quences. In the Inter-ID setting, there is a notable improvement over the NED baseline: FAD decreases from 2.108 to 1.075, LSE-D drops from 9.454 to 9.364, and CSIM increases from 0.831 to 0.915. Among these metrics, CSIM shows particularly significant improvements, attributed to PCMECL’s crucial role in supervising the training via the PEPL module and VT-EDC regularization. Specifically, PCMECL extracts emotion-centric visual embeddings and corresponding personalized text embeddings through the PEPL module. By using VTEDC 8
+
+TABLE I: Comparison results of average FAD, LSE-D and CSIM of NED, ICface, and SSERD with and without our PCMECL in the Inter-ID and Cross-ID settings on the MEAD and RAVDESS datasets. Detailed per-emotion results are provided in Section IX of the Supplementary Material.                                                                                       
+
+> Datasets Methods Inter-ID Cross-ID
+> FAD ↓LSE-D ↓CSIM ↑FAD ↓LSE-D ↓CSIM ↑
+> MEAD
+> NED 2.108 9.454 0.831 4.448 9.906 0.773
+> Ours(NED) 1.075 9.364 0.915 4.300 9.374 0.784
+> ICface 6.795 10.083 0.775 9.540 11.238 0.688
+> Ours(ICface) 6.604 9.566 0.794 9.384 10.261 0.711
+> SSERD 0.740 9.126 0.904 2.453 9.200 0.848
+> Ours(SSERD) 0.655 9.038 0.908 2.441 9.093 0.857 RAVDESS
+> NED 3.057 7.562 0.825 5.412 8.034 0.760
+> Ours(NED) 2.736 7.460 0.833 5.204 7.933 0.772
+> ICface 8.443 8.480 0.755 9.424 11.539 0.677
+> Ours(ICface) 7.972 8.286 0.778 9.207 10.582 0.681
+> SSERD 1.399 7.441 0.894 3.360 7.621 0.790
+> Ours(SSERD) 1.296 7.355 0.899 3.360 7.519 0.801
+
+Fig. 6: Qualitative comparisons of NED with and without PCMECL supervision on the MEAD dataset. to bridge the gap between these two modalities and ensure their alignment, PCMECL guides the generation of visual images that more accurately reflect the target emotion. Addi-tionally, under this supervision, the SPFEM model is capable of generating more realistic facial expressions, resulting in a generated data distribution that is more in line with real data, thereby leading to the noticeable reduction in FAD scores. Similarly, integrating PCMECL into the single-stage ICface method results in significant gains. In the Inter-ID setting, PCMECL improves ICface’s performance with reductions in FAD (6.795 to 6.604) and LSE-D (10.083 to 9.566), and increases in CSIM (0.775 to 0.794). Most importantly, we validate our framework on the state-of-the-art method, SSERD. As shown in Table I, although SSERD achieves impressive baselines using StyleGAN latent space, incorporating PCMECL pushes the boundaries further. Ours(SSERD) achieves the best overall performance, reducing FAD to 0.655 and raising CSIM to 0.908 in the Inter-ID setting. This indicates that while SSERD relies on synthetic paired data which may contain semantic noise, PCMECL 
+
+Fig. 7: Qualitative comparisons of ICface with and without PCMECL supervision on the MEAD dataset. introduces direct VLM-based supervision to enforce stricter alignment with the target emotional concept, yielding the highest fidelity and emotional accuracy. 
+
+Zero-shot Generalization on the RAVDESS Dataset. To demonstrate the robustness of our framework, we conducted a strict zero-shot evaluation on the RAVDESS dataset, where models trained exclusively on MEAD were directly tested without fine-tuning. As reported in the bottom section of Table I, incorporating PCMECL yields consistent improve-ments across all architectures even in this challenging setting. When applied to ICface and NED, our method significantly reduces FAD and LSE-D while improving CSIM in both Inter-ID and Cross-ID settings. Notably, for the state-of-the-art baseline SSERD, our method further enhances its zero-shot performance, reducing FAD from 1.399 to 1.296 and increasing CSIM from 0.894 to 0.899 in the Inter-ID setting. These consistent improvements across varied methods and data domains underscore the robustness of PCMECL as a plug-and-play supervisory module. 9
+
+Fig. 8: Qualitative comparisons of SSERD with and without PCMECL supervision on the MEAD dataset. 
+
+C. Qualitative Comparisons 
+
+In this section, we showcase the visualization results of the representative baselines (NED, ICface) and the state-of-the-art method (SSERD) on the MEAD dataset. We com-pare the outcomes with and without the application of our PCMECL algorithm, as illustrated in Fig. 6, 7, and 8. In these visualizations, we transfer the emotion from a Reference image to a Source identity. The ‘Ours’ column displays the final results supervised by PCMECL, where red boxes and corresponding zoom-in panels are provided to highlight the superior detail in key expressive regions. Additional compar-isons on the RAVDESS dataset are provided in Section X of the Supplementary Material. 
+
+1) Emotional Similarity: The third columns of the figures reveal distinct behaviors across methods. Representative base-lines (NED, ICface) often produce inaccurate or ambiguous expressions. This limitation stems from their failure to provide guidance specific to individuals, which frequently leads to unnatural emotion editing and visual artifacts. While the SOTA method SSERD generates high-quality faces, it relies on synthetic paired data for supervision. This can lead to semantic misalignments, where the generated expression is plausible but fails to fully capture the intensity or specific nuance of the Reference emotion. In contrast, the fourth columns demonstrate that our PCMECL framework, supervised by the PEPL module’s personalized prompts, generates expressions that are semantically much closer to the target. This confirms PCMECL’s ability to provide fine-grained semantic guidance beyond simple geometric deformation or synthetic priors. 
+
+2) Realism: For NED and ICface (Fig. 6 and 7), the base-line results often exhibit significant visual artifacts, such as facial distortions and unnatural blurs, attributed to destructive edits caused by models struggling to match vague or flawed emotional objectives. For instance, NED’s inaccurate 3DMM predictions and ICface’s difficulty in decoupling attributes lead to such distortions. In the case of SSERD (Fig. 8), although the image quality is inherently high due to the StyleGAN backbone, it often suffers from identity texture smoothing or slight identity drift due to the GAN inversion bottleneck. Our method mitigates this by enforcing consistency in the semantic feature difference space via VTEDC. As shown in the zoom-in panels, PCMECL better preserves fine-grained identity details while achieving the desired emotion, leading to visually more natural and faithful results across all architectures. 
+
+3) Lip-Audio Preservation Accuracy: Consistent mouth movement is critical for SPFEM. Baselines often exhibit inconsistent lip shapes when forcing an emotional change. This is rooted in the trade-off between expression intensity and lip-sync constraints. Our PCMECL focuses on aligning feature differences rather than enforcing absolute states, allowing the model to learn emotional changes without distorting the mouth shape required by the audio. As shown in the zoom-in panels, our method preserves the original mouth movements more accurately, ensuring high lip-sync fidelity even under strong emotional transformations. 
+
+D. User study 
+
+We executed online user studies to evaluate the comparative performance of the NED and ICface, both with and without the PCMECL algorithm applied. The study was structured into three key segments: realism, emotion similarity, and mouth shape similarity, across seven fundamental emotions. For each emotion, we select 10 videos from MEAD dataset, amassing a collection of 70 videos. In the study, 25 participants were enrolled to assess three key dimensions of every video. As out-lined in Table II, incorporating PCMECL on MEAD dataset, the NED and ICface method outperformed their standard versions across realism, emotion similarity, and mouth shape similarity. On average, the integration of the PCMECL led to notable enhancements, with a 28% increase in realism, a 24% increase in emotion similarity, and a substantial 36% increase in mouth shape similarity when compared to the NED baseline. Simultaneously, the ICface method, augmented with PCMECL, has seen improvements across all metrics. On average, the integration of PCMECL into the ICface baseline has yielded substantial improvements: a 12% increase in realism, a 20% boost in emotion similarity, and a 26% enhancement in mouth shape similarity. Additionally, Table III showcases the results derived from utilizing the NED and ICface baselines with the RAVDESS dataset. Considering the limited video selection within RAVDESS, we meticulously picked 5 videos per emotion, amassing a compilation of 35 videos. This curated set was subsequently appraised by an identical group of 25 partici-pants. Our research reveals that the adoption of the PCMECL algorithm consistently garners substantially elevated ratings across the three key dimensions assessed within the RAVDESS dataset. 
+
+E. Ablation Study 
+
+To validate that our proposed PEPL and VTEDC modules are necessary advancements over both an original baseline and a standard VLM-based supervision approach, we conducted a 10 
+
+TABLE II: Realism, emotion similarity, and mouth shape similarity ratings of the user study on NED with and without PCMECL, and on ICface with and without PCMECL on MEAD dataset.                                                                                                               
+
+> Emotion Realism Emotion similarity Mouth shape similarity NED Ours(NED) ICface Ours(ICface) NED Ours(NED) ICface Ours(ICface) NED Ours(NED) ICface Ours(ICface)
+> Neutral 32% 68% 55% 45% 48% 52% 45% 55% 40% 60% 40% 60% Angry 28% 72% 45% 55% 28% 72% 32% 68% 31% 69% 34% 66% Disgusted 44% 56% 42% 58% 40% 60% 38% 62% 30% 70% 38% 62% Fear 36% 64% 48% 52% 46% 54% 46% 54% 36% 64% 42% 58% Happy 28% 72% 38% 62% 36% 64% 40% 60% 28% 72% 32% 68% Sad 36% 64% 35% 65% 28% 72% 35% 65% 26% 74% 38% 62% Surprised 48% 52% 48% 52% 40% 60% 42% 58% 33% 67% 36% 64%
+> Avg. 36% 64% 44% 56% 38% 62% 40% 60% 32% 68% 37% 63%
+
+TABLE III: Realism, emotion similarity, and mouth shape similarity ratings of the user study on NED with and without PCMECL, and on ICface with and without PCMECL on RAVDESS dataset.                                                                                                               
+
+> Emotion Realism Emotion similarity Mouth shape similarity NED Ours(NED) ICface Ours(ICface) NED Ours(NED) ICface Ours(ICface) NED Ours(NED) ICface Ours(ICface)
+> Neutral 36% 64% 54% 46% 45% 55% 48% 52% 36% 64% 45% 55% Angry 30% 70% 38% 62% 38% 62% 38% 62% 40% 60% 32% 68% Disgusted 50% 50% 40% 60% 40% 60% 50% 50% 32% 68% 42% 58% Fear 35% 65% 44% 56% 50% 50% 48% 52% 44% 56% 44% 56% Happy 32% 68% 35% 65% 35% 65% 40% 60% 35% 65% 38% 62% Sad 46% 54% 35% 65% 38% 62% 38% 62% 38% 62% 36% 64% Surprised 52% 48% 46% 54% 45% 55% 50% 50% 40% 60% 40% 60%
+> Avg. 40% 60% 42% 58% 42% 58% 45% 55% 38% 62% 40% 60%
+
+comprehensive ablation study. We compare five key settings to demonstrate the step-by-step improvements from our con-tributions. The results, evaluated on the NED baseline under both Inter-ID and Cross-ID settings, are summarized in Table IV. 
+
+1) Effectiveness of VLM-based Supervision: To validate our central claim that leveraging VLMs is a beneficial direction for SPFEM, we first compare the performance of the original baseline (a) NED against a (b) Standard VLM (SVLM) super-vision baseline and our (e) full model. The SVLM baseline directly aligns the visual features of the generated image with the semantic features from a generic text prompt (e.g., ”a photo of a happy face”). As shown in Table IV, the comparison between (a) NED and (b) SVLM demonstrates the potential of leveraging VLMs, with SVLM showing improvements in FAD and CSIM in the Inter-ID setting. However, the performance gain is limited, and even shows a slight degradation in some metrics (e.g., LSE-D). This confirms our hypothesis that a naive applica-tion is insufficient. In stark contrast, the substantial leap in performance from (b) SVLM to (e) Ours across all metrics, especially the significant CSIM increase from 0.848 to 0.915 in the Inter-ID setting, provides direct, compelling evidence for the necessity and effectiveness of our specialized PEPL and VTEDC modules. 
+
+2) Analyses of VTEDC: Building upon the established ben-efits of VLM-based supervision, we now dissect the distinct contributions of our proposed VTEDC modules. VTEDC can eliminate the inherent modality gap in the VLM embedding space by using difference-based techniques. We verify this by comparing it with another baseline that directly constrains the SPFEM output image’s embedding to be consistent with its corresponding emotion text embedding (referred to as ’Ours w/o VTEDC’). As rows (c) and (e) in Table IV show, our approach outperforms NED across all metrics. When we inte-grate VTEDC into the supervision process, we achieve more optimized results. This validates that VTEDC can effectively eliminate differences between modalities and provides better supervision for training the SPFEM model. Another intuitive approach is to directly integrate VTEDC into the PEPL module’s learning process. During PEPL train-ing, the difference technique can be employed to eliminate the modal gap, allowing the learned PEPL module to be seam-lessly integrated into SPFEM. This integration ensures that the output image’s embedding aligns with its corresponding emo-tion text embedding, thereby providing effective supervision. However, applying the difference technique directly during PEPL training presents challenges in achieving convergence, as shown in Fig. 9. The orange curve illustrates that the PEPL module, when trained without VTEDC, achieves complete convergence. In contrast, the blue curve indicates that incorpo-rating VTEDC during PEPL training results in less satisfactory convergence, with the loss stabilizing at around 0.6. This issue may arise because such training does not align well with VLM’s original pre-training approach, thereby failing to fully leverage VLM’s prior knowledge. Consequently, we incorporate VTEDC into the supervision process of SPFEM, utilizing the aligned, fine-grained visual-text embedding pairs learned by PEPL, combined with VTEDC, to offer more accurate supervision. 
+
+3) Analyses of PEPL: Since each individual expresses the same emotion in a unique way, the PEPL module incorpo-rates individual appearance to learn personalized emotional prompts, capturing the expressive variations specific to each person. We validate this by comparing it with a variant that removes the Visual Guider (referred to as ’Ours w/o VG’) and thus relies on non-personalized, generic text prompts for super-vision, isolating the impact of our personalization strategy. As indicated in rows (d) and (e) of Table IV, removing individual appearance results in a deterioration across all three metrics, particularly CSIM and FAD. In the inter-id setting, CSIM drops from 0.915 to 0.852, and FAD increases from 1.075 to 1.812. This decline is due to the lack of consideration for individual differences in expressing the same emotion during 11 
+
+Fig. 9: Convergence curve of the PEPL module training with or without VTEDC strategy. (Blue: with VTEDC; Orange: without VTEDC) supervision, leading to suboptimal performance in CSIM. Additionally, the convergence of data distribution between generated and real expressions contributes to the improvement of FAD. Furthermore, due to inaccuracies in expressions and reduced generation quality, LSE-D is also affected. This demonstrates the crucial role of individual appearance in supervising the SPFEM process. TABLE IV: FAD, LSE-D, and CSIM of NED baseline, SVLM (Standard VLM supervision), Ours w/o VTEDC, Ours w/o VG (Visual Guider), and Ours.                                   
+
+> Settings Methods FAD ↓LSE-D ↓CSIM ↑
+> Inter-ID (a) NED 2.108 9.454 0.831 (b) SVLM 1.915 9.503 0.848 (c) Ours w/o VTEDC 1.143 9.452 0.910 (d) Ours w/o VG 1.812 9.526 0.852 (e) Ours 1.075 9.364 0.915
+> Cross-ID (a) NED 4.448 9.906 0.773 (b) SVLM 4.439 9.782 0.775 (c) Ours w/o VTEDC 4.435 9.466 0.775 (d) Ours w/o VG 4.477 9.591 0.777 (e) Ours 4.300 9.374 0.784
+
+VI. L IMITATIONS 
+
+While our experiments demonstrate PCMECL’s broad ef-fectiveness, its performance is context-dependent. The con-sistently more marginal gains on the ICface compared to the NED model highlight the representational bottlenecks of baselines. Furthermore, the supervisory precision is limited by the VLM’s inherent ability to discern subtle emotions like ”Fear,” resulting in more moderate gains. Finally, metric sensitivities on low-variance tasks like ”Neutral” can lead to performance fluctuations, such as the slight FAD degradation observed in some cases. A detailed analysis is provided in Section VII of the Supplementary Material. In addition to these performance-related factors, there are two key design limitations. First, in line with standard bench-marks in this field (e.g., MEAD, RAVDESS), our framework currently focuses on seven foundational emotions. Conse-quently, its ability to generate more complex or nuanced emotional states has not yet been explored. Second, the current hyperparameter selection relies on a manual search. Although this method ensures stability, its efficiency remains a limitation for rapid deployment scenarios. VII. C ONCLUSION 
+
+In this paper, we introduced PCMECL, a novel plug-and-play supervisory framework that addresses the critical lack of fine-grained, personalized emotional supervision in SPFEM tasks. We were the first to systematically identify and tackle the dual challenges of the modality gap and lack of person-alization in VLM-based supervision. Our solution, featuring the PEPL module with its dynamic textual inversion and the VTEDC module with its innovative difference alignment paradigm, was shown to significantly enhance the emotional accuracy and overall quality of state-of-the-art SPFEM models. Based on the limitations discussed above, we believe promising avenues for future research include the development of co-designed SPFEM and VLM architectures for more synergistic supervision. Another key direction is the exten-sion of our framework to generate more complex, nuanced emotions. Specifically, exploring flexible architectures, such as a Mixture-of-Emotions (MoE) model, offers a promising pathway to represent and manipulate emotions within a con-tinuous or blended space. Finally, improving the practicality of our method through automated hyperparameter tuning presents another important direction for future exploration. We believe PCMECL provides a solid foundation for these future explo-rations in controllable and personalized audio-visual synthesis. 12 
+
+# Supplementary Material 
+
+S1. L OSS FUNCTIONS OF THE BASELINE MODELS 
+
+This section provides a detailed description of the original loss functions for our two baseline models, NED and ICface. In our main paper, both of these are generically referred to as LSPFEM and are combined with our proposed supervisory term, LPCMECL , for end-to-end training. Understanding these baseline objectives is crucial for contextualizing how our framework enhances their performance. 
+
+A. Loss Function of NED 
+
+The training of the NED model [5] is guided by a composite loss function, which is a weighted sum of four key objectives: 
+
+LNED = λadv Ladv + λsty Lsty + λcyc Lcyc + λsp Lsp (S1) Here, Ladv is an adversarial loss to ensure the generated expression sequences are realistic. The style reconstruction loss, Lsty , forces the output sequence’s style to match the one extracted by the style encoder. The cycle consistency loss, Lcyc , encourages the generator to preserve the content of the input sequence by reconstructing the original style vector. Finally, to ensure audio-visual synchronization, the speech-preserving loss, Lsp , explicitly constrains the mouth-related pa-rameters to remain unchanged during the emotion translation process. The λ terms are the corresponding weighting factors. This comprehensive loss function ensures the baseline model generates identity-preserving and well-synchronized results, upon which our PCMECL is applied to enhance emotional accuracy. 
+
+B. Loss Function of ICface 
+
+The ICface model [2] is trained with a different composite objective function, expressed as: 
+
+LICface = Ladv (GN , D )+ Ladv (GA, D )+ λ1LFA +λ2LI +λ3LR
+
+(S2) Here, the total adversarial objective consists of two separate losses, Ladv (GN , D ) and Ladv (GA, D ), which are applied to the neutral-face generator ( GN ) and the reenactment generator (GA) respectively, to ensure photorealism. A key innovation in ICface is the facial attribute reconstruction loss, LFA ,which extends the discriminator’s role to also regress facial attributes from the generated images. The identity classifica-tion loss, LI, employs a pre-trained LightCNN network to ensure the preservation of the subject’s identity. Finally, the reconstruction loss, LR, is an L1 pixel-wise loss that enforces accurate reconstruction of the target frame. The λ terms are the weighting factors for the non-adversarial. 
+
+C. Loss Function of SSERD 
+
+The SSERD model [31] employs a hybrid training strategy that leverages both synthetic paired data and real unpaired data to ensure photorealism and accurate emotion transfer. The overall objective function Lall is defined as: 
+
+Lall = I(Is)[ Lpix + αLlpips ] + λ1Ladv + λ2Lcl (S3) Here, I(Is) is an indicator function that returns 1 for synthetic images and 0 for real images. For synthetic paired data, the model is supervised by the pixel-wise L2 loss ( Lpix ) and the VGG-based perceptual loss ( Llpips ) to enforce content consistency. For all data, a generative adversarial loss ( Ladv )is applied to enhance realism, and a contrastive loss ( Lcl )operates on the latent code to strictly disentangle emotion representations from other attributes. The balance coefficients are set to α = 0 .8, λ1 = 0 .1, and λ2 = 0 .1.When our PCMECL framework is applied, the respective 
+
+LSPFEM for each baseline is combined with our LPCMECL term for end-to-end training. S2. D ETAILED EVALUATION METRICS 
+
+This section provides a comprehensive breakdown of the evaluation metrics used in our study to ensure full clarity, transparency, and reproducibility. We evaluate our method’s performance across three key dimensions: the realism and identity preservation of the generated faces (FAD), the accu-racy of audio-lip synchronization (LSE-D), and the fidelity of the emotional expression (CSIM). The following subsections detail the calculation principles for each metric, their value ranges, and the criteria for interpreting improvements. 
+
+A. Metric Definitions and Calculation Principles a) Fr´ echet Arcface Distance (FAD): FAD is a metric used to evaluate the quality and realism of generated faces, with a strong focus on identity preservation. It is a variant of the widely-used Fr´ echet Inception Distance (FID) [53], but it replaces the general-purpose InceptionV3 network with a pre-trained ArcFace [54] model, which is specialized for face recognition. The calculation proceeds as follows: 1) A large set of real images ( Xr ) and generated images ( Xg ) are collected. 2) Each image is passed through the pre-trained ArcFace model to extract a 512-dimensional feature embed-ding. 3) The collections of embeddings are modeled as two multivariate Gaussian distributions, and their means ( μr , μ g )and covariance matrices ( Σr , Σg ) are calculated. 4) The FAD score is the Fr´ echet distance between these two distributions: FAD = || μr − μg || 2 + Tr (Σ r + Σ g − 2(Σ r Σg )1/2) (S4) 
+
+b) Lip Sync Error Distance (LSE-D): LSE-D measures the synchronization between the lip movements in a video and the corresponding audio track. We follow the method-ology established by state-of-the-art lip-sync models like Wav2Lip [55]. The process is as follows: 1) For a given video segment, the audio waveform and the corresponding mouth region-of-interest (ROI) video frames are extracted. 2) Both are fed into a pre-trained, powerful SyncNet [58] model. 3) The SyncNet model outputs an audio embedding (Ea) and a visual embedding ( Ev ) for each short time window. 13 
+
+4) The LSE-D is the average Euclidean distance between these corresponding embeddings over the entire video duration T :LSE-D = 1
+
+T
+
+> T
+
+X
+
+> t=1
+
+|| Ea(t) − Ev (t)|| 2 (S5) 
+
+c) Cosine Similarity (CSIM): CSIM evaluates the emo-tional accuracy of the generated facial expressions by compar-ing them to ground-truth videos expressing the same emotion. The calculation is as follows: 1) For a generated video and its corresponding ground-truth real video, frames are sampled. 2) Each frame is passed through a pre-trained, state-of-the-art facial expression recognition (FER) network [57]. 3) The FER network outputs a high-dimensional feature embedding for each frame. 4) CSIM is the average cosine similarity between the feature embeddings of the N pairs of generated frames (vg ) and real frames ( vr ): CSIM = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+vg,i · vr,i 
+
+|| vg,i || · || vr,i || (S6) 
+
+B. Value Ranges and Interpretation 
+
+To aid in the interpretation of our quantitative results, the value ranges and criteria for each metric are clarified below:  
+
+> •
+
+FAD & LSE-D: These metrics range from [0 , +∞).Lower values are better, indicating higher realism/identity preservation and better lip-sync, respectively.  
+
+> •
+
+CSIM: This metric ranges from [−1, 1] . Higher values are better, indicating stronger emotional similarity to the ground truth. 
+
+C. Criteria for ”Significant” and ”Marginal” Improvements 
+
+To provide a clear and data-driven context for interpreting the magnitude of our results, we establish the following guidelines for what constitutes a meaningful improvement in our task domain. 
+
+a) Quantitative Guideline: Based on our empirical ob-servations and common practices in the facial generation literature, we consider a relative improvement of 5% or more on key metrics (e.g., CSIM increasing from 0.800 to 0.840) to be significant. Improvements below 2% are considered marginal, representing subtle but positive changes. 
+
+b) Qualitative Justification from User Studies: This quantitative threshold is not arbitrary but is strongly corrob-orated by our user study, as analyzed in the main paper (see Section V-D). The cases where our method achieved ”notable” and ”substantial” enhancements, with measured improvements often far exceeding our 5% significance threshold (e.g., gains of 12% to 36% reported in the user study section), are the same ones where our method achieved decisive user preference rates (e.g., a 64% preference in realism for ‘Ours(NED)‘ in Table III of the main paper). This direct correlation confirms that our definition of ”significant” translates to perceptually meaningful and impactful results from a human evaluation perspective. S3. H IGH -D IMENSIONAL FEATURE ANALYSIS 
+
+This section provides rigorous quantitative evidence for the ”modality gap”—a fundamental challenge in applying VLMs for supervision that we identify in our main paper. While 2D visualizations (Fig. 2 (a)) in the main text illustrate this gap, the analysis here confirms its existence directly in the original 512-dimensional CLIP feature space. Our findings demonstrate that this phenomenon is not merely an artifact of dimensional-ity reduction and provide a solid, high-dimensional foundation for the design of our VTEDC module. 
+
+A. Experimental Setup 
+
+We randomly sampled approximately 7000 images from the MEAD dataset, covering all seven emotion categories. For each image, we extracted its 512-D visual feature embedding using the pre-trained CLIP-ViT-B/32 image encoder. For each of the seven emotion categories, we extracted the correspond-ing 512-D text feature embedding from its unique text prompt ”a photo of a happy face”. 
+
+B. Metrics Definition 
+
+To quantify the modality gap, we defined two metrics. Our hypothesis is that if a significant gap exists, the cross-modal similarity between corresponding pairs will be substantially lower than the inter-modal similarity among visual examples of the same class. The metrics are:  
+
+> •
+
+Inter-Modal Cohesion for Images ( Simage ): This mea-sures the visual coherence of an emotion class. It is the average pair-wise cosine similarity between all image feature embeddings within that class.  
+
+> •
+
+Image-Text Matching Similarity ( Smatch ): This mea-sures the alignment between the visual features of an emotion and its textual representation. It is the average cosine similarity between all image feature embeddings of an emotion and the single text feature embedding for that emotion. 
+
+C. Results and Conclusion 
+
+The results of our analysis are presented in Table S1. As shown, for every emotion category, Smatch is significantly lower than Simage . On average, we observe a similarity drop of approximately 0.18 when moving from inter-modal to cross-modal comparisons, which is a substantial difference. This quantitatively demonstrates that features from differ-ent modalities are inherently more distant from each other than features within the same modality, even for correctly corresponding pairs. This provides a solid, non-visual, high-dimensional foundation for the design of our VTEDC module, which is specifically engineered to bypass this structural discrepancy. S4. H YPERPARAMETER SENSITIVITY ANALYSIS FOR λ
+
+The hyperparameter λ in our overall loss function, Ltotal =
+
+LSPFEM + λL PCMECL , critically balances the baseline’s genera-tion quality with our proposed cross-modal emotional supervi-sion. The term LPCMECL corresponds to the L2 loss introduced 14 
+
+TABLE S1: Quantitative evidence of the modality gap in the 512-D CLIP feature space. All values are average cosine similarities.                              
+
+> Emotion Category Simage Smatch Gap ( Simage −Smatch )
+> Angry 0.821 0.452 0.369 Disgusted 0.805 0.431 0.374 Fear 0.853 0.485 0.368 Happy 0.862 0.553 0.309 Neutral 0.915 0.601 0.314 Sad 0.884 0.524 0.360 Surprised 0.849 0.538 0.311
+> Average 0.856 0.512 0.344
+
+in Section IV of the main paper. To identify the optimal value for λ for each baseline, we conducted a systematic coarse-to-fine search on a held-out validation set. The following subsections present the comprehensive results of this analysis. 
+
+A. Sensitivity Analysis for NED ( λNED )
+
+Our search for the optimal λNED proceeded in two stages. 
+
+a) Coarse-grained Search: We first conducted asearch across different orders of magnitude (λNED ∈{0.01 , 0.1, 1.0, 10 .0}). This initial analysis revealed that a value of λ = 0 .01 provided insufficient emotional guidance, while values of 1.0 or higher led to a significant degradation in generation quality (FAD). This indicated that the optimal value likely resided within the (0.1, 1.0) range. 
+
+b) Fine-grained Search: Subsequently, we performed a fine-grained linear search within this promising range. The results, illustrated in Figure S1, reveal a clear trade-off. As 
+
+λNED increases from 0.2 to 0.4, a substantial improvement in emotional accuracy (CSIM) is achieved, while the generation quality metrics (FAD and LSE-D) remain at their optimal levels. Beyond λ = 0 .4, the gains in CSIM saturate, whereas the quality costs (FAD, LSE-D) begin to rise sharply. Therefore, we selected λNED = 0 .4 as the optimal value, as it represents the point of optimal trade-off: it achieves near-maximal emotional accuracy (CSIM) just before the generation quality (FAD and LSE-D) begins to significantly degrade. 
+
+B. Sensitivity Analysis for ICface ( λICface )
+
+A similar two-stage search was performed for the ICface baseline. 
+
+a) Coarse-grained Search: Given the sensitive adversar-ial dynamics of the GAN-based ICface model, our coarse-grained search over λICface ∈ { 0.01 , 0.1, 1.0} confirmed the model’s high sensitivity to our supervisory loss. Values of 0.1 or higher were observed to destabilize training and severely degrade generation quality. This confirmed that the optimal value must reside within the narrow (0, 0.1) range. 
+
+b) Fine-grained Search: We then conducted a fine-grained search within this range, with the results shown in Figure S2. The analysis reveals that λICface = 0.05 provides the peak emotional accuracy (CSIM) while concurrently main-taining the lowest generation quality costs. Values beyond 0.05 show a decline in CSIM and a sharp increase in FAD and LSE-D. Thus, we selected 0.05 as the robust and optimal choice. 
+
+Fig. S1: Sensitivity analysis of λ for the NED baseline, sum-marizing our coarse-to-fine search. The plot shows the trade-off between Generation Quality (FAD, LSE-D) and Emotional Accuracy (CSIM). The red line marks our optimal choice. 
+
+Fig. S2: Sensitivity analysis of λ for the ICface baseline, sum-marizing our coarse-to-fine search. The plot shows the trade-off between Generation Quality (FAD, LSE-D) and Emotional Accuracy (CSIM). The red line marks our optimal choice. 
+
+C. Sensitivity Analysis for SSERD ( λSSERD )
+
+We applied the same rigorous two-stage search strategy to the SSERD baseline. 
+
+a) Coarse-grained Search: SSERD relies on disentan-gling emotion representations within the StyleGAN latent spac. An initial coarse-grained search was conducted over 
+
+λSSERD ∈ { 0.01 , 0.1, 1.0} to identify the optimal parameter range. Specifically, λ = 1 .0 resulted in a noticeable drop in identity preservation (FAD), likely because excessive regular-ization disrupted the delicate manifold of the pre-trained Style-GAN. Conversely, λ = 0 .01 yielded negligible improvements in emotional alignment. This narrowed our search to the range of (0.1, 1.0). 
+
+b) Fine-grained Search: We subsequently performed a fine-grained search within this interval. As illustrated in Fig-ure S3, the performance trends show a distinct peak. Increasing 
+
+λSSERD initially boosts the CSIM score significantly, correcting the semantic misalignments inherent in SSERD’s synthetic supervision. However, pushing λ beyond 0.2 leads to diminish-15 
+
+ing returns in emotional accuracy and a gradual deterioration in image quality metrics (FAD). Consequently, we selected 
+
+λSSERD = 0 .2 as the optimal setting, where the model achieves the best balance between high-fidelity generation and precise emotional control. 
+
+Fig. S3: Sensitivity analysis of λ for the SSERD baseline, summarizing our coarse-to-fine search. The plot shows the trade-off between Generation Quality (FAD, LSE-D) and Emotional Accuracy (CSIM). The red line marks our optimal choice. S5. A BLATION STUDY ON EMOTION PROJECTOR DESIGN 
+
+This study validates our design choice of using multiple specialized Emotion Projector networks over a single condi-tional network. This design choice is a deliberate engineering decision to achieve the highest possible fidelity in emotion rep-resentation. We observed that a single network tends to learn coarse and averaged representations, struggling to capture the fine-grained visual cues that differentiate similar emotions. In contrast, specialized projectors allow each network to dedicate its full capacity to modeling the nuances of a single emotion. This ablation study provides the rigorous quantitative evidence. 
+
+A. Experimental Setup 
+
+We compare our proposed Multi-Network Design against a Single Conditional Network baseline. The single network is also a three-layer MLP with a similar architecture to one of our specialized projectors, but it takes an additional 7-dimensional one-hot emotion vector as a conditional input. Both PEPL module variants were pre-trained under identical settings on the MEAD dataset and their effectiveness as supervisory signals was evaluated by applying them to the NED baseline. 
+
+B. Results and Analysis 
+
+The results of this comparison are presented in Table S2. The data clearly shows that the Multi-Network design achieves a higher score on the emotion similarity (CSIM) metric across both Inter-ID and Cross-ID settings. This substantial gain in our primary objective (emotional accuracy) is achieved while keeping the fundamental generation quality metrics (FAD and LSE-D) largely stable or even slightly improved. This validates our engineering decision to use specialized projectors, as the performance gain in our core task significantly outweighs the modest increase in parameter count. TABLE S2: Ablation study on the Emotion Projector design comparing our multi-network approach with a single condi-tional network.                   
+
+> Settings Projector Design FAD ↓LSE-D ↓CSIM ↑
+> Inter-ID Single Conditional Network 1.152 9.411 0.882 Multi-Network (Ours) 1.075 9.364 0.915
+> Cross-ID Single Conditional Network 4.415 9.402 0.775 Multi-Network (Ours) 4.300 9.374 0.784
+
+S6. N EGATIVE SAMPLING STRATEGY DETAILS 
+
+In our main paper, we introduce a structured negative sampling strategy for the contrastive pre-training of our PEPL module. This section provides the details of this data-driven approach, designed to address the challenge that emotions are not always mutually exclusive (e.g., ”anger” and ”disgust”), where naively treating any other emotion as a negative sample can lead to a suboptimal learning signal. 
+
+A. Empirical Cross-Modal Similarity Analysis 
+
+To inform our sampling strategy, we directly measured the average similarity between the visual representations of each emotion and the standard textual representations of every other emotion. For each of the seven emotion categories, we randomly sampled a large set of images (N=1000) from the MEAD training set and extracted their 512-D visual embeddings using the CLIP-ViT-B/32 image encoder. We then computed the average cosine similarity between these visual embeddings and the single text embedding of each of the seven emotion prompts. The resulting 7x7 cross-modal similarity matrix is presented in Table S3. The diagonal entries (bolded) consistently show the highest similarity for each row, confirming that the VLM can generally associate the correct visual and textual concepts. TABLE S3: Cross-modal (Image-to-Text) cosine similarity matrix. Each cell (i, j) shows the average similarity between 1,000 images of emotion i and the text prompt for emotion j.                                                         
+
+> Image \Text Angry Disgusted Fear Happy Neutral Sad Surprised Angry 0.452 0.418 0.315 0.221 0.289 0.334 0.321
+> Disgusted 0.409 0.431 0.320 0.215 0.291 0.340 0.318
+> Fear 0.311 0.318 0.485 0.255 0.301 0.312 0.402
+> Happy 0.225 0.218 0.258 0.553 0.352 0.267 0.288
+> Neutral 0.292 0.299 0.305 0.349 0.601 0.330 0.308
+> Sad 0.338 0.342 0.315 0.271 0.333 0.524 0.319
+> Surprised 0.325 0.321 0.411 0.285 0.310 0.315 0.538
+
+B. Pre-defined Negative Sampling Pools 
+
+The empirical analysis in Table S3 provides a direct, data-driven basis for our negative sampling strategy. The table reveals that for each image emotion category (each row), there are one or two non-corresponding text prompts that exhibit significantly higher similarity than the others, representing the 16 
+
+most confusable negative samples. To ensure a clear and stable learning signal, our structured strategy is to exclude the top-K most similar non-corresponding text prompts from the negative sampling pool for each anchor image class. Based on empirical validation, we found that setting K=1 (i.e., excluding only the single most confusable negative) provided the best balance between removing ambiguity and maintaining a diverse set of hard negatives. The specific pools derived from this Top-1 exclusion strategy and used in all our experiments are detailed in Table S4. TABLE S4: Pre-defined negative sampling pools for each positive emotion.         
+
+> Positive Emotion Valid Negative Sampling Pool
+> Angry {Fear, Happy, Neutral, Sad, Surprised }
+> Disgusted {Fear, Happy, Neutral, Sad, Surprised }
+> Fear {Angry, Disgusted, Happy, Neutral, Sad }
+> Happy {Angry, Disgusted, Fear, Sad, Surprised }
+> Neutral {Angry, Disgusted, Fear, Happy, Sad, Surprised }
+> Sad {Angry, Fear, Happy, Neutral, Surprised }
+> Surprised {Angry, Disgusted, Fear, Happy, Neutral, Sad }
+
+S7. A NALYSIS OF INCONSISTENT AND MARGINAL 
+
+RESULTS 
+
+In our main paper, we present a comprehensive evaluation of our PCMECL framework. While the results demonstrate broad effectiveness, this section provides a more in-depth, critical analysis of the few cases where our method yields marginal or inconsistent improvements. These cases include, for instance, the slight FAD degra-dation for the ”Neutral” category in some settings, and the consistently more marginal gains on the ICface baseline com-pared to NED. These outcomes are attributed to the complex interaction of the following three key factors:  
+
+> •
+
+Metric Sensitivity on Saturated Tasks. For low-variance categories like ”Neutral,” where baselines already per-form exceptionally well, the FAD metric is highly sen-sitive to any minor, even if perceptually reasonable, variance introduced by our method. For instance, in Table I of our main paper (Cross-ID), the FAD for NED slightly increases from 2.022 to 2.054. We argue this is an artifact of the metric on a saturated task, not a semantic failure.  
+
+> •
+
+Inherent Ambiguity of Emotions. Subtle emotions like ”Fear” and ”Disgust” have a more diverse and less distinct visual manifestation. This inherent ambiguity can limit the precision of the VLM’s supervisory signal itself. This is reflected not only in less pronounced CSIM gains compared to iconic emotions like ”Happy,” but it also indirectly impacts FAD and LSE-D, as a less precise emotional target provides a weaker constraint against minor generation artifacts.  
+
+> •
+
+Representational Bottlenecks of Baselines. The ulti-mate performance is constrained by the baseline model’s capacity. The consistently more marginal gains on ICface compared to NED exemplify this. NED operates on a structured 3DMM parameter space where our signal can optimize effectively. In contrast, ICface, as a single-stage GAN operating in a highly entangled latent space and governed by a sensitive adversarial equilibrium, presents a greater challenge for an external supervisory signal to provide guidance without subtle disruptions. S8. J USTIFICATION FOR OPTIMIZER AND LEARNING RATE 
+
+SCHEDULER CHOICE 
+
+In our main paper, we specify the use of a Stochastic Gradient Descent (SGD) optimizer with a manually-tuned step decay learning rate schedule for the pre-training of our PEPL module. This section provides the justification for this engineering choice over more common adaptive optimizers like Adam. Our decision was based on empirical findings during ini-tial experiments. We observed that the pre-training of the PEPL module, which involves a contrastive learning objective, presents a particularly challenging optimization problem for two primary reasons:  
+
+> •
+
+Volatile Loss Landscape: The loss is computed based on dynamically constructed positive and negative pairs within each mini-batch. This causes sharp fluctuations in the gradient’s direction and magnitude between iterations, creating a non-smooth loss landscape.  
+
+> •
+
+Multi-Component Co-optimization: The PEPL module requires the simultaneous optimization of multiple dis-tinct networks (the Visual Guider’s MLP and the seven Emotion Projector MLPs), which have different architec-tures and potentially different convergence dynamics. In this challenging context, we found that adaptive opti-mizers like Adam often struggled with instability. Their adap-tive momentum mechanism, when faced with a volatile loss landscape, can accumulate excessive update steps, leading to overshooting and training divergence. Furthermore, their single base learning rate can be difficult to tune to simultaneously suit all functionally different components. In contrast, SGD with momentum, combined with our man-ual step decay schedule, demonstrated superior robustness and stability in our experiments. The simpler update mechanism of SGD is less susceptible to being misled by transient gradient fluctuations, allowing it to converge reliably. The manual step decay then provided effective macro-level control over the training process. Therefore, our choice was an empirically-driven decision to prioritize training stability and final model performance for our specific, challenging task. S9. D ETAILED QUANTITATIVE ANALYSIS 
+
+To provide a more comprehensive evaluation, this section presents the detailed breakdown of performance metrics (FAD, LSE-D, and CSIM) for each specific emotion (e.g., Neutral, Angry, Disgusted, Fear, Happy, Sad, Surprised) on both the MEAD and RAVDESS datasets. We evaluate the effectiveness of our proposed PCMECL framework by integrating it into the representative baselines (NED, ICface) and the state-of-the-art method SSERD. We compare the performance with and without our supervision under both Inter-ID and Cross-ID settings. As illustrated in 17 
+
+TABLE S5: Detailed comparison results of FAD, CSIM, and LSE-D on the MEAD dataset. We compare NED, ICface, and SSERD with and without PCMECL under Inter-ID and Cross-ID settings. 
+
+Settings Metrics Methods Neutral Angry Disgusted Fear Happy Sad Surprised Avg. Inter-ID 
+
+FAD ↓
+
+NED 0.906 2.177 3.838 1.659 1.939 2.538 1.700 2.108 
+
+Ours(NED) 0.966 1.163 1.123 1.378 1.034 0.880 0.978 1.075 
+
+ICface 7.114 6.420 7.383 6.567 6.213 7.301 6.567 6.795 
+
+Ours(ICface) 6.911 5.709 7.073 6.562 6.012 6.892 7.070 6.604 
+
+SSERD 0.473 0.683 0.820 0.781 0.648 0.808 0.965 0.740 
+
+Ours(SSERD) 0.485 0.503 0.710 0.811 0.510 0.700 0.866 0.655 
+
+LSE-D ↓
+
+NED 9.264 9.579 9.128 10.172 9.137 9.074 9.821 9.454 
+
+Ours(NED) 9.338 9.627 9.138 9.502 9.313 9.467 9.163 9.364 
+
+ICface 9.760 10.483 10.433 9.855 10.180 10.017 9.851 10.083 
+
+Ours(ICface) 9.111 10.086 9.908 9.604 9.219 9.437 9.598 9.566 
+
+SSERD 8.964 9.188 8.796 9.181 9.315 9.253 9.188 9.126 
+
+Ours(SSERD) 8.850 9.043 8.853 9.050 9.204 9.150 9.116 9.038 
+
+CSIM ↑
+
+NED 0.883 0.802 0.772 0.848 0.839 0.812 0.864 0.831 
+
+Ours(NED) 0.907 0.895 0.931 0.906 0.927 0.926 0.916 0.915 
+
+ICface 0.779 0.741 0.805 0.754 0.775 0.755 0.817 0.775 
+
+Ours(ICface) 0.801 0.776 0.788 0.794 0.834 0.765 0.799 0.794 
+
+SSERD 0.908 0.874 0.929 0.892 0.908 0.914 0.906 0.904 
+
+Ours(SSERD) 0.909 0.885 0.925 0.870 0.940 0.925 0.902 0.908 Cross-ID 
+
+FAD ↓
+
+NED 2.022 4.851 5.094 4.983 3.919 5.665 4.600 4.448 
+
+Ours(NED) 2.054 4.715 4.643 4.818 3.820 5.422 4.626 4.300 
+
+ICface 10.560 9.470 9.230 9.122 8.493 10.364 9.541 9.540 
+
+Ours(ICface) 9.568 9.485 10.134 9.134 8.613 9.465 9.291 9.384 
+
+SSERD 0.490 3.308 4.011 2.215 2.307 2.483 2.360 2.453 
+
+Ours(SSERD) 0.604 3.650 3.247 2.200 2.799 2.300 2.287 2.441 
+
+LSE-D ↓
+
+NED 9.812 9.904 10.121 9.741 9.936 10.179 9.646 9.906 
+
+Ours(NED) 9.422 9.193 9.352 9.239 9.332 9.827 9.250 9.374 
+
+ICface 11.226 11.073 11.184 11.204 11.322 11.526 11.133 11.238 
+
+Ours(ICface) 10.699 10.034 10.192 10.260 10.078 10.304 10.260 10.261 
+
+SSERD 8.956 9.016 9.051 9.364 9.304 9.299 9.410 9.200 
+
+Ours(SSERD) 8.850 9.131 9.066 9.250 9.150 9.083 9.121 9.093 
+
+CSIM ↑
+
+NED 0.841 0.717 0.791 0.750 0.842 0.691 0.780 0.773 
+
+Ours(NED) 0.824 0.729 0.811 0.759 0.838 0.750 0.780 0.784 
+
+ICface 0.705 0.648 0.637 0.727 0.717 0.664 0.721 0.688 
+
+Ours(ICface) 0.689 0.658 0.739 0.707 0.769 0.654 0.764 0.711 
+
+SSERD 0.908 0.799 0.843 0.837 0.858 0.838 0.852 0.848 
+
+Ours(SSERD) 0.885 0.830 0.832 0.858 0.879 0.852 0.863 0.857 
+
+Table S5 and Table S6, our method demonstrates superior per-formance. Notably, even for challenging emotions with subtle visual cues or large deformations, our PCMECL-supervised models generally outperform their respective baselines, partic-ularly in emotional accuracy (CSIM). This confirms that the improvements reported in the main text are robust and broadly applicable across diverse emotional expressions. S10. Q UALITATIVE COMPARISONS ON THE RAVDESS DATASET 
+
+To further evaluate the generalization capability, we pro-vide additional qualitative results on the RAVDESS dataset. We compare our method against the representative baselines (NED, ICface) and the state-of-the-art method (SSERD) in Fig. S4, Fig. S5, and Fig. S6, respectively. In these visualiza-tions, we transfer the emotion from a Reference image to a Source identity. The ‘Ours’ column displays the final results supervised by PCMECL, where red boxes and corresponding zoom-in panels are provided to highlight the superior detail in key expressive regions. As shown in Fig. S4 and Fig. S5, the representative base-lines (NED and ICface) often producing blurred faces or significant artifacts. In contrast, the SOTA method SSERD 
+
+Fig. S4: Qualitative comparisons of NED with and without PCMECL supervision on the RAVDESS dataset. (Fig. S6) maintains better structural integrity but occasionally suffers from semantic drift, failing to capture the specific nu-18 
+
+TABLE S6: Detailed comparison results of FAD, CSIM, and LSE-D on the RAVDESS dataset. We compare NED, ICface, and SSERD with and without PCMECL under Inter-ID and Cross-ID settings. 
+
+Settings Metrics Methods Neutral Angry Disgusted Fear Happy Sad Surprised Avg. Inter-ID 
+
+FAD ↓
+
+NED 2.041 3.288 4.144 2.635 3.714 2.595 2.980 3.057 
+
+Ours(NED) 2.295 3.029 3.959 1.906 3.148 2.215 2.601 2.736 
+
+ICface 9.816 7.047 8.689 8.413 8.413 8.086 8.636 8.443 
+
+Ours(ICface) 7.340 7.883 8.095 8.349 8.738 7.679 7.717 7.972 
+
+SSERD 1.021 1.127 1.287 1.483 1.161 1.999 1.718 1.399 
+
+Ours(SSERD) 1.102 1.050 1.301 1.220 1.189 1.648 1.562 1.296 
+
+LSE-D ↓
+
+NED 7.376 7.757 7.822 7.452 7.742 7.560 7.226 7.562 
+
+Ours(NED) 7.372 7.603 7.216 7.316 7.724 7.432 7.558 7.460 
+
+ICface 8.209 9.504 8.295 8.523 8.902 8.346 7.578 8.480 
+
+Ours(ICface) 7.444 9.949 9.173 8.831 7.736 7.332 7.537 8.286 
+
+SSERD 7.578 7.786 7.428 7.136 7.472 7.363 7.326 7.441 
+
+Ours(SSERD) 7.485 7.702 7.315 7.052 7.385 7.280 7.266 7.355 
+
+CSIM ↑
+
+NED 0.847 0.805 0.786 0.842 0.793 0.855 0.848 0.825 
+
+Ours(NED) 0.797 0.810 0.796 0.862 0.859 0.847 0.860 0.833 
+
+ICface 0.749 0.703 0.775 0.722 0.797 0.766 0.772 0.755 
+
+Ours(ICface) 0.789 0.711 0.767 0.768 0.805 0.807 0.799 0.778 
+
+SSERD 0.898 0.810 0.927 0.886 0.914 0.932 0.894 0.894 
+
+Ours(SSERD) 0.908 0.807 0.913 0.911 0.936 0.933 0.885 0.899 Cross-ID 
+
+FAD ↓
+
+NED 3.558 5.546 7.388 5.008 5.648 5.588 5.145 5.412 
+
+Ours(NED) 3.129 5.415 7.146 4.942 5.157 5.684 4.952 5.204 
+
+ICface 10.478 8.704 9.260 9.106 9.061 9.639 9.718 9.424 
+
+Ours(ICface) 10.646 8.064 8.481 9.362 8.648 9.905 9.344 9.207 
+
+SSERD 1.085 4.045 5.785 3.431 3.336 3.063 2.772 3.360 
+
+Ours(SSERD) 1.150 4.052 5.600 3.397 3.301 3.050 2.970 3.360 
+
+LSE-D ↓
+
+NED 7.856 8.085 8.107 8.151 8.073 8.006 7.962 8.034 
+
+Ours(NED) 8.122 7.712 8.158 8.146 7.536 7.804 8.056 7.933 
+
+ICface 10.736 12.415 11.860 11.279 11.150 11.305 12.028 11.539 
+
+Ours(ICface) 9.560 11.392 10.857 10.262 10.811 10.561 10.634 10.582 
+
+SSERD 7.557 7.587 7.595 7.690 7.524 7.693 7.704 7.621 
+
+Ours(SSERD) 7.466 7.517 7.520 7.600 7.550 7.577 7.403 7.519 
+
+CSIM ↑
+
+NED 0.820 0.766 0.741 0.749 0.804 0.726 0.713 0.760 
+
+Ours(NED) 0.838 0.752 0.756 0.782 0.827 0.727 0.725 0.772 
+
+ICface 0.677 0.646 0.717 0.649 0.738 0.666 0.644 0.677 
+
+Ours(ICface) 0.696 0.633 0.701 0.686 0.704 0.723 0.627 0.681 
+
+SSERD 0.898 0.737 0.676 0.759 0.809 0.856 0.794 0.790 
+
+Ours(SSERD) 0.885 0.755 0.700 0.775 0.825 0.860 0.807 0.801 
+
+Fig. S5: Qualitative comparisons of ICface with and without PCMECL supervision on the RAVDESS dataset. ance of the target emotion. Our method consistently generates high-fidelity expressions while robustly preserving the source 
+
+Fig. S6: Qualitative comparisons of SSERD with and without PCMECL supervision on the RAVDESS dataset. identity, demonstrating superior zero-shot generalization. 19 
+
+REFERENCES [1] M. C. Doukas, M. R. Koujan, V. Sharmanska, A. Roussos, and S. Zafeiriou, “Head2head++: Deep facial attributes re-targeting,” IEEE Transactions on Biometrics, Behavior, and Identity Science , vol. 3, no. 1, pp. 31–43, 2021. [2] S. Tripathy, J. Kannala, and E. Rahtu, “Icface: Interpretable and con-trollable face reenactment using gans,” in Proceedings of the IEEE/CVF winter conference on applications of computer vision , 2020, pp. 3385– 3394. [3] Y. Li, Q. Hao, J. Hu, X. Pan, Z. Li, and Z. Cui, “3d3m: 3d modulated morphable model for monocular face reconstruction,” IEEE Transactions on Multimedia , vol. 25, pp. 6642–6652, 2022. [4] X. Chai, J. Chen, C. Liang, D. Xu, and C.-W. Lin, “Expression-aware face reconstruction via a dual-stream network,” IEEE Transactions on Multimedia , vol. 23, pp. 2998–3012, 2021. [5] F. P. Papantoniou, P. P. Filntisis, P. Maragos, and A. Roussos, “Neural emotion director: Speech-preserving semantic control of facial ex-pressions in” in-the-wild” videos,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2022, pp. 18 781–18 790. [6] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark et al. , “Learning transferable visual models from natural language supervision,” in International conference on machine learning . PMLR, 2021, pp. 8748–8763. [7] J.-B. Alayrac, J. Donahue, P. Luc, A. Miech, I. Barr, Y. Hasson, K. Lenc, A. Mensch, K. Millican, M. Reynolds et al. , “Flamingo: a visual language model for few-shot learning,” Advances in neural information processing systems , vol. 35, pp. 23 716–23 736, 2022. [8] B. Zhang, X. Zhang, N. Cheng, J. Yu, J. Xiao, and J. Wang, “Emotalker: Emotionally editable talking face generation via diffusion model,” in 
+
+ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2024, pp. 8276–8280. [9] S. E. Eskimez, Y. Zhang, and Z. Duan, “Speech driven talking face generation from a single image and an emotion condition,” IEEE Transactions on Multimedia , vol. 24, pp. 3480–3490, 2021. [10] H. Kim, M. Elgharib, M. Zollh¨ ofer, H.-P. Seidel, T. Beeler, C. Richardt, and C. Theobalt, “Neural style-preserving visual dubbing,” ACM Trans-actions on Graphics (TOG) , vol. 38, no. 6, pp. 1–13, 2019. [11] Y. Ren, G. Li, Y. Chen, T. H. Li, and S. Liu, “Pirenderer: Controllable portrait image generation via semantic neural rendering,” in Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 13 759–13 768. [12] Y. Wang, D. Yang, F. Bremond, and A. Dantcheva, “Latent image animator: Learning to animate images via latent space navigation,” arXiv preprint arXiv:2203.09043 , 2022. [13] Y. Xu, Z. Yang, T. Chen, K. Li, and C. Qing, “Progressive transformer machine for natural character reenactment,” ACM Transactions on Mul-timedia Computing, Communications and Applications , vol. 19, no. 2s, pp. 1–22, 2023. [14] S. Zheng, J. Chen, Z. Yang, T. Chen, and Y. Lu, “Face reenactment based on motion field representation,” in International Conference on Brain Inspired Cognitive Systems . Springer Nature Singapore Singapore, 2023, pp. 354–364. [15] Z. Xu, T. Chen, Z. Yang, S. Peng, K. Wang, and L. Lin, “Exploiting temporal audio-visual correlation embedding for audio-driven one-shot talking head animation,” arXiv preprint arXiv:2504.05746 , 2025. [16] S. Gong, H. Li, J. Tang, D. Hu, S. Huang, H. Chen, T. Chen, and Z. Liu, “Monocular and generalizable gaussian talking head animation,” in Pro-ceedings of the Computer Vision and Pattern Recognition Conference ,2025, pp. 5523–5534. [17] X. Tu, J. Zhao, M. Xie, Z. Jiang, A. Balamurugan, Y. Luo, Y. Zhao, L. He, Z. Ma, and J. Feng, “3d face reconstruction from a single image assisted by 2d face images in the wild,” IEEE Transactions on Multimedia , vol. 23, pp. 1160–1172, 2020. [18] Y. Chen, F. Wu, Z. Wang, Y. Song, Y. Ling, and L. Bao, “Self-supervised learning of detailed 3d face reconstruction,” IEEE Transactions on Image Processing , vol. 29, pp. 8696–8705, 2020. [19] Y. Gan, Z. Yang, X. Yue, L. Sun, and Y. Yang, “Efficient emotional adaptation for audio-driven talking-head generation,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , 2023, pp. 22 634–22 645. [20] A. Siarohin, S. Lathuili` ere, S. Tulyakov, E. Ricci, and N. Sebe, “First or-der motion model for image animation,” Advances in neural information processing systems , vol. 32, 2019. [21] T. Chen, J. Lin, Z. Yang, C. Qing, and L. Lin, “Learning adaptive spatial coherent correlations for speech-preserving facial expression manipulation,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2024, pp. 7267–7276. [22] T. Chen, J. Lin, Z. Yang, C. Qing, Y. Shi, and L. Lin, “Contrastive de-coupled representation learning and regularization for speech-preserving facial expression manipulation,” International Journal of Computer Vision , vol. 133, no. 7, pp. 3822–3838, 2025. [23] A. Pumarola, A. Agudo, A. M. Martinez, A. Sanfeliu, and F. Moreno-Noguer, “Ganimation: Anatomically-aware facial animation from asingle image,” in Proceedings of the European conference on computer vision (ECCV) , 2018, pp. 818–833. [24] P. Ekman and W. V. Friesen, “Facial action coding system,” Environ-mental Psychology & Nonverbal Behavior , 1978. [25] F. Yin, Y. Zhang, X. Cun, M. Cao, Y. Fan, X. Wang, Q. Bai, B. Wu, J. Wang, and Y. Yang, “Styleheat: One-shot high-resolution editable talking face generation via pre-trained stylegan,” in European conference on computer vision . Springer, 2022, pp. 85–101. [26] Y. Choi, M. Choi, M. Kim, J.-W. Ha, S. Kim, and J. Choo, “Stargan: Unified generative adversarial networks for multi-domain image-to-image translation,” in Proceedings of the IEEE conference on computer vision and pattern recognition , 2018, pp. 8789–8797. [27] T. Hang, H. Yang, B. Liu, J. Fu, X. Geng, and B. Guo, “Language-guided face animation by recurrent stylegan-based generator,” IEEE Transactions on Multimedia , vol. 25, pp. 9216–9227, 2023. [28] S. Karao˘ glu, T. Gevers et al. , “Self-supervised face image manipulation by conditioning gan on face decomposition,” IEEE Transactions on Multimedia , vol. 24, pp. 377–385, 2021. [29] A. Tewari, M. Elgharib, G. Bharaj, F. Bernard, H.-P. Seidel, P. P´ erez, M. Zollhofer, and C. Theobalt, “Stylerig: Rigging stylegan for 3d control over portrait images,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 6142–6151. [30] Z. Sun, Y.-H. Wen, T. Lv, Y. Sun, Z. Zhang, Y. Wang, and Y.-J. Liu, “Continuously controllable facial expression editing in talking face videos,” IEEE Transactions on Affective Computing , 2023. [31] Z. Xu, T. Chen, Z. Yang, C. Qing, Y. Shi, and L. Lin, “Self-supervised emotion representation disentanglement for speech-preserving facial expression manipulation,” in ACM Multimedia 2024 , 2024. [32] I. Goodfellow, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, and Y. Bengio, “Generative adversarial nets,” 
+
+Advances in neural information processing systems , vol. 27, 2014. [33] T. Karras, S. Laine, and T. Aila, “A style-based generator architecture for generative adversarial networks,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 4401– 4410. [34] I. Magnusson, A. Sankaranarayanan, and A. Lippman, “Invertable frowns: Video-to-video facial emotion translation,” in Proceedings of the 1st Workshop on Synthetic Multimedia-Audiovisual Deepfake Generation and Detection , 2021, pp. 25–33. [35] T. Chen, J. Lin, Z. Yang, C. Qing, G. Wang, and L. Lin, “Learning spatial-temporal coherent correlations for speech-preserving facial ex-pression manipulation,” arXiv preprint arXiv:2604.20226 , 2026. [36] J. Li, D. Li, C. Xiong, and S. Hoi, “Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation,” in International conference on machine learning . PMLR, 2022, pp. 12 888–12 900. [37] G. Kwon, Z. Cai, A. Ravichandran, E. Bas, R. Bhotika, and S. Soatto, “Masked vision and language modeling for multi-modal representation learning,” arXiv preprint arXiv:2208.02131 , 2022. [38] K. Zhou, J. Yang, C. C. Loy, and Z. Liu, “Conditional prompt learning for vision-language models,” in Proceedings of the IEEE/CVF confer-ence on computer vision and pattern recognition , 2022, pp. 16 816– 16 825. [39] M. Wu, H. Zhu, L. Huang, Y. Zhuang, Y. Lu, and X. Cao, “High-fidelity 3d face generation from natural language descriptions,” in 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023, pp. 4521–4530. [40] Z. Zhao and I. Patras, “Prompting visual-language models for dynamic facial expression recognition,” arXiv preprint arXiv:2308.13382 , 2023. [41] A. Xenos, N. M. Foteinopoulou, I. Ntinou, I. Patras, and G. Tzimiropou-los, “Vllms provide better context for emotion understanding through common sense reasoning,” arXiv preprint arXiv:2404.07078 , 2024. [42] O. Patashnik, Z. Wu, E. Shechtman, D. Cohen-Or, and D. Lischinski, “Styleclip: Text-driven manipulation of stylegan imagery,” in Proceed-ings of the IEEE/CVF international conference on computer vision ,2021, pp. 2085–2094. 20 
+
+[43] S. Yang, H. Hwang, and J. C. Ye, “Zero-shot contrastive loss for text-guided diffusion image style transfer,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , 2023, pp. 22 873–22 882. [44] H. Li, H. Niu, Z. Zhu, and F. Zhao, “Cliper: A unified vision-language framework for in-the-wild facial expression recognition,” arXiv preprint arXiv:2303.00193 , 2023. [45] Y. Etesam, ¨O. N. Yalc ¸ın, C. Zhang, and A. Lim, “Contextual emo-tion recognition using large vision language models,” arXiv preprint arXiv:2405.08992 , 2024. [46] C. Xu, J. Zhu, J. Zhang, Y. Han, W. Chu, Y. Tai, C. Wang, Z. Xie, and Y. Liu, “High-fidelity generalized emotional talking face generation with multi-modal emotion space learning,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2023, pp. 6609– 6619. [47] R. Gal, O. Patashnik, H. Maron, A. H. Bermano, G. Chechik, and D. Cohen-Or, “Stylegan-nada: Clip-guided domain adaptation of image generators,” ACM Transactions on Graphics (TOG) , vol. 41, no. 4, pp. 1–13, 2022. [48] H. Chefer, S. Benaim, R. Paiss, and L. Wolf, “Image-based clip-guided essence transfer,” in European Conference on Computer Vision .Springer, 2022, pp. 695–711. [49] Y. Choi, Y. Uh, J. Yoo, and J.-W. S. Ha, “v2: Diverse image synthesis for multiple domains. in 2020 ieee,” in CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2020, pp. 8185–8194. [50] H. Robbins and S. Monro, “A stochastic approximation method,” The annals of mathematical statistics , pp. 400–407, 1951. [51] K. Wang, Q. Wu, L. Song, Z. Yang, W. Wu, C. Qian, R. He, Y. Qiao, and C. C. Loy, “Mead: A large-scale audio-visual dataset for emotional talking-face generation,” in European Conference on Computer Vision .Springer, 2020, pp. 700–717. [52] S. R. Livingstone and F. A. Russo, “The ryerson audio-visual database of emotional speech and song (ravdess): A dynamic, multimodal set of facial and vocal expressions in north american english,” PloS one ,vol. 13, no. 5, p. e0196391, 2018. [53] M. Heusel, H. Ramsauer, T. Unterthiner, B. Nessler, and S. Hochreiter, “Gans trained by a two time-scale update rule converge to a local nash equilibrium,” Advances in neural information processing systems ,vol. 30, 2017. [54] J. Deng, J. Guo, N. Xue, and S. Zafeiriou, “Arcface: Additive angular margin loss for deep face recognition,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 4690– 4699. [55] K. Prajwal, R. Mukhopadhyay, V. P. Namboodiri, and C. Jawahar, “A lip sync expert is all you need for speech to lip generation in the wild,” in 
+
+Proceedings of the 28th ACM international conference on multimedia ,2020, pp. 484–492. [56] J. S. Chung and A. Zisserman, “Out of time: automated lip sync in the wild,” in Computer Vision–ACCV 2016 Workshops: ACCV 2016 In-ternational Workshops, Taipei, Taiwan, November 20-24, 2016, Revised Selected Papers, Part II 13 . Springer, 2017, pp. 251–263. [57] Z. Zhao, Q. Liu, and F. Zhou, “Robust lightweight facial expression recognition network with label distribution training,” in Proceedings of the AAAI conference on artificial intelligence , vol. 35, no. 4, 2021, pp. 3510–3519. [58] J. S. Chung and A. Zisserman, “Lip reading in the wild,” in Asian conference on computer vision . Springer, 2016, pp. 87–103. 
+
+Tianshui Chen received a Ph.D. degree in com-puter science at the School of Data and Computer Science Sun Yat-sen University, Guangzhou, China, in 2018. Prior to earning his Ph.D, he received a B.E. degree from the School of Information and Science Technology in 2013. He is currently an associate professor at the Guangdong University of Technology. His current research interests include artificial intelligence, multimodal large models, and generative AI. He has authored and co-authored more than 60 papers published in top-tier academic journals and conferences, including T-PAMI, IJCV, T-NNLS, T-IP, T-MM, CVPR, ICCV, AAAI, IJCAI, ACM MM, etc. He has served as a reviewer for numerous academic journals and conferences. He was the recipient of the Best Paper Diamond Award at IEEE ICME 2017. 
+
+Yujie Zhu received the B.Sc. degree in Commu-nications Engineering from Dongguan University of Technology, Dongguan, China, in 2023. He is currently pursuing the M.Eng. degree in Electronic Information at Guangdong University of Technol-ogy, Guangzhou, China. His research focuses on ar-tificial intelligence, multimodal large-scale models, and generative AI. 
+
+Jianman Lin received a B.Sc. degree from Guang-dong University of Technology, Guangzhou, China, in 2024. He is currently pursuing a Master’s degree in Electronic Information at South China Univer-sity of Technology. His research interests include artificial intelligence, multimodal large models, and generative AI. He has published revised papers in prestigious conferences and journals, including CVPR and IJCV. 
+
+Zhijing Yang received the B.S and Ph.D. degrees from the Mathematics and Computing Science, Sun Yat-sen University, Guangzhou China, in 2003 and 2008, respectively. He was a Visiting Research Scholar in the School of Computing, Informatics and Media, University of Bradford, U.K, between July-Dec, 2009, and a Research Fellow in the School of Engineering, University of Lincoln, U.K, between Jan. 2011 to Jan. 2013. He is currently a Profes-sor and Vice Dean at the School of Information Engineering, Guangdong University of Technology, China. He has published over 80 peer-reviewed journal and conference papers, including IEEE T-CSVT, T-MM, T-GRS, PR, etc. His research interests include machine learning and pattern recognition. 
+
+Chunmei Qing received her B.Sc. degree in In-formation and Computation Science from Sun Yat-sen University, China, in 2003, and Ph.D. degree in Electronic Imaging and Media Communications from University of Bradford, UK, in 2009. Then she worked as a postdoctoral researcher in the Uni-versity of Lincoln, UK. From 2013 till now, she is an associate professor in School of Electronic and Information Engineering, South China University of Technology (SCUT), Guangzhou, China. Her main research interests include image/video processing, computer vision, and affective computing. 
+
+Gao Feng received the BS degree in computer science from University College London, in 2007, and the PhD degree in computer science from Peking University, in 2018. He was a post-doctoral research fellow with the Future Laboratory, Tsinghua Univer-sity, from 2018 to 2020. He joins Peking University as Assistant Professor since 2020. His research in-terest is on the intersection of computer science and art, including but not limit on artificial intelligence and painting art, deep learning and painting robot, etc. 21 
+
+Liang Lin (Fellow, IEEE) is a full professor at Sun Yat-sen University. From 2008 to 2010, he was a postdoctoral fellow at the University of Cal-ifornia, Los Angeles. From 2016–2018, he led the SenseTime R&D teams to develop cutting-edge and deliverable solutions for computer vision, data anal-ysis and mining, and intelligent robotic systems. He has authored and co-authored more than 100 papers in top-tier academic journals and conferences (e.g., 15 papers in TPAMI and IJCV and 60+ papers in CVPR, ICCV, NIPS, and IJCAI). He has served as an associate editor of IEEE Trans. Human-Machine Systems, The Visual Computer, and Neurocomputing and as an area/session chair for numerous conferences, such as CVPR, ICME, ACCV, and ICMR. He was the recipient of the Annual Best Paper Award by Pattern Recognition (Elsevier) in 2018, the Best Paper Diamond Award at IEEE ICME 2017, the Best Paper Runner-Up Award at ACM NPAR 2010, Google Faculty Award in 2012, the Best Student Paper Award at IEEE ICME 2014, and the Hong Kong Scholars Award in 2014. He is a Fellow of IEEE, IAPR, and IET.
