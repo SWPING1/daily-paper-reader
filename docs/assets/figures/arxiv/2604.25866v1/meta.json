@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-001.webp",
+      "caption": "Figure 3: Influence of causal sparse features on emotion logits in Gemma-2-2B. Columns correspond to causal SAE features identified in Section 5 (filtered to those with logit influence greater than 0.4 on at least one emotion), and rows correspond to emotion logits. Color intensity indicates the magnitude of logit change after ablating each feature. Features in Phase 1 and Phase 2 are largely syntax-related and tend to influence multiple emotion logits with relatively uniform effects. In Phase 3, several features influence multiple emotions, while others exhibit strong emotion-specific effects. Emotions such as anger and joy have more causal features, whereas Surprise and Disgust have fewer. In particular, Disgust has only two emotion-specific features above the threshold, suggesting weaker representation of this emotion in the model. In contrast, although Surprise has fewer emotion-specific features, several of these features produce large logit changes, indicating the presence of strongly specialized features.",
+      "page": 6,
+      "index": 1,
+      "width": 930,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-002.webp",
+      "caption": "Figure A.3: Subset of the sparse feature causal graph for a representative case-study prompt. Nodes are filtered using a threshold of 0.15 on their contribution to the fear logit. Node color indicates the logit weight. We highlight the path leading to L25-F3410, which has the largest causal impact on the fear logit. Along this path, the model transitions from syntactic features (e.g., L0-F15092, “punctuation marks, colons, and parentheses”) to semantic features, including L13-F14818 (“phrases that establish outcomes in an analytical context”), L16-F11090 (“references in stunts and action sequences in film and television”), and L17-F7177 (“terms related to evacuations and emergency responses”). L17-F7177 then causally influences the first fear-specific feature at L18-F9484 (“concepts and discussions related to fear and its psychological impact”). Subsequent nodes along the path are predominantly fear-related, culminating in L25-F3410 (“intense emotional reactions and psychological responses related to fear and horror”).",
+      "page": 15,
+      "index": 2,
+      "width": 950,
+      "height": 294
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-003.webp",
+      "caption": "Table A.1: Prompt used to classify SAE feature topics using GPT-4o-mini.",
+      "page": 15,
+      "index": 3,
+      "width": 442,
+      "height": 423
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-004.webp",
+      "caption": "Table 3: Causal features and their learned steering multipliers (top 6 positive and negative changes).",
+      "page": 7,
+      "index": 4,
+      "width": 939,
+      "height": 257
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-005.webp",
+      "caption": "Table 2: Emotion recognition performance before and after steering. For each model, the best performance is shown in bold. The main dataset reports F1 scores for six emotions and macro-F1. EmoEvent, EmotionCause, and XED evaluate generalization to external datasets. Perplexity (PPL) measures language modeling performance to assess preservation of general language ability. Random-Feat yields performance identical to Zero-shot and is therefore omitted for clarity. Overall, Causal-Feat consistently achieves the strongest Macro-F1 and cross-dataset generalization.",
+      "page": 7,
+      "index": 5,
+      "width": 921,
+      "height": 304
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-006.webp",
+      "caption": "Figure A.1: Layer-wise linear probe accuracy for each model.",
+      "page": 14,
+      "index": 6,
+      "width": 441,
+      "height": 286
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-007.webp",
+      "caption": "Figure A.4: A subset of feature topics and their mean activation across layers for instances with different emotion labels for Gemma-2-2B.",
+      "page": 18,
+      "index": 7,
+      "width": 878,
+      "height": 1199
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-008.webp",
+      "caption": "Figure 1: A subset of feature topics and their mean activation across layers for instances with different emotion labels for Gemma-2-2B. Topics are selected as representative examples from each category with clear activation patterns. Syntax-related features tend to activate in earlier layers, while emotion-related features emerge in later layers. Emotion-specific features show consistent activation patterns and occasionally co-activate across multiple emotions. Figure A.4 shows a more comprehensive activation map.",
+      "page": 4,
+      "index": 8,
+      "width": 438,
+      "height": 432
+    },
+    {
+      "url": "assets/figures/arxiv/2604.25866v1/fig-009.webp",
+      "caption": "Table A.3: A representative subset of Phase-3 causal features F (3) e,causal identified for emotion prediction. Feature explanations are derived from SAE feature descriptions.",
+      "page": 17,
+      "index": 9,
+      "width": 979,
+      "height": 1190
+    }
+  ]
+}

@@ -1,0 +1,511 @@
+Title: Causal Disentanglement for Full-Reference Image Quality Assessment
+
+URL Source: https://arxiv.org/pdf/2604.21654v2
+
+Published Time: Thu, 30 Apr 2026 00:34:56 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+> 1
+
+# Causal Disentanglement for Full-Reference Image Quality Assessment 
+
+Zhen Zhang, Jielei Chu, Senior Member, IEEE, Tian Zhang, Fengmao Lv, Tianrui Li, Senior Member, IEEE, 
+
+Abstract —Existing deep network-based full-reference image quality assessment (FR-IQA) models typically rely on pairwise comparisons of deep features from reference and distorted images. Although effective on standard IQA benchmarks, existing FR-IQA methods still face two major limitations. Training-dependent methods require labeled IQA data for supervised optimization, but reliable quality annotations are difficult to obtain because they rely on subjective experiments. Training-free methods avoid supervised training, but their fixed perceptual priors limit their adaptability to non-standard or domain-specific image scenarios. To address these limitations, we propose a novel FR-IQA paradigm based on causal disentanglement represen-tation learning. Unlike conventional feature comparison-based methods, our approach formulates degradation estimation as a causal disentanglement process guided by interventions on latent representations. Specifically, we first decouple degradation and content representations by exploiting the content invariance between reference and distorted images. Inspired by the human visual masking effect, we then design a masking module to model the causal influence of image content on degradation features, thereby extracting content-influenced degradation representa-tions from distorted images. Finally, quality scores are predicted from these representations using either supervised regression or label-free dimensionality reduction. Extensive experiments show that our method achieves highly competitive performance on standard IQA benchmarks under fully supervised, few-label, and label-free settings. Moreover, on diverse non-standard image domains with scarce data, including infrared, neutron, screen-content, medical, and tone-mapped images, our method exhibits stronger MOS-free domain adaptation than existing training-free FR-IQA models. Cdoe: https://github.com/yuchen152/Causal-Disentanglement-for-Full-Reference-Image-Quality-Assessment 
+
+Index Terms —Image quality assessment, FR-IQA, label-free, visual masking effect. 
+
+I. I NTRODUCTION 
+
+# IMAGE quality assessment can help operators screen and provide high-quality digital images to their subscribers. Therefore, developing image quality assessment (IQA) meth-ods that align well with human subjective perception be-comes extremely important. IQA can be categorized into full-reference IQA (FR-IQA) [1]–[3], reduced-reference IQA (RR-IQA) [4], and no-reference IQA (NR-IQA) [5]. FR-IQA models are generally believed to be less practical than NR-IQA models because of their reliance on pristine images. However, recent studies [6]–[8] have shown that FR-IQA models can guide perceptual image enhancement, a task that poses challenges for many NR-IQA models [9]. As such, FR-IQA models remain crucial. FR-IQA obtains quality assessment results by determining the difference between the distorted image and the reference image. In previous studies, this difference was usually re-garded as a measure of the distance between these images. 
+
+Fig. 1. (a) shows the typical FR-IQA architecture. Most deep FR-IQA models compute the differences between feature maps to predict quality scores. (b) shows the proposed FR-IQA architecture, where we extract content-influenced degradation features to predict quality scores. 
+
+As shown in Figure 1, deep network-based FR-IQA models often employ deep learning for feature decomposition and score pooling. These FR-IQA models typically extract feature maps from both distorted and reference images, and compute their differences to derive quality scores. Deep network-based FR-IQA methods can be categorized into end-to-end deep learning models (training-dependent) and training-free models. Although these methods have achieved great success in the field of FR-IQA, several limitations remain. Training-dependent methods [6], [10], [11] rely on large-scale labeled IQA data. However, due to the high subjectivity of human per-ception, obtaining reliable ground truth typically necessitates a large panel of human observers to conduct exhaustive scoring or ranking (e.g., MOS). Consequently, this heavy reliance restricts their scalability and applicability, particularly in data-scarce or emerging domains (e.g., infrared or screen-content images). Moreover, training-free [12]–[15] methods typically leverage pre-trained models (e.g., VGG [16], EfficientNet [17]) trained on ImageNet to extract feature maps from both refer-ence and distorted images. They then compute the distance between these maps to derive the quality scores. However, these methods cannot be readily adapted to specific datasets, leading to severe performance drops in some scenarios. For instance, DBIQA [11] demonstrated that DeepWSD [18] only achieves excellent performance in limited scenarios. There-fore, it is essential to develop an FR-IQA method that does not rely on subjective quality annotations and can be efficiently adapted to specific datasets. In this work, we propose a method based on causal disentanglement representation learning that can be efficiently adapted to diverse scenarios (e.g., image enhancement or radiographic imaging) without the need for 
+
+> arXiv:2604.21654v2 [cs.CV] 29 Apr 2026 2
+
+costly Mean Opinion Score (MOS) annotations. To achieve this label-free adaptability, the key lies in establishing unsupervised paradigms for both training and prediction. For the training phase, our approach is built upon the premise that a distorted image fundamentally comprises two components: image content and image degradation. In FR-IQA, distorted images are typically synthesized by applying degradations to reference images. This generation process not only validates this premise but also guarantees that the image content remains strictly identical between the reference and the distorted images. By exploiting this image content invariance, we can decouple the degradation features from the image content in an unsupervised manner. However, merely decoupling image degradation is insufficient to fully simulate human subjective perception. According to the visual masking effect (VME), the Human Visual System (HVS) exhibits varying sensitivities to the same distortion depending on the underlying image content. For example, noise is highly visible in smooth areas (e.g., a clear sky) but nearly imperceptible in textured ones (e.g., dense grass). This phenomenon reveals that human perception of image degradation is affected by the interaction between image content and distortion. Because image content influences the visibility of degradation, it is imperative to explicitly model how image content influences the degradation representation. To this end, we propose a method based on causal disentanglement representation learn-ing to extract content-influenced degradation features. In the prediction phase, employing supervised or few-shot regression allows the model to explicitly map these causal features to subjective scores, thereby achieving a finer alignment with human visual perception. When MOS annotations are un-available, absolute quality prediction is not identifiable with-out additional supervision. Therefore, the zero-shot setting is evaluated as relative ranking rather than MOS fitting. Specifically, based on the analysis above, the learned content-influenced degradation feature is assumed to be primarily governed by a latent perceptual quality variable, so that its quality-relevant variation lies near a low-dimensional manifold in the high-dimensional feature space. Under this view, the intrinsic geometry of the feature manifold reflects the relative perceptual severity of distortions. We thus employ UMAP to recover a one-dimensional embedding that preserves the local neighborhood structure of the learned feature space. The resulting coordinate serves as a relative quality descriptor, enabling zero-shot quality ranking and discrimination without relying on MOS supervision. The main contributions of this work are summarized as follows. 
+
+• We propose a new causal disentanglement architecture for FR-IQA, which departs from conventional pairwise feature comparison. The proposed architecture decouples content and degradation representations by exploiting the content invariance between reference and distorted im-ages, and further incorporates content-conditioned causal modulation to model the visual masking effect. 
+
+• Extensive experiments demonstrate that the proposed method achieves highly competitive performance on stan-dard IQA benchmarks. Our model exhibits consistent robustness across fully supervised, few-label, and MOS-free settings. 
+
+• Comprehensive cross-domain experiments on diverse, non-standard image domains (e.g., screen-content, ra-diographic, and medical images) validate the method’s superior generalization capability. Its ability to perform adaptation without labeled IQA data highlights its prac-tical potential in data-scarce domains. This paper is structured as follows. In Section II, we review the existing work related to our study. In Section III-A, we present the problem formulation of the proposed FR-IQA framework. In Section IV, we describe the proposed method in detail. In Section V, we report the model settings and exper-imental results. In Section VI, we discuss the limitations and failure cases of the proposed method. Finally, the conclusions are presented in Section VII. II. R ELATED WORK 
+
+A. Various Quality Assessment Scenarios 
+
+The development of FR-IQA models has never been de-tached from practical quality assessment scenarios. Early benchmark datasets, such as TID2013, LIVE, CSIQ, and KADID-10k, were mainly developed to study human per-ception of fidelity loss caused by synthetic distortions under controlled settings. More recent datasets, including PIPAL, QADS, SynTEX, and TQD, further extend FR-IQA to images generated by modern restoration and synthesis algorithms, where perceptual quality is often harder to determine be-cause algorithm-induced changes do not always correspond to quality degradation. Meanwhile, FR-IQA has also been explored in more specific scenarios, such as screen-content, infrared, medical, and neutron images. However, progress in these areas remains limited, largely because IQA annotation is costly, subjective, and often requires domain expertise, making labeled datasets difficult to obtain. Moreover, existing training-free FR-IQA methods show performance degradation in cross-domain scenarios, since they usually rely on ImageNet-pretrained feature representations that are primarily optimized for natural images. When applied to domain-specific data, the discrepancy in image statistics and structural information leads to domain shift and compromises prediction reliability. These limitations call for an FR-IQA framework that can be adapted to domain-specific features without relying on subjective quality labels. 
+
+B. Deep Network-Based FR-IQA Models 
+
+Deep networks have been widely used to model the complex relationship between reference and distorted images in FR-IQA. Early studies extracted sensitivity or similarity maps from both images for quality estimation [19], [20]. Later, researchers found that VGG-based deep features effectively represent perceptual similarity, serving as useful losses for image synthesis and quality prediction [21]. Building on this, Ding et al. [6] proposed DISTS, which measures structural and textural similarity in deep feature space, and ADISTS [22] fur-ther improved it using a dispersion index for adaptive weight-ing. Liao et al. [18] instead modeled perceptual degrada-tion using Wasserstein distance in feature space, emphasizing 3
+
+distributional differences for quality evaluation. TOPIQ [10] introduced a top-down approach featuring a cross-scale at-tention mechanism, which leverages high-level semantics to guide the network’s focus toward important local distortion regions for efficient quality evaluation. DBIQA [11] proposed a dual-branch framework using kernel representation similarity analysis (KRSA) and mean absolute error (MAE). This method focuses on correlations among features from the same source. DeepCausal [13] proposed an FR-IQA method using abductive counterfactual inference to uncover causal links between deep network features and perceptual distortions, thereby achieving a training-free FR-IQA framework. DeepDC [15] utilized distance correlation to quantify statistical similarity in deep feature space, thereby overcoming the strict requirement of pixel-level alignment for image quality evaluation. Deep-JSD investigated various deep distribution measures, such as Jensen-Shannon divergence and symmetric Kullback-Leibler divergence, to perceptually compare pre-trained network fea-tures for a training-free FR-IQA framework. However, existing methods still face practical constraints: training-dependent models are limited by the scarcity of an-notated IQA data, while training-free models struggle to adapt quickly to domain-specific datasets. Despite these bottlenecks, these methods have achieved considerable success by formu-lating FR-IQA as a measure of deep feature differences. In this paper, we propose a novel perspective: formulating FR-IQA as a causal disentanglement representation problem grounded in the visual masking effect. 
+
+C. Causal Disentanglement Representation Learning 
+
+Disentangled representation learning aims to separate the underlying generative factors within data into independent and interpretable components. Early approaches, such as Indepen-dent Component Analysis (ICA) [23], attempted to decompose signals into statistically independent sources. Variational Au-toencoders (VAE) [24] further advanced this idea by introduc-ing regularization and prior constraints to structure the latent space, while β-VAE [25] enhanced disentanglement through KL divergence optimization. However, traditional methods often assume independent latent factors, which is unrealistic for data with complex causal dependencies. To address this, CausalVAE [26] incorporates causal structures to achieve causal disentanglement, and SCADI [27] employs pseudo-label generation for semi-supervised causal disentanglement. In this paper, we formulate FR-IQA from the perspective of causal disentanglement representation learning. 
+
+D. Visual Masking Effects 
+
+Recent research reveals that image content exerts a complex causal influence on the visibility of distortions during visual perception [28]–[31]. The visual quality of an image mainly depends on four factors: contrast sensitivity function (CSF), luminance adaptation (LA), contrast masking (CM), and foveated masking (FM). Spatial CSF indicates the bandpass properties of the HVS in the spatial frequency domain [28]. Compared with high-frequency regions, the HVS is more sensitive to distortion in low-frequency regions. LA reflects HVS sensitivity as influenced by background luminance [29]. It is harder to distinguish distortion in relatively dark or bright environments. CM refers to the attenuation of one contrast in the presence of another [30]. FM implies that visual sensitivity is related to retinal eccentricity, with distortion far from the focus of gaze being less perceptible [31]. In IQA, visual masking is commonly modeled to mimic human subjective perception [32], [33]. III. P RELIMINARIES 
+
+A. Problem Formulation  
+
+> Fig. 2. Structural Causal Model (SCM) for FR-IQA. Left: distorted image generation mechanism; Right: visual mechanism after decoupling.
+
+As shown in Figure 2 (a), we construct a Structural Causal Model (SCM) for distorted image generation to describe the distorted image generation process. In this SCM, C and D
+
+respectively denote the image content and degradation. The path C → Id ← D indicates that the distorted image Id is generated from both image content C and degradation D. This SCM is based on the following proposition: 
+
+Proposition 1. A distorted image Id can be predominantly de-scribed by two factors: (1) image content C, which represents the semantic and structural elements, and (2) degradation 
+
+D, which represents all distortions and quality degradation affecting the image. 
+
+Proposition 1 is a reasonable formulation within the FR-IQA framework . By definition, the reference image Ir is distortion-free, thereby providing the pristine image content 
+
+C. Accordingly, the distorted image Id is formulated as a combination of this image content, which strictly corresponds to Ir , and an externally applied degradation D. This process aligns with the causal generation path C → Id ← D.Building upon this generation mechanism and Proposi-tion 1 , a question arises: Can we reformulate the FR-IQA task as a decoupling process? FR-IQA assesses image quality by comparing a distorted image with its reference, with the only difference being the introduced degradation. An intuitive idea is to decouple the degradation D from Id using the pristine content C provided by Ir , and predict the Mean Opinion Score (MOS) based on the degradation D. However, this straightfor-ward decoupling presents a critical limitation: relying solely on the isolated degradation D fails to accurately reflect human visual perception, because image content inherently masks or accentuates distortions due to the visual masking effect. The principle of visual masking indicates that image quality is mainly related to the visibility of distortion. Specifically, the 4
+
+> Fig. 3. Illustrations of different distortion visibility. Under the same distortion intensity level, the image with smooth content can be more tolerant to lens blur than the image with textured content, yet more sensitive to quantization noise. The value in parentheses indicates the imposed distortion intensity level.
+
+same image shows different visual quality when degraded by distortions of different types and intensity levels. However, the visibility of an identical distortion varies across different image contents. As shown in Figure 3 (a), for lens blur, images with smooth content have higher MOS values than those with complex textures under the same distortion level, indicating that smooth content has a stronger masking ability for this distortion. However, images with smooth content are more sensitive to quantization noise than those with complex textures (see Figure 3 (b)). Therefore, although the degradation D acts as the fun-damental determinant of quality assessment, it is modulated by the image content C due to the visual masking effect. Motivated by this insight, we reformulate FR-IQA as a process of causal disentanglement representation learning, as shown in Figure 2 (b). First, we decouple degradation features from Id
+
+under the guidance of content invariance between the reference and distorted images. Second, we model the content-dependent modulation of degradation visibility, C → D. Finally, the resulting content-influenced degradation feature is used to predict the MOS. 
+
+B. Causal Disentanglement Representation Learning 
+
+Causal disentanglement representation learning seeks to learn latent variables that are semantically interpretable and structured according to an underlying causal generative pro-cess. In contrast to conventional disentangled representation learning, which typically assumes statistical independence among latent factors, causal disentanglement explicitly models structural dependencies by introducing a causal graph over the latent variables. Under this formulation, the observed data are assumed to be generated from independent exogenous variables, which are subsequently transformed into causally dependent endogenous representations [26], [27]. Let ϵ ∈ Rn denote the independent exogenous variables, and let z ∈ Rn denote the endogenous latent representations endowed with causal semantics. Given an adjacency matrix A
+
+that encodes the causal relations among latent variables, the causal layer is defined as 
+
+z = A⊤z + ϵ = ( I − A⊤)−1ϵ, ϵ ∼ N (0 , I ), (1) where A specifies the directed dependencies among the latent variables. This formulation indicates that the latent represen-tation z is no longer a collection of mutually independent fac-tors, but instead a structured representation produced through causal propagation over the graph. To ensure that the learned causal structure is well-defined, the adjacency matrix A must correspond to a directed acyclic graph (DAG). CausalVAE imposes the following continuous acyclicity constraint: 
+
+H(A) ≡ tr 
+
+ 
+
+I + cs A ◦ A
+
+n
+
+− n = 0 , (2) where tr( ·) denotes the trace of a matrix, s is a positive scaling factor, ◦ denotes element-wise multiplication, c is a positive constant, and n is the number of latent variables. This constraint guarantees that A represents a valid DAG and thereby ensures that the learned latent variables admit a causal interpretation. Accordingly, causal disentanglement representation learning can be understood as the process of learning semantically meaningful latent factors together with their causal relationships, rather than merely enforcing statistical independence in the latent space [27], [36]. IV. M ETHOD 
+
+The whole framework consists of three stages. Figure 4 shows the process of pre-training and fine-tuning. In the pre-training stage, we first construct a synthetic degraded image dataset from clear images. Subsequently, the model is pre-trained using the constructed synthetic degradation dataset. In the fine-tuning stage, we fine-tune the model on specific IQA datasets (e.g., TID2013 [34], LIVE [35]) or other datasets con-taining distorted images and reference images. The fine-tuning model remains identical to the model used in pre-training, with the only difference being the dataset. In the zero-shot setting, the framework proceeds solely with pre-training, without subsequent fine-tuning. Finally, in the prediction stage, we provide multiple approaches (i.e., supervised, few-shot, and zero-shot) to predict the quality score. Sections IV-A and IV-B describe the training methods for the pre-training and fine-tuning stages. Section IV-C explains how to predict the quality score. 
+
+A. Decouple degradation features 
+
+Guided by the problem formulation in Section III-A, our objective at this stage is to separate distortion-related factors 5Fine -tuning Fine -tuning 
+
+> Synthetic
+> degeneration
+
+## Pre -training   
+
+> Clear image
+> Synthetic
+> distorted image
+> Fine -tuning on the
+> corresponding dataset
+> Distorted image
+> Reference image
+> Encoder Decoder Degenerate
+> features
+> Causal
+> effect
+> Reconstructed
+> image
+> Reconstructed
+> image
+
+## Fine -tuning Fine -tuning 
+
+> Synthetic
+> degeneration
+
+## Pre -training    
+
+> Clear image
+> Synthetic
+> distorted image
+> Fine -tuning on the
+> corresponding dataset
+> Distorted image
+> Reference image
+> Encoder Decoder Degenerate
+> features
+> Causal
+> effect
+> Reconstructed
+> image
+> Reconstructed
+> image
+> Fig. 4. In the pre-training stage, we first construct a synthetic degraded image dataset from clear images. Subsequently, the model is pre-trained using the constructed synthetic degradation dataset. In the fine-tuning stage, we fine-tune the model on specific IQA datasets (e.g., TID2013 [34], LIVE [35]) or other datasets containing distorted images and reference images. The fine-tuning model remains identical to those used in pre-training, with the only difference being the dataset.
+
+from content-related factors in distorted images. A naive approach is to use a standard autoencoder without inter-vention. We use an SCM to describe the latent generation process without intervention, as illustrated in Figure 5 (a). The path Id → Z → ˆId indicates that Z is the latent representation learned from the distorted image Id. Even if the autoencoder reconstructs the distorted image accurately, i.e., 
+
+ˆId ≈ Id, the latent representation may still remain entangled. Extracting decoupled degradation features without supervi-sion is theoretically impossible for standard autoencoders; it fundamentally requires additional inductive biases or explicit interventions [37]. 
+
+> Fig. 5. (a) represents the structure of the autoencoder, and (b) is the structure of the autoencoder after intervention.
+
+To support this separation, we exploit a task-specific prop-erty of FR-IQA: the reference image provides content infor-mation that is aligned with the distorted image. This property is stated as the following proposition. 
+
+Proposition 2. Under the standard FR-IQA setting considered in this work, the reference image Ir and the distorted image Id
+
+share the same underlying scene content, while Id additionally contains distortion-related factors. 
+
+Based on Proposition 1 and Proposition 2 , we exploit the content invariance between the reference and distorted images to introduce an explicit intervention on the latent rep-resentation, thereby providing an inductive bias for decoupling degradation features. As shown in Figure 5(b), let 
+
+Z = ( Z1: k, Z k+1: n), (3) where Z1: k and Zk+1: n denote two complementary parts of the latent representation. Our intervention process is defined as follows. 1) Given a distorted image Id, the encoder E extracts its latent representation Z = ( Z1: k, Z k+1: n).2) Let C denote the content information from the reference image Ir . We replace the first part Z1: k with C, yielding the intervened latent representation (C, Z k+1: n).3) We feed the intervened latent representation (C, Z k+1: n)
+
+into the decoder de to generate the distorted image 
+
+˙Id(C, Z k+1: n).After intervention, the decoder reconstructs the distorted image from the image content and the remaining latent repre-sentation: 
+
+˙Id = de (C, Z k+1: n), (4) where C is the content from the reference image Ir . The corresponding reconstruction objective is 
+
+d
+
+ ˙Id, I d
+
+
+
+= d(de (C, Z k+1: n), I d) , (5) where d(·, ·) denotes a reconstruction metric. If the decoder can reconstruct the distorted image well, namely de (C, Z k+1: n) ≈ Id, Zk+1: n is encouraged to re-tain the degradation-related information. Since C is provided by the reference image and supplies the complete image content information for reconstruction, the complementary information required to reproduce the distortion must be retained in Zk+1: n. Therefore, minimizing d
+
+ ˙Id, I d
+
+
+
+in Eq. (5) encourages Zk+1: n to capture distortion-related factors. In this way, the intervention-reconstruction mechanism induces a functional separation in the latent space, where Zk+1: n
+
+gradually becomes a degradation-related representation. This provides the theoretical motivation for our intervention-based pre-training strategy. 
+
+B. Causal representation learning 
+
+While the framework established in Section IV-A can decouple degradation representations, relying solely on this degradation D is insufficient for accurately simulating human 6 
+
+> Fig. 6. Structural causal model for predicting quality scores.
+
+visual perception. To formalize this discrepancy, we model the decoupling process with an SCM in Figure 6. From a causal perspective, the path C → ˙Id ← D forms a causal collider 
+
+(detailed in Appendix ), implying that the ideal content C and the degradation D are independent [38], [39]. As previously analyzed in Section III-A, image content inherently masks or accentuates distortions due to the visual masking effect. Therefore, we model this masking effect by leveraging the ideal image content C and the decoupled degradation D.To model the content-influenced effect, we follow the causal disentanglement framework DEAR [36], which incorporates a causal model into the latent prior. In causal disentanglement representation learning, a set of latent variables z ∈ Rn
+
+is learned from observed data, while their dependencies are characterized by a DAG with weighted adjacency matrix 
+
+A [23], [26], [27], [36], [40]. Let ϵ ∈ Rn denote the mutually independent exogenous variables, with ϵ ∼ N (0 , I ). Under the linear structural causal model, the causal layer is defined as 
+
+z = A⊤z + ϵ, (6) which yields 
+
+z = ( I − A⊤)−1ϵ, (7) where I is the identity matrix. To further enhance the flexi-bility of the causal transformation, we introduce element-wise nonlinear mappings and extend the structural equation as 
+
+z = f  (I − A⊤)−1h(ϵ) , (8) where f and h are element-wise nonlinear transformations. In this way, the independent exogenous variables ϵ are transformed into causally dependent latent representations z
+
+through nonlinear projection and graph-based causal propaga-tion. In our problem formulation, the latent representation space is explicitly partitioned into only two components: the image content C and the decoupled degradation D. Different from generic causal disentanglement settings that infer an unknown latent causal graph, we explicitly impose the directed percep-tual modulation C → ˙D, where image content modulates the visibility of the physical degradation. Under this assumption, the adjacency matrix A degenerates into a two-node graph with a single directed edge from C to D. Consequently, the general nonlinear causal transformation in Eq. (8) reduces to a structural equation defined on the degradation node, yielding the content-conditioned degradation representation: 
+
+˙D = V (h(C), D ). (9) Here, V (h(C), D ) models how semantic content modulates perceived degradations, allowing the network to capture content-influenced distortion perception. where h(C) denotes the content-related latent representation extracted from the reference image, and V (·) is a modulation function that combines content features and degradation features to generate the content-influenced degradation features ˙D.As shown in Figure 6, intervention step 3) is modified so that the final distorted image is jointly generated by image contents C and ˙D. The content-influenced degradation features 
+
+˙D are used for subsequent prediction of the perceived quality. 
+
+The detailed model design, including the encoder, causal layer, and decoder, is presented in Section V-A .
+
+C. Score prediction 
+
+The final objective is to predict the image quality score based on the learned content-influenced degradation features 
+
+˙D. Depending on the availability of labeled IQA data, we introduce two complementary prediction strategies. 
+
+Supervised regression: When labeled IQA data are avail-able, we employ a two-layer fully connected (FC) regression head to map the content-influenced degradation features ˙D
+
+to the final quality scores. During this phase, all parameters of the model are jointly updated in an end-to-end manner. This supervised fine-tuning further aligns the learned content-influenced degradation representation with subjective human perception. 
+
+Dimensionality reduction: In the zero-shot setting where labeled IQA data are unavailable, absolute MOS values are generally not identifiable without additional supervision. Therefore, instead of directly regressing MOS, we aim to recover a relative quality coordinate from the content-influenced degradation feature ˙D. We begin with the following assumption. 
+
+Assumption 3. There exists a scalar latent perceptual quality variable q ∈ R such that 
+
+q = v(C, D ), (10) 
+
+where v(·) denotes the content-dependent perceptual effect of degradation under visual masking. The subjective quality score is generated from q.
+
+m = ψ(q) + ϵ, (11) 
+
+where ψ(·) is a monotone function and ϵ denotes subjective scoring noise. Accordingly, 
+
+E[m | q] = ψ(q). (12) Assumption 3 is consistent with the problem formulation in Section III-A. Specifically, perceptual image quality is determined not by the physical degradation alone, but by its perceptual visibility after modulation by image content. Since human quality judgment is ultimately expressed as a scalar 7
+
+score, it is natural to model the underlying perceptual effect through a one-dimensional latent variable q.Let ˙D ∈ Rp denote the ideal content-influenced degradation feature. We further assume that its dominant variation is governed by the latent quality variable q.
+
+Assumption 4. There exists an interval Q ⊂ R such that 
+
+˙D = Γ( q) + η, q ∈ Q , (13) 
+
+where Γ : Q → Rp is a mapping function and η is a small perturbation term. Moreover, there exist constants c1, c 2 > 0
+
+such that for any q1, q 2 ∈ Q ,
+
+c1|q1 − q2| ≤ ∥ Γ( q1) − Γ( q2)∥2 ≤ c2|q1 − q2|. (14) 
+
+Equivalently, the quality-relevant features lie near a one-dimensional manifold 
+
+M = {Γ( q) : q ∈ Q} ⊂ Rp, (15) 
+
+and distances on this manifold are locally equivalent to distances in the latent quality variable. 
+
+Assumption 4 states that although ˙D is embedded in a high-dimensional feature space, its quality-relevant geometry is intrinsically close to one-dimensional. This motivates the use of one-dimensional projection for relative quality prediction. Based on the above assumptions, we employ UMAP to project ˙D into a one-dimensional space. UMAP is used here as a practical embedding tool for recovering a one-dimensional coordinate from the learned feature geometry. In the following analysis, we only require that the resulting embedding approx-imately preserves the local neighborhood order and relative distance induced by ˙D. Let yi ∈ R denote the one-dimensional embedding of the i-th sample. Ideally, if sample i is closer to sample j than to sample k in the learned feature space, then the embedding tends to satisfy 
+
+|yi − yj | < |yi − yk|. (16) The following proposition provides a justification for using the projected one-dimensional coordinate as a relative quality descriptor.  
+
+> Fig. 7. Local neighborhood relations in the feature space mainly reflect the proximity of the latent perceptual quality values.
+
+Proposition 5. Suppose Assumptions 3 and 4 hold. The ob-tained one-dimensional embedding y approximately preserves the local neighborhood order and relative distance induced by ˙D on the sample support. Then there exists a monotone function T : Q → R such that 
+
+y ≈ T (q), (17) 
+
+up to perturbations caused by η and the embedding approxi-mation error. Consequently, y can be used as a relative quality coordinate for ranking distorted images. In particular, the ordering induced by y is consistent with the ordering of the latent perceptual quality q, and hence with the ordering of 
+
+E[m | q] = ψ(q).Proof. By Assumption 4, the ideal feature Γ( q) lies on a one-dimensional manifold parameterized by q ∈ Q. The bi-Lipschitz condition implies that, on Q, distances in the feature space are locally equivalent to distances in the latent variable. Therefore, when the perturbation term η is small, local neighborhood relations in ˙D remain consistent with those induced by q.Now consider a one-dimensional embedding y that approx-imately preserves the local neighborhood order of ˙D on the sample support. Since Q is an interval and the underlying structure is one-dimensional, preserving local neighborhood order implies that the recovered coordinate y provides an order-preserving parameterization of the latent variable. Hence there exists a monotone function T (·) such that 
+
+y ≈ T (q), (18) where the approximation error is induced by the perturbation 
+
+η and the imperfect preservation of neighborhood order during embedding. Finally, Assumption 3 gives 
+
+E[m | q] = ψ(q), (19) where ψ(·) is monotone. Therefore, the coordinate y preserves the relative ordering of the latent perceptual quality and, equiv-alently, the ordering of the conditional expected subjective score. It thus serves as a valid relative quality coordinate for ranking distorted images. This result also clarifies the limitation of zero-shot predic-tion. Since the recovered coordinate is identifiable only up to an unknown monotone transformation, the one-dimensional embedding can provide relative quality scores, but not an absolute MOS calibration. Therefore, absolute score prediction requires either a small number of labeled anchor points, as in QCN [41], or a lightweight regression head trained with few-shot IQA supervision. Manifold approximation Feature vector Topological representation Feature vector Low-dimensional projection Feature vector Relative distance Direction  
+
+> Fig. 8. A simplified flowchart of the zero-shot prediction stage.
+
+Specifically, given unseen distorted images Id and their reference images Ir , we feed them into the trained encoder 8
+
+and causal layer with frozen parameters to extract the content-influenced degradation feature ˙D. Then, UMAP is applied to project ˙D into a one-dimensional space, yielding the relative quality coordinate y. Figure 8 shows the simplified flowchart of UMAP. Although this projection does not recover absolute MOS values, it preserves the relative ordering and local geometric structure of the learned quality manifold, which is sufficient for zero-shot quality ranking and discrimination. Random initialization After Pre-training 6 5 4 3 2Scores 6 5 4 3 2Scores  
+
+> Fig. 9. Visualization of the one-dimensional UMAP embedding on TID2013. The color of each point becomes darker as the ground-truth quality decreases. After pre-training, the samples are continuously distributed along the one-dimensional space according to quality variation, while random initialization fails to produce a discriminative structure.
+
+Figure 9 provides empirical evidence consistent with the above hypothesis. With random initialization, the projected points are densely mixed in the one-dimensional space, indi-cating that the learned features do not yet exhibit a meaningful quality manifold. After pre-training, however, the projected samples become continuously distributed according to quality variation, and high-quality samples can be clearly separated from low-quality ones. This observation suggests that pre-training enables the encoder and causal layer to organize the learned feature ˙D around a one-dimensional quality-related manifold, making zero-shot ranking possible through UMAP projection. 
+
+D. Connection to the HVS and Existing Works 
+
+Connections to HVS: the proposed causal disentanglement framework is closely related to the HVS. In human visual perception, the visibility of a distortion is not absolute; it is heavily modulated by the spatial background, a psychophysical phenomenon known as the visual masking effect [28]–[31]. For instance, human eyes are significantly less sensitive to noise embedded in highly textured regions than in smooth, flat areas. Our framework emulates this human visual mecha-nism through causal disentanglement representation learning. Specifically, instead of extracting a monolithic feature where image content and distortions are mixed, our Structural Causal Model (SCM) first isolates them into independent variables. Subsequently, by introducing the directed causal link C → D,we provide a structured approximation of the masking effect. This allows the network to learn how semantic and structural information modulates the visibility of distortion, ensuring that the final representation ˙D reflects the distortion as it is actually perceived by the human eye. 
+
+Connections to existing models: Existing FR-IQA models typically employ dual-branch architectures to compute feature differences or similarities between the reference and distorted images. These methods are highly effective at quantifying signal fidelity by directly comparing the paired inputs. In this work, we propose a novel and complementary perspective by formulating FR-IQA as a causal disentanglement problem. Rather than focusing primarily on pairwise feature compar-isons, we explicitly model the visual masking effect. This paradigm allows us to encode how human perception of distortion is modulated by the image content. V. E XPERIMENTS 
+
+A. Model structure 
+
+Figure 4 shows the overall process, including feature extrac-tion, causal modulation, and degraded image reconstruction. 
+
+Encoder: In practice, we do not perform disentanglement by explicitly splitting the features as in the theoretical anal-ysis. Specifically, the encoder E uses a standard V GG 16 
+
+to extract image degradation features. We directly feed the encoder-extracted features D and the reference image C into the subsequent decoder and causal layer. This direct fusion implicitly approximates the intervention do (Z1: k = C) and prevents mutual interference at the feature levels. 
+
+Causal layer: As shown in Figure 10, the causal layer is designed to explicitly model the content-dependent masking effect, namely, the fact that the perceptual visibility of the same distortion varies with image content. Specifically, the feature extractor h employs a ResNet18 [42] backbone to encode the reference image C into a content representation, 
+
+zc = h(C). (20) Based on zc, a nonlinear mapping f , implemented with three fully connected layers, predicts a content-aware modulation mask, 
+
+Mc = tanh( f (zc)) . (21) Since different image contents may produce different masking effects and thus alter the perceptual visibility of degradation components in different ways, we introduce a channel gating mechanism g and define the effective masking signal as 
+
+ˆMc = σ(g) ⊙ Mc, (22) where σ(·) denotes the sigmoid function and ⊙ denotes element-wise multiplication. Given the degradation feature D
+
+extracted by the encoder, the causal layer performs feature modulation in a residual form: 
+
+˙D = D + λ ( ˆMc ⊙ D), (23) where λ is a scaling factor controlling the modulation strength. This residual modulation is important because image content should not overwrite the degradation representation itself. Instead, it should only regulate the extent to which each degradation component is expressed under a specific content condition. In this way, the causal layer treats content as an intervention variable that selectively suppresses or enhances distortion responses according to masking strength, rather than directly entangling content and degradation information. Therefore, the resulting feature ˙D can more accurately approx-imate the causal effect of image content on distortion visibility, thereby reducing content-induced confounding and achieving better alignment with human subjective perception. 9 
+
+> Fig. 10. The structure of the decoder and causal layer.
+
+Decoder: The reconstruction quality of distorted images is a key factor that affects the representation performance. To con-struct effective supervisory signals, we design a reconstruction network based on a U-Net architecture with FiLM modulation. 
+
+˙Id = Decoder (Ir , ˙D), (24) where Decoder denotes the reconstruction network, Ir the reference image, and ˙Id denotes the reconstructed distorted image. The overall network follows a U-Net architecture. The reference image is first mapped into feature representations by a shallow convolution and then fed into a encoder to extract multi-scale representations. The output of the encoder at layer 
+
+l is denoted by El, which is used for deep semantic modeling and is also passed to the corresponding decoder layer through skip connections to preserve spatial structure and fine details. To enable the network to adaptively modulate middle fea-tures according to the degradation characteristics, we introduce FiLM modulation into the residual blocks of the encoder, the bottleneck, and the decoder. For an middle feature Fl ∈
+
+RCl×Hl×Wl , an MLP maps the degradation feature zdeg to a channel-wise scaling parameter γl and a shifting parameter βl:
+
+γ, β = MLP( ˙D). (25) We then apply a channel-wise affine transformation to the feature: 
+
+FiLM( Fl, ˙D) = (1 + γ) ⊙ Fl + β, (26) where ⊙ denotes channel-wise multiplication. The term (1 + 
+
+γl) ensures the stability around the identity mapping in the early stage. The architecture of the decoder is illustrated in the Figure 10. Figure 4 shows the overall process. 
+
+Loss function: The final reconstruction quality of ˙Id reflects the representation capacity of the extracted latent features. To comprehensively supervise this process, our objective function integrates three complementary components: (i) Pixel-wise Loss: We employ Mean Squared Error (MSE) between the reconstructed output ˙Id and the target distorted image Id to enforce basic pixel-level semantic and structural alignment: 
+
+LM SE = 1
+
+n × m
+
+> n
+
+X
+
+> i=1
+> m
+
+X
+
+> j=1
+
+ .
+
+Id(i, j ) − Id(i, j )
+
+2
+
+. (27) (ii) Perceptual Loss: To mitigate the over-smoothing issue inherent to MSE [43], we introduce a VGG19-based perceptual loss [16], [44] to explicitly recover high-frequency structural details: 
+
+LV GG = MSE 
+
+
+
+VGG ( ˙Id), VGG (Id)
+
+
+
+. (28) (iii) Adversarial Loss: Finally, a PatchGAN discriminator is utilized to synthesize realistic local textures and fine-grained visual details [45]: 
+
+LGAN = log ( GAN (Id)) + log 
+
+
+
+1 − GAN ( ˙Id)
+
+
+
+. (29) 
+
+B. Experimental Protocols and Implementation Details 
+
+Training data and implementation details. For standard IQA benchmarks, the synthetic pre-training set is constructed from high-quality pristine images in the Waterloo Database []. To match the degradation characteristics of each benchmark, we synthesize distorted images according to the degradation types and levels defined in the corresponding dataset protocol. For example, for LIVE, we generate the five degradation types and levels specified in its protocol. For domain-specific datasets, such as infrared or screen-content images, the syn-thetic pre-training data are instead constructed from pristine images in the corresponding domain, using the degradation types described in each dataset protocol. The pristine images used for domain-specific pre-training are strictly separated from the test images. All input images are resized to 448 × 448 , randomly flipped with a probability of 0.5, and normalized. We use AdamW [57] as the optimizer, with an initial learning rate of 
+
+1 × 10 −4 and a cosine annealing scheduler. The numbers of epochs for pre-training and fine-tuning are set to 200 and 20, respectively. The batch size is set to 24. Fine-tuning uses the same reconstruction-based objective and network architecture as pre-training, with the only difference being the training dataset. 
+
+Training and prediction protocol. The proposed frame-work is evaluated under three settings. When MOS labels are available, the model is first pre-trained on the synthetic degraded dataset constructed from Waterloo and then fine-tuned on the target IQA dataset using paired reference and distorted images. This fine-tuning stage does not use MOS labels. Afterward, a two-layer MLP regression head is trained with MOS labels to map the learned content-modulated degra-dation feature ˙D to quality scores. When MOS labels are unavailable on standard IQA bench-marks, the model is only pre-trained on the Waterloo-based synthetic degraded dataset. The trained encoder and causal layer are frozen, and ˙D is extracted from each evaluation sam-ple. UMAP, implemented with the umap-learn package, is then used to project the high-dimensional features onto a one-dimensional quality coordinate for relative quality prediction. 10                                                                                                                                                                                                                                     
+
+> TABLE I RESULTS OF THE PERFORMANCE COMPARISON CONDUCTED ON BENCHMARK DATASETS .Feature Domain Method LIVE [35] CSIQ [46] TID2013 [34] KADID [47] PIPAL [48] PLCC SRCC PLCC SRCC PLCC SRCC PLCC SRCC PLCC SRCC PSNR 0.781 0.801 0.792 0.807 0.664 0.687 0.670 0.676 0.398 0.392 SSIM [1] 0.847 0.851 0.810 0.833 0.665 0.627 0.610 0.619 0.489 0.486 MS-SSIM [49] 0.886 0.903 0.875 0.879 0.842 0.786 0.824 0.826 0.571 0.545 VIF [50] 0.949 0.953 0.899 0.899 0.771 0.677 0.685 0.679 0.572 0.545 VSI [51] 0.877 0.899 0.912 0.929 0.898 0.895 0.877 0.878 0.548 0.526 GMSD [52] 0.909 0.910 0.938 0.939 0.858 0.804 0.847 0.847 0.614 0.569 Traditional NLPD [53] 0.882 0.889 0.913 0.926 0.832 0.799 0.809 0.812 0.489 0.464 PieAPP(CVPR18) [54] 0.866 0.865 0.864 0.883 0.809 0.844 0.857 0.865 0.702 0.701 LPIPS(CVPR18) [21] 0.934 0.932 0.894 0.876 0.732 0.670 0.700 0.720 0.611 0.573 DISTS(TPAMI20) [6] 0.924 0.925 0.919 0.920 0.854 0.830 0.886* 0.886* 0.645 0.627 PDL [55] 0.946 0.943 0.919 0.926 0.848 0.843 0.825 0.829 0.564 0.554 ADISTS [56] 0.954 0.955 0.957 0.950 0.858 0.834 0.889 0.889 0.645 0.631 DeepWSD(MM22) [18] 0.904 0.925 0.941 0.950 0.894 0.874 0.887 0.888 0.503 0.500 DSD [12] 0.944 0.922 0.925 0.925 0.759 0.734 0.847 0.846 0.621 0.624 TOPIQ-FR(TIP24) [10] 0.882 0.887 0.894 0.894 0.854 0.820 0.896 0.895 0.837* 0.809* DeepCausal(CVPR25) [13] 0.929 0.932 0.949 0.952 0.909 0.884 0.898 0.899 0.675 0.657 DeepJSD(TIP24) [14] 0.972 0.965 0.963 0.967 0.900 0.879 0.893 0.894 0.612 0.598 DeepDC(TIP25) [15] 0.904 0.954 0.941 0.957 0.849 0.844 0.896 0.905 0.669 0.670 Feature comparison DBIQA(TPAMI25) [11] 0.969 0.962 0.961 0.956 0.909 0.895 0.900 0.901 0.745* 0.769* Ours w/ f0.968 0.966 0.966 0.954 0.916 0.899 0.902 0.897 0.727 f0.713 f
+> Causal Disentanglement Ours w/o f0.949 0.958 0.946 0.931 0.909 0.892 0.899 0.891 0.684 0.666
+
+Methods marked with an asterisk (*) were trained on external IQA datasets, including KADID and PIPAL. PieAPP and LPIPS were trained on their own proposed datasets. The superscript f denotes fine-tuning on the target dataset followed by supervised regression using labeled data. 
+
+For domain-specific datasets, the model is pre-trained on the corresponding domain-specific synthetic degraded dataset without using MOS labels, and quality scores are predicted using the same UMAP-based projection. The key UMAP parameters nneighbors and min dist are set to their default values of 15 and 0.1, respectively.50 
+
+Datasets: We tested the proposed method on 10 IQA datasets, including five datasets that contained a wide range of distortion types (LIVE IQA [35], CSIQ [46], TID2013 [34], KADID [47], and PIPAL [48]) and five specific-domain IQA datasets related to specific content quality evaluations (Infrared image [58], Neutron image [59], Screen content image [60], Medical image [61] and tone-map image[]) 
+
+C. Quality prediction performance 
+
+In this study, we evaluate a variety of representative and state-of-the-art image quality assessment techniques in five IQA datasets (LIVE IQA [35], CSIQ [46], TID2013 [34], KADID [47], and PIPAL [48]), including feature-based and deep learning approaches: PSNR, SSIM [1], MS-SSIM [49], VIF [50], VSI [51], GMSD [52], NLPD [53], PieAPP [54], LPIPS [21], DISTS [6], PDL [55], ADISTS [56], Deep-WSD [18], DSD [12], TOPIQ-FR [10], DeepCausal [13], DeepJSD [14], DeepDC [15], and DBIQA [11]. The methods we compare can be categorized into three main groups: traditional image quality assessment methods, end-to-end deep learning models, and training-free methods. Specifically, for the end-to-end based approaches, we utilized the weight files provided by the authors of these methods to assess their per-formance through cross-dataset predictions. For the training-free methods, we conducted tests directly on each dataset. For the proposed method, we evaluate performance using two prediction settings, including supervised fine-tuning and a fully unsupervised setting. Specifically, in the supervised fine-tuning setting f , the model is first pretrained on a synthetic dataset, then fine-tuned for feature extraction on a standard IQA dataset, and finally used to train an MLP-based regres-sion model with labeled IQA data for prediction. For fair comparison, we fine-tune the model and perform supervised regression on the PIPAL dataset for cross-dataset testing. In the unsupervised setting, we only pretrain the model on the synthetic dataset and then use UMAP to predict quality scores. As shown in Table I, our method achieves strong overall performance under both prediction settings and remains highly consistent with the ground-truth scores across all datasets. 
+
+D. Domain-specific dataset experiments 
+
+In some domain-specific image scenarios (e.g., infrared, neutron, screen content or medical radiographic imaging), the image structure and texture differ significantly from standard natural images. Figure 11 shows images from different specific domains. Consequently, the existing state-of-the-art training-free methods that rely on models pre-trained on standard natural datasets (ImageNet) are often not suitable for these 11   
+
+> TABLE II RESULTS OF THE PERFORMANCE COMPARISON CONDUCTED ON DOMAIN -SPECIFIC IQA DATASETS .
+
+Feature Domain Method Infrared [58] Neutron [59] Screen [60] Medical [61] PLCC SRCC PLCC SRCC PLCC SRCC PLCC SRCC PSNR 0.814 0.815 0.861 0.873 0.778 0.763 0.615 0.609 SSIM [1] 0.802 0.803 0.870 0.861 0.726 0.714 0.609 0.608 MS-SSIM [49] 0.832 0.827 0.859 0.854 0.757 0.741 0.656 0.636 VIF [50] 0.907 0.901 0.833 0.842 0.819 0.796 0.591 0.583 VSI [51] 0.838 0.841 0.825 0.812 0.769 0.762 0.671 0.654 Traditional GMSD [52] 0.889 0.891 0.938 0.939 0.762 0.813 0.668 0.662 LPIPS [21] 0.841 0.852 0.762 0.771 0.694 0.689 0.724 0.737 PDL [55] 0.795 0.781 0.752 0.761 0.756 0.738 0.699 0.682 ADISTS [56] 0.832 0.845 0.836 0.828 0.786 0.783 0.744 0.752 DeepWSD [18] 0.862 0.858 0.876 0.885 0.880 0.799 0.808 0.784 DSD [12] 0.813 0.824 0.839 0.827 0.830 0.829 0.762 0.771 DeepCausal [13] 0.814 0.808 0.825 0.812 0.813 0.809 0.759 0.748 DeepJSD [14] 0.859 0.838 0.883 0.896 0.845 0.837 0.829 0.806 Training-free DeepDC [15] 0.865 0.871 0.871 0.866 0.832 0.837 0.817 0.810 Causal Disentanglement Ours 0.956 0.948 0.947 0.942 0.926 0.915 0.871 0.866 
+
+scenarios. Meanwhile, obtaining authentically degraded im-ages and annotating their quality scores in these specialized domains is notoriously difficult. Therefore, the commonly used data typically consists of subjectively annotated synthetic distorted images [59], [62]. However, constructing such IQA datasets requires a large number of expert evaluators, and the annotation process is extremely resource-intensive. The proposed method eliminates the dependency on MOS labels during adaptation.  
+
+> Fig. 11. Image examples from diverse domains. (a) to (f) are respectively natural image, infrared image, neutron radiography image, screen-content image, medical image, and tone-mapped image.
+
+To validate the adaptability and effectiveness of our ap-proach, we evaluate a variety of representative and state-of-the-art IQA techniques across five non-standard benchmark datasets: Infrared image [58], Neutron image [59], Screen content image [60], Medical image [61] and tone-map image[]. The compared methods include traditional metrics (PSNR, SSIM [1], MS-SSIM [49], VIF [50], VSI [51], GMSD [52], NLPD [53]) and the existing state-of-the-art training-free deep feature approaches (LPIPS [21], PDL [55], ADISTS [56], DeepWSD [18], DSD [12], DeepCausal [13], DeepJSD [14], DeepDC [15]). For the proposed method, we randomly select a subset of pristine reference images provided by the respective dataset. We then apply the dataset’s native distortion types and degra-dation models to these pristine images to construct a pre-training dataset. The proposed method is then pre-trained on this pre-training dataset, and its quality scores are predicted using UMAP. For the training-free methods, we conduct tests directly on test set using the weights provided in the corresponding papers. To ensure a rigorous and fair evaluation, the pristine images used to generate the pre-training data are strictly separated from those comprising the test set. As shown in Table II, the proposed method achieves the best performance on the evaluated domain-specific datasets under the MOS-free adaptation setting. Some state-of-the-art training-free FR-IQA methods show only suboptimal perfor-mance on these domain-specific IQA datasets, compared with their performance on natural IQA benchmarks. For example, DeepJSD achieves best performance on the CSIQ dataset, but its SROCC and PLCC on the neutron radiography IQA dataset are only 0.896 and 0.833, respectively. This may be because these methods typically rely on models pretrained on Ima-geNet, and the severe domain shift between domain-specific images and standard natural images leads to performance degradation. Notably, some traditional FR-IQA methods also 12 
+
+achieve strong performance on these domain-specific image datasets. This phenomenon suggests that distortion measures based on structural, gradient, or statistical characteristics in traditional methods are often more robust in cross-domain scenarios. The strong performance of the proposed method stems from its ability to support fast training and prediction without using any labeled IQA data. In summary, the proposed method shows strong potential for practical deployment in domain-specific image scenarios. By avoiding reliance on labeled IQA data while maintaining strong performance, it provides an effective solution for image quality assessment in specialized domains where subjective annotations are costly and difficult to obtain. 
+
+E. Controlled Validation of Degradation Disentanglement and Visual Masking 
+
+To further examine whether the proposed method truly learns degradation-specific representations and whether the content-conditioned modulation can capture the visual mask-ing effect, we design a controlled validation experiment to answer the following questions. 
+
+Q1: Can the proposed method disentangle degradation infor-mation from image content in the zero-shot setting? 
+
+Q2: Can the proposed method further model the visual mask-ing effect in the zero-shot setting, such that the perceptual response to the same distortion varies adaptively with different image contents? Reference       
+
+> Ir
+> Distorted
+> Id
+> Blur Dark Color
+> Reference
+> Ir
+> Distorted
+> Id
+> Blur Dark Color
+> Fig. 12. Counterfactual degradation transfer for answering Q1. The degra-dation feature D1, extracted from a distorted image before the causal layer, is combined with another reference image to examine whether the learned degradation representation is independent of image content.
+
+To answer Q1 , we conduct a counterfactual degradation transfer experiment to verify whether the degradation rep-resentation extracted before the causal layer is independent of image content. Given a distorted image, we extract its degradation representation D1, where D1 denotes the degra-dation feature before causal modulation. We then keep D1
+
+fixed and feed another reference image I2 directly into the decoder together with D1. The resulting image is generated as ˆId 
+
+> 2
+
+= decoder (I2, D 1).
+
+As shown in Figure 12, the generated image preserves the content of the reference image while maintaining distortion patterns consistent with those of the source distorted image. This observation indicates that the degradation representation extracted before the causal layer is transferable across different image contents, thereby providing empirical evidence that the proposed method can disentangle degradation from image content before causal modeling.         
+
+> Fig. 13. Controlled validation of visual masking for answering Q2 . The raw degradation feature and the modulated degradation feature are compared on the TID2013 gaussian blur and noise subsets. The evaluation includes overall quality prediction, fixed-level cross-content ranking, reference sensitivity alignment, and per-level pairwise accuracy.
+
+To answer Q2 , we conduct controlled experiments on the gaussian blur and noise subsets of TID2013 in the zero-shot setting. This experiment is designed to examine whether the causal layer can modulate degradation responses according to image content under different distortion types. Specifically, we compare the raw degradation feature D, extracted be-fore the causal layer, with the modulated degradation feature 
+
+˙D, obtained after content-conditioned causal modulation. For each feature, we derive a one-dimensional quality score and evaluate its consistency with human subjective scores under controlled conditions. All reported results are averaged over the gaussian blur and noise subsets. We evaluate the two features from four aspects. First, we measure the overall quality prediction performance on the two distortion subsets to examine whether the learned feature is globally aligned with subjective quality. Second, we conduct fixed-level cross-content ranking. For each distortion level, all distorted images share the same physical distortion strength but correspond to different reference contents. We therefore compute ranking correlation and pairwise ranking accuracy within each distortion level, and then average the results across all levels and the two distortion subsets. This metric evaluates whether the feature can distinguish content-dependent distor-tion visibility when physical distortion strength is controlled. Third, we compute reference sensitivity alignment. For each reference image, we fit the subjective quality scores across distortion levels as a function of the distortion level, and use the resulting slope to represent human sensitivity to the corresponding distortion. We apply the same procedure to the model response and compute the correlation between model 13    
+
+> TABLE III SROCC AND PLCC OF DIFFERENT DATA SCALES ACROSS FOUR DATASETS .
+
+Scale 
+
+LIVE TID2013 KADID Neutron 
+
+w/ frozen w/o frozen w/ frozen w/o frozen w/ frozen w/o frozen w/ frozen w/o frozen PLCC SROCC PLCC SROCC PLCC SROCC PLCC SROCC PLCC SROCC PLCC SROCC PLCC SROCC PLCC SROCC 0% 0.949 0.958 0.949 0.958 0.909 0.892 0.909 0.892 0.899 0.891 0.899 0.891 0.947 0.942 0.947 0.942 2% 0.932 0.921 0.805 0.809 0.895 0.876 0.768 0.752 0.884 0.872 0.745 0.738 0.928 0.918 0.801 0.796 5% 0.938 0.936 0.803 0.786 0.901 0.884 0.795 0.787 0.889 0.881 0.771 0.782 0.934 0.927 0.806 0.812 10% 0.940 0.939 0.895 0.881 0.907 0.890 0.853 0.839 0.894 0.888 0.842 0.835 0.939 0.935 0.889 0.878 15% 0.943 0.941 0.912 0.908 0.911 0.895 0.878 0.864 0.898 0.893 0.869 0.861 0.942 0.939 0.908 0.901 TABLE IV SRCC AND PLCC OF DIFFERENT LOSS .Loss LIVE TID2013 Neutron                                                                                                       
+
+> LM SE LV GG LGAN PLCC SRCC PLCC SRCC PLCC SRCC
+> ✓✗✗0.764 0.751 0.741 0.732 0.775 0.746
+> ✓✓✗0.919 0.906 0.901 0.883 0.938 0.927
+> ✓✗✓0.806 0.797 0.775 0.764 0.821 0.833
+> ✗✓✓0.692 0.674 0.653 0.661 0.512 0.490
+> ✓✓✓0.949 0.958 0.909 0.892 0.947 0.942
+> TABLE V SRCC AND PLCC OF DIFFERENT TRAINING STRATEGIES .Method LIVE TID2013 Neutron PT FT CL PLCC SRCC PLCC SRCC PLCC SRCC
+> ✓✗✗0.912 0.920 0.872 0.871 0.921 0.915
+> ✓✓✗0.931 0.929 0.901 0.891 0.944 0.946
+> ✓✗✓0.949 0.958 0.909 0.892 0.947 0.942
+> ✗✓✓0.183 0.162 0.201 0.198 0.748 0.698
+> ✓✓✓0.968 0.966 0.916 0.899 0.958 0.949
+
+sensitivity and human sensitivity across reference images. Finally, we report per-level pairwise accuracy to show how consistently the model preserves content-dependent perceptual ordering at each distortion level. As shown in Figure 13, the modulated degradation feature consistently outperforms the raw degradation feature. On av-erage over the gaussian blur and noise subsets, ˙D improves SROCC from 0.884 to 0.934 and PLCC from 0.871 to 0.923 ,while reducing RMSE from 0.312 to 0.268 . In the fixed-level cross-content ranking experiment, ˙D improves the mean-level SROCC from 0.228 to 0.438 , the mean-level PLCC from 0.201 
+
+to 0.411 , and the pairwise accuracy from 0.462 to 0.620 .Moreover, in reference sensitivity alignment, ˙D improves the sensitivity SROCC from 0.214 to 0.372 and the sensitivity PLCC from 0.238 to 0.418 , while increasing the mean curve SROCC from 0.928 to 0.982 .These results indicate that the causal modulation does not simply improve quality prediction performance, but also en-hances the alignment between degradation representations and content-dependent perceptual responses. Since the fixed-level ranking experiment controls the physical distortion strength, the improvement of ˙D suggests that the proposed method can, to some extent, model the content-dependent visibility of distortions across different distortion types. This provides empirical evidence that the proposed causal layer can simulate the visual masking effect in the zero-shot setting. 
+
+F. Few-shot experiments 
+
+Unsupervised dimensionality reduction methods such as UMAP ultimately predict relative quality scores that align with human visual perception, rather than absolute scores that precisely fit MOS. Therefore, in this section, we evaluate the performance of the proposed method in predicting absolute MOS when only a small amount of IQA data is available. As shown in Table III, few-shot experiments are presented in de-tail on the LIVE, TID2013, KADID, and Neutron datasets. We conducted few-shot experiments on these datasets at 0% , 2% ,
+
+5% , 10% and 15% data ratios. The remaining data are all used for testing. w/ frozen and w/o frozen denote the frozen/updated parameters of the degradation feature extractor. In the few-shot experiments, we use a fully connected (FC) layer with labeled IQA images for fine-tuning. The FC layer consists only of a normalization layer and a linear layer to map quality scores. After freezing the parameters (w/ frozen), both PLCC and SRCC stably maintain high values, demonstrating that the extracted degradation features exhibit strong generalization ability and excel in zero-shot and few-shot scenarios. However, when only a small amount of labeled IQA data is used to fully fine-tune the parameters of the degradation feature extractor, these data fail to provide effective supervision and instead damage the extracted features, leading to a severe performance drop. This indicates that a small amount of labeled IQA data is insufficient to align the model more precisely with human subjective perception and tends to degrade the original feature representation. 
+
+G. Ablation Studies 
+
+The impact of loss: During pre-training and fine-tuning, we employ three loss functions: MSE loss, VGG loss, and GAN loss. Pixel-wise loss functions such as MSE struggle to handle the uncertainty inherent in recovering lost high-frequency details such as texture. When solely MSE loss is used, the model fails to reconstruct images degraded with high-frequency noise, which leads to the model lacking the ability to capture high-frequency degradation. Across all three datasets, introducing LV GG on top of LM SE yields the largest 14 
+
+single-step gain, which indicates that effective degradation-aware supervision is the dominant factor in improving repre-sentation quality. Specifically, when moving from using only 
+
+LM SE to using LM SE + LV GG , the PLCC/SRCC on LIVE increases from 0.764/0.751 to 0.919/0.906, that on TID2013 increases from 0.741/0.732 to 0.901/0.883, and that on Neu-tron increases from 0.775/0.746 to 0.938/0.927. Figure 14 presents the scatter plot that evaluates high-frequency and low-frequency degradations with only MSE loss. The proposed model performs well on evaluating certain low-frequency degradation types, but it lacks the capability to assess high-frequency degradation types. The adversarial loss primarily improves the fidelity of fine details and textures in the reconstructed images, thereby enhancing the representation capability of the model. The full loss combination achieves the best performance on all datasets, reaching 0.949/0.958 on LIVE, 0.909/0.892 on TID2013, and 0.947/0.942 on Neutron. Compared with LM SE + LV GG , the improvement is smaller, which suggests that LGAN mainly serves as a further refinement term. (a) Low frequency (b) High frequency  
+
+> Fig. 14. Scatter plot of partial low-frequency degradation assessment versus high-frequency degradation assessment.
+
+The Impact of training strategies: We investigate the contributions of three training strategies: pre-training (PT), fine-tuning (FT), and the causal layer (CL). As shown in Table V, PT equips the model with a basic capability to disentangle degradation features. Even the use of only the pre-training scheme yields strong performance on the LIVE, TID2013, and Neutron datasets. CL captures the causal effect of image content on degradation-related features. With this layer, the learned representation is better aligned with human subjective perception in an unsupervised setting, leading to consistent performance gains across all three datasets. After labeled data are introduced during the final stage of FT, the model is more precisely aligned with human subjective perception and achieves the best performance on all three datasets. 
+
+Supplementary experiments: Additional experimental re-sults are provided in the supplementary material due to space limitations. These include ablation studies on the encoder architecture, decoder insertion strategy, causal masking for-mulation, and causal structure, together with comparisons of projection methods, UMAP sensitivity and stability analyses, and additional visualization results. These experiments further support the robustness and effectiveness of the proposed method. VI. L IMITATIONS AND FAILURE CASES 
+
+Limitations: Although our method achieves strong per-formance with domain-specific pre-training, this dependence also limits its applicability. Unlike fully training-free FR-IQA methods, it still requires clean reference data and explicit degradation simulation to build the pre-training set. As a result, it does not offer the same plug-and-play convenience as fully training-free approaches. 
+
+Failure cases: The proposed method achieves strong per-formance on common global distortions, such as blur, noise, and compression, but performs relatively worse on blockwise distortions. This limitation stems from two factors. Blockwise distortions disrupt the original image structure, which makes accurate reconstruction difficult (see Appendix ). In this case, the reconstruction losses, including LM SE , LV GG , and 
+
+LGAN , cannot provide effective supervision for learning re-liable degradation representations. Blockwise distortions also directly damage the original image content, which conflicts with the visual masking effect. As a result, the proposed method cannot reliably capture the interaction between content and degradation, which limits its prediction performance. VII. C ONCLUSIONS 
+
+We propose an FR-IQA method based on causal disen-tanglement representation learning. Specifically, the method constructs a model that decouples content-influenced degrada-tion features. Subsequently, the quality score is predicted by learning the approximate manifold of the degradation features. Experimental results verify the effectiveness of our method. Moreover, the method demonstrates superior cross-domain generalization compared with existing training-free FR-IQA models, owing to its capability for scenario-specific training without labeled IQA data. VIII. ACKNOWLEDGEMENT This work is supported by the National Natural Science Foundation of China (Nos. 62276218, 12192214, 62373096), the Fundamental Research Funds for the Central Universities, China (No. 2682024ZTPY055), Science and Technology De-velopment Plan Project of Jilin Province, China. Grant No. 20260206058ZP, and National Natural Science Foundation of China (Grant No. 11905028). REFERENCES [1] Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli, “Image quality assessment: from error visibility to structural similarity,” IEEE transactions on Image Processing , vol. 13, no. 4, pp. 600–612, 2004. 1, 10, 11 [2] L. Zhang, L. Zhang, X. Mou, and D. Zhang, “Fsim: A feature similarity index for image quality assessment,” IEEE Transactions on Image Processing , vol. 20, no. 8, pp. 2378–2386, 2011. 1 [3] A. Saha and Q. J. Wu, “Full-reference image quality assessment by combining global and local distortion measures,” Signal Processing , vol. 128, pp. 186–197, 2016. 1 [4] A. Rehman and Z. Wang, “Reduced-reference image quality assessment by structural similarity estimation,” IEEE Transactions on Image Pro-cessing , vol. 21, no. 8, pp. 3378–3389, 2012. 1 [5] A. Mittal, A. K. Moorthy, and A. C. Bovik, “No-reference image quality assessment in the spatial domain,” IEEE Transactions on Image Processing , vol. 21, no. 12, pp. 4695–4708, 2012. 1 15 
+
+[6] K. Ding, K. Ma, S. Wang, and E. P. Simoncelli, “Image quality assessment: Unifying structure and texture similarity,” IEEE transactions on pattern analysis and machine intelligence , vol. 44, no. 5, pp. 2567– 2581, 2020. 1, 2, 10 [7] ——, “Comparison of full-reference image quality models for optimiza-tion of image processing systems,” International Journal of Computer Vision , vol. 129, no. 4, pp. 1258–1281, 2021. 1 [8] X. Liao, X. Wei, M. Zhou, Z. Li, and S. Kwong, “Image quality assessment: Measuring perceptual degradation via distribution measures in deep feature spaces,” IEEE Transactions on Image Processing , vol. 33, pp. 4044–4059, 2024. 1 [9] W. Zhang, D. Li, X. Min, G. Zhai, G. Guo, X. Yang, and K. Ma, “Per-ceptual attacks of no-reference image quality models with human-in-the-loop,” Advances in Neural Information Processing Systems , vol. 35, pp. 2916–2929, 2022. 1 [10] C. Chen, J. Mo, J. Hou, H. Wu, L. Liao, W. Sun, Q. Yan, and W. Lin, “Topiq: A top-down approach from semantics to distortions for image quality assessment,” IEEE Transactions on Image Processing , vol. 33, pp. 2404–2418, 2024. 1, 3, 10 [11] X. Liao, X. Wei, M. Zhou, H.-S. Wong, and S. Kwong, “Image quality assessment: Exploring joint degradation effect of deep network features via kernel representation similarity analysis,” IEEE Transactions on Pattern Analysis and Machine Intelligence , 2025. 1, 3, 10 [12] I. Kligvasser, T. Shaham, Y. Bahat, and T. Michaeli, “Deep self-dissimilarities as powerful visual fingerprints,” Advances in Neural Information Processing Systems , vol. 34, pp. 3939–3951, 2021. 1, 10, 11 [13] W. Shen, M. Zhou, Y. Chen, X. Wei, Y. Feng, H. Pu, and W. Jia, “Image quality assessment: Investigating causal perceptual effects with abductive counterfactual inference,” in Proceedings of the Computer Vision and Pattern Recognition Conference , 2025, pp. 17 990–17 999. 1, 3, 10, 11 [14] X. Liao, X. Wei, M. Zhou, Z. Li, and S. Kwong, “Image quality assessment: Measuring perceptual degradation via distribution measures in deep feature spaces,” IEEE Transactions on Image Processing , vol. 33, pp. 4044–4059, 2024. 1, 10, 11 [15] H. Zhu, B. Chen, L. Zhu, S. Wang, and W. Lin, “Deepdc: Deep distance correlation as a perceptual image quality evaluator,” IEEE Transactions on Image Processing , vol. 34, pp. 7859–7873, 2025. 1, 3, 10, 11 [16] K. Simonyan and A. Zisserman, “Very deep convolutional networks for large-scale image recognition,” arXiv preprint arXiv:1409.1556 , 2014. 1, 9 [17] M. Tan and Q. Le, “Efficientnet: Rethinking model scaling for con-volutional neural networks,” in International conference on machine learning . PMLR, 2019, pp. 6105–6114. 1 [18] X. Liao, B. Chen, H. Zhu, S. Wang, M. Zhou, and S. Kwong, “Deepwsd: Projecting degradations in perceptual space to wasserstein distance in deep feature space,” in Proceedings of the 30th ACM International Conference on Multimedia , 2022, pp. 970–978. 1, 2, 10, 11 [19] F. Gao, Y. Wang, P. Li, M. Tan, J. Yu, and Y. Zhu, “Deepsim: Deep similarity for image quality assessment,” Neurocomputing , vol. 257, pp. 104–114, 2017. 2 [20] J. Kim and S. Lee, “Deep learning of human visual sensitivity in image quality assessment framework,” in Proceedings of the IEEE conference on computer vision and pattern recognition , 2017, pp. 1676–1684. 2 [21] R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang, “The unreasonable effectiveness of deep features as a perceptual metric,” in 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition , 2018, pp. 586–595. 2, 10, 11 [22] K. Ding, Y. Liu, X. Zou, S. Wang, and K. Ma, “Locally adaptive struc-ture and texture similarity for image quality assessment,” in Proceedings of the 29th ACM International Conference on multimedia , 2021, pp. 2483–2491. 2 [23] H. D. Sikka, A Deeper Look at the Unsupervised Learning of Disen-tangled Representations in β-VAE from the perspective of Core Object Recognition . Harvard University, 2020. 3, 6 [24] D. P. Kingma and M. Welling, “Auto-encoding variational bayes,” arXiv preprint arXiv:1312.6114 , 2013. 3 [25] I. Higgins, L. Matthey, A. Pal, C. Burgess, X. Glorot, M. Botvinick, S. Mohamed, and A. Lerchner, “beta-vae: Learning basic visual concepts with a constrained variational framework,” in International conference on learning representations , 2017. 3 [26] M. Yang, F. Liu, Z. Chen, X. Shen, J. Hao, and J. Wang, “Causalvae: Disentangled representation learning via neural structural causal mod-els,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2021, pp. 9593–9602. 3, 4, 6 [27] H. Nam, “Scadi: Self-supervised causal disentanglement in latent vari-able models,” arXiv preprint arXiv:2311.06567 , 2023. 3, 4, 6 [28] A. J. Ahumada Jr and H. A. Peterson, “Luminance-model-based dct quantization for color image compression,” in Human vision, visual processing, and digital display III , vol. 1666. SPIE, 1992, pp. 365–374. 3, 8 [29] D. G. Pelli and P. Bex, “Measuring contrast sensitivity,” Vision research ,vol. 90, pp. 10–14, 2013. 3, 8 [30] G. E. Legge and J. M. Foley, “Contrast masking in human vision,” 
+
+Journal of the optical Society of America , vol. 70, no. 12, pp. 1458– 1471, 1980. 3, 8 [31] Z. Chen and C. Guillemot, “Perceptually-friendly h. 264/avc video coding based on foveated just-noticeable-distortion model,” IEEE Trans-actions on Circuits and Systems for Video Technology , vol. 20, no. 6, pp. 806–819, 2010. 3, 8 [32] X. Wang, J. Xiong, and W. Lin, “Visual interaction perceptual network for blind image quality assessment,” IEEE Transactions on Multimedia ,vol. 25, pp. 8958–8971, 2023. 3 [33] L. Zheng, Y. Luo, Z. Zhou, J. Ling, and G. Yue, “Cdinet: Content distortion interaction network for blind image quality assessment,” IEEE Transactions on Multimedia , vol. 26, pp. 7089–7100, 2024. 3 [34] N. Ponomarenko, L. Jin, O. Ieremeiev, V. Lukin, K. Egiazarian, J. Astola, B. Vozel, K. Chehdi, M. Carli, F. Battisti et al. , “Image database tid2013: Peculiarities, results and perspectives,” Signal Processing: Image Com-munication , vol. 30, pp. 57–77, 2015. 4, 5, 10 [35] H. R. Sheikh, M. F. Sabir, and A. C. Bovik, “A statistical evaluation of recent full reference image quality assessment algorithms,” IEEE Transactions on Image Processing , vol. 15, no. 11, pp. 3440–3451, 2006. 4, 5, 10 [36] X. Shen, F. Liu, H. Dong, Q. Lian, Z. Chen, and T. Zhang, “Weakly supervised disentangled generative causal representation learning,” Jour-nal of Machine Learning Research , vol. 23, no. 241, pp. 1–55, 2022. 4, 6[37] F. Locatello, S. Bauer, M. Lucic, G. Raetsch, S. Gelly, B. Sch¨ olkopf, and O. Bachem, “Challenging common assumptions in the unsupervised learning of disentangled representations,” in international conference on machine learning . PMLR, 2019, pp. 4114–4124. 5 [38] J. Pearl, Causality . Cambridge university press, 2009. 6 [39] M. J. Kusner, J. Loftus, C. Russell, and R. Silva, “Counterfactual fairness,” Advances in neural information processing systems , vol. 30, 2017. 6 [40] Y. Liu, J. He, J. Gu, X. Kong, and C. Dong, “Degae: A new pretraining paradigm for low-level vision,” Proceedings of the IEEE/CVF conference on Computer Vision and Pattern Recognition , pp. 23 292–23 303, 2023. 6[41] N.-H. Shin, S.-H. Lee, and C.-S. Kim, “Blind image quality assessment based on geometric order learning,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2024, pp. 12 799–12 808. 7 [42] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image recognition,” in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , 2016, pp. 770–778. 8 [43] J. Johnson, A. Alahi, and L. Fei-Fei, “Perceptual losses for real-time style transfer and super-resolution,” in European conference on computer vision . Springer, 2016, pp. 694–711. 9 [44] C. Ledig, L. Theis, F. Husz´ ar, J. Caballero, A. Cunningham, A. Acosta, A. Aitken, A. Tejani, J. Totz, Z. Wang et al. , “Photo-realistic single image super-resolution using a generative adversarial network,” in 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition , 2017, pp. 4681–4690. 9 [45] M. Tahmid, M. S. Alam, N. Rao, and K. M. A. Ashrafi, “Image-to-image translation with conditional adversarial networks,” in 2023 IEEE 9th International Women in Engineering (WIE) Conference on Electrical and Computer Engineering (WIECON-ECE) , 2023, pp. 1–5. 9 [46] E. C. Larson and D. M. Chandler, “Most apparent distortion: full-reference image quality assessment and the role of strategy,” Journal of electronic imaging , vol. 19, no. 1, pp. 011 006–011 006, 2010. 10 [47] H. Lin, V. Hosu, and D. Saupe, “Kadid-10k: A large-scale artificially distorted iqa database,” in 2019 Eleventh International Conference on Quality of Multimedia Experience (QoMEX) . IEEE, 2019, pp. 1–3. 10 [48] G. Jinjin, C. Haoming, C. Haoyu, Y. Xiaoxing, J. S. Ren, and D. Chao, “Pipal: a large-scale image quality assessment dataset for perceptual im-age restoration,” in European conference on computer vision . Springer, 2020, pp. 633–651. 10 [49] Z. Wang, E. P. Simoncelli, and A. C. Bovik, “Multiscale structural similarity for image quality assessment,” in The thrity-seventh asilomar conference on signals, systems & computers, 2003 , vol. 2. Ieee, 2003, pp. 1398–1402. 10, 11 16 
+
+[50] H. R. Sheikh and A. C. Bovik, “Image information and visual quality,” 
+
+IEEE Transactions on image processing , vol. 15, no. 2, pp. 430–444, 2006. 10, 11 [51] L. Zhang, Y. Shen, and H. Li, “Vsi: A visual saliency-induced index for perceptual image quality assessment,” IEEE Transactions on Image processing , vol. 23, no. 10, pp. 4270–4281, 2014. 10, 11 [52] W. Xue, L. Zhang, X. Mou, and A. C. Bovik, “Gradient magnitude similarity deviation: A highly efficient perceptual image quality index,” 
+
+IEEE transactions on image processing , vol. 23, no. 2, pp. 684–695, 2013. 10, 11 [53] V. Laparra, J. Ball´ e, A. Berardino, and E. P. Simoncelli, “Perceptual image quality assessment using a normalized laplacian pyramid,” Elec-tronic Imaging , vol. 28, pp. 1–6, 2016. 10, 11 [54] E. Prashnani, H. Cai, Y. Mostofi, and P. Sen, “Pieapp: Perceptual image-error assessment through pairwise preference,” in Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , 2018, pp. 1808–1817. 10 [55] M. Delbracio, H. Talebei, and P. Milanfar, “Projected distribution loss for image enhancement,” in 2021 IEEE International Conference on Computational Photography (ICCP) . IEEE, 2021, pp. 1–12. 10, 11 [56] K. Ding, Y. Liu, X. Zou, S. Wang, and K. Ma, “Locally adaptive struc-ture and texture similarity for image quality assessment,” in Proceedings of the 29th ACM International Conference on multimedia , 2021, pp. 2483–2491. 10, 11 [57] I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,” 
+
+arXiv preprint arXiv:1711.05101 , 2017. 9 [58] O. Zelmati, B. Bondˇ zuli´ c, B. Pavlovi´ c, I. Tot, and S. Merrouche, “Study of subjective and objective quality assessment of infrared compressed images,” Journal of Electrical Engineering , vol. 73, no. 2, pp. 73–87, 2022. 10, 11 [59] Z. Zhang, C.-B. Meng, X.-L. Jiang, C.-Y. Zhao, S. Qiao, and T. Zhang, “Comprehensive quality assessment method for neutron radiographic im-ages based on cnn and visual salience,” Nuclear Science and Techniques ,vol. 36, no. 7, p. 118, 2025. 10, 11 [60] Z. Ni, L. Ma, H. Zeng, Y. Fu, L. Xing, and K.-K. Ma, “Scid: A database for screen content images quality assessment,” in 2017 International Symposium on Intelligent Signal Processing and Communication Sys-tems (ISPACS) . IEEE, 2017, pp. 774–779. 10, 11 [61] S. Zhang, Y. Wang, J. Jiang, J. Dong, W. Yi, and W. Hou, “Cnn-based medical ultrasound image quality assessment,” Complexity , vol. 2021, no. 1, p. 9938367, 2021. 10, 11 [62] Q. Zhao, H. Liu, W. Tian, and X. Wang, “Construction of the hyper-spectral image distortion evaluation index for low altitude uavs,” Trans. Chin. Soc. Agric. Eng , vol. 20, pp. 67–76, 2022. 11
