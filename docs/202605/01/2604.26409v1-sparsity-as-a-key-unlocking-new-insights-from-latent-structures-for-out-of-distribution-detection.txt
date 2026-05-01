@@ -1,0 +1,724 @@
+Title: Sparsity as a Key: Unlocking New Insights from Latent Structures for Out-of-Distribution Detection
+
+URL Source: https://arxiv.org/pdf/2604.26409v1
+
+Published Time: Thu, 30 Apr 2026 00:39:52 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# Sparsity as a Key: Unlocking New Insights from Latent Structures for Out-of-Distribution Detection 
+
+Ahyoung Oh † Wonseok Shin † Songkuk Kim ‡
+
+School of Integrated Technology, BK21 Graduate Program in Intelligent Semiconductor Technology Yonsei University   
+
+> {ahyoung.oh, wonseok.shin, songkuk }@yonsei.ac.kr
+
+Abstract 
+
+Sparse Autoencoders (SAEs) have demonstrated significant success in interpreting Large Language Models (LLMs) by decomposing dense representations into sparse, semantic components. However, their potential for analyzing Vi-sion Transformers (ViTs) remains largely under-explored. In this work, we present the first application of SAEs to the ViT [CLS] token for out-of-distribution (OOD) detec-tion, addressing the limitation of existing methods that rely on entangled feature representations. We propose a novel framework utilizing a Top-k SAE to disentangle the dense 
+
+[CLS] features into a structured latent space. Through this analysis, we reveal that in-distribution (ID) data ex-hibits consistent, class-specific activation patterns, which we formalize as Class Activation Profiles (CAPs) . Our study uncovers a key structural invariant: while ID sam-ples preserve a stable pattern within CAPs, OOD samples systematically disrupt this structure. Leveraging this in-sight, we introduce a scoring function based on the diver-gence of core energy profiles to quantify the deviation from ideal activation profiles. Our method achieves strong re-sults on the FPR95 metric—critical for safety-sensitive ap-plications—across multiple benchmarks, while also achiev-ing competitive AUROC. Overall, our findings demonstrate that the sparse, disentangled features revealed by SAEs can serve as a powerful, interpretable tool for robust OOD de-tection in vision models. 
+
+1. Introduction 
+
+The Vision Transformer (ViT) has achieved remarkable suc-cess across a wide range of computer vision tasks [10]. This success, however, largely depends on the assumption that inference data is drawn from the same distribution as the training set, referred to as in-distribution (ID) data. In real-
+
+> †Equal contribution.
+> ‡Corresponding author.
+
+world scenarios such as autonomous driving or medical di-agnosis, this assumption is frequently violated [17]. Models inevitably encounter out-of-distribution (OOD) inputs that fall outside their training domain [15]. Detecting such OOD samples is therefore essential for developing trustworthy AI systems [12, 38]. Over the past years, numerous methods have been proposed to address this challenge [38]. Baseline ap-proaches like Maximum Softmax Probability (MSP) [15] and ODIN [23] utilize logit statistics, while energy-based scores [24] refine this by aggregating logit information. Other feature-based methods leverage distance metrics, such as the Mahalanobis distance [22] or non-parametric 
+
+k-nearest neighbors (KNN) [34]. Despite their utility, these approaches treat feature vectors as monolithic and opaque. By relying on aggregate statistics—such as magnitude or Euclidean distance—they overlook the fact that deep repre-sentations are inherently entangled, with distinct semantic concepts superposed within dense activations [11]. Con-sequently, distance-based methods often fail to distinguish spurious geometric proximity from genuine semantic simi-larity, focusing on the quantity of activation rather than the quality of the internal structure. This challenge is particularly amplified in complex ar-chitectures like ViTs. ViT encodes images as sequences of patch tokens and aggregates global context through a spe-cial classification token, the [CLS] token [10]. Although this embedding provides a compact and expressive sum-mary, it remains a black box whose internal organization is difficult to interpret [6]. This interpretability gap limits our ability to build robust OOD detection mechanisms directly upon these features. To bridge this interpretability gap, we draw inspiration from Sparse Autoencoders (SAEs), which have recently demonstrated the ability to disentangle dense representa-tions in large language models into sparse, semantically meaningful components [8, 30]. Unlike conventional au-toencoders that compress inputs into low-dimensional bot-tlenecks, SAEs expand the latent dimensionality while en-1          
+
+> arXiv:2604.26409v1 [cs.CV] 29 Apr 2026 In -distribution
+> *
+> Dtrain
+> Input Patch
+> Projection
+> …
+> Transformer Encoder
+> 0*[CLS] Embedding
+> Vision Transformer ( ViT )
+> …
+> [CLS] Token
+> Feature
+> Sparse AE
+> Class Activation Profiles (CAPs)
+> Sparse Latent Activations
+> Sorted Neuron Index
+> mean(a)
+> Class 1
+> Dtest
+> …
+> !" $%&'( ≥*
+> Input Patch
+> Projection
+> …
+> Transformer Encoder
+> 0*[CLS] Embedding
+> Sparse Latent Activations
+> Out -of -distribution
+> !" $%&'( <α
+> Quantify the structural divergence
+> of the test sample's energy profile
+> from the predicted class’s CAP
+> [CLS] Token
+> Feature
+> …
+> …
+> MLP
+> Head Predicted class
+> (Training)
+> (Frozen)
+> Labels
+> predicted class=120
+> ID data
+> of class 120
+> OOD data
+> predicted
+> as class 120
+> CAP of class 120
+> Total number of classes
+
+Figure 1. Overview of our OOD detection framework. In the (a) Setup Phase, a Top-k SAE is trained on [CLS] tokens extracted from a fixed, pre-trained ViT using ID data. This process learns disentangled latent features, which are aggregated to form CAPs. In the (b) Inference Phase, the latent activation distribution of a test sample is compared against the predicted class’s CAP using our Energy Profile Divergence (EPD) score to compute the final OOD score. 
+
+forcing sparsity. Each input is reconstructed using only a small subset of latent neurons, revealing a structured and interpretable basis of the original representation. We extend this paradigm to ViTs with a key modifica-tion. Traditional SAEs use “soft” regularization ( e.g ., ℓ1or KL penalties), which does not ensure strict sparsity, leaving many low-magnitude activations that obscure clear struc-tural patterns. To address this, we employ a Top-k SAE 
+
+[13, 26], which enforces a “hard” sparsity constraint by ac-tivating only the k most salient features for each input. This strict selection yields a stable and disjoint set of latent fea-tures for ID data, forming a clearer semantic structure. When trained on ViT [CLS] embeddings, the Top-k
+
+SAE “unfolds” the dense representation into a structured sparse space exhibiting highly consistent, class-specific ac-tivation patterns. We formalize these patterns as Class Acti-vation Profiles (CAPs) —canonical class-conditioned tem-plates capturing the characteristic activation of each class. While ID samples preserve this structure, OOD inputs dis-rupt it by weakening dominant activations and diffusing sparsity patterns. We quantify this structural discrepancy using our pro-posed Energy Profile Divergence (EPD), which measures how severely the sample’s energy profile deviates from the characteristic energy profile defined by the class’s core fea-tures. An overview of the full pipeline—from CAP con-struction to OOD scoring—is shown in Figure 1. Our main contributions are summarized as follows: • We present the first application of a Top-k Sparse Au-toencoder to ViT [CLS] tokens for OOD detection, demonstrating that hard sparsity enables interpretable and robust feature decomposition. • We introduce Class Activation Profiles (CAPs) , an inter-pretable, class-conditioned structural invariant that serves as a stable reference for ID feature organization. • We propose a CAP-based scoring mechanism that mea-sures the structural divergence of core energy profiles, achieving strong robustness and competitive performance in average FPR95. 
+
+2. Related works 
+
+Our study bridges three research domains: OOD detection, Vision Transformer interpretability, and sparse representa-tion learning. 
+
+2.1. Out-of-Distribution Detection 
+
+OOD detection aims to identify samples that lie outside the support of the training distribution, a central challenge for reliable machine learning [38]. Confidence-based meth-ods such as MSP [15] and ODIN [23] infer uncertainty from model outputs. Feature-based approaches like Maha-lanobis distance [22] and energy-based scoring [24] eval-uate distances in latent space, while others leverage gradi-ents [18] or outlier exposure training [16]. Generative and 2reconstruction-based methods use autoencoders or genera-tive transformations to detect anomalies via reconstruction fidelity or self-supervised signals [2, 14]. Our approach shares conceptual ground with feature-based methods but introduces a distinct perspective: we use an autoencoder not for reconstruction loss or distance mea-surement, but to re-parameterize the dense ViT [CLS] to-ken into a sparse, interpretable latent basis. OOD detection then arises from structural disruptions in this disentangled space, rather than deviations in raw logits or entangled fea-ture magnitudes. 
+
+2.2. Vision Transformers and the [CLS] Token 
+
+The ViT [10] processes an image as a sequence of patch embedding tokens and aggregates contextual information through self-attention into a special [CLS] token [32]. This global embedding effectively summarizes image-level se-mantics but does so by entangling multiple visual attributes within a dense vector space, making it challenging to inter-pret or decompose [6]. Recent studies have explored this embedding for OOD detection. ViM [37] combines the ViT’s penultimate-layer feature residuals with logit infor-mation to separate ID and OOD samples, while ReAct [33] truncates activation distributions to enhance OOD separa-bility. However, these methods typically operate on the dense, entangled representation. Our method explicitly disen-tangles this representation using a SAE, recovering class-conditioned feature spaces that offer enhanced interpretabil-ity. 
+
+2.3. Sparse Autoencoders 
+
+SAEs are unsupervised neural models that learn overcom-plete yet sparse latent representation of data, inspired by the efficient coding hypothesis in neuroscience [30]. Un-like conventional autoencoders that compress inputs into a dense bottleneck, SAEs expand the latent dimension and impose sparsity to uncover interpretable basis features. This approach has proven highly effective in large language models, where SAEs disentangle hidden activations into se-mantically coherent components [8]. 
+
+2.3.1. Comparison with Other Interpretability Methods 
+
+Various techniques exist to interpret deep networks. Post-hoc methods like attention visualization [6] or saliency maps highlight input regions relevant to a specific predic-tion but do not reveal the global feature vocabulary of the model. On the other hand, linear decomposition methods like Principal Component Analysis (PCA) [1] or Indepen-dent Component Analysis (ICA) [19]) attempt to find global directions. However, PCA is limited to orthogonal linear transformations, and ICA assumes a linear generative pro-cess, making them ill-suilted for the highly non-linear man-ifolds of deep neural activation. Standard Autoencoders (AEs) [3] generalize non-linearly but typically employ an undercomplete bottleneck, forcing compression at the cost of disentanglement. In contrast, SAEs invert the usual objective: instead of compressing information, they expand the latent space and constrain activation sparsity. This enables the emergence of disentangled, interpretable latent factors that better capture the semantic structure of ViT representations. 
+
+2.3.2. Soft vs Hard Sparsity 
+
+There are two paradigms for enforcing sparsity in SAEs. 
+
+Soft Sparsity. The most common approach, popularized in deep learning [29], add a soft sparsity penalty to the loss function. This penalty, typically an ℓ1 or a KL divergence term, encourages the average activation of hidden neurons to be low. While successful in LLM interpretability [8, 11], soft sparsity has limitations. 
+
+Hard Sparsity. A key limitation of soft sparsity is that it does not guarantee per-sample sparsity [5]. An ℓ1-penalized model might still react to a novel OOD input with diffuse, low-magnitude activations across many fea-tures, known as the shrinkage effect, obscuring the distinc-tion between ID and OOD. To address this, we employ the Top-k SAE [13, 26], which enforces a hard sparsity con-straint. This is achieved by explicitly selecting only the k
+
+features with the highest activations and zeroing out the rest. In our OOD detection framework, this property is cru-cial: by constraining each ID sample to a stable k-sparse subspace, the model learns consistent, class-specific activa-tion bases. OOD inputs that violate these learned structural patterns naturally exhibit massive disruptions in the latent structure, providing a clear and robust signal for detection. 
+
+3. Pattern Analysis 
+
+To devise an effective OOD detection method, we first an-alyze how our Top-k SAE reshapes the dense and entan-gled [CLS] token representations. By training the SAE on 
+
+[CLS] tokens extracted from the ImageNet-1k [9] train-ing set (ID), the dense features are decomposed into a high-dimensional, sparse latent space where semantic structures become explicit. 
+
+3.1. Identification of Core Features in ID Classes 
+
+Our central hypothesis is that under the Top-k sparsity con-straint, the SAE learns a sparse basis where each class is represented by a unique set of active neurons. We posit that the dense [CLS] token is mapped to highly specific activa-tion signatures that are unique for each class. To validate this, we first define the notion of “core fea-tures.” For a given class c, we identify the subset of latent neurons with the highest mean activation on the ID train-ing data. For our quantitative analysis of global disjoint-ness, we instantiate this set as the top 5% of neurons ranked 30.5 
+
+> 0.4
+> 0.3
+> 0.2
+> 0.1
+> 0.0
+
+Figure 2. Pairwise Jaccard similarity of core feature sets across all 1,000 ImageNet classes. Each cell represents the overlap be-tween the core feature of a class pair. The off-diagonal region indicates near-zero similarity between the core feature sets of dif-ferent classes. Lighter colors indicate low similarity, while darker colors indicate high similarity. 
+
+by their mean activation. If these core features are truly discriminative, they should be disjoint across classes. We assess this by computing the Jaccard similarity coefficient between the core feature sets of every pair of the 1,000 Im-ageNet classes. Figure 2 provides strong confirmation of this disjoint-ness. The heatmap exhibits a dominant diagonal structure with near-zero off-diagonal values, indicating that the core features for different classes have minimal overlap. Occa-sional weak off-diagonal signals appear only between se-mantically related categories ( e.g ., different breeds of cats), reflecting shared semantic attributes. This demonstrates that the Top-k SAE successfully disentangles class representa-tions into unique, non-overlapping latent subspaces. We further visualize this separation using UMAP [27] in Figure 4. The 1,000 classes form tight, well-separated clusters in the projected space, confirming that the learned sparse activation patterns are not only unique but also ro-bustly preserve the semantic identity of each class. 
+
+3.2. OOD Activation Affinity to ID Core Features 
+
+Having established that ID classes map to disjoint core fea-tures, we now investigate the behavior of OOD samples. OOD inputs, despite being unknown, are inevitably classi-fied into one of the ID classes by the ViT backbone. Our analysis reveals that this is not a random failure but a con-sequence of semantic alignment in the sparse latent space: OOD samples are classified as a specific ID class because they partially activate the core features of that class. Class 738 ID vs. OOD predicted as Class 738  
+
+> (Core indices of Class 738 ID, plantpot )
+> Top 20 Core Indices
+> Activations
+> Class 989 ID vs. OOD predicted as Class 738
+> (Core indices of Class 989 ID, rosehip)
+> Activations
+> Top 20 Core Indices
+> Activations
+> ID
+> OOD
+> ID
+> OOD
+
+Figure 3. Activation affinity of OOD samples to specific ID core features. The plots compare activations of ID samples (Blue) and misclassified OOD samples (Red) on specific core feature sets. Top: OOD samples from iNaturalist predicted as ‘Class 738 (plantpot)’ show high activation on the core features of Class 738. 
+
+Bottom: The same OOD samples show negligible activation on the core features of an unrelated class (‘Class 989, rosehip’). This illustrates that OOD samples are not random but structurally align with their predicted class. 
+
+We visualize this phenomenon in Figure 3, using the iNaturalist dataset [35] as a representative OOD dataset. The figure compares the activation magnitudes on the core feature sets. To ensure visual clarity, we plot the top-20 dominant core features. The top panel shows OOD sam-ples misclassified as ‘Class 738 (plantpot)’. Noticeably, these samples exhibit significant, non-zero activations on the core features of Class 738, mirroring the behavior of true ID samples. Conversely, the bottom panel shows the same OOD samples evaluated on the core features of an un-related class (‘Class 989, rosehip’), where activations col-lapse to near-zero. This explains the mechanism of misclassification: the 4Dog family 
+
+Cat family 
+
+Primates General mammals 
+
+Birds 
+
+Snakes 
+
+Herptiles 
+
+Fishes 
+
+Reptiles 
+
+Arthropods 
+
+Vehicles 
+
+Fungi 
+
+Structures 
+
+Furnitures 
+
+Foods 
+
+Kitchenwares 
+
+Balls 
+
+Bottles 
+
+Musical 
+
+Instruments 
+
+Clothes & 
+
+Accessories 
+
+Appliances 
+
+Housewares 
+
+Stationaries 
+
+> Irish Water Spaniel
+> Japanese
+> Spaniel
+> Keeshond
+> Tibetan
+> Masitiff
+> Papillon
+> Cocker
+> Spaniel
+> Irish
+> Wolfhound
+> Sussex Spaniel
+> Clumber
+> Welsh Springer Spaniel
+> Pomeranian Chow
+> Curly -coated
+> Retriever
+> Afgan
+> Hound
+
+Figure 4. UMAP visualization clustering the mean sparse activation vectors of all 1,000 ID classes. Each point represents the centroid of a class in the SAE latent space. The formation of tight, well-separated clusters confirms that the sparse features robustly capture the distinct semantic identity of each class. 
+
+OOD sample is routed to a specific ID class because its underlying features align better with that class’s core fea-tures than any other. This behavior is consistently ob-served across other datasets, including Textures [7] and OpenImage-O [21]. To quantify this effect globally, Figure 5 aggregates these statistics across all classes. We compare: (1) ID samples on their true core features (Blue, Left), (2) OOD samples on their matched class’s core features (Red, Middle), and (3) OOD samples on all other class features (Red, Right). The clear separation between the (2) and (3) provides statistical evidence for our hypothesis. OOD samples do not activate neurons randomly; they systematically align with the core features of the single ID class they resemble most. However, a crucial distinction remains: as seen in the gap between the Blue and Middle-Red boxes, the magnitude of this activation is weaker than that of true ID samples. We explore this vital structural difference in the next section. 
+
+3.3. Difference of Activation Profiles in OOD 
+
+Our analysis in the Section 3.2 demonstrates that OOD sam-ples mimic the core features of ID classes. However, Fig-ure 5 suggests that while they hit the correct features, they fail to match the intensity of ID samples. We formalize this discrepancy by analyzing the Class 0.025 
+
+> 0.020
+> 0.015
+> 0.010
+> 0.005
+> 0.000
+> ID
+> Ground
+> Truth
+> OOD
+> Other
+> Classes
+> OOD
+> Matched
+> Class
+> ID
+> Ground
+> Truth
+> OOD
+> Other
+> Classes
+> OOD
+> Matched
+> Class
+
+iNaturalist OpenImage -O
+
+Figure 5. Global statistics of activation intensity. We aggregate mean activations on core indices across all classes for two OOD datasets: iNaturalist (Left) and OpenImage-O (Right). ID Ground Truth (Blue, Left): Strong activation on ground-truth core fea-tures. OOD Matched (Red, Middle): OOD samples activate the core features of their predicted class, but with lower intensity than ID. OOD Other Classes (Red, Right): OOD samples show min-imal activation on unrelated classes. 
+
+Activation Profile (CAP) : the full Dlatent -dimensional mean activation vector for a class. This serves as a canoni-cal template of the “ideal” activation structure for that class. Figure 6 visualizes the activation profiles of ID samples 5Activations       
+
+> Latent Indices Sorted by ID train Class Mean
+> ID
+> OOD
+> Activations
+> Latent Indices Sorted by ID train Class Mean
+> ID
+> OOD
+> Class Activation Profile vs. OpenImage -O
+> (ID Class 309, bee)
+> Class Activation Profile vs. iNaturalist
+> (ID Class 986, yellow lady’s slipper)
+
+Figure 6. Structural differences in ID and OOD activation. We compare the mean activation profiles of ID samples (Blue) and misclassified OOD samples (Red) sorted by the ID CAP. Top: 
+
+iNaturalist vs. ID (Class 986). Bottom: OpenImage-O vs. ID (Class 309). In both cases, ID samples maintain a sharp, concen-trated head, whereas OOD samples exhibit a flattened, diffused profile. Shaded regions indicate variance. 
+
+versus OOD samples predicted as the same class against this canonical template. This comparison reveals a funda-mental structural disruption. ID samples (Blue) exhibit a sharp, high-energy head where activation is highly concen-trated, followed by a rapid drop-off. In contrast, OOD sam-ples (Red) show a significantly flatter profile. They fail to activate the critical features in the CAP’s sorted head with the same intensity. This structural deviation is the cornerstone of our OOD detection method. Even when an OOD sample fools the classifier by activating the correct subset of core features, it fails to replicate the precise activation pattern—the shape of the distribution—of the ID data. While Figure 6 illustrates this for iNaturalist [35] and OpenImage-O [21], this pat-tern is consistent across diverse OOD benchmark datasets. This insight directly motivates our proposed scoring func-tion, Energy Profile Divergence (EPD), which is explicitly designed to quantify this structural disruption in the energy allocation profile. 
+
+4. Experiments 
+
+4.1. Experimental Setup 
+
+Benchmark. In our experiments, we adopt OpenOOD v1.5 [39], the latest version of the comprehensive OOD de-tection benchmark framework, to ensure a fair evaluation against existing works. The ID data for all experiments is ImageNet-1k [9]. The OOD evaluation was conducted using a suite of five datasets, organized into two groups based on their semantic distance to ImageNet-1k: near-OOD (SSB-hard [36], NINCO [4]) and far-OOD (iNatural-ist [35], Textures [7], OpenImage-O [21]). 
+
+Backbone Architectures. Our primary experiments are conducted using a pre-trained ViT-B/16 as the backbone. To verify the generalizability, we also evaluate it on the Swin Transformer [25] and DINOv2 [31]. 
+
+OOD Scoring. As motivated in Section 3.3, detecting OOD requires quantifying structural deviation of activation pro-files. To measure this, we first define the CAP for a class 
+
+c, denoted as ¯hc ∈ RDlatent , which is the mean activation vector of all ID training samples belonging to that class. Let 
+
+hs ∈ RDlatent be the sparse activation vector of a given test sample s.We define M c as the array of indices corresponding to the 
+
+L largest mean activation values in the CAP ¯hc. This pa-rameter L defines the number of core features we analyze for each class. We then filter both the CAP and the sam-ple’s activation vector using this index set M c to create two 
+
+L-dimensional core activation vectors, C and S
+
+Ci = ¯hcM ci , Si = hsM ci , ∀i ∈ 1, . . . , L  (1) We interpret these L-dimensional vectors as energy distri-bution profiles. The total L1 norm represents the total en-ergy allocated within this core subspace, while L1 normal-ization isolates the proportional allocation of this energy. This normalization effectively projects the core activation vector onto a (L − 1) -dimensional simplex. This simplex is the class-specific geometric space we analyze, isolating the semantic “shape” of the class’s core feature hierarchy from its overall scale. We define their normalized energy distribution profiles, P
+
+(from the sample S) and Q (from the class CAP C), as: 
+
+Pi = SiLP
+
+> i=1
+
+Si
+
+, Qi = CiLP
+
+> i=1
+
+Ci
+
+, ∀i ∈ 1, . . . , L  (2) Within this core feature space, the reference profile Q
+
+serves as the geometric anchor point or centroid on the sim-plex, representing the stable structure of the ID class. The test sample’s profile P is a new point projected into this same space. We quantify the discrepancy between them us-ing our metric, the Energy Profile Divergence (EPD) :
+
+EPD Score = DKL (P ∥ Q) = 
+
+> L
+
+X
+
+> i=1
+
+Pi log 
+
+ Pi
+
+Gi
+
+
+
+(3) This score, formally equivalent to the KL Divergence 
+
+DKL (P ∥ Q) [20], provides a principled measure of ge-ometric divergence within this class-specific subspace. A6high EPD score signifies that the test sample P has “drifted” far from the characteristic anchor point Q, indicating that its energy allocation fundamentally disrupts the ID class’s core feature hierarchy. 
+
+Metrics. We report using two primary metrics: the Area Under the Receiver Operating Characteristic (AUROC) curve (higher is better) and the False Positive Rate at 95% True Positive Rate (FPR95) (lower is better). While AU-ROC provides a general measure of separability across all thresholds, FPR95 is the critical metric for reliable deploy-ment in safety-sensitive applications, as it bounds the worst-case failure rate on anomalies [17]. It directly measures the OOD false positive rate under the constraint that 95% of ID samples are correctly accepted. 
+
+4.2. SAE Architecture and Training 
+
+We adopt a Top-k SAE [26], an overcomplete, single-hidden-layer autoencoder. Unlike traditional SAEs that use 
+
+ℓ1 or KL penalties to encourage average sparsity [29], our model enforces per-sample hard sparsity. The model is trained to optimize a composite loss function designed to balance accurate reconstruction with maintain-ing robust feature activation. The total loss is: 
+
+LTotal = LRecon + αLAuxK  (4) Reconstruction Loss ( LRecon ) is the Mean Squared Error (MSE) between the normalized input [CLS] token and its reconstruction. To mitigate “neuron dead”—a common is-sue in Top-k models where some neurons never win the 
+
+k-competition—we employ an auxiliary loss, LAuxK [13]. This loss encourages dead neurons to participate in recon-structing the residual error, weighted by α.This hard-sparsity architecture is fundamental to our hy-pothesis. Soft ℓ1 sparsity can still permit dense, low-amplitude activations in response to novel OOD inputs, cor-rupting the signal. In contrast, the Top-k SAE acts as a structural bottleneck, forcing a sparse representation. This amplifies the dissimilarity between the stable ID patterns (CAPs) and the disrupted OOD patterns, making the struc-tural deviation quantified by our EPD a highly robust OOD signal. 
+
+4.3. Hyperparameter Rationale 
+
+Our hyperparameters were selected to balance representa-tional capacity with semantic specificity: 
+
+Latent Dimension (Dlatent = 7680 ). Our latent dimension is 10x the ViT-B/16 [CLS] token dimension ( Din = 768 ). This overcomplete ratio is for providing sufficient capacity for the features to disentangle into a sparse basis [8]. 
+
+Sparsity Level (k = 128 ). We empirically identified 
+
+k = 128 as the optimal operating point. This value is sig-nificantly smaller than Din (768), enforcing a strong repre-sentational bottleneck that compels the model to select only the most salient features for reconstruction, achieving a 6x dimensionality reduction per-sample. 
+
+Activation Head Size (p = 15% ). From a 99%-firing anal-ysis, we observed that each class activates approximately 18.8% of the latent dimensions on average (std. 4.6%), im-plying a meaningful activation band of roughly 14–23%. Guided by this empirical range and validated through per-formance sweeps, we set the activation head size to the cor-responding optimum. These parameters were finalized to achieve a balanced trade-off between sensitivity to OOD detection performance and robustness across diverse benchmarks. See the Ap-pendix for a detailed results. 
+
+4.4. Computational Cost 
+
+We benchmarked the Top-k SAE training cost on a single NVIDIA RTX 4080 GPU: 100 epochs over ImageNet-1k ( 1.28M samples, batch size 4096) completed in approx-imately 17 minutes (10.18 sec/epoch). This constitutes a one-time setup cost, as the SAE is subsequently frozen dur-ing inference, requiring no retraining or fine-tuning, ensur-ing the computational efficiency of our method. 
+
+4.5. Results on ViT 
+
+Table 1 compares our method against prominent approaches on a ViT-B/16 backbone. Our method achieves the best average FPR95 (40.96%) among all compared methods, demonstrating strong robustness in OOD detection. As dis-cussed in Section 4.1, minimizing FPR95 is paramount for safety. Concurrently, our method secures a highly compet-itive separability, securing the second-best overall AUROC (87.26%). Table 2 presents the per-dataset AUROC and FPR95 scores for our method, where our method remains highly competitive, particularly achieving superior FPR95 on SSB-Hard and Textures. Detailed results for the other benchmark methods are provided in the Appendix.                                                                                      
+
+> Method FRP95 AUROC Near-OOD Far-OOD Average Near-OOD Far-OOD Average
+> ASH 94.45 96.77 95.84 53.20 51.56 52.22 GEN 70.78 32.23 47.65 76.30 91.35 85.33 GradNorm 94.72 92.64 93.47 53.68 41.74 46.52 KNN 70.47 31.93 47.35 74.11 90.81 84.13 MDS 66.11 29.97 44.43 79.04 92.60 87.18 MSP 81.88 51.66 63.75 73.53 86.04 81.03 OpenMax 88.78 55.49 68.81 73.64 89.27 83.02 ReAct 84.48 53.92 66.15 69.27 85.69 79.12 RMDS 65.38 28.75 43.40 80.09 92.60 87.60
+> SHE 70.88 27.14 44.63 76.11 92.42 85.90 ViM 73.75 29.20 47.02 77.03 92.84 86.51 TempScale 84.63 53.77 66.11 73.17 86.32 81.06
+> Ours 65.23 24.77 40.96 78.98 92.78 87.26
+
+Table 1. OOD detection performance on ViT-B/16 (ID Acc: 81.14%). Results are averaged across Near-OOD and Far-OOD datasets. Best results are in bold; second and third-best are under-lined. Our method achieves the best average FPR95. 
+
+7Metric SSB hard NINCO iNaturalist Textures OpenImage-O FPR95 82.41 48.06 17.84 30.44 26.03 AUROC 72.21 85.74 95.17 91.06 92.12 
+
+Table 2. Detailed our OOD detection performance on ViT-B/16. Best results are in bold; second and third-best are underlined. 
+
+Our results demonstrate strong robustness across diverse OOD scenarios. Our approach also achieves leading FPR95 on Far-OOD datasets and maintains competitive perfor-mance on notoriously difficult Near-OOD benchmarks. Robustness on individual datasets is further detailed in the Appendix. Particularly, our method records the best FPR95 performance on OpenImage-O (26.03%) and maintains top-tier performance on the challenging datasets like NINCO (48.06%), outperforming strong baselines. These results support our core hypothesis: an OOD signal derived from structural deviation within a learned sparse feature space provides a reliable detection mechanism. By enforcing hard sparsity, the Top-k SAE learns a discrimina-tive latent space where our EPD effectively detects both Far-OOD samples (failing to activate core features) and Near-OOD samples (activating a conflicting pattern). 
+
+4.6. Results on Other Backbones 
+
+Our method also achieves competitive results on the Swin-T backbone, showing strong robustness in FPR95 com-pared to existing methods (Table 3). However, its over-all performance is lower than that on ViT-B/16. We at-tribute this gap not to a fundamental limitation of Swin-T, but to how its architectural design interacts with our ap-proach. Our method assesses OOD likelihood by compar-ing activation-profile shapes between a sample and its pre-dicted class’ CAP. Swin-T’s window-based local attention and hierarchical aggregation yield feature embeddings with weaker global consistency and less sharply defined activa-tion heads, which directly reduces the separability achieved through profile-shape alignment.                                                                                
+
+> Method FRP95 AUROC Near-OOD Far-OOD Average Near-OOD Far-OOD Average
+> ASH 94.60 94.78 94.71 46.64 44.34 45.26 GEN 63.72 32.76 45.15 78.97 91.00 86.19 GradNorm 93.72 96.60 95.45 47.72 35.68 40.49 KNN 71.61 34.41 46.28 71.69 89.36 82.45 MDS 68.64 30.75 42.74 75.24 91.46 86.92 MSP 70.69 49.32 52.27 76.72 89.65 84.47 OpenMax 79.20 52.28 63.06 76.61 88.54 83.96 ReAct 72.55 42.62 56.30 75.74 88.99 83.69 RMDS 66.28 29.33 41.37 78.36 92.98 88.36
+> SHE 76.28 45.82 58.00 76.75 89.89 84.63 TempScale 72.57 50.01 59.03 76.96 86.75 82.83
+> Ours 68.51 26.97 43.99 76.76 92.21 86.03
+
+Table 3. OOD detection performance on Swin Transformer (ID Acc: 81.60%). Results are averaged across Near-OOD and Far-OOD datasets. Best results are in bold; second and third-best are underlined. 
+
+In contrast, our method demonstrates strong performance when applied to DINOv2, which is explicitly optimized for object-centric global representations. The resulting CAPs are significantly sharper and more stable than those of Swin-T, leading to a substantial reduction in FPR95. This con-firms that our structural detection mechanism effectively leverages the global coherence of the latent space, perform-ing best when the backbone naturally minimizes intra-class feature variance. Detailed results are included in the Ap-pendix. 
+
+4.7. Ablation: Scoring Metric 
+
+To validate our choice of EPD, we compare it against Eu-clidean and cosine distance applied within the same sparse CAP framework on ViT-B/16. EPD outperforms both al-ternatives across all evaluation splits; detailed results are provided in the Appendix. 
+
+5. Conclusion 
+
+We demonstrated that the ViT [CLS] token can be inter-preted by decomposing it into a structured sparse basis. To the best of our knowledge, this work represents the first ap-plication of a Top-k SAE to unlock these features specifi-cally for OOD detection. A core contribution is the identification of CAPs as stable structural invariants for ID classes. Our analysis revealed that OOD samples fail to replicate the precise shape of these profiles. By quantifying this structural mismatch via EPD, our method achieved strong performance in average FPR95. This confirms that analyzing the distributional shape of ac-tivations provides a robustness advantage over conventional magnitude-based approaches. Beyond performance, our framework is computationally efficient—requiring only a lightweight, one-time SAE train—and interpretable, establishing structural alignment as a robust foundation for reliable vision systems 
+
+Limitations and Future Work. While we established the interpretability of sparse patterns at the class level via CAPs, we did not conduct a granular feature-level visual-ization to identify the specific semantic concepts captured by individual latent neurons. We leave this fine-grained analysis for future work, as well as extending our structural framework to other modalities and architectures. 
+
+Acknowledgments. This work was supported by the Na-tional Research Foundation of Korea (NRF) grant (No. RS-2024-00453301) and the Institute for Information & communications Technology Planning & Evaluation (IITP) grant (No. RS-2025-25442469) funded by the Korea gov-ernment (MSIT). 8References 
+
+[1] Herv´ e Abdi and Lynne J Williams. Principal component analysis. Wiley interdisciplinary reviews: computational statistics , 2(4):433–459, 2010. 3 [2] Jinwon An and Sungzoon Cho. Variational autoencoder based anomaly detection using reconstruction probability. 
+
+Special lecture on IE , 2(1):1–18, 2015. 3 [3] Pierre Baldi. Autoencoders, unsupervised learning, and deep architectures. In Proceedings of ICML workshop on unsuper-vised and transfer learning , pages 37–49. JMLR Workshop and Conference Proceedings, 2012. 3 [4] Julian Bitterwolf, Maximilian Mueller, and Matthias Hein. In or out? fixing imagenet out-of-distribution detection eval-uation. In ICML , 2023. 6 [5] Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom Conerly, Nicholas L Turner, Cem Anil, Carson Denison, Amanda Askell, et al. Towards monosemanticity: Decomposing language models with dic-tionary learning. Transformer Circuits Thread , 2023. 3 [6] Hila Chefer, Shir Gur, and Lior Wolf. Transformer inter-pretability beyond attention visualization. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 782–791, 2021. 1, 3 [7] Mircea Cimpoi, Subhransu Maji, Iasonas Kokkinos, Sammy Mohamed, and Andrea Vedaldi. Describing textures in the wild. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 3606–3613, 2014. 5, 6 [8] Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey. Sparse autoencoders find highly interpretable features in language models. arXiv preprint arXiv:2309.08600 , 2023. 1, 3, 7 [9] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. Imagenet: A large-scale hierarchical image database. In 2009 IEEE conference on computer vision and pattern recognition , pages 248–255. Ieee, 2009. 3, 6 [10] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Syl-vain Gelly, et al. An image is worth 16x16 words: Trans-formers for image recognition at scale. arXiv preprint arXiv:2010.11929 , 2020. 1, 3 [11] Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, et al. Toy models of superposition. arXiv preprint arXiv:2209.10652 ,2022. 1, 3 [12] Stanislav Fort, Jie Ren, and Balaji Lakshminarayanan. Ex-ploring the limits of out-of-distribution detection. Advances in neural information processing systems , 34:7068–7081, 2021. 1 [13] Leo Gao, Tom Dupr´ e la Tour, Henk Tillman, Gabriel Goh, Rajan Troll, Alec Radford, Ilya Sutskever, Jan Leike, and Jeffrey Wu. Scaling and evaluating sparse autoencoders. 
+
+arXiv preprint arXiv:2406.04093 , 2024. 2, 3, 7 [14] Izhak Golan and Ran El-Yaniv. Deep anomaly detection us-ing geometric transformations. Advances in neural informa-tion processing systems , 31, 2018. 3 [15] Dan Hendrycks and Kevin Gimpel. A baseline for detect-ing misclassified and out-of-distribution examples in neural networks. arXiv preprint arXiv:1610.02136 , 2016. 1, 2 [16] Dan Hendrycks, Mantas Mazeika, and Thomas Dietterich. Deep anomaly detection with outlier exposure. arXiv preprint arXiv:1812.04606 , 2018. 2 [17] Dan Hendrycks, Nicholas Carlini, John Schulman, and Jacob Steinhardt. Unsolved problems in ml safety. arXiv preprint arXiv:2109.13916 , 2021. 1, 7 [18] Rui Huang, Andrew Geng, and Yixuan Li. On the impor-tance of gradients for detecting distributional shifts in the wild. Advances in Neural Information Processing Systems ,34:677–689, 2021. 2 [19] Aapo Hyv¨ arinen. Independent component analysis: recent advances. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences , 371 (1984):20110534, 2013. 3 [20] Solomon Kullback and Richard A Leibler. On information and sufficiency. The Annals of Mathematical Statistics , 22 (1):79–86, 1951. 6 [21] Alina Kuznetsova, Hassan Rom, Neil Alldrin, Jasper Ui-jlings, Ivan Krasin, Jordi Pont-Tuset, Shahab Kamali, Stefan Popov, Matteo Malloci, Alexander Kolesnikov, et al. The open images dataset v4: Unified image classification, object detection, and visual relationship detection at scale. Interna-tional journal of computer vision , 128(7):1956–1981, 2020. 5, 6 [22] Kimin Lee, Kibok Lee, Honglak Lee, and Jinwoo Shin. A simple unified framework for detecting out-of-distribution samples and adversarial attacks. Advances in neural infor-mation processing systems , 31, 2018. 1, 2 [23] Shiyu Liang, Yixuan Li, and Rayadurgam Srikant. Enhanc-ing the reliability of out-of-distribution image detection in neural networks. arXiv preprint arXiv:1706.02690 , 2017. 1, 2[24] Weitang Liu, Xiaoyun Wang, John Owens, and Yixuan Li. Energy-based out-of-distribution detection. Advances in neural information processing systems , 33:21464–21475, 2020. 1, 2 [25] Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, and Baining Guo. Swin transformer: Hierarchical vision transformer using shifted windows. In 
+
+Proceedings of the IEEE/CVF international conference on computer vision , pages 10012–10022, 2021. 6 [26] Alireza Makhzani and Brendan Frey. K-sparse autoencoders. 
+
+arXiv preprint arXiv:1312.5663 , 2013. 2, 3, 7 [27] Leland McInnes, John Healy, and James Melville. Umap: Uniform manifold approximation and projection for dimen-sion reduction. arXiv preprint arXiv:1802.03426 , 2018. 4 [28] Maximilian Mueller and Matthias Hein. Mahalanobis++: Improving ood detection via feature normalization. arXiv preprint arXiv:2505.18032 , 2025. 8 [29] Andrew Ng. Sparse autoencoder. CS294A Lecture notes, Stanford University, 2011. 3, 7 [30] Bruno A Olshausen and David J Field. Sparse coding with an overcomplete basis set: A strategy employed by v1? Vision research , 37(23):3311–3325, 1997. 1, 3 
+
+9[31] Maxime Oquab, Timoth´ ee Darcet, Th´ eo Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. Dinov2: Learning robust visual features without supervision. 
+
+arXiv preprint arXiv:2304.07193 , 2023. 6 [32] Maithra Raghu, Thomas Unterthiner, Simon Kornblith, Chiyuan Zhang, and Alexey Dosovitskiy. Do vision trans-formers see like convolutional neural networks? Advances in neural information processing systems , 34:12116–12128, 2021. 3 [33] Yiyou Sun, Chuan Guo, and Yixuan Li. React: Out-of-distribution detection with rectified activations. Advances in neural information processing systems , 34:144–157, 2021. 3 [34] Yiyou Sun, Yifei Ming, Xiaojin Zhu, and Yixuan Li. Out-of-distribution detection with deep nearest neighbors. In In-ternational conference on machine learning , pages 20827– 20840. PMLR, 2022. 1 [35] Grant Van Horn, Oisin Mac Aodha, Yang Song, Yin Cui, Chen Sun, Alex Shepard, Hartwig Adam, Pietro Perona, and Serge Belongie. The inaturalist species classification and de-tection dataset. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 8769–8778, 2018. 4, 6 [36] Sagar Vaze, Kai Han, Andrea Vedaldi, and Andrew Zisser-man. Open-set recognition: A good closed-set classifier is all you need. In ICLR , 2022. 6 [37] Haoqi Wang, Zhizhong Li, Litong Feng, and Wayne Zhang. Vim: Out-of-distribution with virtual-logit matching. In Pro-ceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 4921–4930, 2022. 3 [38] Jingkang Yang, Kaiyang Zhou, Yixuan Li, and Ziwei Liu. Generalized out-of-distribution detection: A survey. Inter-national Journal of Computer Vision , 132(12):5635–5662, 2024. 1, 2 [39] Jingyang Zhang, Jingkang Yang, Pengyun Wang, Haoqi Wang, Yueqian Lin, Haoran Zhang, Yiyou Sun, Xuefeng Du, Yixuan Li, Ziwei Liu, et al. Openood v1. 5: Enhanced benchmark for out-of-distribution detection. arXiv preprint arXiv:2306.09301 , 2023. 6 
+
+10 Sparsity as a Key: Unlocking New Insights from Latent Structures for Out-of-Distribution Detection 
+
+# Supplementary Material 
+
+A. Activation Affinity of OOD Samples to Specific ID Core Features Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices 
+
+Class 30 9 ID vs. OOD predicted as Class 309 
+
+(Core indices of Class 309 ID, bee) 
+
+Class 986 ID vs. OOD predicted as Class 309 
+
+(Core indices of Class 986 ID, yellow lady’s slipper) 
+
+iNaturalist 
+
+Class 996 ID vs. OOD predicted as Class 996 
+
+(Core indices of Class 996 ID, hen of the woods) 
+
+Class 309 ID vs. OOD predicted as Class 996 
+
+(Core indices of Class 309 ID, bee) Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices 
+
+Class 389 ID vs. OOD predicted as Class 389 
+
+(Core indices of Class 389 ID, barracouta) 
+
+Class 390 ID vs. OOD predicted as Class 389 
+
+(Core indices of Class 390 ID, eel) 
+
+NINCO 
+
+Class 557 ID vs. OOD predicted as Class 557 
+
+(Core indices of Class 557 ID, flagpole) 
+
+Class 984 ID vs. OOD predicted as Class 557 
+
+(Core indices of Class 984 ID, rapeseed) Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices 
+
+Class 580 ID vs. OOD predicted as Class 580 
+
+(Core indices of Class 580 ID , greenhouse) 
+
+Class 989 ID vs. OOD predicted as Class 580 
+
+(Core indices of Class 989 ID, rosehip) 
+
+OpenImage -O
+
+Class 738 ID vs. OOD predicted as Class 738 
+
+(Core indices of Class 738 ID, flowerpot) 
+
+Class 989 ID vs. OOD predicted as Class 73 8
+
+(Core indices of Class 989 ID, rosehip) Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices Top 20 Core Indices 
+
+Class 599 ID vs. OOD predicted as Class 599 
+
+(Core indices of Class 599 ID, honeycomb) 
+
+Class 904 ID vs. OOD predicted as Class 599 
+
+(Core indices of Class 904 ID, window screen) 
+
+Textures 
+
+Class 911 ID vs. OOD predicted as Class 911 
+
+(Core indices of Class 911 ID, wool) 
+
+Class 904 ID vs. OOD predicted as Class 911 
+
+(Core indices of Class 904 ID, window screen )
+
+Figure 7. Core feature activation by different OOD datasets. This figure presents two pairs of graphs for each dataset. Each pair shows an OOD sample (Red) compared against ID samples (Blue) using two class feature sets. Left panel (in each): The OOD sample consis-tently exhibits high activation on the core features of its predicted ID class. Right panel (in each): The same OOD sample demonstrates negligible activation on the core features of an unrelated ID class. This pattern confirms the robust semantic alignment driving classifier predictions, irrespective of the OOD source dataset. 
+
+1To demonstrate that the semantic alignment of OOD samples is a general phenomenon—a key finding discussed in Section 3.2—Figure 7 presents additional evidence drawn from diverse OOD datasets, including iNaturalist, NINCO, OpenImage-O, and Textures. As evident in the figure, the pattern remains remarkably consistent. In every illustrated case, the OOD sample (Red) exhibits significant, non-zero activation levels when evaluated against the core features of its misclassified ID class (Left panels in each). Conversely, the same OOD sample consistently demonstrates negligible activation when processed against the core features belonging to an entirely unrelated ID class (Right panels in each). This observation strongly reinforces our hypothesis that the classifier’s decisions are driven by structural and semantic alignments in the sparse latent space, rather than resulting from random classification failures. 
+
+B. Global Statistics of Activation Intensity 0.025 
+
+0.020 
+
+0.015 
+
+0.010 
+
+0.005 
+
+0.000 
+
+ID 
+
+Ground 
+
+Truth 
+
+OOD 
+
+Other 
+
+Classes 
+
+OOD 
+
+Matched 
+
+Class 
+
+ID 
+
+Ground 
+
+Truth 
+
+OOD 
+
+Other 
+
+Classes 
+
+OOD 
+
+Matched 
+
+Class 
+
+# Texture s NINCO           
+
+> Figure 8. Global statistics of core feature activation intensity. We aggregate mean activation values on core indices across all classes for OOD datasets. ID Ground Truth (Blue, Left): Demonstrates strong activation on the core features corresponding to the ground-truth class. OOD Matched Class (Red, Middle): OOD samples activate the core features of their predicted ID class, though with consistently lower intensity than true ID samples. OOD Other Classes (Red, Right): OOD samples exhibit minimal activation on the core features of unrelated ID classes.
+
+As a supplement to the analysis Figure 5 in Section 3.2, Figure 8 demonstrates that our findings are not limited to specific examples but represent a general phenomenon across diverse OOD datasets. The aggregated statistics consistently show that OOD samples systematically activate their matched class features (Red, Middle) but not other class features (Red, Right). This clear separation provides another strong evidence supporting our hypothesis that this specific activation is the reason why the sample is classified into that particular ID class. Furthermore, this OOD activation magnitude (Red, Middle) is consistently weaker than that of true ID samples (Blue, Left). 2C. Structural Differences in ID and OOD Activation Class Activation Profile vs. iNaturalist 
+
+ID Class 309 (bee) ID Class 996 (hen -of -the -woods)         
+
+> Latent Indices Sorted by ID train Class Mean Latent Indices Sorted by ID train Class Mean
+> Activations
+> Activations
+> ID OOD ID OOD
+
+Class Activation Profile vs. NINCO 
+
+ID Class 389 (barracouta) ID Class 986 (yellow lady’s slipper)         
+
+> Latent Indices Sorted by ID train Class Mean Latent Indices Sorted by ID train Class Mean
+> Activations
+> Activations
+> ID OOD ID OOD
+
+Class Activation Profile vs. OpenImage -O
+
+ID Class 580 (greenhouse) ID Class 738 (flowerpot)        
+
+> Latent Indices Sorted by ID train Class Mean Latent Indices Sorted by ID train Class Mean
+> Activations
+> Activations
+> ID OOD ID OOD
+
+Class Activation Profile vs. Textures 
+
+ID Class 794 (shower curtain) ID Class 904 (window screen)        
+
+> Latent Indices Sorted by ID train Class Mean Latent Indices Sorted by ID train Class Mean
+> Activations
+> Activations
+> ID OOD ID OOD
+
+Figure 9. Consistency of structural activation profiles across diverse OOD datasets. This figure provides additional examples com-paring the mean activation on CAP of ID samples (Blue) and OOD samples (Red) misclassified as the same class across four benchmark datasets: iNaturalist, NINCO, OpenImage-O, and Textures. The latent indices are sorted according to the mean ID activation profile of the respective class. In all cases, the distinctive activation head of ID samples is sharply attenuated and dispersed in OOD samples, confirming the generality of the structural disruption observed in the main paper. 
+
+3To further substantiate the claims made in Section 3.3 regarding the fundamental structural disruption between ID and mis-classified OOD samples, Figure 9 presents comprehensive activation profile comparisons. This supplementary evidence confirms that the phenomena illustrated in Figure 6 are systematic findings, not exceptions limited to specific datasets or classes. As shown across all tested OOD benchmarks (iNaturalist, NINCO, OpenImage-O, and Textures), the consistent trend is the inability of OOD samples (Red) to replicate the activation signature of true ID data (Blue). Specifically, OOD ac-tivation profiles display a diffused and lower-intensity distribution, particularly failing to match the high-energy, concentrated peak—the “head” of the profile—that is characteristic of the ID samples. This consistent structural failure across varied OOD sources underscores the robustness of our central observation, and provides the essential foundation for our EPD metric. 
+
+D. Hyperparameter Ablation: Latent Dimension and Sparsity Level      
+
+> Figure 10. Hyperparameter sensitivity analysis. FPR95 (blue, lower is better) and AUROC (red, higher is better) across combinations of latent dimension ( L) and sparsity level ( k). Darker colors indicate better performance. The selected configuration ( L= 7680 ,k= 128 )minimizes overall FPR95 while maintaining strong AUROC, representing the optimal trade-off between robustness and separability.
+
+Figure 10 presents a comprehensive sensitivity analysis over our two primary architectural hyperparameters: the latent di-mension L ∈ { 3840 , 7680 , 11520 } and the sparsity level k ∈ { 32 , 64 , 128 , 256 }. The results reveal a consistent pattern: increasing L generally requires a proportional increase in k to maintain reconstruction quality, but this scaling is eventually constrained by model instability at larger k values. Our selected configuration ( L = 7680 , k = 128 ) yields the best overall FPR95 (40.96%), prioritizing robustness in safety-critical detection over marginal AUROC gains. The relative flatness of AUROC across configurations further confirms that our method is not overly sensitive to the precise hyperparameter choice within a reasonable range. 
+
+E. Activation Head Size Sensitivity 
+
+To support the parameter choices detailed in Section 4.3, Figure 11 provides a comprehensive sensitivity analysis on the Activation Head Ratio (p). This hyperparameter defines the percentage of top-activated latent indices utilized for calculating our EPD score. 482.23 82.34 82.35 82.41 82.41 82.53 82.61 82.67 82.61                                                                                              
+
+> 47.50 47.79 47.84 48.06 47.67 47.65 47.67 47.51 47.54
+> 18.06 17.98 17.96 17.84 17.66 17.70 17.89 17.85 17.85
+> 30.85 30.58 30.59 30.44 30.21 30.00 30.06 29.93 30.15
+> 25.95 26.02 26.02 26.03 26.13 26.18 26.27 26.34 26.38
+> 10.00
+> 20.00
+> 30.00
+> 40.00
+> 50.00
+> 60.00
+> 70.00
+> 80.00
+> 90.00
+> 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20
+> 72.20 72.21 72.21 72.21 72.21 72.20 72.20 72.18 72.17
+> 85.70 85.70 85.72 85.74 85.76 85.77 85.77 85.77 85.77
+> 95.13 95.14 95.15 95.17 95.16 95.18 95.17 95.17 95.17
+> 91.09 91.08 91.06 91.06 91.05 91.05 91.04 91.04 91.03
+> 92.15 92.13 92.13 92.12 92.11 92.11 92.10 92.08 92.06
+> 70.00
+> 75.00
+> 80.00
+> 85.00
+> 90.00
+> 95.00
+> 100.00
+> 0.12 0.13 0.14 0.15 0.16 0.17 0.18 0.19 0.20
+> Activation Head Rati oActivation Head Rati o
+
+FPR95 AUROC 
+
+SSH -Hard NINCO iNaturalist Textures OpenImage -OFigure 11. Sensitivity analysis of the activation head ratio ( p). Performance metrics, FPR95 (Left) and AUROC (Right), are evaluated across various OOD benchmarks as a function of the activation head ratio ( p). The ratio determines the size of the sorted latent feature set used for divergence calculation. The results demonstrate the stability of our proposed method EPD across the empirically derived meaningful range ( p = 0 .12 to p = 0 .20 ), validating the robust selection of the chosen value ( p = 0 .15 ) used in the main paper. 
+
+The analysis systematically sweeps p across the empirically derived range. The resulting metrics, FPR95 and AUROC, show remarkable consistency across all tested benchmark OOD datasets (SSH-Hard, NINCO, iNaturalist, Textures, and OpenImage-O). The observed flatness of the performance curves explicitly confirms that the effectiveness of our EPD method is highly robust and not overly dependent on the precise selection of p. This validates our choice of p=0.15 as an optimal, stable setting that effectively balances detection sensitivity and generalizability across diverse OOD sources. 
+
+F. Ablation: Scoring Metric 
+
+Metric Near-OOD Far-OOD Overall FPR95 AUROC FPR95 AUROC FPR95 AUROC 
+
+Euclidean 67.56 76.83 29.68 90.87 44.83 85.25 Cosine 71.74 77.09 47.93 84.21 57.45 81.36 
+
+EPD (Ours) 65.23 78.98 24.77 92.78 40.96 87.26 
+
+Table 4. Metric Ablation on ViT-B/16. EPD outperforms Euclidean and cosine distance across all evaluation splits, validating the use of KL divergence over normalized energy profiles. 
+
+EPD’s advantage stems from its use of KL divergence over L1-normalized profiles, which captures the shape of the energy distribution rather than its magnitude or direction alone. Euclidean distance performs competitively on Far-OOD but degrades on Near-OOD, while cosine similarity is notably weaker on Far-OOD—confirming that structural shape within the sparse simplex is the most discriminative signal for OOD detection. 5G. Full Experimental Results 
+
+G.1. Full Results on ViT 
+
+Method Near-OOD Far-OOD Overall SSB-Hard NINCO Average iNaturalist Textures OpenImage-O Average Average FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC 
+
+ASH 93.50 53.89 95.40 52.52 94.45 53.20 97.02 50.63 98.49 48.53 94.80 55.52 96.77 51.56 95.84 52.22 DICE 89.77 59.05 81.09 71.67 85.43 65.36 47.92 82.51 54.79 82.21 52.57 82.23 51.76 82.32 65.23 75.53 EBO 92.25 58.80 94.16 66.02 93.21 62.41 83.58 79.30 83.65 81.17 88.79 76.48 85.34 78.98 88.49 72.35 GEN 82.24 70.09 59.31 82.51 70.78 76.30 22.94 93.54 38.31 90.23 35.43 90.27 32.23 91.35 47.65 85.33 GradNorm 93.62 42.96 95.81 64.40 94.72 53.68 91.16 42.42 92.25 44.99 94.52 37.82 92.64 41.74 93.47 46.52 KNN 86.22 65.97 54.73 82.25 70.48 74.11 27.74 91.46 33.23 91.12 34.82 89.86 31.93 90.81 47.35 84.13 MDS 83.47 71.57 48.76 86.52 66.11 79.04 20.66 96.01 38.90 89.41 30.35 92.38 29.97 92.60 44.43 87.18 MLS 91.52 64.20 92.98 72.40 92.25 68.30 72.98 85.29 78.93 83.74 85.78 81.60 79.23 83.54 84.44 77.45 MSP 86.41 68.94 77.35 78.11 81.88 73.53 42.42 88.19 56.44 85.06 56.11 84.87 51.66 86.04 63.75 81.03 OpenMax 89.20 68.60 88.36 78.68 88.78 73.64 19.56 94.93 73.17 85.52 73.74 87.36 55.49 89.27 68.81 83.02 ReAct 90.46 63.10 78.50 75.43 84.48 69.27 48.22 86.11 55.87 86.66 57.68 84.29 53.92 85.69 66.15 79.12 RMDS 84.53 72.87 46.22 87.31 65.38 80.09 19.46 96.10 37.23 89.38 29.57 92.32 28.75 92.60 43.40 87.60 
+
+SHE 85.74 68.04 56.01 84.18 70.88 76.11 22.17 93.57 25.65 92.65 33.59 91.04 27.14 92.42 44.63 85.89 TempScale 87.36 68.55 81.90 77.80 84.63 73.18 43.08 88.54 58.22 85.39 60.00 85.04 53.77 86.32 66.11 81.06 ViM 90.06 69.42 57.45 84.64 73.76 77.03 17.59 95.72 40.41 90.61 29.59 92.18 29.20 92.84 47.02 86.51 
+
+Ours 82.41 72.21 48.06 85.74 65.23 78.98 17.84 95.17 30.44 91.06 26.03 92.12 24.77 92.78 40.96 87.26 
+
+Table 5. OOD detection performance on ImageNet-1K benchmarks, evaluated on a ViT-B/16 (ID Acc: 81.14%). For each metric, the best result is in bold and the second and third results are underlined. 
+
+G.2. Full Results on Swin-T 
+
+Method Near-OOD Far-OOD Overall SSB-Hard NINCO Average iNaturalist Textures OpenImage-O Average Average FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC 
+
+ASH 95.22 46.28 93.98 47.00 94.60 46.64 94.19 46.49 96.17 41.32 93.99 45.22 94.78 44.34 94.71 45.26 DICE 95.76 49.97 97.28 50.00 96.52 49.99 98.11 47.09 87.37 77.61 96.36 58.67 93.95 61.12 94.98 56.67 EBO 87.51 68.28 79.23 78.42 83.37 73.35 61.18 85.17 84.29 79.00 80.20 80.24 75.22 81.47 78.48 78.22 GEN 79.35 72.78 48.10 85.16 63.73 78.97 20.47 94.23 45.04 88.16 32.77 90.60 32.76 91.00 45.15 86.19 GradNorm 93.37 50.43 94.06 45.01 93.72 47.72 95.18 38.28 97.80 34.75 96.83 34.00 96.60 35.68 95.45 40.49 KNN 85.08 64.21 58.14 79.16 71.61 71.69 31.15 88.91 35.79 90.56 36.30 88.62 34.41 89.36 49.29 82.29 MDS 83.72 68.69 53.55 81.78 68.64 75.24 21.89 93.60 37.47 89.82 30.89 90.98 30.08 91.47 45.50 84.97 MLS 86.60 70.47 75.78 80.95 81.19 75.71 49.65 89.01 79.94 81.70 73.96 83.93 67.85 84.88 73.19 81.21 MSP 81.02 71.75 60.36 81.69 70.69 76.72 37.50 89.84 61.49 83.27 48.97 85.81 49.32 86.31 57.87 82.47 OpenMax 85.54 71.52 72.85 81.69 79.20 76.61 19.56 95.06 76.41 82.81 60.88 87.75 52.28 88.54 63.05 83.77 ReAct 85.01 69.36 60.08 82.12 72.55 75.74 31.34 90.08 53.98 87.04 42.54 87.85 42.62 88.32 54.59 83.29 RMDS 82.66 71.81 49.89 84.91 66.28 78.36 18.55 95.57 39.09 89.26 29.34 92.10 29.00 92.31 43.91 86.73 
+
+SHE 85.03 70.75 67.53 82.74 76.28 76.75 33.25 92.78 51.32 88.86 52.88 88.04 45.82 89.89 58.00 84.63 TempScale 82.12 71.83 63.02 82.09 72.57 76.96 36.84 90.36 62.89 83.68 50.30 86.20 50.01 86.75 59.03 82.83 ViM 88.55 68.94 60.80 81.85 74.68 75.40 17.98 94.62 29.46 92.69 26.62 92.29 24.69 93.20 44.68 86.08 
+
+Ours 81.62 70.50 55.40 83.01 68.51 76.76 20.37 94.07 32.64 90.86 27.90 91.71 26.97 92.21 43.59 86.03 
+
+Table 6. OOD detection performance on ImageNet-1K benchmarks, evaluated on a Swin Transformer (ID Acc: 81.60%. For each metric, the best result is in bold and the second and third results are underlined. 
+
+G.3. Full Results on Multiple Architectures (Ours Only) 
+
+Method Near-OOD Far-OOD Overall SSB-Hard NINCO Average iNaturalist Textures OpenImage-O Average Average FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC Ours (ViT-B) 82.41 72.21 48.06 85.74 65.23 78.98 17.84 95.17 30.44 91.06 26.03 92.12 24.77 92.78 40.96 87.26 
+
+Ours (Swin-T) 81.62 70.50 55.40 83.01 68.51 76.76 20.37 94.07 32.64 90.86 27.90 91.71 26.97 92.21 43.59 86.03 
+
+Ours (DINOv2) 80.05 76.82 44.74 89.63 62.40 83.23 7.21 97.87 32.35 92.11 16.22 95.51 18.59 95.16 40.50 89.20 
+
+Table 7. OOD Detection performance of our method across different architectures. Detailed OOD detection performance on ImageNet-1K benchmarks for our proposed method (EPD) applied to DINOv2 B/14 (ID Acc: 84.64%), ViT-B/16 (ID Acc: 81.14%), and Swin-T (ID Acc: 81.60%). 
+
+6The comprehensive OOD detection performance results for the ViT-B/16 (Table 5) and Swin-T (Table 6) backbones, includ-ing detailed metrics for all OpenOOD benchmark methods, are presented here. Moreover, to definitively demonstrate the generalizability and robust effectiveness of our core structural detection mechanism, Table 7 provides a side-by-side compar-ison of our method applied to three distinct Vision Transformer backbones: DINOv2, ViT-B/16, and Swin-T. These tables provide the detailed data that underpins the summary findings discussed in Section 4.5 and 4.6. • ViT-B/16 : The detailed results emphatically confirm that our method, EPD using CAP, achieves the best overall average FPR95 ( 40 .96 %) among all compared methods, outperforming the next best methods (RMDS at 43 .40% and MDS at 
+
+44 .43% ). This performance gap validates EPD’s exceptional capability in minimizing false positives across diverse OOD scenarios, which is paramount for safety-critical applications. • Swin-T : Our method achieves the best overall average FPR95 ( 43 .59 %) among the compared methods on this architecture. The overall AUROC reflects the influence of the Swin-T architecture, where localized attention and hierarchical feature extraction result in latent representations with reduced global coherence. Despite this, our method secures the best overall average FPR95 and a competitive AUROC score. • DINOv2 : Our method achieves its highest overall performance on DINOv2, leading to the best overall FPR95 ( 40 .50 %)among all tested backbones. This inclusion of DINOv2 further validates the general applicability of EPD, proving that our method’s efficacy of OOD detection stems from fundamental structural properties of the latent space. It is important to note that due to the lack of comprehensive OOD benchmark results for DINOv2 in existing literature, Table 7 presents the performance of only our method as an internal comparison. This comparative analysis solidifies our hypothesis that the efficacy of OOD detection through structural deviation is not dependent on a specific backbone model. 
+
+H. Results on Different ID Dataset: CIFAR-100                                                                                                                                                                                                                                                                                         
+
+> Method Near-OOD Far-OOD Overall CIFAR10 TinyImageNet Average SVHN Textures Places365 Average Average FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC
+> ASH 87.04 56.96 90.97 51.23 89.01 54.09 81.59 57.61 82.07 58.53 91.72 52.57 85.13 56.24 86.68 55.38 DICE 69.63 81.68 60.53 83.57 65.08 82.63 44.10 90.96 73.32 82.57 65.11 82.65 60.84 85.39 62.54 84.29 EBO 63.84 84.38 49.64 86.83 56.74 85.60 39.33 89.89 59.26 86.88 64.07 83.81 54.22 86.86 55.23 86.36 GEN 62.46 84.64 49.98 86.80 56.22 85.72 40.06 89.63 58.78 86.89 64.43 83.80 54.42 86.77 55.14 86.35 GradNorm 48.78 85.52 45.17 87.63 46.97 86.57 49.54 91.47 58.10 86.65 44.07 88.41 50.57 88.84 49.13 87.94 KNN 43.61 87.67 41.53 87.77 42.57 87.72 41.08 88.95 47.88 87.96 50.66 85.39 46.54 87.43 44.95 87.55 MDS 44.64 88.10 44.81 85.60 44.73 86.85 50.50 78.14 38.52 90.14 56.47 82.55 48.50 83.61 46.99 84.91 MLS 63.70 84.17 49.52 86.62 56.61 85.39 39.57 89.46 59.27 86.51 64.07 83.58 54.30 86.52 55.23 86.07 MSP 61.80 81.68 52.63 83.84 57.22 82.76 46.98 84.81 64.86 82.25 64.56 80.80 58.80 82.62 58.17 82.68 OpenMax 62.94 80.95 54.92 83.58 58.93 82.26 48.94 84.42 75.71 79.82 66.20 81.15 63.62 81.80 61.74 81.98 ReAct 51.21 86.02 41.68 88.11 46.44 87.06 41.10 91.04 57.11 87.31 47.42 87.14 48.54 88.50 47.70 87.92 RMDS 47.02 86.50 41.81 86.82 44.42 86.66 37.60 87.27 43.03 86.84 49.79 84.64 43.47 86.25 43.85 86.41 SHE 49.91 86.03 46.61 87.35 48.26 86.69 78.93 88.52 65.28 86.85 46.96 87.40 63.72 87.59 57.54 87.23 TempScale 62.41 83.02 50.92 85.18 56.67 84.10 44.23 86.85 61.70 84.23 64.19 82.13 56.71 84.40 56.69 84.28 ViM 43.89 88.58 38.73 88.43 41.31 88.50 36.11 86.88 35.86 91.91 46.51 86.53 39.49 88.44 40.22 88.47 Ours 44.76 87.25 42.76 87.48 43.76 87.37 41.76 87.92 45.21 87.93 52.44 85.21 46.47 87.02 45.39 87.16
+
+Table 8. OOD detection performance on CIFAR-100 benchmarks, evaluated on a ViT-B/16 (ID Acc: 84.78%). For this experiment, we employed a fine-tuned version of google/vit-base-patch16-224-in21k . For each metric, the best result is in bold and the second and third results are underlined. 
+
+To validate the general applicability and domain robustness of our EPD method, we conducted extensive experiments using CIFAR-100 as the ID dataset, a domain fundamentally different in scale and complexity from the ImageNet domain studied in the main experiment. The full set of results comparing EPD with established OpenOOD benchmarks is detailed in Table 8. The OOD datasets utilized for this analysis were selected from the suggested list for CIFAR-100 in the OpenOOD v 1.5 framework. The results demonstrate that EPD maintains its effectiveness despite the significant shift in the training domain. While some methods, such as KNN and GEN, showing a notable surge in performance on the CIFAR-100 domain compared to their ImageNet-1k score, our method demonstrates cross-domain stability. EPD maintains a robust performance where the score gap relative to the top-ranking method is small. Our method shows highly stable performance across both Near-OOD and Far-OOD categories, proving that the core mechanism is not architecture- or domain-specific. 7I. Comparison with Recent Baselines: MDS++ and RMDS++ 
+
+Table 9 extends our comparison to include recently proposed methods MDS++ and RMDS++ [28], which are enhanced variants of MDS and RMDS. Note that unlike the other baselines evaluated via OpenOOD v1.5, these results were obtained through our own implementation. Our method remains highly competitive against these stronger baselines. In particular, our approach records the best FPR95 on SSB-Hard and Textures among all three methods, demonstrating that our structural detection mechanism provides complementary advantages. While MDS++ and RMDS++ outperform ours on iNaturalist and NINCO, our method shows superior or competitive performance on the remaining datasets. 
+
+Method Near-OOD Far-OOD SSB-Hard NINCO iNaturalist Textures OpenImage-O FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC FPR95 AUROC 
+
+MDS++ 83.97 74.04 44.90 88.55 11.97 97.18 31.37 90.57 25.21 93.11 
+
+RMDS++ 83.29 74.81 43.86 88.67 13.34 96.95 34.74 89.28 26.45 92.66 
+
+Ours 82.41 72.21 48.06 85.74 17.84 95.17 30.44 91.06 26.03 92.12  
+
+> Table 9. Comparison with recent methods on ImageNet-1K benchmarks using ViT-B/16. Bold : best result; underlined: second best.
+
+J. CAP Cosine Similarity Analysis     
+
+> Figure 12. CAP cosine similarity analysis. (A) Distribution of pairwise cosine similarity between all 1,000 ID class CAPs. The distri-bution peaks near zero, confirming that most ID classes form mutually orthogonal subspaces in the sparse latent space. (B) Examples of class pairs with high and low CAP similarity. High-similarity pairs (red) correspond to semantically related concepts ( e.g ., Eskimo dog vs. Siberian husky), while low-similarity pairs (blue) represent semantically distinct classes. This validates that CAPs capture meaningful semantic identity rather than arbitrary activation patterns.
+
+The pairwise cosine similarity distribution in Figure 12(A) provides further evidence for the disjointness of CAPs established in Section 3.1 of the main paper. While the Jaccard similarity in Figure 2 measures binary feature overlap, cosine similarity here captures the directional alignment of the full mean activation vectors. The zero-skewed distribution confirms that the vast majority of ID class pairs occupy nearly orthogonal subspaces in the sparse latent space. The qualitative examples in (B) further validate that the few high-similarity pairs correspond exclusively to semantically related classes ( e.g ., near-synonym animal breeds or synonymous objects), demonstrating that the sparse latent space organizes classes according to genuine semantic relationships rather than arbitrary activation patterns. 8

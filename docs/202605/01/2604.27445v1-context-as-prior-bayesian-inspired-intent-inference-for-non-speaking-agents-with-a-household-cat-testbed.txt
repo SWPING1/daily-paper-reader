@@ -1,0 +1,147 @@
+Title: Context as Prior: Bayesian-Inspired Intent Inference for Non-Speaking Agents with a Household Cat Testbed
+
+URL Source: https://arxiv.org/pdf/2604.27445v1
+
+Published Time: Fri, 01 May 2026 00:30:28 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Context as Prior: Bayesian-Inspired Intent Inference for Non-Speaking Agents with a Household Cat Testbed 
+
+## Wenqian Zhang University of California, Riverside Riverside, CA 
+
+> wzhan240@ucr.edu
+
+## Zehao Wang University of California, Riverside Riverside, CA 
+
+> zwang712@ucr.edu
+
+## Abstract 
+
+Many agents in real-world environments cannot reliably communicate their goals through language, including household pets, pre-verbal infants, and other non-speaking embodied agents. In such settings, intent must be inferred from incomplete behavioral observations in context-rich en-vironments. This creates a core ambiguity: observable be-havior is often noisy or underspecified, while context pro-vides strong prior information but can also induce brittle shortcut predictions if used naively. We present CatSignal , a Bayesian-inspired probabilis-tic framework for multimodal intent inference that models spatial context as a prior-like constraint and behavioral observations as evidence. Rather than treating context as an ordinary input feature, our method uses a context-gated Product-of-Experts formulation to compute posterior-like intent distributions from context, pose dynamics, and acous-tic cues. We instantiate this formulation in a household cat setting as a focused proof-of-concept for intent inference in non-speaking agents. Under Leave-One-Video-Out evaluation on a multi-modal domestic cat dataset, the proposed prior-guided fu-sion achieves the best overall accuracy of 77.72% , outper-forming feature concatenation (71.83%) and stronger late-fusion baselines. More importantly, it substantially reduces context-driven shortcut failures in ambiguous cases. While simpler fusion strategies remain competitive in Macro-F1 and selective prediction, the proposed model provides the strongest overall accuracy and the best suppression of context-based shortcut collapse. 
+
+## 1. Introduction 
+
+Intelligent systems operating in homes and shared environ-ments increasingly need to interpret intents that cannot reli-ably communicate through natural language, such as house-hold pets, pre-verbal infants, and other non-speaking com-panions [1–5]. In such settings, intent must be inferred from partial observations rather than explicit verbal instruction. This is challenging as behavioral cues are often noisy or incomplete, while environmental context is highly informa-tive and often crucial for narrowing the set of feasible goals. A domestic cat provides a concrete example. A cat near a food bowl may be seeking food, but it may also simply remain idle nearby. Likewise, a cat near a door may in-tend to exit, or may merely linger there. Pose and audio alone are often insufficient to resolve such ambiguity: mo-tion patterns can overlap across goals, and vocalizations are sparse and inconsistent [6–8]. Meanwhile, context provides a strong prior over feasible goals, but cannot by itself deter-mine whether the observed clip reflects active goal pursuit or context-compatible idling. If context is treated as an ordinary feature, a discrimi-native model may collapse to shortcut rules such as near bowl → FOOD or near door → EXIT , regardless of be-havioral evidence [9]. We therefore frame intent infer-ence for non-speaking agents as probabilistic reasoning un-der strong contextual priors. We propose CatSignal , a Bayesian-inspired context-gated Product-of-Experts frame-work in which spatial context defines a prior-like constraint over feasible intents, while pose and audio provide comple-mentary evidence [10–13]. We instantiate this formulation in a household feline set-ting as a proof-of-concept testbed [14–19]. Our contribu-tions are: (1) a prior-guided formulation for intent infer-ence in non-speaking agents; (2) a context-gated Product-of-Experts framework combining context, pose, and audio; and (3) experiments showing improved overall accuracy, re-duced shortcut failures, and competitive uncertainty behav-ior under ambiguity. 
+
+## 2. Related Work 
+
+Markerless pose systems such as DeepLabCut [14] and SLEAP [15] have enabled animal behavior analysis in naturalistic settings, while benchmarks such as Mammal-1                          
+
+> arXiv:2604.27445v1 [cs.CV] 30 Apr 2026 Spatial Features
+> c
+> Near Door
+> Pose Features
+> 𝑋 !"#$
+> Audio Features
+> 𝑋 %&'("
+> Context Expert
+> Pose Expert
+> Audio Expert
+> Posterior shifts toward
+> the correct intent, IDLE
+> Behavioral evidence
+> suggests inactivity
+> Context prior
+> strongly favors
+> EXIT
+> Prior -Guided PoE
+> 𝑃 "𝑦 𝑥 !"" ∝
+> 𝑃 𝑦 𝑐 #
+> ⋅𝑃 𝑦 𝑥 $%& '
+> ⋅𝑃 𝑦 𝑥 !()*%
+> 𝑃 𝑦 𝑐
+> 𝑃 𝑦 𝑋 !"#$
+> 𝑃 𝑦 𝑋 %&'("
+
+Figure 1. Illustration of prior-guided intent inference in an ambiguous near-door household-cat clip. Context induces a strong prior toward 
+
+EXIT , while pose and audio evidence favor IDLE . Their Product-of-Experts fusion shifts the final posterior toward IDLE .
+
+Net [16] reflect a growing interest in animal-centered visual understanding. Additional work on animal behavior quan-tification and ecological deployment further highlights the growth of this area [6–8, 17–19]. However, most prior work focuses on observable motion or action categories rather than latent goal inference. More broadly, hidden-goal inference has been studied in Bayesian theory of mind [3], inverse planning [2], ma-chine theory of mind [4], and goal/activity recognition more broadly [5, 20]. In multimodal learning, feature concatena-tion is a common fusion strategy [10, 11], but it can encour-age shortcut reliance when the context is strongly predic-tive [9]. Product-of-Experts formulations provide a natural way to combine probabilistic contributions from multiple modalities [12, 13]. Our contribution is to treat context not as an ordinary feature, but as prior-like structure that is up-dated by behavioral evidence. 
+
+## 3. Dataset and Problem Setup 
+
+We instantiate our formulation in a household feline set-ting as a focused proof-of-concept for intent inference in non-speaking agents. The raw dataset consists of 34 home videos of varying durations recorded in a real domestic en-vironment, with a total duration of 1855.76 seconds. Af-ter pose-validity filtering, the final dataset contains 212 re-tained 3-second clips. To construct training and evaluation samples, we seg-ment the recordings into 3-second clips, but retain only clips with valid pose observations. Specifically, we first run DeepLabCut [14] and keep only temporal segments in which the cat is successfully detected with sufficient valid keypoints for extracting pose-derived features such as body speed, tail speed, tail swing, and body stretch statistics. We then extract synchronized audio from the same retained temporal windows, so that pose and audio evidence are aligned at the clip level. The final feature set, therefore, combines pose-validity statistics, motion descriptors, and synchronized acoustic descriptors for each retained clip. 
+
+Intent refers to an inferred latent goal associated with the observed behavior, with labels assigned retrospectively based on the immediate behavioral outcome. We consider three intent classes: EXIT , where the cat exhibits exit-seeking behavior and then leaves once the door is opened; 
+
+FOOD , where the cat exhibits food-seeking behavior and then consumes food; and IDLE , where the cat remains inac-tive or does not realize an exit- or food-directed outcome. The spatial context is represented by three discrete states: 
+
+near bowl , near door , and neutral . Context pro-vides a strong spatial prior over feasible intents in this household environment. Exit-related behavior occurs only near the door, while food-seeking behavior occurs only near the bowl. In the retained dataset, the near bowl region contains only FOOD and IDLE clips, the near door re-gion contains only EXIT and IDLE clips, and the neutral 
+
+region contains only IDLE . This makes the task funda-mentally asymmetric: context strongly constrains which intents are feasible, but does not fully determine whether the observed clip reflects a goal-directed state or a context-compatible idle state. The core challenge is therefore not identifying a relevant context, but disambiguating goal-directed behavior from idling within that context. 
+
+## 4. Method 
+
+Figure 1 illustrates our prior-guided intent inference frame-work through an ambiguous near-door example. In this clip, spatial context induces a strong prior toward EXIT, 2while pose and audio provide behavioral evidence favoring IDLE. More generally, given a video segment, our model extracts three streams of information: spatial context, pose dynamics, and acoustic features, each of which contributes a modality-specific class distribution. The final prediction is obtained through context-gated Product-of-Experts fusion. 
+
+Context as prior. Let y ∈ { EXIT , FOOD , IDLE } denote the latent intent. We interpret spatial context c as a prior-like constraint P (y | c). This prior captures coarse envi-ronmental feasibility constraints. For example, P (EXIT |
+
+near door ) is expected to be high, while P (FOOD |
+
+near door ) is negligible. However, the prior is not suffi-cient to determine whether the observed clip reflects active goal pursuit or an idle state within the same region. 
+
+Behavioral evidence. Using DeepLabCut, we estimate 2D keypoints and extract kinematic descriptors such as body speed, body stretch, tail speed, and tail movement statistics, which define a pose expert P (y | xpose ). From synchronized audio, we extract MFCC and spectral statis-tics to define an audio expert P (y | xaudio ).
+
+Prior-guided Product-of-Experts fusion. We combine prior and evidence using 
+
+˜P (y | xall ) ∝ P (y | c)α · P (y | xpose ) · P (y | xaudio ). (1) where α controls the strength of the contextual prior. Abla-tion results show that removing context severely harms per-formance, while moderate-to-full prior strength performs best; we therefore use α = 1 .0 in the main experiments. After normalization, this yields the posterior-like intent dis-tribution used for prediction. We tune the pose and audio experts while keeping the low-dimensional context expert fixed. Although the formu-lation is not a fully generative Bayesian model, it preserves the key distinction that context should act as prior structure rather than as an ordinary feature. 
+
+## 5. Experiments 
+
+Our experiments test a central hypothesis: in a household setting with strong spatial priors, treating context as prior knowledge should yield more reliable intent inference than treating it as an ordinary feature. We evaluate all meth-ods under Leave-One-Video-Out (LOVO) cross-validation to test generalization across recording sessions rather than within-video temporal interpolation. 
+
+5.1. Baselines 
+
+We compare ours against Pose-only , Audio-only , Context-only , Feature Concat , LateFusion-Avg , LateFusion-Weighted , PoE-Ctx+Pose , and PoE-Ctx+Aud . These baselines range from single-modality prediction to stronger feature-, late-fusion, and partial-expert alternatives, and test whether our gains come from multimodal information alone or from assigning context a distinct prior-like role.                                                      
+
+> Method Acc. (%) Std. (%) Macro-F1 Context-only 60.87 48.80 0.7117 Audio-only 50.87 38.76 0.4977 Pose-only 39.36 36.25 0.3623 Feature Concat 71.83 35.35 0.6666 LateFusion-Avg 73.69 33.88 0.7666
+> LateFusion-Weighted 73.76 32.02 0.7454 PoE-Ctx+Pose 60.55 43.56 0.6729 PoE-Ctx+Aud 75.31 35.77 0.7549
+> Prior-Guided PoE (Full) 77.72 33.24 0.7460
+> Table 1. Overall intent prediction performance under LOVO eval-uation. The full prior-guided PoE model achieves the highest over-all accuracy.
+> αAcc. (%) Std. (%) Macro-F1 0.0 45.60 37.01 0.4156 0.3 73.10 35.19 0.6577 0.5 75.42 34.71 0.6922 0.8 75.75 34.14 0.7100
+> 1.0 77.72 33.24 0.7460
+> 1.2 75.11 34.27 0.7244
+> Table 2. Sensitivity of the full PoE model to the context-strength parameter αunder tuned experts.
+
+5.2. Main Results 
+
+Table 1 reports performance. The full prior-guided PoE model achieves the best overall accuracy, improving from 71.83% for feature concatenation to 77.72% . It also outper-forms both late-fusion and partial-expert baselines in accu-racy, indicating that treating context as a distinct prior-like factor can be beneficial when combined with multimodal evidence. These results show that neither pose nor audio is sufficient in isolation, while context is strong but incom-plete because it cannot distinguish active goal from context-compatible idling. The best performance is obtained when context is treated as a prior and updated by behavioral evi-dence rather than fused naively as an ordinary feature. 
+
+5.3. Ablation on Prior Strength 
+
+Table 2 shows the effect of varying the context-strength pa-rameter α. Removing context severely harms performance, while moderate-to-full prior strength performs best. In par-ticular, α = 1 .0 yields the highest overall accuracy, which we therefore use in the main experiments. 
+
+## 6. Analysis 
+
+Because the main motivation of our method is not merely higher average accuracy, but more reliable inference under ambiguity, we focus on analyses that directly probe shortcut behavior and confidence quality. 3Figure 2. Shortcut failure rates in ambiguous contexts under tuned experts. Context-only collapses to deterministic shortcuts, while late fusion and prior-guided PoE reduce such failures. 
+
+6.1. Shortcut Failures under Ambiguous Contexts 
+
+Figure 2 highlights the central failure mode in this task: de-terministic shortcut predictions induced by context alone. In ambiguous scenarios, the context-only model collapses to context-based shortcuts, with 100% failure on idle sam-ples in both ambiguous settings. Both late fusion and prior-guided PoE substantially reduce these failures. Under the tuned experts, the proposed PoE is especially effective in the near-bowl regime, reducing the shortcut failure rate for 
+
+IDLE → FOOD errors from 18.5% under late fusion to 3.7%. In the near-door regime, PoE remains better than late fusion, though the margin is smaller (38.7% vs. 51.6%). 
+
+6.2. Selective Prediction under Ambiguity 
+
+Figure 3 shows the accuracy–coverage trade-off on ambigu-ous subsets ( near bowl and near door ). Compared with context-only inference, both stronger fusion strategies yield substantially better confidence-quality trade-offs un-der ambiguity. Late fusion attains the strongest cumulative accuracy over coverage, while the proposed PoE remains competitive and complements this result by achieving the best overall accuracy in the full evaluation. 
+
+## 7. Discussion and Limitations 
+
+Our study is intentionally scoped as a proof-of-concept in a household feline setting. In a context-rich and behaviorally ambiguous household environment, treating context as prior knowledge can yield more reliable multimodal intent dis-ambiguation than naive feature fusion. The notion of intent in this work should be interpreted as an outcome-verified latent goal state associated with the observed clip. We also find that context and audio fusion 
+
+> Figure 3. Accuracy–coverage curve on ambiguous subsets under tuned experts. Stronger fusion strategies substantially outperform context-only inference under ambiguity.
+
+are already strong, while the full model provides an addi-tional gain. We hypothesize that this reflects the current home-collected dataset: vocalization cues are often highly discriminative, whereas pose-derived cues are limited by overlap in motion patterns and the stability of markerless keypoint extraction under large or blurred motion. Because clips without sufficiently valid keypoints are filtered out during preprocessing, some informative motion-heavy seg-ments may be removed before feature extraction. Finally, the current label space is intentionally small. Ex-tending this formulation to richer intent sets, multi-home datasets, and cross-species settings is an important direction for future work. 
+
+## 8. Conclusion 
+
+We presented CatSignal, a Bayesian-inspired context-gated Product-of-Experts framework for intent inference under strong contextual priors. Rather than treating spatial con-text as just another feature, our approach models context as a prior-like constraint, poses, and audio observations as complementary evidence, yielding a posterior-like distribu-tion over latent intent. In a household cat testbed, this for-mulation improves overall accuracy, reduces context-driven shortcut failures, and remains competitive in uncertainty-sensitive analysis under ambiguity. More broadly, our re-sults suggest that behavior understanding for non-speaking agents may be better approached as probabilistic intent in-ference than as conventional multimodal classification in settings where context sharply constrains feasible goals but does not fully resolve behavioral ambiguity. 4References 
+
+[1] D. Premack and G. Woodruff. Does the chimpanzee have a theory of mind? Behavioral and Brain Sci-ences , 1(4):515–526, 1978. 1 [2] C. L. Baker, R. Saxe, and J. B. Tenenbaum. Ac-tion understanding as inverse planning. Cognition ,113(3):329–349, 2009. 2 [3] C. L. Baker, R. Saxe, and J. B. Tenenbaum. Bayesian theory of mind: Modeling joint belief-desire attribu-tion. In CogSci , 2011. 2 [4] N. C. Rabinowitz, F. Perbet, F. B. Song, C. Zhang, S. M. A. Eslami, and M. Botvinick. Machine theory of mind. In ICML , 2018. 2 [5] F. A. Van-Horenbeke and A. Peer. Activity, plan, and goal recognition: A review. Frontiers in Robotics and AI , 8:643010, 2021. 1, 2 [6] G. J. Berman, D. M. Choi, W. Bialek, and J. W. Shae-vitz. Mapping the stereotyped behaviour of freely moving fruit flies. Journal of the Royal Society In-terface , 11(99):20140672, 2014. 1, 2 [7] A. B. Wiltschko, M. J. Johnson, G. Iurilli, E. R. Peter-son, J. M. Katon, S. V. Pashkovski, V. E. Abraira, R. P. Adams, and S. R. Datta. Mapping sub-second struc-ture in mouse behavior. Neuron , 88(6):1121–1135, 2015. [8] J. P. Bohnslav, N. K. Wimalasena, K. J. Clausing, Y. Y. Dai, D. A. Yarmolinsky, T. Cruz, A. D. Kashlan, M. J. Chiappe, D. Orefice, D. Woolf, R. K. Marks, P. L. Miller, B. T. Ness, C. J. Arneson, C. Kim, C. L. Hillman, A. M. Datta, and S. R. Datta. DeepEthogram, a machine learning pipeline for supervised behavior classification from raw pixels. eLife , 10:e63377, 2021. 1, 2 [9] R. Geirhos, J.-H. Jacobsen, C. Michaelis, R. Zemel, W. Brendel, M. Bethge, and F. A. Wichmann. Short-cut learning in deep neural networks. Nature Machine Intelligence , 2(11):665–673, 2020. 1, 2 [10] T. Baltruˇ saitis, C. Ahuja, and L.-P. Morency. Mul-timodal machine learning: A survey and taxonomy. 
+
+TPAMI , 41(2):423–443, 2019. 1, 2 [11] J. Ngiam, A. Khosla, M. Kim, J. Nam, H. Lee, and A. Y. Ng. Multimodal deep learning. In ICML , pages 689–696, 2011. 2 [12] G. E. Hinton. Training products of experts by mini-mizing contrastive divergence. Neural Computation ,14(8):1771–1800, 2002. 2 [13] M. Wu and N. Goodman. Multimodal generative models for scalable weakly-supervised learning. In 
+
+NeurIPS , 2018. 1, 2 [14] A. Mathis, P. Mamidanna, K. M. Cury, T. Abe, V. N. Murthy, M. W. Mathis, and M. Bethge. DeepLabCut: markerless pose estimation of user-defined body parts with deep learning. Nature Neuroscience , 21(9):1281– 1289, 2018. 1, 2 [15] T. D. Pereira, N. Tabris, A. Matsliah, D. M. Turner, J. Li, S. Ravindranath, E. S. Papadoyannis, E. Normand, D. S. Deutsch, Z. Y. Wang, G. C. McKenzie-Smith, C. C. Mitelut, M. D. Castro, J. D’Uva, M. Kislin, D. H. Sanes, S. D. Kocher, S. S.-H. Wang, A. L. Falkner, and M. Murthy. SLEAP: A deep learning system for multi-animal pose tracking. Nature Methods , 19(4):486– 495, 2022. 1 [16] J. Chen, M. Hu, D. J. Coker, M. L. Berumen, B. Costelloe, S. Beery, A. Rohrbach, and M. Elho-seiny. MammalNet: A large-scale video benchmark for mammal recognition and behavior understanding. In CVPR , 2023. 2 [17] C. Wiltshire, J. Lewis-Cheetham, V. Komedov´ a, T. Matsuzawa, K. E. Graham, and C. Hobaiter. DeepWild: Application of the pose estimation tool DeepLabCut for behaviour tracking in wild chim-panzees and bonobos. Journal of Animal Ecology ,92(8):1733–1749, 2023. 2 [18] M. Vidal, N. Wolf, B. Rosenberg, B. P. Harris, and A. Mathis. Perspectives on individual animal identifi-cation from biology and computer vision. Integrative and Comparative Biology , 61(3):900–916, 2021. [19] S. Ye, A. Filippova, J. Lauer, S. Schneider, M. Vidal, T. Qiu, A. Mathis, and M. W. Mathis. SuperAnimal pretrained pose estimation models for behavioral anal-ysis. Nature Communications , 15:6819, 2024. 1, 2 [20] F. Meneguzzi and R. Fraga Pereira. A survey on goal recognition as planning. In IJCAI , pages 4524–4532, 2021. 2 5

@@ -1,0 +1,452 @@
+Title: Temporal Prototyping and Hierarchical Alignment for Unsupervised Video-based Visible-Infrared Person Re-Identification
+
+URL Source: https://arxiv.org/pdf/2604.21324v1
+
+Published Time: Fri, 24 Apr 2026 00:37:29 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+> 1
+
+# Temporal Prototyping and Hierarchical Alignment for Unsupervised Video-based Visible-Infrared Person Re-Identification 
+
+Zhiyong Li, Wei Jiang, Haojie Liu, Mingyu Wang, Wanchong Xu, Weijie Mao 
+
+Abstract —Visible-infrared person re-identification (VI-ReID) enables cross-modality identity matching for all-day surveillance, yet existing methods predominantly focus on the image level or rely heavily on costly identity annotations. While video-based VI-ReID has recently emerged to exploit temporal dynamics for improved robustness, existing studies remain limited to supervised settings. Crucially, the unsupervised video VI-ReID problem, where models must learn from RGB and infrared tracklets without identity labels, remains largely unexplored despite its practical importance in real-world deployment. To bridge this gap, we propose HiTPro (Hierarchical Temporal Prototyping), a prototype-driven framework without explicit hard pseudo-label assignment for unsupervised video-based VI-ReID. HiTPro begins with an efficient Temporal-aware Feature Encoder that first extracts discriminative frame-level features and then aggregates them into a robust tracklet-level representation. Building upon these features, HiTPro first constructs reliable intra-camera prototypes via Intra-Camera Tracklet Prototyp-ing by aggregating features from temporally partitioned sub-tracklets. Through Hierarchical Cross-Prototype Alignment , we perform a two-stage positive mining process: progressing from within-modality associations to cross-modality matching, en-hanced by Dynamic Threshold Strategy and Soft Weight Assign-ment. Finally, Hierarchical Contrastive Learning progressively optimizes feature-prototype alignment across three levels: intra-camera discrimination, cross-camera same-modality consistency, and cross-modality invariance. Extensive experiments on HITSZ-VCM and BUPTCampus demonstrate that HiTPro achieves state-of-the-art performance under fully unsupervised settings, significantly outperforming adapted baselines and establishes a strong baseline for future research. Code will be available at https://github.com/ThomasjonLi/HiTPro. 
+
+Index Terms —Video-based Visible-infrared person re-identification, Unsupervised learning, Intelligent surveillance 
+
+I. I NTRODUCTION 
+
+Visible-infrared person re-identification (VI-ReID) aims to match pedestrian identities across non-overlapping cameras operating in heterogeneous spectral bands, typically visible (RGB) and infrared (IR), enabling robust 24/7 surveillance un-der varying illumination conditions [1]–[3]. Since the introduc-tion of the first large-scale benchmark, SYSU-MM01 [4], VI-ReID has drawn significant attention due to its practical value                          
+
+> This work was supported by the Zhejiang Province Natural Science Foun-dation of China (Grant LZ24F030004). (Corresponding author: Wei Jiang, e-mail: jiangwei_zju@zju.edu.cn)
+> Zhiyong Li,Haojie Liu, Mingyu Wang, Wanchong Xu and Weijie Mao are with the College of Control Science and Engineering, Zhejiang Uni-versity, Hangzhou 310027, China. (email: lizhiyong_zju@zju.edu.cn, li-uhaojie@zju.edu.cn, wangmingyu@zju.edu.cn, 3210104804@zju.edu.cn, wj-mao@zju.edu.cn ) Wei Jiang is with the School of Computer Science and Technology, Zhejiang University of Water Resources and Electric Power, Hangzhou, 310018, China (e-mail: jiangwei_zju@zju.edu.cn).
+
+and the inherent challenge of bridging the substantial cross-modality discrepancy. To address this modality gap, VI-ReID methods predominantly operated on static images, focusing on learning modality-invariant representations through shared embedding spaces [5]–[7] or cross-modality images synthesis methods [8]–[10]. However, real-world surveillance systems typically capture video sequences, which contain rich temporal dynamics such as gait, motion patterns, and pose transitions that are invaluable for robust identity matching, especially under occlusion or low-quality imaging conditions. This has motivated the emer-gence of video-based Re-ID. In the single-modality (visible) setting, researchers have adopted attention mechanisms or Transformer-based architectures [11]–[13]. Recently, several works have extended video Re-ID to the visible-infrared do-main. For instance, Lin et al. [13] proposed a temporal memory module on the HITSZ-VCM dataset to align modality-shared motion patterns, while Du et al. [14] introduced auxiliary visible samples to enhance infrared representation learning on BUPTCampus. Despite this progress, a critical limitation persists: all existing video VI-ReID approaches assume full identity supervision during training. In real-world scenar-ios, however, collecting large-scale labeled cross-modal video datasets is prohibitively expensive and often infeasible due to privacy constraints and camera heterogeneity. This necessitates the study of unsupervised video VI-ReID, where models must learn transferable representations without any identity annotations. The shift from supervised to unsupervised video-based visible-infrared person re-identification introduces fundamen-tal challenges that cannot be adequately addressed by sim-ply extending existing image-level paradigms. Most current unsupervised VI-ReID methods [15]–[17] rely on a two-stage pipeline: first performing intra-modality clustering to generate pseudo-labels, and then aligning these clusters across modalities via contrastive learning or graph matching. While effective for static images, this strategy breaks down in the video setting. First, the number of tracklets is drastically smaller than that of individual frames, which violates the den-sity assumption of clustering algorithms like DBSCAN [18]. Second, tracklet representations exhibit large intra-identity variation due to pose dynamics, motion blur, and background clutter across the sequence. This leads to less compact feature distributions, making it difficult for clustering to separate iden-tities reliably. Third, and uniquely to VI-ReID, each identity must be matched across two orthogonal sources of heterogene-ity: cross-camera shifts, and cross-modality gaps. However, conventional unsupervised pipelines, originally designed for either single-modality ReID or image-level VI-ReID, lack 
+
+> arXiv:2604.21324v1 [cs.CV] 23 Apr 2026 2
+
+a mechanism to simultaneously address the aforementioned issues. To this end, we revisit cross-modal video person re-identification from the perspective of real-world surveillance systems. Unlike image-based person ReID, pedestrians in video surveillance inherently exhibit spatio-temporal varia-tions [19]. As illustrated in Figure 1, within a single camera over a short time window, multiple pedestrians occupy distinct spatial regions, implying that their tracklets must correspond to different identities; this intra-camera spatial separation provides a strong structural prior for identity discrimination. Conversely, the same individual may appear across different cameras at temporally disjoint intervals, typically as a visible tracklet during daytime and an infrared tracklet at night, requiring unsupervised association across both camera views and modalities despite the absence of overlapping observations or labels.  
+
+> Fig. 1. Illustration of spatio-temporal variations in unsupervised video-based visible-infrared person re-identification: within a single camera over a short time window, multiple pedestrians occupy distinct spatial regions, implying that their tracklets must correspond to different identities; Conversely, the same individual may appear across different cameras at temporally disjoint intervals, typically as a visible tracklet during daytime and an infrared tracklet at night.
+
+Motivated by these insights, we propose HiTPro (Hier-archical Temporal Prototyping), an unsupervised framework that leverages spatio-temporal structure in surveillance video for prototype-based learning. HiTPro begins with an efficient Temporal-aware Feature Encoder (TFE) that first extracts frame-level features for each video frame, and then aggre-gates them within each tracklet via temporal attention, sup-pressing transient noise and producing a stable tracklet-level representation. Built upon this foundation, HiTPro introduces two core components. First, to address sample sparsity and avoid unreliable clustering, we design Intra-Camera Tracklet Prototyping (ICTP), which leverages the structural prior that all tracklets observed by a single camera in a short period time must correspond to distinct identities. Rather than treating each tracklet as a monolithic unit, ICTP partitions it into multiple sub-tracklets along the temporal axis. Each sub-tracklet is encoded independently, and their features are aggregated, to form a prototype per tracklet. Second, to jointly resolve cross-camera appearance shifts and cross-modality gaps, we propose Hierarchical Cross-Prototype Alignment (HCPA). Instead of direct feature alignment, HCPA performs a two-stage positive mining process grounded in prototype similarity. It begins with intra-modality cross-camera mining: for each tracklet prototype, high-confidence matches are identified across other cameras within the same modality. Then we perform cross-modality mining, matching visible prototypes to infrared ones (and vice versa). To ensure reliability throughout training, HCPA employs a Dynamic Threshold Strategy (DTS) that adaptively adjusts the similarity threshold per instance based on its current matching confidence, preventing premature exclusion of valid positives. The resulting positive pairs are further refined by Soft Weight Assignment (SWA), which assigns soft weights according to relative similarity strength to emphasize more reliable matches during alignment. Finally, building on the reliable positive pairs mined by HCPA, we introduce Hierarchical Contrastive Learning (HCL) that explicitly optimizes the alignment between sub-tracklet features and their corresponding identity prototypes. This learning is organized hierarchically: it first enforces intra-camera separation by repelling sub-tracklets from different identities within the same camera; then aligns sub-tracklets to cross-camera prototypes of the same identity within the same modality; finally, it bridges the visible-infrared gap by attracting sub-tracklets to cross-modality prototypes weighted by SWA confidence. HCL ensures that fine-grained temporal fragments consis-tently converge to a unified, modality-invariant identity anchor. In summary, our main contributions are listed as follows: 
+
+• We introduce the problem of unsupervised video-based visible-infrared person re-identification, highlighting its unique challenges beyond image-level or single-modality settings. To address this problem, we propose HiTPro, a dedicated frame-work built upon a Temporal-aware Feature Encoder (TFE) to aggregate robust tracklet representations. 
+
+• We introduce Intra-Camera Tracklet Prototyping (ICTP) and Hierarchical Cross-Prototype Alignment (HCPA), two complementary strategies that exploit camera-wise identity exclusivity and trajectory-level cross-modal consistency to mine high-confidence positive pairs without supervision. 
+
+• We design Hierarchical Contrastive Learning (HCL), which directly aligns sub-tracklet features with identity proto-types in a progressive manner: from intra-camera discrimina-tion, to cross-camera same-modality alignment, and ultimately to cross-modality matching. 
+
+• We conduct comprehensive experiments on existing video-based VI-ReID datasets and demonstrate that HiTPro achieves state-of-the-art performance under unsupervised settings, val-idating the effectiveness of our proposed learning paradigm. II. R ELATED WORKS 
+
+A. Image-based Visible-Infrared Person Re-Identification 
+
+Visible-infrared person re-identification (VI-ReID) has emerged as a critical task for all-day surveillance, aiming to match pedestrian identities across visible and infrared imaging modalities under large cross-modality appearance discrepan-cies. Early supervised approaches primarily focus on mitigat-3
+
+ing modality gaps through shared embedding learning, partic-ularly by the design of the two-stream convolutional neural network [2], [4], [20], [21]. Recent works have also designed two-stream architectures based on the emerging Transformer framework [22]–[24]. Beyond structural alignment, a second line of research leverages image-level generative models such as GAN to translate images across spectra, thereby enabling inter-modality matching [8]–[10], [25]. On this basis , feature-level generation or transformation has gained traction as a more stable alternative that avoids the instability of image synthesis [26]–[28]. These methods operate in latent space to either hallucinate modality-invariant features or explicitly disentangle identity-related and modality-specific component. Recently, cross-modal learning based on frequency-domain feature analysis and separation has also begun to attract researchers’ attention [29]–[31]. However, the reliance on expensive cross-modal identity annotations severely limits real-world deployment. This has spurred growing interest in unsupervised VI-ReID. H2H [32] first introduce this problem and proposed a two-stage learning strategy that progresses from intra-modality clustering-based learning to cross-modality alignment. OTLA [33] proposes a method based on optimal transport paths to transfer labels from the visible to infrared modality. Subsequent methods have focused on improving clustering strategies and cross-modal alignment techniques [34]–[38]. Although image-level unsupervised VIReID methods have achieved certain success on existing datasets, they operate at the image level, ignoring the rich temporal dynamics in video surveillance sequences, such as pose and motion changes, as well as environmental disturbances, that are crucial for robust identity matching. This limitation prevents them from learning stable identity-aware representations when applied to video-level features. 
+
+B. Video-based Person Re-Identification 
+
+Video-based person re-identification exploits temporal infor-mation from tracklets to enhance robustness against occlusion, pose variation, background clutter, and transient appearance changes. Early approaches adopt recurrent networks [39], [40] or 3D-convolutions [41], [42] to capture motion cues across frames. Later works leverage attention mechanisms to weight informative frames [43], [44]. Recent advances focus on fine-grained temporal structure, long-range dependency modeling, and explicit preservation of spatial identity cues across time [45], [46]. Complementing these sequence modeling efforts, spatial-aware or fine-grained based frameworks have been developed to preserve spatial semantics during temporal fusion [47]–[50]. Some researchers have also proposed unsupervised learning methods designed for single-modality video ReID. TAUDL [51] and UTAL [19] associate tracklets across cameras using spatio-temporal coherence and appearance consistency without any identity annotations. Several research also focus on video feature clustering method optimization [52]–[55]. To address feature diversity in unlabeled videos, Zhang et al. [55] in-troduce a dual-modeling approach combining reliable tracklet representations from easy frames and informative represen-tations from hard frames, enhanced by discrepant memory mining. However, these methods are developed exclusively in visible-only settings. They inherently assume relatively small appearance variations across views, and thus fail catas-trophically in cross-modality scenarios like RGB-IR matching, where modality discrepancy dominates over identity signals. Consequently, none can be directly applied to the unsupervised video-based VI-ReID problem addressed in this work. 
+
+C. Video-based Visible-Infrared Person Re-Identification 
+
+A few recent works have begun to investigate supervised video-based VI-ReID by extending temporal modeling to cross-modality settings. Lin et al. [13] first introduce video-based learning into VI-ReID and contribute a large scale video-based cross-modal ReID dataset HITSZ-VCM. They propose a temporal-memory to captures discriminative motion patterns. Li et al. [56] employ bidirectional LSTM to build temporal in-formation and leverages anaglyph data as cross-modal bridges. FA-Net [57] aligns spatial information with global-local fea-ture fusion and achieves temporal alignment by learnable weighting. SIMFGA [58] also integrates local features with a temporal Transformer to jointly align spatio-temporal informa-tion across dual modalities. STHF [59] proposed a high-pass filter to suppress spatial-temporal low-frequency components in tracklets. Current methods mostly focus on jointly aligning spatio-temporal information through network design. However, all these approaches strictly rely on full identity supervision and offer no mechanism to handle the unlabeled setting, mak-ing them inapplicable to real-world deployments where cross-modal tracklet annotations are scarce or absent. In this work, we address the problem of unsupervised video-based VI-ReID and propose a novel HiTPro framework. The proposed method leverages frame-level consistency within unlabeled tracklets to construct reliable pseudo-prototypes, while enforcing cross-camera and cross-modality alignment, enabling robust and scalable identity association without labeled video data. III. M ETHOD 
+
+In this section, we present HiTPro, a Hierarchical Tem-poral Prototyping framework for unsupervised cross-modal video person re-identification. An overview of the HiTPro architecture is shown in Fig. 2. Section III-A introduces the Temporal Feature Encoder (TFE), which enhances video-level representations by capturing inter-frame dynamics and adaptively emphasizing discriminative frames. Building upon these features, Section III-B describes Intra-Camera Tempo-ral Prototyping (ICTP)—a self-supervised strategy that con-structs tracklet prototypes within each camera by exploiting the identity-disjointness prior of pedestrian tracks. To bridge heterogeneous views, Section III-C details our Hierarchi-cal Cross Prototype Alignment mechanism, which progres-sively identifies reliable cross-camera and cross-modal positive prototypes through similarity-guided soft labeling. Finally, Section III-D presents the hierarchical contrastive learning framework, which progressively optimizes intra-camera, intra-modality cross-camera, and cross-modality alignment through a curriculum-based loss scheduling strategy. 4 
+
+> Fig. 2. Illustration of the proposed HiTPro framework. The input video tracklets from visible and infrared modalities are processed by a Temporal-aware Feature Encoder (TFE) to obtain modality-invariant temporal-aggregated features. Each tracklet is split into sub-tracklets, whose embeddings are aggregated into tracklet-level prototypes. The HCPA module then performs hierarchical positive mining: first within modality across cameras, then across modalities, using dynamic thresholds and soft weights to ensure reliable matching. During training, a curriculum-based contrastive loss progressively aligns representations at intra-camera, intra-modality, and cross-modality levels.
+
+A. Temporal-aware Feature Encoder (TFE). 
+
+To effectively model the temporal dynamics of video se-quences and extract discriminative person representations un-der cross-modal settings, we design a Temporal-aware Feature Encoder (TFE) that integrates a dual-stream backbone with temporal aggregation modules. As illustrated in Figure 3, TFA first processes input video clips x ∈ RT ×H×W from visible and infrared modalities through a shared backbone network derived from the AGW framework [2]. Specifically, each frame in the video snippet is processed through a uni-fied pipeline: it first passes through modality-specific shallow layers to capture surface-level semantic cues, and then enters a shared deep backbone to extract modality-invariant identity representations fb. Building upon these frame features, the Transformer-based Temporal Encoder (TTE), which consist of two Transformer Layer, is employed to model long-range dependencies between frames by capturing global contextual information via self-attention mechanisms. This enables the network to understand complex motion patterns and occlusion scenarios, thereby enhancing the robustness of individual frame representations. The enhanced features fe are then fed into an Adaptive Frame-weighting Module (AFM), which computes importance scores for each frame using an attention network composed of two linear layers with ReLU activation and a softmax layer. Formally, given a sequence of enhanced features fe = {fe1 , f e2 , ..., f eT } ∈ RB×T ×D The attention weights are computed as: 
+
+αt = Softmax  w⊤ϕ(fet ) (1) where ϕ(·) is a learnable projection function and w is a weight vector. The final video-level embedding is obtained by weighted summation: 
+
+f =
+
+> T
+
+X
+
+> t=1
+
+αt · fet (2) This design allows TFE to dynamically emphasize informative frames (e.g., clear appearance or full body) while suppressing noisy or occluded ones, resulting in a compact and dis-criminative representation suitable for downstream contrastive learning.  
+
+> Fig. 3. Architecture of the Temporal-aware Feature Encoder (TFE). Input video clips from visible and infrared modalities are first processed by the base encoder. Subsequently, a two-layer Transformer encoder models long-range temporal dependencies across frames. Finally, an adaptive frame-weighting module computes attention scores for each frame and produces a compact, discriminative video-level embedding by weighted aggregation. 5
+
+B. Intra-Camera Temporal Prototyping (ICTP) 
+
+To enable self-supervised learning in the absence of iden-tity labels, we propose Intra-Camera Temporal Prototyping (ICTP), which constructs trajectory-level prototypes by lever-aging a natural structural prior in video surveillance: within a single camera, all observed pedestrian tracklets are mutually identity-disjoint, i.e., no two distinct tracklets correspond to the same person at the same time. This property guarantees that each tracklet represents a unique underlying identity, providing a reliable basis for prototype formation without cross-camera association or clustering. Given a set of tracklets Xm,c = {x1, x 2, ..., x Nc } from modality m (visible or infrared), where Nc denotes the number of tracklets in camera c, we first partition each long tracklet 
+
+xi into K non-overlapping sub-tracklets Ii = {x1 
+
+> i
+
+, x 2 
+
+> i
+
+, ..., x Ki }.This subdivision captures local appearance variations (e.g., due to pose change or partial occlusion) while preserving the identity consistency within the original tracklet. Each sub-tracklet xki is processed by the Temporal Feature Encoder to produce a compact video-level embedding: 
+
+f ki = TFE  xki
+
+ ∈ RD (3) The trajectory prototype pi for tracklet xi is then defined as the mean feature of all its sub-tracklet features: 
+
+pi = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+f ki (4) This averaging operation yields a robust and stable represen-tation of the underlying identity, effectively smoothing out transient visual noise and emphasizing consistent appearance cues across time. Within a single camera ct, the collection of all prototypes forms the intra-camera prototype set Pct =
+
+{pi}Nct 
+
+> i=1
+
+, and the union of prototype sets from all cameras un-der the same modality constitutes the intra-modality prototype set Pm = {P mct }Cm 
+
+> t=1
+
+(Cm denotes the number of cameras in modality m). The resulting prototypes serve as high-quality pseudo-centers for subsequent self-supervised or contrastive learning stages. 
+
+C. Hierarchical Cross Prototype Alignment (HCPA) 
+
+To bridge representations across cameras and modalities, we propose a Hierarchical Cross Prototype Alignment strat-egy that first performs intra-modality cross-camera positive mining, followed by cross-modal extension. 
+
+Intra-modality Cross-cam Positive Mining. For each source prototype pi from camera cs, we compute its similarity to every prototype pj in all other cameras ct̸ = cs of the same modality. For each target camera ct, we select the prototype with the highest similarity to pi as the per-camera best candidate: 
+
+j∗(ct) = arg max 
+
+> j∈P ct
+
+Sim( pi, p j ) (5) where Sim( pi, p j ) = p⊤   
+
+> ipj
+> ∥pi∥∥ pj∥
+
+. Pct denotes the set of pro-totypes in camera ct. Since the number of times the same pedestrian appears across different cameras is uncertain, we employ a similarity threshold to filter out ambiguous matches. Specifically, for each cross-camera prototype set Pct , if the prototype pj∗(ct) most similar to pi exceeds a predefined sim-ilarity threshold, pj∗(ct) is included in the positive sample set. The final set of reliable intra-modality cross-camera positive indices for pi is: 
+
+Ji = j∗(ct) | ct̸ = cs, Sim( pi, p j∗(ct)) ≥ h (6) For the visible and infrared modalities, we can obtain J vi and 
+
+J in i , respectively. A detailed discussion on the calculation of the threshold h is provided below. 
+
+Cross-modality Positive Mining. While intra-modality cross-camera mining provides high-confidence positive pairs within each modality, bridging the semantic gap between vis-ible and infrared domains requires a dedicated cross-modality alignment stage. We therefore perform cross-modality positive mining separately. Specifically, for a source prototype pvi from the visible modality, we search for its positive matches among all prototypes in the infrared modality. Then per-cam best infrared candidate is selected as: 
+
+j∗(ct) = arg max 
+
+> j∈P in ct
+
+Sim( pvi , p in j ) (7) where Pin ct denotes the set of infrared prototypes in infrared camera cin t . Next, we compute reliable cross-modality positive samples using a similar approach: 
+
+J v→in i =
+
+n
+
+j∗(ct) | Sim( pvi , p in j∗(ct)) ≥ h
+
+o
+
+(8) The positive set from infrared to visible modality J in →vi can be derived in the same manner. 
+
+Dynamic Threshold Strategy (DTS). While the fixed-threshold provides a simple baseline, it fails to account for the evolving quality of prototype representations during training. Early in training, features are noisy and inter-identity similar-ities are compressed, making even true matches fall below a rigid threshold. Conversely, in later stages, over-conservative thresholds may exclude valid positives that exhibit natural appearance variation. To address this, we replace the static threshold with a dynamic, instance-adaptive threshold that scales with the current matching confidence of each query prototype. Specifically, for a source prototype pi, let s(i)
+
+> max
+
+denote the maximum similarity between pi and its per-camera best matches across all target cameras (within the same modality for intra-modality mining, or across modalities for cross-modality mining). We define the reliability threshold at epoch e as: 
+
+hi = ρ(e) · s(i)max (9) where ρ(e) is a linearly decaying scheduling function: 
+
+ρ(e) = ρinit + ( ρfinal − ρinit ) · eetotal 
+
+(10) This formulation ensures that the mining process remains sensitive to both the instance-level matching difficulty and the global learning stage and the global learning stage, yielding a high-quality positive set throughout training. 
+
+Soft Weight Assignment (SWA). After identifying the set of reliable positive candidates, we further refine their 6
+
+Algorithm 1 : Training procedure of the proposed HiTPro 
+
+Input: Visible and infrared training tracklets V and R;
+
+Initialize: Temporal-aware Feature Encoder TFE; maximal epoch E; maximal iteration I; 
+
+> 1:
+
+for e=1 : E do  
+
+> 2:
+
+Split tracklets within each camera into sub-tracklets.  
+
+> 3:
+
+Freeze TFE andconstruct intra-camera prototypes Pct by Eq.(3) - (4) and form the modality prototype sets Pv , Pin ; 
+
+> 4:
+
+for Pvct in Pv do  
+
+> 5:
+
+for pvi in Pvct do  
+
+> 6:
+
+Calculate current hi by Eq. (9) - (10);  
+
+> 7:
+
+Generate cross-cam positive set Jvi by Eq. (5) - (6) and corresponding weight Wvi by Eq. (11);  
+
+> 8:
+
+Generate cross-modality positive set Jv→in i by Eq. (7) - (8); and corresponding weight Wv→in i by Eq. (11);  
+
+> 9:
+
+end for  
+
+> 10:
+
+end for  
+
+> 11:
+
+Repeat steps 4 - 10 for Pin to obtain W in and W in →v ; 
+
+> 12:
+
+for iter=1: I do  
+
+> 13:
+
+Activate TFE for training and extract batch features Bv , Bin . 
+
+> 14:
+
+Calculate Lic by Eq.(12);  
+
+> 15:
+
+if e ≥ eintra then calculate Limcc by Eq.(13);  
+
+> 16:
+
+if e ≥ ecross then calculate Lcm by Eq.(14);  
+
+> 17:
+
+Calculate Ltotal and backward to update all prototypes by Eq. (16);  
+
+> 18:
+
+end for  
+
+> 19:
+
+end for 
+
+contribution by assigning soft weights that reflect their relative matching confidence. Specifically, let {sij = Sim( pi, p j ) |
+
+j ∈ J i} denote the raw similarities of the reliable candidates. We compute normalized weights using a temperature-scaled softmax: 
+
+wij = exp( sij /τ w)
+
+P 
+
+> j′∈J i
+
+exp( sij ′ /τ w) (11) where τw is a temperature parameter that controls the sharp-ness of weight distribution. The final output for prototype pi
+
+is a weighted positive set: Wi = {(j, w ij ) | j ∈ J i}. We apply the same computational procedure to Wvi , Win i , Wv→in i , and 
+
+Win →vi .
+
+D. Hierarchical Contrastive Learning (HCL) 
+
+During training, we perform learning in a hierarchical man-ner—from intra-camera to intra-modality, and finally to cross-modality. The positive pairs used in training are pre-computed at the beginning of each epoch via the HCPA module described above. For each visible or infrared training batch Bv(in ),we randomly select C cameras, and within each camera, we sample P complete tracklets. For each tracklet, we further randomly select S sub-tracklets for training, resulting in a batch-size of Bv(in ) = C ×P ×S. Next, we take a visible sub-tracklet training feature qvi ∈ Bv as an example to illustrate the computation of each loss term. For the infrared modality, the corresponding losses can be derived symmetrically using an analogous approach. Ultimately, each loss term is the sum of the losses computed over Bv and Bin .
+
+Intra-Camera Loss. We first calculate intra-camera loss as the basic loss function to encourage consistency among sub-tracklets belonging to the same prototype within a single camera view: 
+
+Lvic = − 1
+
+Bv
+
+X 
+
+> qvi∈Bv
+
+log exp( qvi (pvi )⊤/τ )
+
+P 
+
+> j∈C i
+
+exp( qvi (pvk)⊤/τ ) (12) where pvi denotes the prototype feature corresponding to the sub-tracklet feature qvi and Ci denotes the set of all prototypes belonging to the same camera as qvi . τ is the temperature parameter. 
+
+Intra-Modality Cross-Camera Loss. After the model has learned person identities within each camera, we extend the loss to intra-modality cross-camera alignment, aiming to re-duce the distance between qvi and its cross-camera positive prototypes: 
+
+Limcc = − 1
+
+Bv
+
+X 
+
+> qvi∈B
+
+X  
+
+> pvj∈J vi
+
+wij · log exp( qvi (pvj )⊤/τ )
+
+P 
+
+> k∈C j
+
+exp( qvi (pvk)⊤/τ )
+
+(13) The intra-modality cross-camera loss Lvintra −mod and 
+
+Lin intra −mod can be computed using the above formulation. 
+
+Cross-Modality Loss. Finally, the model achieves modality-irrelevant identity alignment by pulling the given query feature closer to its cross-modality positive prototypes. Given visible sub-tracklet query feature qvi and corresponding positive prototypes J v→in i , the cross-modality loss is computed by Lvcm =
+
+− 1
+
+Bv
+
+X 
+
+> qvi∈Bv
+
+X  
+
+> pin j∈J v→in i
+
+wij · log exp( qvi (pin j )⊤/τ )
+
+P 
+
+> k∈C j
+
+exp( qvi (pin k )⊤/τ )
+
+(14) 
+
+Hierarchical Loss Scheduling (HLS). To stabilize training and avoid premature exposure to noisy cross-cam or cross-modality matches, we adopt a hierarchical loss scheduling strategy that progressively introduces supervision signals of 7  
+
+> TABLE I COMPARISON WITH THE STATE -OF -THE -ART METHODS ON HITSZ-VCM DATASET . T HE BEST RESULTS ARE HIGHLIGHTED IN BOLD .
+
+Infrared to Visible Visible to Infrared Method Venue Type R1 R5 R10 mAP R1 R5 R10 mAP Supervised LBA [60] ICCV-21 Image 46.38 65.29 72.23 30.69 49.30 69.27 75.90 32.38 DDAG [61] ECCV-20 Image 54.62 69.79 76.05 39.26 59.03 74.64 79.53 41.50 CAJ [62] ICCV-21 Image 56.59 73.49 79.52 41.49 60.13 74.62 79.86 42.81 MTMML [13] CVPR-22 Video 63.74 76.88 81.72 45.31 64.54 78.96 82.98 47.69 IBAN [56] TCSVT-23 Video 65.03 78.34 82.98 48.77 69.58 81.51 85.43 50.96 SADSTRM [63] IJMLC-25 Video 65.31 77.86 82.66 49.49 67.66 80.74 85.13 51.76 ScRL [64] PR-25 Video 71.20 83.20 87.40 52.90 73.30 84.40 87.70 53.00 FA-Net [57] TIP-25 Video 68.13 79.65 84.01 51.15 70.01 82.11 85.98 52.46 SIMFGA [58] IVC-25 Video 75.55 84.16 87.33 64.91 79.80 87.98 90.66 67.62 STHF [59] TCSVT-26 Video 70.40 81.60 86.20 56.20 73.50 83.70 87.00 58.60 Unsupervised C-Contrast [65] ACCV-22 Image 10.34 21.43 27.45 7.15 11.18 23.89 28.43 8.21 ADCA [17] MM-22 Image 15.28 25.45 32.69 13.17 16.53 28.29 36.69 14.93 SCA-RCP [36] TKDE-24 Image 17.47 29.75 36.67 13.21 18.52 30.62 37.32 13.70 PGM [34] CVPR-23 Image 19.89 33.45 40.64 17.60 20.93 35.30 41.04 18.11 SDCL [37] CVPR-24 Image 20.35 33.74 41.90 19.21 21.43 36.74 41.60 18.74 TAUDL [51] ECCV-18 Video 29.10 45.38 52.79 22.64 30.42 46.79 53.28 23.98 UTAL [19] TPAMI-19 Video 33.56 47.82 55.02 25.94 34.67 48.76 56.16 26.85 SRC [54] TMM-22 Video 39.93 56.78 62.90 30.79 40.12 57.01 63.69 31.09 UFCS [66] IoTJ-25 Video 42.98 58.01 67.73 33.90 44.57 59.26 68.41 35.20 DRMPCL [55] Neurocomput-25 Video 44.48 59.79 67.59 34.23 45.12 60.78 68.20 37.31 HiTPro (ours) - Video 56.58 70.85 76.08 44.27 57.98 71.28 77.39 45.70 
+
+increasing difficulty. The total loss at epoch e is formulated by: 
+
+Ltotal (e) = Lic + I[e ≥ eintra ] · L imcc + I[e ≥ ecross ] · L cm 
+
+(15) where I(·) denotes the indicator function, equal to 1 if the condition is true and 0 otherwise. eintra and ecross denote the epoch at which the computation of Lintra −mod and 
+
+Lcross −mod begin, respectively. 
+
+Prototype Update Strategy. Inspired by memory-bank based methods such as Cluster-Contrast [65], we update the tracklet prototypes using the sub-tracklet features during the back-propagation process. Each sub-tracklet feature con-tributes not only to its own prototype but also to all reliably associated positive prototypes identified by the HCPA module. Specifically, given a visible sub-tracklet feature qvi , we update all these prototypes via exponential moving average: 
+
+pvi ← (1 − α) · pvi + α · qvi
+
+pvj ← (1 − α) · pvj + α · qvi , ∀j ∈ J vi
+
+pin j ← (1 − α) · pin j + α · qvi , ∀j ∈ J v→in i
+
+(16) where α is the momentum coefficient. This strategy keeps prototypes aligned with the evolving feature space of the encoder and actively mitigates cross-camera and cross-modal discrepancies. The overall training algorithm proceeds as Al-gorithm 1. IV. E XPERIMENTS 
+
+A. Datasets and Evaluation Metric 
+
+HITSZ-VCM [13] is the first large-scale dataset that jointly incorporates video tracklets and dual visible-infrared modalities. The dataset was collected using 12 visible and 12 corresponding infrared cameras, capturing pedestrian tra-jectories across diverse indoor and outdoor scenes including passageways, playgrounds, and gardens. It contains 927 unique identities, with a total of 463,259 frames organized into 21,863 tracklets by default (11,785 in the visible modality and 10,078 in the infrared modality). The original author split the training set into 11,061 video sequences corresponding to 500 distinct identities, whereas the test set consists 10,802 video sequences from 427 identities.In this work, for the purpose of unsupervised learning, we do not adopt the original authors’ training set partitioning strategy for tracklet segmentation. Instead, we preserve the continuous trajectory of the same pedestrian within each camera while discarding their identity labels to fulfill the objective of unsupervised learning, resulting in a training set of 1481 visible tracklets and 1445 infrared tracklets of 500 identities. The test set remains unchanged. 
+
+BUPTCampus [14] is a large-scale, video-based visible-infrared person re-identification dataset which is collected using 6 binocular dual-modality cameras that simultaneously record RGB and infrared images of individuals. The dataset contains 3,080 unique identities, totaling 1,869,066 images and is organized into 16,826 video sequences. Following the same protocol as HITSZ-VCM, we retain complete tracklets in the training set, resulting in a total of 2,335 visible and 2,335 infrared trajectories, covering 1,000 distinct identities. This work focuses on unsupervised video person re-identification and therefore does not utilize the auxiliary annotations pro-vided in this dataset. The Cumulative Matching Characteristics (CMC) and mean Average Precision (mAP) are employed as evaluation metrics. 8
+
+B. Implementation Details 
+
+The experiments are conducted using a single 24G RTX 4090 GPU and the algorithm are based on Pytorch. SGD is employed as optimizer with lr=0.00035, momentum=0.9 and learning rate is decayed to 0.1 of its initial value every 20 epochs. The total training epochs etotal is 60, and for each epoch the training iters I is 300. For both training and feature extraction, we adhere to the original dataset configura-tions: we set seq_len=6 for HITSZ-VCM and seq_len=10 for BUPTCampus. We resized each image to 288 × 144 and data augmentation methods such as Padding, RandomCrop, Ran-domHorizontalFlip, ChannelRandomErasing and ChannelEx-change [62] are employed for training images. For ICTP module, the number of sub-tracklets K is set to 4. For HCPA module, τs and τw is set to 0.1. ρinit and ρf inal is set to 0.99 and 0.90, respectively. During HCL training stage, each batch contains both visible and infrared modalities with 2 cameras × 2 full tracklet × 2 sub-tracklets (which means 
+
+B(v(in ) = 2 × 2 × 2 = 8 ). Temperature τ = 0 .05 . Momentum 
+
+α = 0 .2. eintra and ecross is set to 5, 15, respectively. 
+
+C. Comparison with the state-of-the-art methods 
+
+We conduct a comprehensive comparison between our pro-posed method and current state-of-the-art (SOTA) approaches on HITSZ-VCM and BUPTCampus datasets, including su-pervised methods and unsupervised methods. These methods can be generally categorized into image-based methods and video-based methods. For cross-modal, image-level unsuper-vised methods such as PGM [34] , we adapt them to video dataset by replacing image features with averaged video frame features. Since no existing unsupervised cross-modal video-level learning methods are available, we adapt several single-modal unsupervised video learning approaches , such as UTAL [19], UFCS [66], to the cross-modal setting. The experimental results on HITSZ-VCM are shown in Table. I. It is obvious that The proposed HiTPro method in this work significantly outperforms other unsupervised learning approaches and achieves performance that is comparable to or even surpasses that of several supervised learning methods. Specifically,under infrared to visible mode, our method out-performs the second-best unsupervised approach by 12.10% in Rank-1 accuracy and 8.04% in mAP. For image-based unsu-pervised methods, the lack of video-level feature modeling ca-pability—coupled with their reliance on pseudo-labels gener-ated by image clustering algorithms—leads to sub-optimal per-formance on unsupervised cross-modal video datasets. Video-based unsupervised learning methods, such as UFCS [66], DRMPCL [55], achieve modest improvements in accuracy. However, they still underperform compared to our method when applied to cross-modal datasets. Our method achieves consistently strong performance under both visible-to-infrared and infrared-to-visible evaluation settings, maintaining state-of-the-art results. The results confirm that the proposed HiTPro learning framework achieves significant improvements over existing solutions, particularly in the demanding unsupervised video-based cross-modal setting. We also conduct experiments on the newly proposed BUPT-Campus dataset, with results reported in Table II. Our method also achieves the best performance under unsupervised mode, reporting 42.91% Rank-1 accuracy and 41.78% mAP under infrared to visible mode, outperforming the second-best ap-proach by 19.03% in Rank-1 accuracy and 16.66% in mAP. It even surpass several supervised image-based methods in the process. The absolute performance on BUPTCampus is moderately lower than on HITSZ-VCM, primarily due to its larger cross-modality gap and more dynamic scene variations. Despite these challenges, HiTPro maintains a clear margin over all baselines, demonstrating its robustness in realistic and demanding environments. Overall, these results underscore that our proposed framework generalizes well beyond a single benchmark and sets a new state of the art for unsupervised video-based visible-infrared person re-identification. 
+
+D. Ablation study 
+
+In this section, we conduct ablation studies on the HITSZ-VCM dataset to evaluate the individual effectiveness of each component in the proposed method. The results are shown in Table. III. The baseline model employs a standard AGW [2] backbone based on ResNet-50 without temporal modeling. All other settings in these experiments are kept consistent with the optimal configuration. During training, it also incorporates the Cluster-Contrast [65] framework, a clustering-based unsuper-vised ReID learning paradigm. As shown in the first row of the table, conventional unsupervised approaches based on image-level features and clustering perform poorly on cross-modal video ReID, achieving only a Rank-1 accuracy of 10.73% under infrared to visible mode. 
+
+Effectiveness of TFE. We first investigate the contribution of the Temporal-aware Feature Encoder (TFE) to the overall model. By comparing experiments index 1 vs. 2 and 3 vs. 4 in Table III, we observe that the TFE module significantly improves the model’s video re-identification accuracy over the baseline. We further investigate the role and necessity of the individual components within the TFE, with results presented in Table IV. Incorporating the Transformer-based Temporal Encoder (TTE) yields a substantial gain, boost-ing Rank-1 to 50.10% and mAP to 38.13% under infrared to visible mode, as shown in index 2. This confirms that modeling long-range dependencies across frames effectively captures motion patterns and occlusion dynamics, which are crucial for video-based Re-ID. Besides, adding the Adaptive Frame-weighting Module (AFM) alone also yields a notable improvement, increasing Rank-1 accuracy by 8.68% compared to the baseline (as show in index 3). This component allows the network to dynamically emphasize informative frames while suppressing noisy or occluded ones, leading to more robust and discriminative video-level embeddings. The combination of these modules achieves the best overall performance (as shown in index 4), demonstrating the synergistic effectiveness of the proposed modules in extracting discriminative features for video-based person re-identification. 
+
+Effectiveness of ICTP. Next, we evaluate the contribution of the proposed Intra-Camera Temporal Prototyping (ICTP) 9
+
+TABLE II COMPARISON WITH THE STATE -OF -THE -ART METHODS ON BUPTC AMPUS DATASET . T HE BEST RESULTS ARE HIGHLIGHTED IN BOLD .Infrared to Visible Visible to Infrared Method Venue Type R1 R5 R10 mAP R1 R5 R10 mAP Supervised  LBA [60] ICCV-21 Image 32.09 54.85 65.11 32.93 39.07 58.70 66.48 37.06 CAJ [62] ICCV-21 Image 40.49 66.79 73.32 41.46 45.00 70.00 77.04 43.61 DEEN [27] CVPR-23 Image 49.81 71.64 80.97 48.59 53.70 74.81 80.74 50.43 MTMML [13] CVPR-22 Video 40.64 57.66 63.52 38.13 42.97 59.57 66.02 42.97 SADSTRM [63] IJMLC-25 Video 54.21 72.03 80.27 51.65 53.12 74.80 81.54 49.65 SIMFGA [58] IVC-25 Video 55.05 73.75 80.46 54.57 54.88 76.56 82.62 51.76 Unsupervised ADCA [17] MM-22 Image 1.87 6.90 11.19 4.39 2.96 7.22 11.11 4.84 SCA-RCP [36] TKDE-24 Image 2.43 5.60 8.96 3.43 3.89 8.52 14.26 5.41 PGM [34] CVPR-23 Image 4.10 8.77 14.74 5.51 5.37 13.52 19.63 8.16 SDCL [37] CVPR-24 Image 4.91 9.22 15.68 6.02 5.87 16.71 23.45 9.56 TAUDL [51] ECCV-18 Video 18.84 32.46 39.55 19.76 17.41 34.44 40.37 19.93 UTAL [19] TPAMI-19 Video 19.03 33.40 39.74 22.64 30.42 46.79 53.28 23.98 UFCS [66] IoTJ-25 Video 21.46 38.81 46.27 23.27 23.70 38.52 46.30 24.10 DRMPCL [55] Neurocomput-25 Video 23.88 40.30 46.64 25.12 24.63 40.74 48.89 25.51 HiTPro (ours) - Video 42.91 62.13 69.22 41.78 42.22 65.37 71.30 41.05 
+
+TABLE III EFFECTIVENESS OF THE EACH COMPONENTS OF THE PROPOSED HITP RO ON THE HITSZ-VCM DATASET .Components Infrared to Visible Visible to Infrared index Baseline TFE ICTP HCPA&HCL R1 mAP R1 mAP 1 ✓ 10.73 6.70 11.24 7.05 2 ✓ ✓ 19.77 15.16 21.45 17.91 3 ✓ ✓ 20.64 15.89 22.09 18.83 4 ✓ ✓ ✓ 31.62 21.55 33.02 22.89 5 ✓ ✓ ✓ ✓ 56.58 44.27 57.98 45.70 
+
+Fig. 4. Influence of K on (a) HITSZ-VCM dataset and (b) BUPTCAMPUS dataset under infrared to visible test mode. Rank-1 and mAP are reported. TABLE IV EFFECTIVENESS OF THE EACH COMPONENTS OF THE TEMPORAL -AWARE 
+
+FEATURE ENCODER (TFE) ON THE HITSZ-VCM DATASET .Components Infrared to Visible Visible to Infrared index Baseline TTE AFM R1 mAP R1 mAP 1 ✓ 40.13 31.28 49.36 30.02 2 ✓ ✓ 50.10 38.13 51.25 39.16 3 ✓ ✓ 48.81 37.61 49.13 36.54 4 ✓ ✓ ✓ 56.58 44.27 57.98 45.70 
+
+module. The baseline model processes video features using conventional clustering methods, while ICTP module construct trajectory-level prototypes by averaging features from sub-tracklets within a single camera view, thereby providing re-liable pseudo-identities for self-supervised learning. Adding the ICTP module alone means that only the Intra-Camera loss Lic is incorporated during training. By comparing index 3 vs. 1 and index 4 vs. 2 in Table III, we observe that the introduction of ICTP delivers a noticeable performance boost—incorporating ICTP alone brings approximately a 10% gain in Rank-1 accuracy. This improvement demonstrates that ICTP effectively leverages the identity-disjoint property of intra-camera tracklets to form stable and discriminative 10                 
+
+> TABLE V THE EFFECTIVENESS OF THE COMPONENTS IN HCPA PROCESS AND THE INDIVIDUAL LOSS TERMS IN THE HCL TRAINING STAGE ON THE HITSZ-VCM
+> DATASET . ’DTS’ DENOTES DYNAMIC THRESHOLD STRATEGY . ’SWA’ DENOTES SOFT WEIGHT ASSIGNMENT . ’HLS’ DENOTES HIERARCHICAL LOSS
+> SCHEDULING .
+
+Components Infrared to Visible Visible to Infrared index Lic Limcc Lcm HLS DTS SWA R1 mAP R1 mAP 1 ✓ 31.62 21.55 33.02 22.89 2 ✓ ✓ 40.01 34.44 45.89 35.46 3 ✓ ✓ 15.05 10.77 15.64 11.03 4 ✓ ✓ ✓ 45.61 38.33 45.92 36.87 5 ✓ ✓ ✓ ✓ 50.96 39.58 51.21 40.14 6 ✓ ✓ ✓ ✓ ✓ 54.38 42.18 55.12 42.36 7 ✓ ✓ ✓ ✓ ✓ ✓ 56.58 44.27 57.98 45.70   
+
+> Fig. 5. Influence of K on (a) HITSZ-VCM dataset and (b) BUPTCAMPUS dataset under infrared to visible test mode. Rank-1 and mAP are reported.
+> Fig. 6. Cosine distance distributions of 40,000 randomly sampled positive (intra-class, blue) and negative (inter-class, red) pairs on the test set. Left: baseline model. Right: our HiTPro.
+
+prototype representations. More importantly, ICTP serves as a foundational component for the subsequent HCPA matching process and the HCL training paradigm. More importantly, ICTP serves as a foundational component for the subsequent HCPA process and the HCL training paradigm. 
+
+Effectiveness of HCPA and HCL. We finally evaluate the effectiveness of the proposed Hierarchical Cross Prototype Alignment (HCPA) and Hierarchical Contrastive Learning (HCL) modules. Due to the strong coupling and high synergy between the two modules, we evaluate their performance together as an integrated component. By Comparing index 4 and 5 in Table III, after incorporating HCPA and HCL, the model achieves a significant performance gain: Rank-1 accuracy improves by 24.96% and mAP increases by 22.72% under infrared to visible mode compared to using only the ICTP learning scheme. This clearly demonstrates that unsuper-vised contrastive learning—from cross-camera to cross-modal alignment—is key to the model’s performance improvement. To further evaluate the effectiveness of individual components in HCPA and the synergistic contribution of the loss terms in HCL, we conduct more fine-grained ablation studies on the HITSZ-VCM dataset, the results are shown in Table V. By comparing index 2 vs. 1, it can be observed that incorporating the Intra-Modality Cross-Camera Loss Limcc leads to a sig-nificant performance gain compared to performing contrastive learning only within individual cameras, demonstrating the importance of intra-modality cross-camera learning. However, as shown by comparing index 3 vs. 1, directly incorporating the cross-modality loss Lcm alone actually degrades model performance. This is likely because the modality gap is significantly larger than the inter-camera variation; thus, intro-ducing cross-modal learning without intra-modality guidance in training introduces substantial noise, leading to a sharp decline in the precision of positive samples. Comparing index 4 vs. 3, the model achieves a significant performance gain after jointly incorporating the Limcc and Lcm together, with Rank-1 accuracy improving by 30.56%. This demonstrates that intra-modal alignment is an indispensable step for effective cross-modal identity alignment. Incorporating Hierarchical Loss Scheduling (HLS) further improves the model accuracy, as shown in index 5. The introduction of Dynamic Threshold Strategy (DTS) enhances the reliability of positive samples during early training and gradually incorporates hard positives in later stages to improve model performance while mitigating noise from falsely labeled positives. Meanwhile, the Soft Weight Assignment (SWA) module further assigns higher weights to more reliable positive samples. As shown in Index 6 and 7, both modules contribute Rank-1 accuracy gains of 11   
+
+> Fig. 7. t-SNE visualization of tracklet features for 20 randomly selected identities from the test set. Each color represents a unique identity; circles denote infrared features and squares denote visible features. (a) Initial embedding before training. (b) Features learned by baseline method. (c) Features learned by our HiTPro, achieving compact and modality-invariant identity clusters.
+> Fig. 8. Top-5 Retrieval results of (a) Baseline and (b) HiTPro method on HITSZ-VCM dataset. Correct matches are highlighted with green boxes, while incorrect retrievals are marked in red boxes.
+
+approximately 2–3%. Together, they validate that explicitly modeling the uncertainty of unsupervised matches, through adaptive mining and confidence-aware weighting, is essential for robust cross-modality alignment. 
+
+E. Parameter Analysis 
+
+Influence of sub-tracklets number K. To further in-vestigate the optimal value of number of sub-tracklets K proposed in ICTP, we conduct parameter ablation study on both the HITSZ-VCM and BUPTCAMPUS dataset. As shown in Figure 4, we evaluate the performance of our HiTPro framework on both HITSZ-VCM and BUPTCampus datasets under varying values of K from 2 to 8. On HITSZ-VCM, performance initially increases with K, peaking at K=4, then gradually declines as K increases further. This suggests that partitioning a tracklet into too few segments may fail to capture fine-grained temporal variations, while overly fine segmentation introduces noise and reduces feature stability due to shorter sub-tracklets. The optimal K=4 strikes a balance between temporal granularity and representation robustness. On BUPTCampus, the trend is similar: performance improves from K=2 to K=5, before dropping slightly for larger. The consistent peak around K=4 or K=5 across both datasets indicates that moderate temporal partitioning is crucial for effective prototype learning. These results demonstrate that the ICTP module is sensitive to K , but remains stable within a reasonable range. We therefore set K=4 as the default in all experiments, which provides the best trade-off between temporal modeling fidelity and feature consistency. 
+
+Influence of eintra and ecross . To evaluate the effectiveness of our hierarchical training strategy, we conduct ablation experiments on the HITSZ-VCM dataset to analyze the impact of the starting epochs for intra-modality cross-camera learning (eintra ) and cross-modal learning ( ecross ). Specifically, we vary the initiation epoch of these two phases and measure the final performance. As shown in Figure 5, the model 12 
+
+achieves its highest accuracy when the eintra is set to 5, which suggests that intra-modality cross-camera learning can start at an earlier stage, as the inter-camera discrepancies are relatively small. However, initiating cross-modality alignment too early (before epoch 10) leads to a noticeable drop in accuracy due to unaligned intra-modality representations. Delayed cross-modality learning limits the model’s ability to fully exploit cross-spectrum information, causing a gradual decline. We therefore select ecross = 15 as the optimal epoch to start cross-modality learning. 
+
+F. Visualization 
+
+Feature Distance Distribution. To validate the effective-ness of our proposed HiTPro framework in learning discrim-inative and modality-invariant representations, we conduct a visualization analysis on the distance distribution between feature pairs. Specifically, we randomly sample 40,000 positive and negative pairs from the test set and compute their cosine distances. The resulting density distributions are illustrated in Figure 6. The baseline model exhibits substantial overlap be-tween intra-class (blue) and inter-class (red) cosine distances, with a small mean gap, indicating weak discriminability. In contrast, after training with our method, the distributions be-come well-separated. The improved class separability directly supports our method’s superior retrieval performance and confirms that HiTPro effectively learns a compact, identity-preserving embedding space without relying on pseudo-labels. 
+
+TSNE Distribution. To further illustrate the evolution of feature representations, we visualize the embedding space using t-SNE on 20 randomly selected identities from the test set. In the plot, each color denotes a unique identity, while circle markers represent infrared tracklet feature and squares denote visible (RGB) tracklet feature. As shown in Figure 7, (a) the initial distribution reveals no clear identity clustering, with features scattered across the space regardless of modality. In (b), the baseline model, which employing conventional clustering-based contrastive learning, achieves partial intra-modal aggregation, where same-identity instances within RGB or IR are grouped to some extent. However, a significant cross-modality gap remains, as corresponding identities from different modalities are still separated, indicating limited alignment capability. In contrast, (c) our HiTPro framework successfully bridges this gap: features of the same person are tightly clustered across both modalities, forming compact and well-separated identity manifolds. This demonstrates that HiTPro effectively learns modality-invariant representations by aligning sub-tracklet features with identity prototypes in a hierarchical and unsupervised manner. 
+
+Retrieval Results Analysis We present qualitative retrieval results on the test set by visualizing 6 frames sampled from each query tracklet of HITSZ-VCM dataset. As shown in Figure 8, we present the Rank-5 results under dual-modal re-trieval, where correct matches are highlighted with green boxes and incorrect matches with red boxes. The baseline frequently suffers from retrieval failures caused by similar appearances, poses, or excessive modality discrepancies. These errors reveal its vulnerability to superficial cues and insufficient cross-modal alignment. In contrast, HiTPro retrieves the correct identity across under both search mode, even in challenging cases such as low-texture IR imaging, or drastic viewpoint shifts. The results confirm that HiTPro effectively disentangles identity-relevant features from modality- and pose-dependent noise, leading to more reliable video-based cross-modality retrieval. V. C ONCLUSION 
+
+In this work, we formulate and address the problem of unsu-pervised video-based visible-infrared person re-identification, a practical yet underexplored task that requires joint mod-eling of cross-modality gaps and spatio-temporal dynamics in unlabeled videos. To tackle this problem, we propose HiTPro, a clustering-free framework without explicit pseudo-label assignment that leverages video structure through aefficient Temporal-aware Feature Encoder (TFE) to obtain tracklet representations. It then employs Intra-Camera Tracklet Prototyping (ICTP) for identity exclusivity, followed by Hi-erarchical Cross-Prototype Alignment (HCPA) with dynamic thresholding and soft weighting to reliably mine cross-modal positives. Finally, Hierarchical Contrastive Learning (HCL) enables progressive optimization from intra-camera to cross-modality alignment. Extensive experiments on HITSZ-VCM and BUPTCampus show that HiTPro achieves state-of-the-art performance among unsupervised methods. Ablation studies further validate the synergistic effectiveness of the proposed modules in our framework. Nevertheless, a gap remains com-pared to supervised approaches, and performance may degrade under poor tracking or severe occlusion. We hope HiTPro serves as a strong baseline for unsupervised video-based VI-ReID and inspires future work on robust prototype-driven learning in cross-modal retrieval, such as handling imperfect tracklets or extending the paradigm to other modalities like text-to-image or audio-visual tasks. REFERENCES [1] N. Huang, J. Liu, Y. Miao, Q. Zhang, and J. Han, “Deep learning for visible-infrared cross-modality person re-identification: A comprehen-sive review,” Information Fusion , 2022. [2] M. Ye, J. Shen, G. Lin, T. Xiang, L. Shao, and S. C. Hoi, “Deep learning for person re-identification: A survey and outlook,” IEEE transactions on pattern analysis and machine intelligence , vol. 44, no. 6, pp. 2872– 2893, 2021. [3] Q. Leng, M. Ye, and Q. Tian, “A survey of open-world person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 30, no. 4, pp. 1092–1108, 2019. [4] A. Wu, W.-S. Zheng, H.-X. Yu, S. Gong, and J. Lai, “Rgb-infrared cross-modality person re-identification,” in Proceedings of the IEEE/CVF international conference on computer vision , 2017, pp. 5390–5399. [5] Z. Feng, J. Lai, and X. Xie, “Learning modality-specific representations for visible-infrared person re-identification,” IEEE Transactions on Im-age Processing , vol. 29, pp. 579–590, 2019. [6] H. Lu, X. Zou, and P. Zhang, “Learning progressive modality-shared transformers for effective visible-infrared person re-identification,” in                 
+
+> Proceedings of the AAAI conference on artificial intelligence , vol. 37, no. 2, 2023, pp. 1835–1843. [7] Y. Lu, Y. Wu, B. Liu, T. Zhang, B. Li, Q. Chu, and N. Yu, “Cross-modality person re-identification with shared-specific feature transfer,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 13 379–13 389. [8] X. Zhong, T. Lu, W. Huang, M. Ye, X. Jia, and C.-W. Lin, “Grayscale enhancement colorization network for visible-infrared person re-identification,” IEEE transactions on circuits and systems for video technology , vol. 32, no. 3, pp. 1418–1430, 2021. 13
+
+[9] J. Liu, W. Song, C. Chen, and F. Liu, “Cross-modality person re-identification via channel-based partition network,” Applied intelligence ,vol. 52, no. 3, pp. 2423–2435, 2022. [10] J. Qi, T. Liang, W. Liu, Y. Li, and Y. Jin, “A generative-based image fusion strategy for visible-infrared person re-identification,” IEEE Trans-actions on Circuits and Systems for Video Technology , vol. 34, no. 1, pp. 518–533, 2023. [11] H. Liu, Z. Jie, K. Jayashree, M. Qi, J. Jiang, S. Yan, and J. Feng, “Video-based person re-identification with accumulative motion context,” IEEE transactions on circuits and systems for video technology , vol. 28, no. 10, pp. 2788–2802, 2017. [12] X. Chang, T. M. Hospedales, and T. Xiang, “Multi-level factorisation net for person re-identification,” in Proceedings of the IEEE conference on computer vision and pattern recognition , 2018, pp. 2109–2118. [13] X. Lin, J. Li, Z. Ma, H. Li, S. Li, K. Xu, G. Lu, and D. Zhang, “Learning modal-invariant and temporal-memory for video-based visible-infrared person re-identification,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2022, pp. 20 973–20 982. [14] Y. Du, C. Lei, Z. Zhao, Y. Dong, and F. Su, “Video-based visible-infrared person re-identification with auxiliary samples,” IEEE Transactions on Information Forensics and Security , vol. 19, pp. 1313–1325, 2023. [15] J. Shi, X. Yin, Y. Chen, Y. Zhang, Z. Zhang, Y. Xie, and Y. Qu, “Multi-memory matching for unsupervised visible-infrared person re-identification,” in European Conference on Computer Vision , 2024, pp. 456–474. [16] B. Yang, J. Chen, C. Chen, and M. Ye, “Dual consistency-constrained learning for unsupervised visible-infrared person re-identification,” IEEE Transactions on Information Forensics and Security , vol. 19, pp. 1767– 1779, 2023. [17] B. Yang, M. Ye, J. Chen, and Z. Wu, “Augmented dual-contrastive aggregation learning for unsupervised visible-infrared person re-identification,” in Proceedings of the 30th ACM International Conference on Multimedia , 2022, pp. 2843–2851. [18] M. Ester, H.-P. Kriegel, J. Sander, X. Xu et al. , “A density-based algorithm for discovering clusters in large spatial databases with noise,” in kdd , 1996, pp. 226–231. [19] M. Li, X. Zhu, and S. Gong, “Unsupervised tracklet person re-identification,” IEEE transactions on pattern analysis and machine intelligence , vol. 42, no. 7, pp. 1770–1782, 2019. [20] M. Ye, X. Lan, J. Li, and P. C. Yuen, “Hierarchical discriminative learning for visible thermal person re-identification,” in Proceedings of the AAAI conference on artificial intelligence , 2018, pp. 7501–7508. [21] M. Ye, X. Lan, Q. Leng, and J. Shen, “Cross-modality person re-identification via modality-aware collaborative ensemble learning,” IEEE Transactions on Image Processing , vol. 29, pp. 9387–9399, 2020. [22] C. Chen, M. Ye, M. Qi, J. Wu, J. Jiang, and C.-W. Lin, “Structure-aware positional transformer for visible-infrared person re-identification,” IEEE Transactions on Image Processing , vol. 31, pp. 2352–2364, 2022. [23] Z. Chai, Y. Ling, Z. Luo, D. Lin, M. Jiang, and S. Li, “Dual-stream transformer with distribution alignment for visible-infrared person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 33, no. 11, pp. 6764–6776, 2023. [24] K. Jiang, T. Zhang, X. Liu, B. Qian, Y. Zhang, and F. Wu, “Cross-modality transformer for visible-infrared person re-identification,” in 
+
+European conference on computer vision , 2022, pp. 480–496. [25] H. Liu, D. Xia, and W. Jiang, “Towards homogeneous modality learning and multi-granularity information exploration for visible-infrared person re-identification,” IEEE Journal of selected topics in signal processing ,vol. 17, no. 3, pp. 545–559, 2023. [26] Q. Zhang, C. Lai, J. Liu, N. Huang, and J. Han, “Fmcnet: Feature-level modality compensation for visible-infrared person re-identification,” in 
+
+Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2022, pp. 7349–7358. [27] Y. Zhang and H. Wang, “Diverse embedding expansion network and low-light cross-modality benchmark for visible-infrared person re-identification,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2023, pp. 2153–2162. [28] H. Liu, Z. Li, J. Gu, M. Wang, Q. J. Wu, and W. Jiang, “Stochastic style perturbation modelling for visible-infrared person re-identification with severely modality imbalance,” Neural Networks , p. 108206, 2025. [29] Y. Zhang, H. Wang, Y. Lu, Y. Yan, and X. Li, “Frequency domain nuances mining for visible-infrared person re-identification,” IEEE Transactions on Information Forensics and Security , 2025. [30] H. Gu, X. Yang, R. Lu, L. Pu, S. Han, and M. Wu, “Discovering multi-frequency embedding for visible-infrared person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , 2025. [31] T. Yu, D. Cheng, H. Jiang, L. Chen, J. Qian, Q. Kou, and G. Zhai, “Wavelet-based frequency feature learning for visible-infrared person re-identification,” IEEE Transactions on Consumer Electronics , 2026. [32] W. Liang, G. Wang, J. Lai, and X. Xie, “Homogeneous-to-heterogeneous: Unsupervised learning for rgb-infrared person re-identification,” IEEE Transactions on Image Processing , vol. 30, pp. 6392–6407, 2021. [33] J. Wang, Z. Zhang, M. Chen, Y. Zhang, C. Wang, B. Sheng, Y. Qu, and Y. Xie, “Optimal transport for label-efficient visible-infrared person re-identification,” in European conference on computer vision , 2022, pp. 93–109. [34] Z. Wu and M. Ye, “Unsupervised visible-infrared person re-identification via progressive graph matching and alternate learning,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,2023, pp. 9548–9558. [35] Z. Pang, C. Wang, L. Zhao, Y. Liu, and G. Sharma, “Cross-modality hierarchical clustering and refinement for unsupervised visible-infrared person re-identification,” IEEE Transactions on circuits and systems for video technology , vol. 34, no. 4, pp. 2706–2718, 2023. [36] Z. Li, H. Liu, X. Peng, and W. Jiang, “Inter-intra modality knowledge learning and clustering noise alleviation for unsupervised visible-infrared person re-identification,” Transactions on Knowledge and Data Engi-neering , vol. 36, no. 8, pp. 3934–3947, 2024. [37] B. Yang, J. Chen, and M. Ye, “Shallow-deep collaborative learning for unsupervised visible-infrared person re-identification,” in Proceedings of the IEEE/CVF international conference on computer vision , 2024, pp. 16 870–16 879. [38] X. Yin, J. Shi, Z. Zhang, Y. Xie, and Y. Qu, “Adaptive pseudo-label purification and debiasing for unsupervised visible-infrared person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , 2025. [39] N. McLaughlin, J. M. Del Rincon, and P. Miller, “Recurrent convolu-tional network for video-based person re-identification,” in Proceedings of the IEEE conference on computer vision and pattern recognition ,2016, pp. 1325–1334. [40] Z. Zhou, Y. Huang, W. Wang, L. Wang, and T. Tan, “See the forest for the trees: Joint spatial and temporal recurrent neural networks for video-based person re-identification,” in Proceedings of the IEEE conference on computer vision and pattern recognition , 2017, pp. 4747–4756. [41] X. Gu, H. Chang, B. Ma, H. Zhang, and X. Chen, “Appearance-preserving 3d convolution for video-based person re-identification,” in 
+
+European conference on computer vision . Springer, 2020, pp. 228–243. [42] J. Li, S. Zhang, and T. Huang, “Multi-scale 3d convolution network for video based person re-identification,” in Proceedings of the AAAI conference on artificial intelligence , vol. 33, no. 01, 2019, pp. 8618– 8625. [43] Y. Wang, P. Zhang, S. Gao, X. Geng, H. Lu, and D. Wang, “Pyramid spatial-temporal aggregation for video-based person re-identification,” in Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 12 026–12 035. [44] G. Chen, Y. Rao, J. Lu, and J. Zhou, “Temporal coherence or temporal motion: Which is more critical for video-based person re-identification?” in European conference on computer vision . Springer, 2020, pp. 660– 676. [45] R. Hou, H. Chang, B. Ma, S. Shan, and X. Chen, “Temporal complemen-tary learning for video person re-identification,” in European conference on computer vision . Springer, 2020, pp. 388–405. [46] J. Yang, W.-S. Zheng, Q. Yang, Y.-C. Chen, and Q. Tian, “Spatial-temporal graph convolutional network for video-based person re-identification,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 3289–3299. [47] Y. Fu, X. Wang, Y. Wei, and T. Huang, “Sta: Spatial-temporal attention for large-scale video-based person re-identification,” in Proceedings of the AAAI conference on artificial intelligence , vol. 33, no. 01, 2019, pp. 8287–8294. [48] Z. Ran, X. Wei, W. Liu, and X. Lu, “Multiscale aligned spatial–temporal interaction for video-based person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 34, no. 9, pp. 8536– 8546, 2024. [49] Y. Liu, Z. Yuan, W. Zhou, and H. Li, “Spatial and temporal mutual promotion for video-based person re-identification,” in Proceedings of the AAAI conference on artificial intelligence , vol. 33, no. 01, 2019, pp. 8786–8793. [50] H. Ma, C. Zhang, Z. Li, and Z. Wang, “Recursively learning fine-grained spatial–temporal features for video-based person re-identification,” En-gineering Applications of Artificial Intelligence , vol. 148, p. 110429, 2025. 14 
+
+[51] M. Li, X. Zhu, and S. Gong, “Unsupervised person re-identification by deep learning tracklet association,” in Proceedings of the European conference on computer vision (ECCV) , 2018, pp. 737–753. [52] P. Xie, X. Xu, Z. Wang, and T. Yamasaki, “Unsupervised video person re-identification via noise and hard frame aware clustering,” arXiv preprint arXiv:2106.05441 , 2021. [53] J. Qian and X. Xie, “Successive consensus clustering for unsupervised video-based person re-identification,” IEEE Signal Processing Letters ,vol. 29, pp. 822–826, 2022. [54] P. Xie, X. Xu, Z. Wang, and T. Yamasaki, “Sampling and re-weighting: Towards diverse frame aware unsupervised video person re-identification,” IEEE Transactions on Multimedia , vol. 24, pp. 4250– 4261, 2022. [55] C. Zhang, Y. Su, N. Wang, Y. Lan, T. Wang, and A. Li, “Dual represen-tation modeling and progressive contrastive learning for unsupervised video person re-identification,” Neurocomputing , vol. 645, p. 130467, 2025. [56] H. Li, M. Liu, Z. Hu, F. Nie, and Z. Yu, “Intermediary-guided bidi-rectional spatial–temporal aggregation network for video-based visible-infrared person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 33, no. 9, pp. 4962–4972, 2023. [57] X. Yang, W. Dong, X. Wang, D. Cheng, and N. Wang, “Fa-net: A feature alignment network for video-based visible-infrared person re-identification,” IEEE Transactions on Image Processing , vol. 34, pp. 8406–8420, 2025. [58] Z. Zuo, H. Li, Y. Zhang, and M. Xie, “Spatio-temporal information mining and fusion feature-guided modal alignment for video-based visible-infrared person re-identification,” Image and Vision Computing ,vol. 157, p. 105518, 2025. [59] S. Tao, S. Li, J. Ye, N. Dong, F. Li, and H. Li, “Spatial-temporal high-frequency learning for video-based visible-infrared person re-identification,” IEEE Transactions on Circuits and Systems for Video Technology , 2026. [60] H. Park, S. Lee, J. Lee, and B. Ham, “Learning by aligning: Visible-infrared person re-identification using cross-modal correspondences,” in 
+
+Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 12 046–12 055. [61] M. Ye, J. Shen, D. J. Crandall, L. Shao, and J. Luo, “Dynamic dual-attentive aggregation learning for visible-infrared person re-identification,” in European conference on computer vision , 2020, pp. 229–247. [62] M. Ye, W. Ruan, B. Du, and M. Z. Shou, “Channel augmented joint learning for visible-infrared recognition,” in Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 13 567–13 576. [63] L. Xu, H. Li, Y. Zhang, and D. Tao, “Adversarial self-attack defense and spatial-temporal relation mining for visible-infrared video person re-identification,” International Journal of Machine Learning and Cy-bernetics , vol. 16, no. 10, pp. 7843–7858, 2025. [64] S. Li, J. Leng, J. Gan, M. Mo, and X. Gao, “Shape-centered repre-sentation learning for visible–infrared person re-identification,” Pattern Recognition , vol. 167, p. 111756, 2025. [65] Z. Dai, G. Wang, W. Yuan, S. Zhu, and P. Tan, “Cluster contrast for unsupervised person re-identification,” in Proceedings of the Asian conference on computer vision , 2022, pp. 1142–1160. [66] Q. Li, M. Gao, G. Zhang, W. Zhai, and G. Jeon, “Cross-camera discriminative person association by unsupervised frame clustering and selection,” IEEE Internet of Things Journal , 2025.
