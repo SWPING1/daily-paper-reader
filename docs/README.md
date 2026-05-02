@@ -6,61 +6,47 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-01
-- 运行时间：2026-05-01 20:11:53 UTC
+- 最新运行日期：2026-05-02
+- 运行时间：2026-05-02 20:18:21 UTC
 - 运行状态：成功
-- 本次总论文数：13
-- 精读区：2
-- 速读区：11
+- 本次总论文数：8
+- 精读区：0
+- 速读区：8
 
 ### 今日简报（AI）
-今日深挖 13 篇多模态前沿，聚焦解决情感分析中的分支失衡与跨模态“言不由衷”检测。
-重点推荐通过双分支重平衡优化情感识别，以及利用语音与文本的冲突来识别反思日记中的情感失调。
-建议关注多模
-- 详情：[/202605/01/README](/202605/01/README)
+- 今日共生成 8 篇推荐（精读 0 篇，速读 8 篇）
+- 速读：《Mitigating Shared-Private Branch Imbalance via Dual-Branch Rebalancing for Multimodal Sentiment Analysis》（7.5/10）, 《ViBE: Visual-to-M/EEG Brain Encoding via Spatio-Temporal VAE and Distribution-Aligned Projection》（6.5/10）, 《Reconstruction by Generation: 3D Multi-Object Scene Reconstruction from Sparse Observations》（6.5/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202605/02/README](/202605/02/README)
 
 ### 精读区论文标签
-1. [Mitigating Shared-Private Branch Imbalance via Dual-Branch Rebalancing for Multimodal Sentiment Analysis](/202605/01/2604.25179v1-mitigating-shared-private-branch-imbalance-via-dual-branch-rebalancing-for-multimodal-sentiment-analysis)  
-   标签：评分：8.5/10、query:missing-modality
-   evidence：多模态情感分析中的共享-私有分解与模态特定证据
-2. [I'm Fine, But My Voice Isn't: Cross-Modal Affective Dissonance Detection for Reflective Journaling](/202605/01/2604.27517v1-im-fine-but-my-voice-isnt-cross-modal-affective-dissonance-detection-for-reflective-journaling)  
-   标签：评分：8.5/10、query:missing-modality
-   evidence：跨模态情感不一致检测与情绪调节
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Enhancing multimodal affect recognition in healthcare: the robustness of appraisal dimensions over labels within age groups and in cross-age generalisation](/202605/01/2604.27938v1-enhancing-multimodal-affect-recognition-in-healthcare-the-robustness-of-appraisal-dimensions-over-labels-within-age-groups-and-in-cross-age-generalisation)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：医疗保健中的多模态情感识别
-2. [Sparsity as a Key: Unlocking New Insights from Latent Structures for Out-of-Distribution Detection](/202605/01/2604.26409v1-sparsity-as-a-key-unlocking-new-insights-from-latent-structures-for-out-of-distribution-detection)  
+1. [Mitigating Shared-Private Branch Imbalance via Dual-Branch Rebalancing for Multimodal Sentiment Analysis](/202605/02/2604.25179v1-mitigating-shared-private-branch-imbalance-via-dual-branch-rebalancing-for-multimodal-sentiment-analysis)  
+   标签：评分：7.5/10、query:missing-modality
+   evidence：共享-私有分解与模态特定证据组织
+2. [ViBE: Visual-to-M/EEG Brain Encoding via Spatio-Temporal VAE and Distribution-Aligned Projection](/202605/02/2604.26218v1-vibe-visual-to-meeg-brain-encoding-via-spatio-temporal-vae-and-distribution-aligned-projection)  
    标签：评分：6.5/10、query:missing-modality
-   evidence：使用稀疏自编码器将密集特征解耦到结构化潜空间
-3. [Text-Utilization for Encoder-dominated Speech Recognition Models](/202605/01/2604.26514v1-text-utilization-for-encoder-dominated-speech-recognition-models)  
+   evidence：使用VAE重建神经响应并建立跨模态对齐。
+3. [Reconstruction by Generation: 3D Multi-Object Scene Reconstruction from Sparse Observations](/202605/02/2604.27106v1-reconstruction-by-generation-3d-multi-object-scene-reconstruction-from-sparse-observations)  
    标签：评分：6.5/10、query:missing-modality
-   evidence：模态匹配及在语音模型中利用纯文本数据
-4. [Temporal Prototyping and Hierarchical Alignment for Unsupervised Video-based Visible-Infrared Person Re-Identification](/202605/01/2604.21324v1-temporal-prototyping-and-hierarchical-alignment-for-unsupervised-video-based-visible-infrared-person-re-identification)  
+   evidence：基于生成框架的稀疏观测重建
+4. [EmoTransCap: Dataset and Pipeline for Emotion Transition-Aware Speech Captioning in Discourses](/202605/02/2604.26417v1-emotranscap-dataset-and-pipeline-for-emotion-transition-aware-speech-captioning-in-discourses)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：基于层次化时间原型的跨模态身份匹配
-5. [Context Unrolling in Omni Models](/202605/01/2604.21921v1-context-unrolling-in-omni-models)  
+   evidence：具有时间动态的语音情感描述
+5. [Attribution-Guided Multimodal Deepfake Detection via Cross-Modal Forensic Fingerprints](/202605/02/2604.26453v1-attribution-guided-multimodal-deepfake-detection-via-cross-modal-forensic-fingerprints)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：跨多种模态表示进行推理
-6. [Beyond Chain-of-Thought: Rewrite as a Universal Interface for Generative Multimodal Embeddings](/202605/01/2604.22280v1-beyond-chain-of-thought-rewrite-as-a-universal-interface-for-generative-multimodal-embeddings)  
+   evidence：取证内容的共享嵌入空间几何约束
+6. [State Beyond Appearance: Diagnosing and Improving State Consistency in Dial-Based Measurement Reading](/202605/02/2604.26614v1-state-beyond-appearance-diagnosing-and-improving-state-consistency-in-dial-based-measurement-reading)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：生成式多模态嵌入和跨模态对齐的统一框架
-7. [Robust Audio-Text Retrieval via Cross-Modal Attention and Hybrid Loss](/202605/01/2604.23323v1-robust-audio-text-retrieval-via-cross-modal-attention-and-hybrid-loss)  
+   evidence：诊断外观变化下的状态一致性
+7. [ZAYAN: Disentangled Contrastive Transformer for Tabular Remote Sensing Data](/202605/02/2604.27606v1-zayan-disentangled-contrastive-transformer-for-tabular-remote-sensing-data)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：针对噪声音频的鲁棒多模态检索框架
-8. [SMoES: Soft Modality-Guided Expert Specialization in MoE-VLMs](/202605/01/2604.23996v1-smoes-soft-modality-guided-expert-specialization-in-moe-vlms)  
+   evidence：解耦嵌入空间与动态特征掩码
+8. [LRS-VoxMM: A benchmark for in-the-wild audio-visual speech recognition](/202605/02/2604.27866v1-lrs-voxmm-a-benchmark-for-in-the-wild-audio-visual-speech-recognition)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：模态引导的专家专业化和层相关的模态融合
-9. [SaliencyDecor: Enhancing Neural Network Interpretability through Feature Decorrelation](/202605/01/2604.25315v1-saliencydecor-enhancing-neural-network-interpretability-through-feature-decorrelation)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：通过特征去相关提高归因保真度
-10. [Dual-LoRA: Parameter-Efficient Adversarial Disentanglement for Cross-Lingual Speaker Verification](/202605/01/2604.26327v2-dual-lora-parameter-efficient-adversarial-disentanglement-for-cross-lingual-speaker-verification)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：因素的对抗性解耦
-11. [Context as Prior: Bayesian-Inspired Intent Inference for Non-Speaking Agents with a Household Cat Testbed](/202605/01/2604.27445v1-context-as-prior-bayesian-inspired-intent-inference-for-non-speaking-agents-with-a-household-cat-testbed)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：从不完整的行为观察中进行意图推断
+   evidence：在严重声学退化和噪声下的评估
 
 
 <div class="dpr-home-promo-card">
