@@ -1,0 +1,136 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-03T20:28:17.478477+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2604.26181v1",
+      "source": "arxiv",
+      "title": "SWAN: World-Aware Adaptive Multimodal Networks for Runtime Variations",
+      "abstract": "Multimodal deep neural networks deployed in realistic environments must contend with runtime variations: changes in modality quality, overall input complexity, and available platform resources. Current networks struggle with such fluctuations -- adaptive networks cannot adhere to a strict compute budget, controller-based networks neglect to consider input complexity, and statically provisioned networks fail at all the above. Consequently, they do not extract maximum utility from the expended computational resources. We present SWAN (Sample and World-Aware Multimodal Network), the first adaptive multimodal network that accomplishes all three goals. SWAN employs a quality-aware controller to assign resources among modalities according to a variable user-specified maximum budget. Within this budget, an adaptive gating module further optimizes efficiency by scaling layer utilization according to sample complexity. For further gains, SWAN also employs a token dropping module that masks semantically irrelevant multimodal features before performing detections. We evaluate SWAN in the domain of autonomous driving with complex multi-object 3D detection, reducing FLOPs by up to 49% with minimal degradation.",
+      "authors": [
+        "Jason Wu",
+        "Shir-Kang Scott Jinn",
+        "Yuyang Yuan",
+        "Maggie Wigness",
+        "Lance M. Kaplan",
+        "Hang Qiu",
+        "Mani Srivastava"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-04-28T23:56:39+00:00",
+      "link": "https://arxiv.org/pdf/2604.26181v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "adaptive multimodal networks for runtime variations in modality quality",
+      "llm_evidence_cn": "针对模态质量运行时变化的自适应多模态网络",
+      "llm_evidence": "针对模态质量运行时变化的自适应多模态网络",
+      "canonical_evidence": "针对模态质量运行时变化的自适应多模态网络",
+      "llm_tldr_en": "An adaptive network that manages resources based on modality quality and input complexity for robust performance.",
+      "llm_tldr_cn": "一种根据模态质量和输入复杂度管理资源的自适应网络，以实现鲁棒性能。",
+      "llm_tldr": "一种根据模态质量和输入复杂度管理资源的自适应网络，以实现鲁棒性能。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2604.23641v1",
+      "source": "arxiv",
+      "title": "VDLF-Net: Variational Feature Fusion for Adaptive and Few-Shot Visual Learning",
+      "abstract": "This paper introduces VDLF-Net, which attaches a compact VAE to a multi-scale CNN backbone. Latent vectors and softmax-gate support the backbone feature maps, while $\\ell_2$-normalized embeddings from the gated maps contribute toward supervised classification or episodic few-shot prediction. Under standard CIFAR-100 and Mini-ImageNet protocols, VDLF-Net demonstrates an improved performance over ResNet-50 Enhanced, VGG-16, Prototypical Networks, and Matching Networks. Extensive ablations show that removing the fine-resolution scale has the greatest impact on VDLF-Net's performance. At the same time, KL and reconstruction at the chosen $α$ pose a minor performance reduction, demonstrating that performance gains over classical episodic baselines mainly originate from the full VDLF-Net architecture and training strategy.",
+      "authors": [
+        "Jiawei Yan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-26T10:15:39+00:00",
+      "link": "https://arxiv.org/pdf/2604.23641v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "variational feature fusion with VAE for reconstruction and latent vector support",
+      "llm_evidence_cn": "使用VAE进行变分特征融合，支持重建和潜向量",
+      "llm_evidence": "使用VAE进行变分特征融合，支持重建和潜向量",
+      "canonical_evidence": "使用VAE进行变分特征融合，支持重建和潜向量",
+      "llm_tldr_en": "Introduces VDLF-Net using VAE for variational feature fusion in adaptive and few-shot learning.",
+      "llm_tldr_cn": "引入VDLF-Net，利用VAE在自适应和少样本学习中进行变分特征融合。",
+      "llm_tldr": "引入VDLF-Net，利用VAE在自适应和少样本学习中进行变分特征融合。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Reconstructing missing modalities before feature decoupling in multimodal learning",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.23996v1",
+      "source": "arxiv",
+      "title": "SMoES: Soft Modality-Guided Expert Specialization in MoE-VLMs",
+      "abstract": "Mixture-of-Experts (MoE) has become a prevalent backbone for large vision-language models (VLMs), yet how modality-specific signals should guide expert routing remains under-explored. Existing routing strategies are either hand-crafted or modality-agnostic, relying on idealized priors that ignore the layer-dependent modality fusion patterns in MoE-VLMs and provide little guidance for expert specialization. We propose Soft Modality-guided Expert Specialization (SMoES), which consists of dynamic soft modality scores that capture layer-dependent fusion patterns, an expert binning mechanism aligned with expert-parallel deployment, and an inter-bin mutual information regularization that encourages coherent modality specialization. Our method leverages attention-based or Gaussian-statistics modality scores to optimize mutual information regularization. Experiments across four MoE-based VLMs and 16 benchmarks demonstrate improvement on both effectiveness and efficiency: 0.9% and 4.2% average gain on multimodal and language-only tasks, 56.1% reduction in EP communication overhead, and 12.3% throughput improvement under realistic deployment. These results validate that aligning routing with modality-aware expert specialization unlocks MoE-VLM capacity and efficiency.",
+      "authors": [
+        "Zi-Hao Bo",
+        "Yaqian Li",
+        "Anzhou Hou",
+        "Rinyoichi Takezoe",
+        "Ertao Zhao",
+        "Tianxiang Pan",
+        "Jiale Yan",
+        "Mo Guang",
+        "Kaiwen Long"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-27T03:23:19+00:00",
+      "link": "https://arxiv.org/pdf/2604.23996v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "modality-guided expert specialization in multimodal models",
+      "llm_evidence_cn": "多模态模型中模态引导的专家专业化",
+      "llm_evidence": "多模态模型中模态引导的专家专业化",
+      "canonical_evidence": "多模态模型中模态引导的专家专业化",
+      "llm_tldr_en": "Proposes soft modality-guided expert routing to improve modality-specific specialization in MoE-VLMs.",
+      "llm_tldr_cn": "提出软模态引导的专家路由，以提升多模态专家混合模型中的模态特定专业化。",
+      "llm_tldr": "提出软模态引导的专家路由，以提升多模态专家混合模型中的模态特定专业化。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

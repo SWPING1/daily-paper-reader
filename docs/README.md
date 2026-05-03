@@ -6,47 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-02
-- 运行时间：2026-05-02 20:18:21 UTC
+- 最新运行日期：2026-05-03
+- 运行时间：2026-05-03 20:29:27 UTC
 - 运行状态：成功
-- 本次总论文数：8
-- 精读区：0
-- 速读区：8
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 8 篇推荐（精读 0 篇，速读 8 篇）
-- 速读：《Mitigating Shared-Private Branch Imbalance via Dual-Branch Rebalancing for Multimodal Sentiment Analysis》（7.5/10）, 《ViBE: Visual-to-M/EEG Brain Encoding via Spatio-Temporal VAE and Distribution-Aligned Projection》（6.5/10）, 《Reconstruction by Generation: 3D Multi-Object Scene Reconstruction from Sparse Observations》（6.5/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202605/02/README](/202605/02/README)
+今日深度复盘多模态自适应技术，重点解析了评分高达 9.0 的 SWAN 架构如何应对运行时环境波动。
+研究表明，结合环境感知动态调整与软模态引导的专家分工（SMoES），是提升视觉语言模型在少样本及复杂场景下表现的关键。
+建议优先研读 SWAN 的自适应机制，探索如何让大模型在动态现实世界
+- 详情：[/202605/03/README](/202605/03/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [SWAN: World-Aware Adaptive Multimodal Networks for Runtime Variations](/202605/03/2604.26181v1-swan-world-aware-adaptive-multimodal-networks-for-runtime-variations)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：针对模态质量运行时变化的自适应多模态网络
 
 ### 速读区论文标签
-1. [Mitigating Shared-Private Branch Imbalance via Dual-Branch Rebalancing for Multimodal Sentiment Analysis](/202605/02/2604.25179v1-mitigating-shared-private-branch-imbalance-via-dual-branch-rebalancing-for-multimodal-sentiment-analysis)  
-   标签：评分：7.5/10、query:missing-modality
-   evidence：共享-私有分解与模态特定证据组织
-2. [ViBE: Visual-to-M/EEG Brain Encoding via Spatio-Temporal VAE and Distribution-Aligned Projection](/202605/02/2604.26218v1-vibe-visual-to-meeg-brain-encoding-via-spatio-temporal-vae-and-distribution-aligned-projection)  
-   标签：评分：6.5/10、query:missing-modality
-   evidence：使用VAE重建神经响应并建立跨模态对齐。
-3. [Reconstruction by Generation: 3D Multi-Object Scene Reconstruction from Sparse Observations](/202605/02/2604.27106v1-reconstruction-by-generation-3d-multi-object-scene-reconstruction-from-sparse-observations)  
-   标签：评分：6.5/10、query:missing-modality
-   evidence：基于生成框架的稀疏观测重建
-4. [EmoTransCap: Dataset and Pipeline for Emotion Transition-Aware Speech Captioning in Discourses](/202605/02/2604.26417v1-emotranscap-dataset-and-pipeline-for-emotion-transition-aware-speech-captioning-in-discourses)  
+1. [VDLF-Net: Variational Feature Fusion for Adaptive and Few-Shot Visual Learning](/202605/03/2604.23641v1-vdlf-net-variational-feature-fusion-for-adaptive-and-few-shot-visual-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：具有时间动态的语音情感描述
-5. [Attribution-Guided Multimodal Deepfake Detection via Cross-Modal Forensic Fingerprints](/202605/02/2604.26453v1-attribution-guided-multimodal-deepfake-detection-via-cross-modal-forensic-fingerprints)  
+   evidence：使用VAE进行变分特征融合，支持重建和潜向量
+2. [SMoES: Soft Modality-Guided Expert Specialization in MoE-VLMs](/202605/03/2604.23996v1-smoes-soft-modality-guided-expert-specialization-in-moe-vlms)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：取证内容的共享嵌入空间几何约束
-6. [State Beyond Appearance: Diagnosing and Improving State Consistency in Dial-Based Measurement Reading](/202605/02/2604.26614v1-state-beyond-appearance-diagnosing-and-improving-state-consistency-in-dial-based-measurement-reading)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：诊断外观变化下的状态一致性
-7. [ZAYAN: Disentangled Contrastive Transformer for Tabular Remote Sensing Data](/202605/02/2604.27606v1-zayan-disentangled-contrastive-transformer-for-tabular-remote-sensing-data)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：解耦嵌入空间与动态特征掩码
-8. [LRS-VoxMM: A benchmark for in-the-wild audio-visual speech recognition](/202605/02/2604.27866v1-lrs-voxmm-a-benchmark-for-in-the-wild-audio-visual-speech-recognition)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：在严重声学退化和噪声下的评估
+   evidence：多模态模型中模态引导的专家专业化
 
 
 <div class="dpr-home-promo-card">
