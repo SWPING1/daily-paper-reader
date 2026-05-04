@@ -1,0 +1,459 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-04T20:45:04.639654+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 8,
+    "quick_skim_target": 11,
+    "quick_selected": 8
+  },
+  "deep_dive": [
+    {
+      "id": "2605.00434v1",
+      "source": "arxiv",
+      "title": "LIMSSR: LLM-Driven Sequence-to-Score Reasoning under Training-Time Incomplete Multimodal Observations",
+      "abstract": "Real-world multimodal learning is often hindered by missing modalities. While Incomplete Multimodal Learning (IML) has gained traction, existing methods typically rely on the unrealistic assumption of full-modal availability during training to provide reconstruction supervision or cross-modal priors. This paper tackles the more challenging setting of IML under training-time incomplete observations, which precludes reliance on a ``God's eye view'' of complete data. We propose LIMSSR (LLM-Driven Incomplete Multimodal Sequence-to-Score Reasoning), a framework that reformulates this challenge as a conditional sequence reasoning task. LIMSSR leverages the semantic reasoning capabilities of Large Language Models via Prompt-Guided Context-Aware Modality Imputation and Multidimensional Representation Fusion to infer latent semantics from available contexts without direct reconstruction. To mitigate hallucinations, we introduce a Mask-Aware Dual-Path Aggregation to dynamically calibrate inference uncertainty. Extensive experiments on three Action Quality Assessment datasets demonstrate that LIMSSR significantly outperforms state-of-the-art baselines without relying on complete training data, establishing a new paradigm for data-efficient multimodal learning. Code is available at https://github.com/XuHuangbiao/LIMSSR.",
+      "authors": [
+        "Huangbiao Xu",
+        "Huanqi Wu",
+        "Xiao Ke",
+        "Yuxin Peng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-01T06:11:42+00:00",
+      "link": "https://arxiv.org/pdf/2605.00434v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "incomplete multimodal observations during training",
+      "llm_evidence_cn": "训练期间的不完整多模态观察",
+      "llm_evidence": "训练期间的不完整多模态观察",
+      "canonical_evidence": "训练期间的不完整多模态观察",
+      "llm_tldr_en": "Proposes LIMSSR to handle missing modalities during training using LLM-driven sequence reasoning.",
+      "llm_tldr_cn": "提出LIMSSR框架，利用大模型驱动的序列推理处理训练阶段的模态缺失问题。",
+      "llm_tldr": "提出LIMSSR框架，利用大模型驱动的序列推理处理训练阶段的模态缺失问题。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.00670v1",
+      "source": "arxiv",
+      "title": "Robust Multimodal Recommendation via Graph Retrieval-Enhanced Modality Completion",
+      "abstract": "Multimodal data plays a critical role in web-based recommendation systems, where information from diverse modalities such as vision and text enhances representation learning. However, real-world multimodal datasets often suffer from modality incompleteness due to sensor failures, annotation scarcity, or privacy constraints, which substantially degrade model performance and reliability. One effective solution to address this issue is modality completion, which reconstructs missing features to provide modality-complete graphs for downstream tasks. Given a query node with missing multimodal features, existing modality completion methods typically infer information from the node itself or its neighbors to reconstruct the missing modality. However, these methods may overlook semantically relevant context in the graph, which contains valuable cues that are non-trivial to capture through simple methods like neighborhood aggregation. In this work, we propose GRE-MC, a Graph Retrieval-Enhanced Modality Completion framework, to overcome these limitations. By introducing a modality-aware subgraph retrieval mechanism, GRE-MC selects semantically relevant subgraphs from the entire graph, providing richer contextual information for completing missing modalities. Subsequently, a graph transformer jointly encodes the query node and the retrieved subgraph via global attention to complete the missing features, while a learnable sparse-routing codebook regularizes latent embeddings into compact bases for improved robustness. Extensive experiments on multimodal recommendation benchmarks demonstrate that GRE-MC consistently outperforms state-of-the-art methods, validating the effectiveness of subgraph retrieval and joint-encoding graph transformer for robust modality completion.",
+      "authors": [
+        "Yuan Li",
+        "Jun Hu",
+        "Jiaxin Jiang",
+        "Bryan Hooi",
+        "Bingsheng He"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.SI"
+      ],
+      "published": "2026-05-01T13:50:52+00:00",
+      "link": "https://arxiv.org/pdf/2605.00670v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "modality completion and reconstruction of missing features in multimodal graphs",
+      "llm_evidence_cn": "多模态图中的模态补全与缺失特征重建",
+      "llm_evidence": "多模态图中的模态补全与缺失特征重建",
+      "canonical_evidence": "多模态图中的模态补全与缺失特征重建",
+      "llm_tldr_en": "Proposes a graph retrieval-enhanced modality completion method to address missing data in multimodal recommendation.",
+      "llm_tldr_cn": "提出一种图检索增强的模态补全方法，解决多模态推荐中的数据缺失问题。",
+      "llm_tldr": "提出一种图检索增强的模态补全方法，解决多模态推荐中的数据缺失问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Reconstructing missing modalities before feature decoupling in multimodal learning",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.00644v1",
+      "source": "arxiv",
+      "title": "Learning Multimodal Energy-Based Model with Multimodal Variational Auto-Encoder via MCMC Revision",
+      "abstract": "Energy-based models (EBMs) are a flexible class of deep generative models and are well-suited to capture complex dependencies in multimodal data. However, learning multimodal EBM by maximum likelihood requires Markov Chain Monte Carlo (MCMC) sampling in the joint data space, where noise-initialized Langevin dynamics often mixes poorly and fails to discover coherent inter-modal relationships. Multimodal VAEs have made progress in capturing such inter-modal dependencies by introducing a shared latent generator and a joint inference model. However, both the shared latent generator and joint inference model are parameterized as unimodal Gaussian (or Laplace), which severely limits their ability to approximate the complex structure induced by multimodal data. In this work, we study the learning problem of the multimodal EBM, shared latent generator, and joint inference model. We present a learning framework that effectively interweaves their MLE updates with corresponding MCMC refinements in both the data and latent spaces. Specifically, the generator is learned to produce coherent multimodal samples that serve as strong initial states for EBM sampling, while the inference model is learned to provide informative latent initializations for generator posterior sampling. Together, these two models serve as complementary models that enable effective EBM sampling and learning, yielding realistic and coherent multimodal EBM samples. Extensive experiments demonstrate superior performance for multimodal synthesis quality and coherence compared to various baselines. We conduct various analyses and ablation studies to validate the effectiveness and scalability of the proposed multimodal framework.",
+      "authors": [
+        "Jiali Cui",
+        "Zhiqiang Lao",
+        "Heather Yu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-01T13:25:11+00:00",
+      "link": "https://arxiv.org/pdf/2605.00644v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal VAEs for capturing inter-modal dependencies",
+      "llm_evidence_cn": "用于捕获模态间依赖关系的多模态VAE",
+      "llm_evidence": "用于捕获模态间依赖关系的多模态VAE",
+      "canonical_evidence": "用于捕获模态间依赖关系的多模态VAE",
+      "llm_tldr_en": "This paper improves multimodal EBMs using VAEs to better capture complex inter-modal relationships.",
+      "llm_tldr_cn": "本文通过多模态VAE改进能量模型，以更好地捕获复杂的多模态依赖关系。",
+      "llm_tldr": "本文通过多模态VAE改进能量模型，以更好地捕获复杂的多模态依赖关系。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2604.25776v1",
+      "source": "arxiv",
+      "title": "Unrequited Emotions: Investigating the Gaps in Motivation and Practice in Speech Emotion Recognition Research",
+      "abstract": "Critical analyses of emotion recognition technology have raised ethical concerns around task validity and potential downstream impacts, urging researchers to ensure alignment between their stated motivations and practice. However, these discussions have not adequately influenced or drawn from research on speech emotion recognition (SER). We address this gap by conducting a systematic survey of SER research to uncover what stated motivations drive this work and if they align with the datasets and emotions studied. We find that while SER research identifies appealing goals, such as well-situated voice-activated systems or healthcare applications, commonly-used datasets do not reflect these proposed deployment contexts, thus presenting a gap between motivations and research practices. We argue that such gaps engender ethical concerns, and that SER research should reassert itself with concrete use-cases to prevent misinterpretations, misuse, and downstream harms.",
+      "authors": [
+        "Taryn Wong",
+        "Zeerak Talat",
+        "Hanan Aldarmaki",
+        "Anjalie Field"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-04-28T15:43:35+00:00",
+      "link": "https://arxiv.org/pdf/2604.25776v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "speech emotion recognition research and dataset alignment issues",
+      "llm_evidence_cn": "语音情感识别研究与数据集对齐问题",
+      "llm_evidence": "语音情感识别研究与数据集对齐问题",
+      "canonical_evidence": "语音情感识别研究与数据集对齐问题",
+      "llm_tldr_en": "Surveys speech emotion recognition research to identify gaps between stated motivations and actual practices.",
+      "llm_tldr_cn": "对语音情感识别研究进行系统调查，揭示研究动机与实际应用之间的差距。",
+      "llm_tldr": "对语音情感识别研究进行系统调查，揭示研究动机与实际应用之间的差距。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2604.23443v1",
+      "source": "arxiv",
+      "title": "Revisiting Greedy Decoding for Visual Question Answering: A Calibration Perspective",
+      "abstract": "Stochastic sampling strategies are widely adopted in large language models (LLMs) to balance output coherence and diversity. These heuristics are often inherited in Multimodal LLMs (MLLMs) without task-specific justification. However, we contend that stochastic decoding can be suboptimal for Visual Question Answering (VQA). VQA is a closed-ended task with head-heavy answer distributions where uncertainty is usually epistemic, arising from missing or ambiguous visual evidence rather than plausible continuations. In this work, we provide a theoretical formalization of the relationship between model calibration and predictive accuracy, and derive the sufficient conditions for greedy decoding optimality. Extensive experiments provide empirical evidence for the superiority of greedy decoding over stochastic sampling across multiple benchmarks. Furthermore, we propose Greedy Decoding for Reasoning Models, which outperforms both stochastic sampling and standard greedy decoding in multimodal reasoning scenarios. Overall, our results caution against naively inheriting LLMs decoding heuristics in MLLMs and demonstrate that greedy decoding can be an efficient yet strong default for VQA.",
+      "authors": [
+        "Boqi Chen",
+        "Xudong Liu",
+        "Yunke Ao",
+        "Jianing Qiu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-04-25T21:01:05+00:00",
+      "link": "https://arxiv.org/pdf/2604.23443v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uncertainty arising from missing or ambiguous visual evidence in multimodal tasks",
+      "llm_evidence_cn": "多模态任务中由缺失或模糊视觉证据引起的不确定性",
+      "llm_evidence": "多模态任务中由缺失或模糊视觉证据引起的不确定性",
+      "canonical_evidence": "多模态任务中由缺失或模糊视觉证据引起的不确定性",
+      "llm_tldr_en": "Analyzes greedy decoding in VQA, noting that uncertainty often stems from missing visual evidence.",
+      "llm_tldr_cn": "分析了VQA中的贪婪解码，指出不确定性通常源于视觉证据的缺失或模糊。",
+      "llm_tldr": "分析了VQA中的贪婪解码，指出不确定性通常源于视觉证据的缺失或模糊。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.00184v1",
+      "source": "arxiv",
+      "title": "Introducing WARM-VR: Benchmark Dataset for Multimodal Wearable Affect Recognition in Virtual Reality",
+      "abstract": "With the growing integration of human-computer interaction into everyday life, advances in machine learning have enabled systems to better perceive and respond to users' emotional states. Most existing affect recognition datasets focus on static environments, limiting their applicability to immersive multimedia contexts such as Virtual Reality (VR). In this paper, we introduce WARM-VR, a novel publicly available multimodal dataset designed to support affect recognition in immersive, multisensory environments using wearable sensing instrumentation. Data were collected from 31 participants aged 19-37 using wearable sensors: a wristband measuring Blood Volume Pulse (BVP), EDA, skin Temperature, three-axis Acceleration, and a chest strap recording ECG signals. Participants engaged in immersive VR experiences designed to elicit relaxation through a calming beach environment following stress induction via an arithmetic task. These sessions incorporated synchronized multimedia stimuli: visual, auditory, and olfactory. Affective states were assessed subjectively through validated self-report questionnaires and objectively through the analysis of physiological measurements. Statistical analysis of the questionnaires confirmed that VR relaxation significantly reduced negative affect, particularly with olfactory enhancement. Furthermore, we established a benchmark on the dataset using widely recognized machine learning algorithms. The best performance for binary classification from BVP data of valence, was obtained with a CNN and a CNN-Bi-GRU model, both achieving an average F1-score of 0.63 and an AUC of 0.69. For arousal, a lightweight Transformer architecture provided the most balanced results (F1-0 0.54 and F1-1 0.63), outperforming recurrent hybrids. In the relaxation task, a CNN-Bi-GRU model reached the highest overall performance (average F1-score 0.64, AUC 0.69).",
+      "authors": [
+        "Karim Alghoul",
+        "Faisal Mohd",
+        "Fedwa Laamarti",
+        "Hussein Al Osman",
+        "Abdulmotaleb El Saddik"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.HC"
+      ],
+      "published": "2026-04-30T20:00:56+00:00",
+      "link": "https://arxiv.org/pdf/2605.00184v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal affect recognition dataset with wearable sensors",
+      "llm_evidence_cn": "使用可穿戴传感器的多模态情感识别数据集",
+      "llm_evidence": "使用可穿戴传感器的多模态情感识别数据集",
+      "canonical_evidence": "使用可穿戴传感器的多模态情感识别数据集",
+      "llm_tldr_en": "Introduces WARM-VR, a multimodal wearable dataset for affect recognition in immersive VR environments.",
+      "llm_tldr_cn": "引入了WARM-VR，一个用于沉浸式虚拟现实环境情感识别的多模态可穿戴数据集。",
+      "llm_tldr": "引入了WARM-VR，一个用于沉浸式虚拟现实环境情感识别的多模态可穿戴数据集。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2604.26347v1",
+      "source": "arxiv",
+      "title": "The False Resonance: A Critical Examination of Emotion Embedding Similarity for Speech Generation Evaluation",
+      "abstract": "Objective metrics for emotional expressiveness are vital for speech generation, particularly in expressive synthesis and voice conversion requiring emotional prosody transfer. To quantify this, the field widely relies on emotion similarity between reference and generated samples. This approach computes cosine similarity of embeddings from encoders like emotion2vec, assuming they capture affective cues despite linguistic and speaker variations. We challenge this assumption through controlled adversarial tasks and human alignment tests. Despite high classification accuracy, these latent spaces are unsuitable for zero-shot similarity evaluation. Representational limitations cause linguistic and speaker interference to overshadow emotional features, degrading discriminative ability. Consequently, the metric misaligns with human perception. This acoustic vulnerability reveals it rewards acoustic mimicry over genuine emotional synthesis.",
+      "authors": [
+        "Yun-Shao Tsai",
+        "Yi-Cheng Lin",
+        "Huang-Cheng Chou",
+        "Tzu-Wen Hsu",
+        "Yun-Man Hsu",
+        "Chun Wei Chen",
+        "Shrikanth Narayanan",
+        "Hung-yi Lee"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.CL"
+      ],
+      "published": "2026-04-29T06:59:48+00:00",
+      "link": "https://arxiv.org/pdf/2604.26347v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "limitations of emotion embeddings and interference in latent spaces",
+      "llm_evidence_cn": "情感嵌入的局限性以及潜空间中的干扰",
+      "llm_evidence": "情感嵌入的局限性以及潜空间中的干扰",
+      "canonical_evidence": "情感嵌入的局限性以及潜空间中的干扰",
+      "llm_tldr_en": "Critically examines emotion embeddings, finding they fail to decouple affective cues from speaker identity.",
+      "llm_tldr_cn": "批判性地检查了情感嵌入，发现它们未能将情感线索与说话人身份解耦。",
+      "llm_tldr": "批判性地检查了情感嵌入，发现它们未能将情感线索与说话人身份解耦。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2604.27343v1",
+      "source": "arxiv",
+      "title": "JI-ADF: Joint-Individual Learning with Adaptive Decision Fusion for Multimodal Skin Lesion Classification",
+      "abstract": "Skin lesion classification is essential for early dermatological diagnosis, yet many existing computer-aided systems rely primarily on dermoscopic images and underutilize the multimodal evidence routinely available in clinical practice. To address this gap, we propose \\textbf{JI-ADF}, a trimodal deep learning framework that integrates dermoscopic images, clinical photographs, and structured patient metadata for clinically grounded skin lesion classification. The proposed architecture combines joint multimodal representation learning with modality-specific auxiliary supervision and an adaptive decision fusion mechanism that dynamically calibrates modality contributions on a per-sample basis. To enhance cross-modal reasoning while preserving modality-specific evidence, we further introduce a multimodal fusion attention (MMFA) module. We evaluate JI-ADF on the large-scale MILK10k benchmark, which reflects real-world clinical acquisition conditions and severe class imbalance. The proposed method demonstrates strong and well-balanced performance across lesion categories, improving sensitivity and Dice score while maintaining high specificity and good calibration. Extensive analyses, including modality ablation, calibration evaluation, and Grad-CAM visualization, further confirm the robustness and clinically meaningful behavior of the model. These results indicate that JI-ADF provides a reliable and practical foundation for multimodal skin lesion classification in real-world clinical settings.",
+      "authors": [
+        "Phan Nguyen",
+        "Dat Cao",
+        "Quang Hien Kha",
+        "Hien Chu",
+        "Minh H. N. Le",
+        "Trang Quoc Thao Pham",
+        "Nguyen Quoc Khanh Le"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-04-30T02:48:15+00:00",
+      "link": "https://arxiv.org/pdf/2604.27343v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "adaptive decision fusion to calibrate modality contributions",
+      "llm_evidence_cn": "自适应决策融合以校准模态贡献",
+      "llm_evidence": "自适应决策融合以校准模态贡献",
+      "canonical_evidence": "自适应决策融合以校准模态贡献",
+      "llm_tldr_en": "Introduces adaptive decision fusion for robust multimodal skin lesion classification.",
+      "llm_tldr_cn": "引入自适应决策融合机制，实现鲁棒的多模态皮肤病变分类。",
+      "llm_tldr": "引入自适应决策融合机制，实现鲁棒的多模态皮肤病变分类。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.00156v1",
+      "source": "arxiv",
+      "title": "RoboKA: KAN Informed Multimodal Learning for RoboCall Surveillance System",
+      "abstract": "Wide exploration on robocall surveillance research is hindered due to limited access to public datasets, due to privacy concerns. In this work, we first curate Robo-SAr, a synthetic robocall dataset designed for robocall surveillance research. Robo-SAr comprises of ~200 unwanted and ~1200 legitimate synthetic robocall samples across three realistic adversarial axes: psycholinguistics-manipulated transcripts, emotion-eliciting speech, and cloned voices. We further propose RoboKA, a Kolmogorov-Arnold Network (KAN)-based multimodal fusion framework designed to model structured nonlinear interactions between acoustic and linguistic cues that characterize diverse adversarial robocall strategies. RoboKA first leverages cross-modal contrastive learning to align latent modality representations and feeds the resulting embeddings to a KAN-projection head for final classification. We benchmark RoboKA against strong unimodal and multimodal baselines in both in-domain and out-of-domain setups, finding RoboKA to surpass all baselines in terms of recall and F1-score.",
+      "authors": [
+        "Nitin Choudhury",
+        "Nikhil Kumar",
+        "Aditya Kumar Sinha",
+        "Abhijeet Anand",
+        "Hossein Salemi",
+        "Orchid Chetia Phukan",
+        "Hemant Purohit",
+        "Arun Balaji Buduru"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.CR"
+      ],
+      "published": "2026-04-30T19:25:53+00:00",
+      "link": "https://arxiv.org/pdf/2605.00156v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal fusion for emotion-eliciting speech",
+      "llm_evidence_cn": "针对诱发情感语音的多模态融合",
+      "llm_evidence": "针对诱发情感语音的多模态融合",
+      "canonical_evidence": "针对诱发情感语音的多模态融合",
+      "llm_tldr_en": "Proposes RoboKA, a multimodal fusion framework for robocall surveillance using acoustic and linguistic cues.",
+      "llm_tldr_cn": "提出了RoboKA，一种利用声学和语言线索进行机器人电话监控的多模态融合框架。",
+      "llm_tldr": "提出了RoboKA，一种利用声学和语言线索进行机器人电话监控的多模态融合框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.00658v1",
+      "source": "arxiv",
+      "title": "UniVidX: A Unified Multimodal Framework for Versatile Video Generation via Diffusion Priors",
+      "abstract": "Recent progress has shown that video diffusion models (VDMs) can be repurposed for diverse multimodal graphics tasks. However, existing methods often train separate models for each problem setting, which fixes the input-output mapping and limits the modeling of correlations across modalities. We present UniVidX, a unified multimodal framework that leverages VDM priors for versatile video generation. UniVidX formulates pixel-aligned tasks as conditional generation in a shared multimodal space, adapts to modality-specific distributions while preserving the backbone's native priors, and promotes cross-modal consistency during synthesis. It is built on three key designs. Stochastic Condition Masking (SCM) randomly partitions modalities into clean conditions and noisy targets during training, enabling omni-directional conditional generation instead of fixed mappings. Decoupled Gated LoRA (DGL) introduces per-modality LoRAs that are activated when a modality serves as the generation target, preserving the strong priors of the VDM. Cross-Modal Self-Attention (CMSA) shares keys and values across modalities while keeping modality-specific queries, facilitating information exchange and inter-modal alignment. We instantiate UniVidX in two domains: UniVid-Intrinsic, for RGB videos and intrinsic maps including albedo, irradiance, and normal; and UniVid-Alpha, for blended RGB videos and their constituent RGBA layers. Experiments show that both models achieve performance competitive with state-of-the-art methods across distinct tasks and generalize robustly to in-the-wild scenarios, even when trained on fewer than 1,000 videos. Project page: https://houyuanchen111.github.io/UniVidX.github.io/",
+      "authors": [
+        "Houyuan Chen",
+        "Hong Li",
+        "Xianghao Kong",
+        "Tianrui Zhu",
+        "Shaocong Xu",
+        "Weiqing Xiao",
+        "Yuwei Guo",
+        "Chongjie Ye",
+        "Lvmin Zhang",
+        "Hao Zhao",
+        "Anyi Rao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-01T13:40:56+00:00",
+      "link": "https://arxiv.org/pdf/2605.00658v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "stochastic condition masking for multimodal generation and cross-modal consistency",
+      "llm_evidence_cn": "用于多模态生成和跨模态一致性的随机条件掩码",
+      "llm_evidence": "用于多模态生成和跨模态一致性的随机条件掩码",
+      "canonical_evidence": "用于多模态生成和跨模态一致性的随机条件掩码",
+      "llm_tldr_en": "A unified framework for video generation using stochastic masking to handle diverse multimodal inputs.",
+      "llm_tldr_cn": "一个统一的视频生成框架，使用随机掩码处理多样化的多模态输入。",
+      "llm_tldr": "一个统一的视频生成框架，使用随机掩码处理多样化的多模态输入。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.00733v1",
+      "source": "arxiv",
+      "title": "EASE: Federated Multimodal Unlearning via Entanglement-Aware Anchor Closure",
+      "abstract": "Federated Multimodal Learning (FML) trains multimodal models across decentralized clients while keeping their image-text pairs private. However, joint embedding training entangles forgotten knowledge across both modalities and client gradient subspaces, hindering federated unlearning. Previous federated unlearning approaches neither sever the cross-modal reconstruction channel mediated by bilinear coupling nor separate forget-exclusive update directions from those shared with retained clients. We identify an Anchor Principle for federated multimodal contrastive unlearning: forgotten alignments persist through three residual anchors arising from bilinear cross-modal coupling, principal-angle subspace entanglement, and continued federated updates. At the modality level, we show that bilateral displacement of both visual and language branches closes the cross-modal reconstruction channel. Correspondingly, our method addresses subspace entanglement through Cosine--Sine decomposition of client-update subspaces, isolating forget-exclusive directions from retain support. Moreover, we propose a direction-selective Forget Lock that bounds residual drift across rounds. Combining these strategies, we present EASE, an Entanglement-Aware Subspace Excision framework that closes all three anchor channels under a unified design. EASE demonstrates consistent superiority across multiple datasets and unlearning scenarios, for instance, matching the retrain reference to within 0.2 and 4.2 R@1 points on the forget and retain sides under client unlearning on Flickr30K with CLIP-B/32.",
+      "authors": [
+        "Zihao Ding",
+        "Beining Wu",
+        "Jun Huang"
+      ],
+      "primary_category": "cs.NI",
+      "categories": [
+        "cs.NI",
+        "cs.AI",
+        "cs.LG",
+        "cs.MM"
+      ],
+      "published": "2026-05-01T15:33:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.00733v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "sever the cross-modal reconstruction channel and subspace entanglement",
+      "llm_evidence_cn": "切断跨模态重建通道和子空间纠缠",
+      "llm_evidence": "切断跨模态重建通道和子空间纠缠",
+      "canonical_evidence": "切断跨模态重建通道和子空间纠缠",
+      "llm_tldr_en": "Addresses entanglement in federated multimodal learning to enable effective unlearning.",
+      "llm_tldr_cn": "解决联邦多模态学习中的纠缠问题，以实现有效的遗忘学习。",
+      "llm_tldr": "解决联邦多模态学习中的纠缠问题，以实现有效的遗忘学习。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
