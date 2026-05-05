@@ -1,0 +1,110 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-001.webp",
+      "caption": "Table 8: Cosine similarity between mean displacement vectors. [T] = trained, [U] = unseen. Most corruptions share a dominant “away from coherent” direction (0.80–0.98). Repetition is the clear outlier (∼0.1), consistent with its 44% detection rate.",
+      "page": 15,
+      "index": 1,
+      "width": 686,
+      "height": 350
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-002.webp",
+      "caption": "Table 1: Text domain: detection accuracy on all 15 corruption types. The model was trained on only the first 6. The 9 below the line were never seen during training. “Valid” = pairs where the corruption actually modified the text; “Skip” = silent failures where the corruption returned unchanged text (filtered from accuracy computation). Out of 100 paragraphs per type.",
+      "page": 7,
+      "index": 2,
+      "width": 710,
+      "height": 575
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-003.webp",
+      "caption": "Table 2: Text domain: encoder comparison at the same training data scale (50K paragraphs).",
+      "page": 7,
+      "index": 3,
+      "width": 664,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-004.webp",
+      "caption": "Table 7: Configuration details for both domains.",
+      "page": 14,
+      "index": 4,
+      "width": 772,
+      "height": 250
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-005.webp",
+      "caption": "Figure 1: Left: constraint network architecture, shared across modalities and branches. SSM blocks handle sequential state tracking at linear cost; dual-head attention blocks perform long-range consistency checks. Right: the dual-head attention mechanism. Each head uses a single learned projection W (not separate Q/K/V), halving parameter cost and eliminating key-value cache entirely—each evaluation is a stateless forward pass. Asymmetry emerges from the masking structure, not from parameterization.",
+      "page": 3,
+      "index": 5,
+      "width": 744,
+      "height": 541
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-006.webp",
+      "caption": "Table 6: Approaches to incorporating frequency features. Only processing both views through the same frozen encoder achieved meaningful frequency contribution.",
+      "page": 13,
+      "index": 6,
+      "width": 856,
+      "height": 229
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-007.webp",
+      "caption": "Table 5: Cross-dataset evaluation: trained on FF++, tested on Celeb-DF. Single-frame detection unless noted. † = frozen/minimal encoder adaptation. ∗Effort: average frame-level AUC on Celeb-DF++ intra-scenario; most directly comparable single-frame protocol. ∗∗GenD: video-level AUROC averaging 32 frames per video; averaging smooths per-frame noise, making this a substantially easier metric than single-frame AUC.",
+      "page": 8,
+      "index": 7,
+      "width": 682,
+      "height": 313
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-008.webp",
+      "caption": "Table 3: Vision domain: deepfake detection AUC (mean ± std over 5 seeds). Celeb-DF is cross-dataset (no training data from this set).",
+      "page": 8,
+      "index": 8,
+      "width": 644,
+      "height": 213
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-009.webp",
+      "caption": "Figure 2: Three-branch composable architecture for vision. All branches process features from the same frozen DINOv2 encoder, ensuring representation compatibility. The frequency branch encodes a rendered frequency heatmap through DINOv2 rather than raw frequency features—the key insight from the compatibility investigation (Section 6). Each branch trains independently; composition occurs only at inference.",
+      "page": 4,
+      "index": 9,
+      "width": 504,
+      "height": 444
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-010.webp",
+      "caption": "Figure 3: Cross-modal transfer: the same constraint network architecture processes both text (BERT windows) and vision (DINOv2 patches). Only the input projection layer changes between modalities. The architecture, loss function, and training procedure are identical.",
+      "page": 5,
+      "index": 10,
+      "width": 548,
+      "height": 412
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-011.webp",
+      "caption": "Table 11: Alpha ablation: text domain validation accuracy by corruption type. Tense shift (60%) and coreference break (65–67%) show lower raw accuracy than in Table 1 because this validation includes silent corruption failures (where the corruption returns unchanged text); Table 1 counts only pairs where the corruption actually modified the text, yielding 100% for both. The α sensitivity is zero for both types regardless of filtering.",
+      "page": 16,
+      "index": 11,
+      "width": 622,
+      "height": 200
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-012.webp",
+      "caption": "Table 9: Alpha ablation: combined three-branch AUC on vision benchmarks.",
+      "page": 16,
+      "index": 12,
+      "width": 710,
+      "height": 200
+    },
+    {
+      "url": "assets/figures/arxiv/2605.00960v1/fig-013.webp",
+      "caption": "Table 10: Alpha ablation: structural branch only (isolates the α effect from branch composition).",
+      "page": 16,
+      "index": 13,
+      "width": 710,
+      "height": 200
+    }
+  ]
+}
