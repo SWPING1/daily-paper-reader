@@ -1,0 +1,516 @@
+Title: Prompt-Anchored Vision-Text Distillation for Lifelong Person Re-identification
+
+URL Source: https://arxiv.org/pdf/2605.05027v1
+
+Published Time: Thu, 07 May 2026 01:23:17 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# Prompt-Anchored Vision–Text Distillation for Lifelong Person Re-identification 
+
+## Wen Wen 1,2,3 Hao Chen 2* Shiliang Zhang 31University of Electronic Science and Technology of China, China 
+
+2Harbin Institute of Technology, Shenzhen, China 
+
+3Peking University, China 
+
+## Abstract 
+
+Lifelong person re-identification (LReID) aims to train a generalizable model with sequentially collected data. How-ever, such models often suffer from semantic drift, limited adaptability, and catastrophic forgetting as new domains emerge. Existing exemplar-free approaches largely rely on visual-only distillation or parameter regularization, while overlooking the potential of auxiliary modalities, such as text, to preserve semantic stability and enable incremental plasticity. We observe that the frozen text encoder in pre-trained vision–language models can serve as a stable se-mantic anchor across domains. To decouple the roles of vi-sion and text, we propose Prompt-Anchored vision–text Dis-tillation (PAD), an asymmetric vision–text framework for semantic alignment and cross-domain generalization. On the textual side, we distill prompts to preserve vision–text alignment under a fixed semantic space, acting as a global semantic reference rather than a dominant learning signal. On the visual side, an EMA-based teacher with an adap-tive prompt pool enables domain-wise adaptation by allo-cating new slots while freezing past ones. Extensive exper-iments show that PAD substantially outperforms state-of-the-art methods across seen and unseen domains, achieving a strong balance between stability and plasticity. Project page: https://github.com/zu-zi/PAD .
+
+## 1. Introduction 
+
+Person re-identification (ReID) aims to retrieve the same individual across non-overlapping camera views, and has been extensively studied under static closed-world settings. However, real-world surveillance systems continuously en-counter data from evolving environments, new cameras, or changing time periods. In such scenarios, retraining mod-els from scratch is impractical. This dynamic scenario has motivated the study of lifelong person re-identification (LReID) [19, 29], where a model incrementally learns new 
+
+> *
+
+Corresponding author Model t1  Model t2  Model t3           
+
+> Memory Buffer
+> Model t1 Model t2
+> EIET
+> TA-Prompt TA-Prompt
+> EI
+> VA-Prompt Pool
+> Prototype Bank
+> (c) Ours: Prompt-Anchored visual-text Distillation
+> (a) Exemplar-based Methods
+> D1D2D3
+> store
+> (b) Prototype-based Methods
+> replay update
+> Text Side Visual Side
+> D1D2
+> extract retrieval update
+> class centroids
+> TEXKD
+> D2D1
+> VISKD
+> Prompt Anchors Shared Space Align
+> D1D2
+
+Figure 1. Comparison of lifelong ReID paradigms. (a) Exemplar-based methods store raw samples for rehearsal. (b) Exemplar-free prototype-based methods store class centroids or distribution for visual knowledge distillation. (c) Our proposed PAD extends exemplar-free methods to both visual and text modalities: a frozen text encoder provides stable semantic anchors, while text distilla-tion (TEXKD) and visual distillation (VISKD) respectively distill the TA-Prompt and visual branch, achieving effective alignment in a shared vision–text space. 
+
+identities while retaining previously acquired knowledge. A key challenge of LReID lies in the catastrophic forget-ting phenomenon: newly learned information often over-writes previously learned representations. This problem becomes even more critical in person ReID, where large intra-person divergences (e.g., lighting, viewpoint, occlu-sion) coexist with small inter-person variations. Such fine-grained differences make it difficult to preserve stable iden-tity semantics over time. Consequently, the model suffers from semantic drift, the learned embedding space gradually shifts, causing previously separable identities to become confused or misaligned. To mitigate catastrophic forgetting, existing lifelong person ReID approaches can be roughly categorized 
+
+> arXiv:2605.05027v1 [cs.CV] 6 May 2026
+
+into exemplar-based methods [1, 36] and exemplar-free prototype-based methods [31, 32], as shown in Fig. 1. Exemplar-based methods store samples from previous do-mains to preserve past knowledge, which has proven to be effective but raises data storage and privacy concerns in real-world deployments. To reduce the risk of privacy leakage, recent methods adopt visual knowledge distillation based on sample feature affinity [32] or distribution statis-tics [31], transferring knowledge without retaining old im-ages. However, these techniques operate solely within the visual modality and thus struggle to maintain the semantic consistency of person identities when domain distributions shift. As a result, the learned feature space may remain lo-cally discriminative but gradually drift away from the un-derlying identity semantics over time. Meanwhile, the emergence of vision–language models such as CLIP [20] and its variant CLIP-ReID [12] provides new opportunities for semantically grounded representa-tion learning. Textual information naturally offers domain-invariant semantic anchors—descriptions such as “a person wearing a red jacket” remain stable even when visual ap-pearances vary due to pose or illumination changes. This motivates us to exploit textual semantics as persistent an-chors for guiding the evolution of visual representations 
+
+during exemplar-free lifelong learning. In this paper, we propose Prompt-Anchored vision–text Distillation (PAD) , a novel exemplar-free framework with an asymmetric vision–text design that introduces textual semantic guidance for visual feature learning in LReID. Unlike prior works that rely on visual-only distillation or prompt-based adaptation in the visual space, PAD intro-duces a frozen textual semantic space as a global anchor while enabling adaptive visual learning. We maintain a set of Text-Anchor Prompts (TA-Prompts) that align visual and textual representations, and a set of Visual-Adaptation Prompts (VA-Prompts) that facilitate incremental adapta-tion and memory across domains. During each incremental stage, these prompts constrain the visual encoder to remain aligned with historical semantic knowledge. This design ef-fectively suppresses semantic drift while allowing flexible adaptation to new identities and domains. Specifically, on the textual side, we freeze the pretrained text encoder to establish stable anchors as implicit semantic constraints, and train only the TA-Prompts to align visual and textual representations. In subsequent domains, a fixed teacher further performs distillation on TA-Prompts to pre-vent textual semantics from drifting away from previously learned domains. On the visual side, we update the last few layers of the backbone, the classification head, and a visual prompt pool to balance plasticity and memory. An EMA-based teacher provides visual information distillation on the visual encoder, effectively mitigating fine-grained drift and enhancing cross-domain consistency. In summary, our main contributions are threefold: • We introduce an exemplar-free LReID framework that uses a frozen textual semantic space as a global anchor, instead of relying solely on visual distillation. • We design two prompts with asymmetric roles: TA-Prompt for semantic anchoring in the text space, and VA-Prompt for domain-wise adaptation in the visual space. • Extensive experiments demonstrate that PAD achieves consistent improvements over prior work on both seen and unseen domains. 
+
+## 2. Related Work 
+
+CLIP-based person ReID. With the rapid progress of vi-sion–language models, researchers have increasingly ex-plored adapting CLIP for person ReID. Li et al . [12] develop CLIP-ReID, which integrates ambiguous textual descriptions with learnable tokens in a two-stage train-ing paradigm, and has become a widely adopted base-line for person ReID. Yu et al . [37] further present TF-CLIP, a one-stage framework that learns sequential prompts to capture temporal cues for video-based ReID. MP-ReID [38] leverages both learnable prompts and large lan-guage model–generated prompts to enhance multi-modal representation learning. Built upon textual inversion, PromptSG [35] introduces a lightweight inversion network to learn a pseudo-token representation for each individual, achieving efficient personalized modeling. 
+
+Prompt-based lifelong learning. Prompt-based lifelong learning has gained increasing attention with the surge of pretrained models [3, 20], leveraging prompts to adapt frozen backbones to sequentially arriving data and novel classes. L2P [27] introduces a prompt pool to adapt a pre-trained ViT for continual learning without revisiting pre-vious data. DualPrompt [26] extends L2P by separat-ing prompts into G(eneral)-Prompt and E(xpert)-Prompt to balance generalization and specialization. CODA-Prompt [22] further develops a learnable prompt genera-tor that dynamically constructs prompts from image fea-tures or patches. Instead of maintaining an explicit pool or generator, CoSTEP [44] models the conditional distri-bution of prompts given input features, achieving adaptive prompt selection across tasks. RainbowPrompt [7] intro-duces a diversity-aware prompt evolution mechanism that adaptively fuses prompts from multiple domains to miti-gate forgetting. Most of the above approaches focus on vi-sual prompts, while recent studies have begun to explore multi-modal prompts for CLIP-based lifelong learning. For instance, S-Prompt [25] and AttriCLIP [24] enhance cross-modal alignment by jointly optimizing visual and textual prompts. More recently, ENGINE [42] integrates external knowledge from large language models to further improve the semantic consistency of CLIP-based lifelong learning. 
+
+Lifelong person ReID. Lifelong person re-identification (LReID) aims to learn incrementally added person data while preserving previously acquired knowledge. Previous LReID methods can be roughly categorized into exemplar rehearsal methods and exemplar-free methods. Exemplar rehearsal methods [1, 8, 19, 29] store image samples in a memory buffer and conduct knowledge distillation or pa-rameter regularization with stored samples. Despite the ef-fectiveness of exemplar rehearsal, such methods may raise data storage and privacy concerns. Instead of raw samples, exemplar-free methods [31, 32, 34, 43] store feature proto-types or distributions to regularize model parameter update in lifelong learning, which have less privacy concerns in real-world deployments. 
+
+Difference with related work. PAEMA [11] studies exemplar-free LReID with prompt-guided adaptation and EMA-based knowledge preservation, while DAFC [17] emphasizes distribution-aware forgetting compensation for exemplar-free LReID. DualPrompt [26] formulates contin-ual learning with complementary prompts on a pretrained visual backbone, and ENGINE [42] improves CLIP-based class-incremental learning by injecting external knowledge from both visual and textual modalities. CLIP-ReID [12] leverages textual semantics for static ReID, but does not consider continual adaptation. Different from these works, PAD is built around a frozen textual semantic space that serves as a persistent anchor throughout lifelong learning. Our design is asymmetric: the textual branch is responsible for semantic preservation, while the visual branch remains adaptive through prompt expansion and distillation. Thus PAD is not a simple combination of prompting and distilla-tion modules, but a vision–text formulation tailored to the stability–plasticity trade-off in LReID. 
+
+## 3. Proposed Method 
+
+3.1. Formulation 
+
+In the task of exemplar-free lifelong person re-identification (LReID), a stream of T datasets denoted as D = {Dt}Tt=1 
+
+arrives sequentially for incremental training. Each dataset 
+
+Dt consists of a training set Dtrain  
+
+> t
+
+and a test set Dtest  
+
+> t
+
+, with no overlapping identities between them. During training, at step t, the model can only access the current training set Dtrain  
+
+> t
+
+for learning, while data from previous domains 
+
+{Dtrain  
+
+> i
+
+}i<t are inaccessible to avoid storage or privacy is-sues. For evaluation, all seen-domain test sets {Dtest  
+
+> i
+
+}Ti=1 are used to assess the model’s anti-forgetting and knowledge acquisition abilities. Additionally, a set of unseen datasets 
+
+DU = {Di}Ui=1 is utilized to measure the generalization performance of the LReID model on unseen domains. 
+
+3.2. Overview of PAD 
+
+Conceptually inspired by CLIP-ReID [12], the proposed Prompt-Anchored vision–text Distillation (PAD) frame-work extends cross-modal alignment into a lifelong setting. As illustrated in Fig. 2, PAD consists of a frozen text encoder, a partially trainable image encoder with only later layers unfrozen, and two prompt mechanisms that serve the textual and visual pathways, respectively. The two path-ways play asymmetric roles: the textual branch preserves cross-domain semantics, while the visual branch remains adaptive to new domains. In the textual pathway, the frozen text encoder provides a stable semantic coordinate system. The TA-Prompt is op-timized with a weak textual distillation signal from a fixed text teacher. This weak alignment preserves long-term se-mantic consistency without over-constraining domain adap-tation. In the visual pathway, PAD employs a complementary form of strong distillation. A momentum-based EMA teacher regularizes high-level visual representations, pre-venting semantic drift as new domains accumulate. Mean-while, the VA-Prompt operates inside the transformer back-bone, allocating new prompt slots for each incoming do-main while freezing previous ones, enabling continual vi-sual adaptation while reducing forgetting of previously learned domains. The overall training objective integrates contrastive alignment, identity classification, metric learning, and vi-sion–text knowledge distillation (KD): 
+
+Loverall = Lsupcon + LID + Ltriplet + LKD , (1) where Lsupcon is a supervised contrastive loss [9] that aligns TA-Prompt with the visual feature bank, while LID and 
+
+Ltriplet are logit-level cross-entropy loss and feature-level triplet loss [5], respectively. The distillation term collects all textual and visual KD losses: 
+
+LKD = λtext LTEXKD + λfeat LfeatKD + λlogit LlogitKD , (2) where LTEXKD is the text-side logit KD that keeps TA-Prompt close to the frozen text anchor, while LfeatKD and 
+
+LlogitKD are the visual-side feature KD and logit KD that transfer knowledge from the EMA teacher to the partially trainable backbone. The coefficients λtext , λfeat , and λlogit 
+
+control the contributions of each distillation pathway. The text encoder supplies stable cross-domain semantic anchors during training, while only the image encoder is re-tained at inference, ensuring high computational efficiency. 
+
+3.3. Textual Side 
+
+PAD establishes a dual-level semantic alignment on the tex-tual side, combining implicit anchoring from the frozen text encoder with explicit guidance through distillation of the TA-Prompt Labels .   
+
+> .
+> .Text Encoder
+> .
+> .
+> .
+> text features LTEXKD-logits
+> TA-Prompt .
+> .
+> .Text Encoder text features
+> .
+> .
+> .
+> Labels
+> Lsupcon
+> .
+> .
+> .image features
+
+⊙   
+
+> Images VA-Prompt Image Encoder
+> pool EMA-T LVISKD-logits
+> VA-Prompt Image Encoder Images each layer image features ID logits
+> LID
+> Ltriplet EMA-T initialize LVISKD-feature
+> D1
+> D2
+> Dt
+> T
+> pool
+
+Textual Side Visual Side 
+
+> current image features current text features prompt "A photo of a XX person." Fixed-T ∇update gradient prompt ID logits each layer initialize initialize ∇update gradient ⊙"A photo of a XX person."
+
+qTqTqSqS
+
+> Lsupcon
+> Ltriplet
+> LID
+
+⊙⊙⊙⊙⊙⊙Figure 2. Overview of the proposed PAD framework. The framework consists of a textual branch (left) and a visual branch (right) that evolve across domains. On the textual side, we use a frozen text encoder and distill the learnable textual prompts (TA-Prompt). On the visual side, we construct a visual prompt (VA-Prompt) pool and train last layers of the image encoder with a two-term visual distillation loss. The textual branch provides semantic guidance during training, while only the image encoder is kept for inference. 
+
+learnable prompts. The implicit alignment provides the pri-mary semantic anchoring, while explicit TEXKD only of-fers lightweight regularization for long-term consistency. 
+
+3.3.1. Implicit alignment 
+
+The frozen text encoder inherited from the pretrained vi-sion–language model defines a stable linguistic coordinate system that remains invariant across domains. Within this space, the TA-Prompt learns a set of trainable prompt to-kens [12] that generate class-level textual embeddings, ef-fectively bridging the mapping between textual category de-scriptions and visual representations. Concretely, for each identity yi we extract its visual fea-ture vi ∈ Rd from the current image encoder, and ob-tain the corresponding textual feature ti ∈ Rd by inserting the class-specific prompt tokens generated by TA-Prompt into the fixed text template and feeding the resulting sen-tence into the frozen text encoder. Both features are ℓ2-normalized, and TA-Prompt is optimized with a symmetric image–text SupCon loss [9]: 
+
+Lsupcon = SupCon( v → t) + SupCon( t → v), (3) where SupCon( v → t) and SupCon( t → v) are supervised contrastive losses computed over {vi} and {ti} with iden-tity labels {yi}. Positive pairs share the same identity label, and negative pairs come from different identities. Because the text encoder is frozen, optimizing Lsupcon 
+
+only updates the prompt parameters while keeping them aligned with the stable semantic anchors. In other words, each domain adapts its TA-Prompt to better match the cur-rent visual distribution, yet all domains remain tied to a uni-fied cross-modal semantic space dictated by the frozen text backbone. This produces an implicit alignment effect: vi-sual clusters are consistently pulled toward a set of class-level textual anchors shared across domains, even without any explicit text-side distillation. This implicit SupCon-driven alignment already acts as a strong, domain-agnostic semantic regularizer, explaining the robustness of our base-line when explicit TEXKD is disabled. 
+
+3.3.2. Explicit alignment 
+
+To obtain finer semantic consistency without sacrificing plasticity, PAD adds a deliberately weak distillation term on top of the implicit image–text contrastive loss. For each domain, we first construct a frozen text teacher by loading the previous checkpoint and keeping only its tex-tual branch fixed. Passing all identity labels through this teacher yields a global text bank ttea ∈ RC×d, which is cached once and reused throughout training. During op-timization, we sample a batch of cached visual features 
+
+v ∈ RB×d from the current domain, and select a label sub-set consisting of the batch identities and a set of randomly sampled negative identities. For this subset, the student TA-Prompt produces text embeddings tstu , while the teacher provides the corresponding anchors from ttea . We define a temperature-scaled softmax cosine similarity function: 
+
+q(v, t, τ, γ ) = exp ( γ (v · t+)/τ )
+
+PKi=1 exp ( γ (v · ti)/τ ) , (4) where K denotes the size of the sampled identity subset, including the batch identities and the randomly sampled negative identities. v · t is the cosine similarity between visual and text embeddings. τ is a temperature parameter that smooths the similarity distribution, and γ is a learnable logit-scaling factor that adjusts the overall sharpness of sim-ilarity scores. To softly align these two distributions, PAD applies a temperature-scaled textual distillation loss, denoted 
+
+LTEXKD :
+
+LTEXKD = τ 2 DKL 
+
+ q(v, t tea , τ, γ ) q(v, t stu , τ, γ ) ,
+
+(5) where DKL denotes the Kullback–Leibler divergence be-tween the teacher and student similarity distributions. In practice, we keep the teacher fixed within a domain and do not apply EMA on the textual branch: because the text encoder is fixed and only the prompts are updated, an EMA teacher would quickly collapse to the student, causing the KL term to vanish after only a few iterations. Using a frozen teacher avoids this collapse and provides a stable reference drawn from previous domains. This explicit alignment therefore complements the sym-metric image–text contrastive loss: while contrastive learn-ing adapts TA-Prompt to the current visual distribution, 
+
+LTEXKD gently keeps its image-conditioned class scores compatible with the historical text bank. With a small dis-tillation weight, PAD preserves the plasticity of the textual side across domains while still leveraging the teacher as a semantic anchor accumulated along the lifelong sequence. We intentionally keep LTEXKD weak, since overly strong text-side regularization would over-constrain prompt adap-tation on new domains. 
+
+3.4. Visual Side 
+
+3.4.1. Visual distillation 
+
+To regulate the adaptation of the partially unfrozen visual backbone and prevent semantic drift across domains, PAD applies an EMA-based visual distillation strategy. A mo-mentum teacher is maintained by updating its parameters after every iteration: 
+
+θtea ← αθ tea + (1 − α)θstu , (6) where θstu and θtea denote the student and teacher param-eters of the visual branch, and α ∈ (0 , 1) is the momen-tum coefficient. This EMA teacher provides a temporally smoothed target that reflects the recent training trajectory while filtering out noisy fluctuations, stabilizing continual updates under domain shift. Given an input batch of images, we compute a triplet of visual representations from both the student and the EMA teacher: 
+
+vstu i = {vstu  
+
+> 11
+
+, v stu  
+
+> 12
+
+, v stu proj }, vtea i = {vtea  
+
+> 11
+
+, v tea  
+
+> 12
+
+, v tea proj },
+
+corresponding to the penultimate-layer token output, the final-layer token output, and the final projected embedding of the visual transformer. These multi-level features are dis-tilled via a mean-squared regression: 
+
+LfeatKD = 13
+
+> 3
+
+X
+
+> i=1
+
+vstu i − vtea i 
+
+> 22
+
+. (7) In parallel, we apply a logit-level distillation that mir-rors the textual branch but is anchored on the domain-specific text feature bank. Concretely, both the student image features and its EMA teacher counterparts are pro-jected onto the same fixed textual embedding set, producing two vision–text similarity distributions through plain inner-product scoring without learnable logit-scaling factor. Atemperature-smoothed KL divergence is then used to match these two distributions: 
+
+LlogitKD = τ 2 DKL 
+
+ q(vtea , t, τ ) q(vstu , t, τ ) . (8) The overall visual distillation term is therefore 
+
+LVISKD = λfeat LfeatKD + λlogit LlogitKD , (9) with λfeat and λlogit controlling the respective strengths. Be-cause visual representations sit at a finer granularity and are highly sensitive to domain distribution shifts, PAD applies visual distillation with a relatively strong weight. Combined with selectively unfrozen late transformer blocks, this pro-vides sufficient plasticity for learning new domains, while using the EMA teacher as an anchor to prevent the learned feature space from collapsing or drifting away from previ-ous knowledge. 
+
+3.4.2. VA-Prompt design 
+
+The VA-Prompt is inspired by the design philosophy of Du-alPrompt [26] and consists of two complementary compo-nents: a General Prompt (G-Prompt) and an Expert Prompt (E-Prompt). For each transformer layer in the image en-coder, the G-Prompt provides a set of globally shared tokens, while the E-Prompt maintains a pool of expert-specific prompts. During forward propagation, the current input representation serves as a query to select the top-k
+
+most relevant experts based on cosine similarity. The se-lected prompts are concatenated after the [CLS] token and before the patch tokens, forming an extended token se-quence [CLS , G, E, patches ]. After the transformer block processes this sequence, the inserted prompts are stripped off, ensuring that no residual tokens overwrite the original structure of the visual representation. Across domains, each new domain activates a fresh set of prompt slots, while freezing those from previous domains. This yields a dynamic prompt pool that grows without in-terfering with previously acquired knowledge. 3.4.3. Selective layer unfreezing 
+
+Before entering the lifelong sequence, the model first adapts the pretrained CLIP backbone to the ReID task on the ini-tial domain, without distillation or layer freezing. This step shifts the pretrained model from generic feature learn-ing to ReID-specific representation learning. In subse-quent domains, prompt-based adaptation cannot accommo-date large-scale unfreezing, while conventional distillation methods usually depend on full or deep-layer fine-tuning. PAD adopts a balanced strategy: it only unfreezes the last few transformer blocks and the classification heads—where forgetting and transfer are most pronounced, while keeping lower layers frozen to preserve domain-invariant representations. This selective unfreezing strategy mitigates computational cost and over-constraint, yet still enables effective adaptation. 
+
+## 4. Experimental Results 
+
+4.1. Datasets and Evaluation Metrics 
+
+We conduct experiments across a total of twelve do-mains to comprehensively assess the lifelong adaptation and generalization ability of PAD. The seen domains in-clude Market1501 [40], CUHK-SYSU [30], DukeMTMC-reID [21], MSMT17 [28], and CUHK03 [15], while the unseen domains consist of CUHK01 [14], CUHK02 [13], VIPeR [4], PRID2011 [6], i-LIDS [41], GRID [18], and SenseReID [39]. Following the community’s main-stream lifelong ReID protocol, we adopt the All-Known-All (AKA) [19] benchmarks, i.e . AKA-order1 and AKA-order2, which define the sequential training and evaluation orders. Each domain is introduced incrementally without any re-play of past data, and the model is evaluated on both the cur-rent and previously seen domains after each training stage, as well as on all unseen domains for cross-domain general-ization. All datasets follow their standard splits, and perfor-mance is measured by mean Average Precision (mAP) and Cumulative Matching Characteristic at Rank-1 (R1). Our evaluation follows established lifelong ReID benchmarks and enables direct comparison with prior work. Additional evaluation under the LPW-s2 [34] substitution protocol is provided in the supplementary material. 
+
+4.2. Implementation Details 
+
+We adopt CLIP ViT-B/16 as the visual backbone and follow the standard lifelong protocol over five domains. Images are resized to 256 × 128 , augmented with random flipping and erasing, and sampled with an identity-balanced sampler. All models are trained using Adam with a batch size of 64 on a single NVIDIA RTX 3090 GPU. On the textual side, we freeze the CLIP text encoder and only optimize TA-Prompt, implemented as class-specific 1 2 3 4 5    
+
+> Training step
+> 40
+> 50
+> 60
+> 70
+> 80
+> Average mAP (%)
+> DASK
+> PatchKD
+> DKP++
+> AKA
+> LSTKC
+> PAD 12345
+> Training step
+> 50
+> 60
+> 70
+> 80
+> 90
+> Average R@1 (%)
+> DASK
+> PatchKD
+> DKP++
+> AKA
+> LSTKC
+> PAD
+
+Figure 3. Performance tendency on seen domains (AKA-order1). After each training step, the model is evaluated on the already-seen domains. 
+
+contextual tokens. Text-side distillation applies only logit-level KL loss with weight λtext = 0 .5, temperature τ =0.07 , and the learnable scaling factor γ initialized to 7.0.VA-Prompt adopts 6 general + 6 expert tokens per layer (pool size 36, Top-K=4). New expert slots are activated per domain, while all previous slots are frozen. Only the last few transformer blocks and the classification head are unfrozen; the backbone uses a base LR of 5 × 10 −6. Vi-sual distillation employs an EMA teacher with momentum 
+
+α = 0 .997 , combined with feature-level MSE and logit-level KL losses weighted by λfeat = λlogit = 0 .5, τ = 4 .0.
+
+4.3. Comparison with State-of-the-art Methods 
+
+We compare PAD with representative state-of-the-art meth-ods, including generic lifelong methods [10, 16, 26] and ReID-specific lifelong methods [2, 11, 17, 19, 23, 31– 33, 43]. The results are summarized in Table 1 and Ta-ble 2, corresponding to AKA-order1 and AKA-order2, re-spectively. Over 7 random seeds on AKA-order1, PAD achieves stable final-stage performance (seen-domain aver-age: 70.30 ±0.49 mAP and 80.98 ±0.31 R1). PAD achieves the best overall averages on both seen and unseen domains under AKA-order1 and AKA-order2. To provide additional intuition about PAD’s sequen-tial behavior, we further visualize the stage-wise perfor-mance tendency on AKA-order1. As shown in Fig. 3, PAD maintains stable performance on previously seen domains throughout the sequence. Fig. 4 further shows that unseen-domain performance improves as more tasks are introduced. 
+
+4.4. Ablation Studies 
+
+To further verify the effectiveness of each component in the proposed PAD framework, we conduct comprehensive ab-lation studies under the AKA-order1 benchmark. All exper-iments follow the same lifelong training protocol. 
+
+4.4.1. Component Analysis 
+
+We begin by incrementally assembling the proposed frame-work to assess the contribution of each module. Starting Table 1. Performance comparison with state-of-the-art methods on AKA-order1. The optimal and suboptimal values are highlighted in red and blue, respectively. AKA-order1 is Market-1501 →CUHK-SYSU → DukeMTMC →MSMT17 →CUHK03. Method Venue Market-1501 CUHK-SYSU DukeMTMC MSMT17 CUHK03 Seen-Avg Unseen-Avg 
+
+mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 LwF [16] PAMI’17 56.3 77.1 72.9 75.1 29.6 46.5 6.0 16.6 36.1 37.5 40.2 50.6 47.2 42.6 DualPrompt [26] ECCV’22 62.3 82.5 70.0 75.0 40.5 61.0 8.2 28.1 35.6 35.9 43.3 56.5 41.4 36.8 FCS [10] CVPR’24 58.3 78.5 75.1 76.2 42.6 59.8 10.2 24.3 35.3 34.9 44.3 54.7 52.1 44.2 AKA [19] CVPR’21 58.1 77.4 72.5 74.8 28.7 45.2 6.1 16.2 38.7 40.4 40.8 50.8 47.6 42.6 PatchKD [23] MM’22 68.5 85.7 75.6 78.6 33.8 50.4 6.5 17.0 34.1 36.8 43.7 53.7 49.1 45.4 LSTKC [32] AAAI’24 54.7 76.0 81.1 83.4 49.4 66.2 20.0 43.2 44.7 46.5 50.0 63.1 57.0 49.9 C2R [2] CVPR’24 69.0 86.8 76.7 79.5 33.2 48.6 6.6 17.4 35.6 36.2 44.2 53.7 48.7 41.9 DKP [31] CVPR’24 60.3 80.6 83.6 85.4 51.6 68.4 19.7 41.8 43.6 44.2 51.8 64.1 59.2 51.6 PAEMA [11] IJCV’24 71.7 86.9 90.0 91.3 66.0 79.0 31.4 55.3 50.0 50.8 61.8 72.7 70.3 63.2 
+
+DKP++ [43] PAMI’25 63.9 83.6 83.7 85.3 56.7 74.1 26.5 52.6 46.5 47.6 55.4 68.6 65.7 58.5 DASK [33] AAAI’25 61.2 82.3 81.9 83.7 58.5 74.6 29.1 57.6 46.2 48.1 55.4 69.3 65.3 58.4 DAFC [17] Arxiv’25 81.7 90.6 89.7 90.9 64.5 78.9 27.1 52.9 64.0 66.1 65.6 75.9 - -
+
+PAD (Ours) 81.2 92.0 92.6 93.5 64.9 77.8 46.9 72.0 68.1 69.5 70.7 81.0 78.6 71.4 
+
+Table 2. Performance comparison with state-of-the-art methods on AKA-order2. The optimal and suboptimal values are highlighted in red and blue, respectively. AKA-order2 is DukeMTMC →MSMT17 →Market-1501 → CUHK-SYSU → CUHK03. Method Venue DukeMTMC MSMT17 Market-1501 CUHK-SYSU CUHK03 Seen-Avg Unseen-Avg 
+
+mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 LwF [16] PAMI’17 42.7 61.7 5.1 14.3 34.4 58.6 70.0 73.0 34.1 34.1 37.2 48.4 44.0 40.1 FCS [10] CVPR’24 53.6 70.0 9.5 23.5 48.7 69.9 76.2 78.2 37.1 38.4 45.0 56.0 52.7 45.1 AKA [19] CVPR’21 42.2 60.1 5.4 15.1 37.2 59.8 71.2 73.9 36.9 37.9 38.6 49.4 46.0 41.7 PatchKD [23] MM’22 58.3 74.1 6.4 17.4 43.2 67.4 74.5 76.9 33.7 34.8 43.2 54.1 48.6 44.1 LSTKC [32] AAAI’24 49.9 67.6 14.6 34.0 55.1 76.7 82.3 83.8 46.3 48.1 49.6 62.1 57.6 49.6 C2R [2] CVPR’24 59.7 75.0 7.3 19.2 42.4 66.5 76.0 77.8 37.8 39.3 44.7 55.6 48.5 41.7 DKP [31] CVPR’24 53.4 70.5 14.5 33.3 60.6 81.0 83.0 84.9 45.0 46.1 51.3 63.2 59.0 51.6 PAEMA [11] IJCV’24 67.2 79.8 26.0 49.4 69.8 85.8 91.0 89.9 49.3 49.7 60.4 71.1 69.4 62.5 
+
+DKP++ [43] PAMI’25 55.7 73.9 22.2 47.8 65.9 85.6 84.4 86.5 49.5 51.7 55.5 69.1 64.9 57.9 DASK [33] AAAI’25 55.7 74.4 25.2 51.9 71.6 87.7 84.8 86.2 48.4 49.8 57.1 70.0 65.5 57.9 DAFC [17] Arxiv’25 71.1 83.2 31.2 58.0 72.2 87.4 88.2 89.3 60.6 62.9 64.7 76.2 - -
+
+PAD (Ours) 71.1 82.6 37.7 64.0 77.5 89.8 93.9 94.9 66.4 68.5 69.3 80.0 76.2 68.6 1 2 3 4 5    
+
+> Training step
+> 30
+> 40
+> 50
+> 60
+> 70
+> Average mAP (%)
+> DASK
+> PatchKD
+> DKP++
+> AKA
+> LSTKC
+> PAD 12345
+> Training step
+> 30
+> 40
+> 50
+> 60
+> 70
+> Average R@1 (%)
+> DASK
+> PatchKD
+> DKP++
+> AKA
+> LSTKC
+> PAD
+
+Figure 4. Performance tendency on unseen domains (AKA-order1). After each training step, the performance of all unseen domains is evaluated. 
+
+from a fully fine-tuned CLIP-ReID [12] baseline without any prompt or distillation, we progressively introduce the freezing scheme, VA-Prompt, textual distillation, and visual distillation. Table 3 reflects the expected stability–plasticity trade-off. The fully fine-tuned baseline (S0) adapts well to later domains but suffers stronger forgetting on earlier ones, while the freezing-only variant (S1) favors early-domain re-tention at the cost of adaptation. Adding VA-Prompt (S2) restores plasticity, and TEXKD (S3) and VISKD (S4) fur-ther improve stability from the textual and visual sides, re-spectively. The full PAD (S5) achieves the best overall bal-ance across domains. The same trend is observed on AKA-order2 in the supplementary material. We further observe that VA-Prompt activation similar-ity strongly correlates with inter-domain feature similarity (ρ = 0 .77 ), suggesting that prompt routing is semantically meaningful. 
+
+4.4.2. Analysis on Textual Distillation 
+
+We evaluate the impact of textual distillation using weak and strong parameter configurations, alongside no-Table 3. Ablation study on AKA-order1. Columns indicate modules: Freeze —PAD freezing scheme, VA —Visual Adaptive Prompt, 
+
+TEXKD —textual fixed distillation, VISKD —visual EMA distillation. ID Freeze VA TEXKD VISKD Market1501 CUHK-SYSU DukeMTMC MSMT17 CUHK03 Seen Avg mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 S0 67.2 83.6 84.1 85.8 58.8 74.3 41.3 67.2 79.4 81.4 66.2 78.5 S1 ✓ 81.9 92.8 90.7 91.7 58.6 75.1 40.8 67.9 62.1 64.2 66.8 78.4 S2 ✓ ✓ 78.2 90.7 90.5 91.8 59.7 76.4 42.8 69.5 69.6 72.0 68.2 80.1 S3 ✓ ✓ ✓ 79.1 91.0 90.9 92.0 59.0 75.5 43.4 70.1 69.7 73.2 68.4 80.4 S4 ✓ ✓ ✓ 79.2 91.1 92.3 93.3 64.1 77.3 45.6 71.2 68.1 69.1 69.9 80.4 S5 ✓ ✓ ✓ ✓ 81.2 92.0 92.6 93.5 64.9 77.8 46.9 72.0 68.1 69.5 70.7 81.0 
+
+Table 4. Effect of textual distillation strength on AKA-order1. Weak/Strong differ only when TEXKD is enabled; for “No KD” and “VISKD only”, both columns are identical.           
+
+> Method TEXKD Setting Weak (mAP / R1) Strong (mAP / R1)
+> No KD 68.2 / 80.1 68.2 / 80.1 TEXKD only 68.4 / 80.4 67.6 / 79.3 VISKD only 69.9 / 80.4 69.9 / 80.4 TEXKD + VISKD 70.7 / 81.0 69.5 / 80.2
+
+distillation and vision-only variants, as shown in Table 4. The weak setting corresponds to λlogit =0 .50 , τ =0 .07 , and 
+
+γ=7 .0, while the strong setting uses λlogit =1 .00 , τ =0 .05 ,and γ=12 .0.These results support our design choice that TEXKD should remain weak. Since the frozen text encoder and Sup-Con already provide strong implicit anchoring, a stronger text-side constraint mainly over-regularizes prompt adapta-tion and degrades performance. More fine-grained variants are reported in the supplementary material. To quantify semantic drift, we measure the maximum co-sine similarity between image embeddings and the frozen text prototypes at the final stage. PAD consistently im-proves this score by about +0.09 across representative do-mains (e.g., Duke 0.151 →0.243, Market 0.188 →0.277, and CUHK-SYSU 0.192 →0.287), supporting that TEXKD and VISKD stabilize the learned visual semantics. 
+
+4.4.3. Parameter Freezing Strategy 
+
+Fig. 5 summarizes the trainable ratios on both sides. Only the TA-Prompt is updated on the textual branch, whereas the visual branch optimizes the VA-Prompt, classifier head, and selectively unfrozen backbone blocks. Although the architecture is fixed, the effective trainable ratio varies across domains because identity distributions affect the classifier and prompt-routing parameters that re-ceive gradients. CUHK-SYSU, with its denser and more long-tailed identity structure, activates more visual-side pa-rameters during Stage 1, resulting in a higher trainable ratio (∼7.8%), while other datasets stay around 1–1.6%. Com-pared to most previous methods [32, 43] that require full Market1501      
+
+> CUHK-SYSU
+> DukeMTMC
+> MSMT17
+> CUHK03
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> 7
+> 8
+> Trainable params (% of total model) TA-Prompt
+> (a) TA-Prompt .Market1501
+> CUHK-SYSU
+> DukeMTMC
+> MSMT17
+> CUHK03
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> 70
+> 80
+> 90
+> 100
+> Trainable params (% of total model) VA-Prompt
+> Visual-Head
+> Visual-Encoder (b) VA-Prompt ,Head ,Backbone .
+
+Figure 5. Trainable parameter composition across domains. 
+
+The textual side (a) updates only the TA-Prompt, while the visual side (b) trains the VA-Prompt, classifier head, and a small portion of the backbone. Ratios are normalized within trainable modules, excluding the frozen text encoder. 
+
+model training, our prompt-based design and selective pa-rameter freezing drastically reduce the number of updated parameters while still enabling effective adaptation. On the 5-domain AKA benchmark, PAD introduces only marginal prompt-storage overhead, with a peak of 13.71M prompt parameters (about 26.1 MiB in FP16), and additional anal-ysis of the number of unfrozen blocks is provided in the supplementary material. 
+
+## 5. Conclusion 
+
+We propose Prompt-Anchored vision–text Distillation (PAD) for exemplar-free lifelong person re-identification. PAD introduces a frozen textual semantic space as a per-sistent anchor and couples weak textual distillation with stronger EMA-guided visual distillation, so that semantic preservation and domain adaptation are handled in an asym-metric manner. In this way, PAD mitigates semantic drift without replay or full backbone fine-tuning. Extensive ex-periments on AKA-order1 and AKA-order2 show that PAD consistently outperforms prior methods on both seen and unseen domains. Nevertheless, some domains remain chal-lenging, and future work may further improve PAD through adaptive distillation weighting and extensions to more com-plex settings such as multimodal or hybrid-clothing ReID. Acknowledgement 
+
+This work was supported in part by the Natural Sci-ence Foundation of China under Grant 62402013, Grant U20B2052, Grant 61936011, in part by Grant 2023-JCJQ-LA-001-088, in part by the China Postdoctoral Science Foundation under Grant 2025T180410, Grant 2023M730056, in part by the Okawa Foundation Research Award, in part by the Ant Group Research Fund, and in part by the Kunpeng&Ascend Center of Excellence, Peking University. 
+
+## References 
+
+[1] Hao Chen, Francois Bremond, Nicu Sebe, and Shiliang Zhang. Anti-forgetting adaptation for unsupervised person re-identification. IEEE Transactions on Pattern Analysis and Machine Intelligence , 47(2):1056–1072, 2025. [2] Zhenyu Cui, Jiahuan Zhou, Xun Wang, Manyu Zhu, and Yuxin Peng. Learning continual compatible representation for re-indexing free lifelong person re-identification. In Pro-ceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 16614–16623, 2024. [3] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Syl-vain Gelly, et al. An image is worth 16x16 words: Trans-formers for image recognition at scale. arXiv preprint arXiv:2010.11929 , 2020. [4] Douglas Gray and Hai Tao. Viewpoint invariant pedestrian recognition with an ensemble of localized features. In ECCV ,2008. [5] Alexander Hermans, Lucas Beyer, and Bastian Leibe. In de-fense of the triplet loss for person re-identification. arXiv preprint arXiv:1703.07737 , 2017. [6] Martin Hirzer, Csaba Beleznai, Peter M. Roth, and Horst Bischof. Person Re-Identification by Descriptive and Dis-criminative Classification. In Proc. Scandinavian Confer-ence on Image Analysis (SCIA) , 2011. [7] Kiseong Hong, Gyeong-hyeon Kim, and Eunwoo Kim. Rainbowprompt: Diversity-enhanced prompt-evolving for continual learning. In Proceedings of the IEEE/CVF Inter-national Conference on Computer Vision , pages 1130–1140, 2025. [8] Zhipeng Huang, Zhizheng Zhang, Cuiling Lan, Wenjun Zeng, Peng Chu, Quanzeng You, Jiang Wang, Zicheng Liu, and Zheng-jun Zha. Lifelong unsupervised domain adaptive person re-identification with coordinated anti-forgetting and adaptation. In CVPR , 2022. [9] Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip Isola, Aaron Maschinot, Ce Liu, and Dilip Krishnan. Supervised contrastive learning. Advances in neural information processing systems , 33:18661–18673, 2020. [10] Qiwei Li, Yuxin Peng, and Jiahuan Zhou. Fcs: Feature calibration and separation for non-exemplar class incremen-tal learning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 28495– 28504, 2024. [11] Qiwei Li, Kunlun Xu, Yuxin Peng, and Jiahuan Zhou. Exemplar-free lifelong person re-identification via prompt-guided adaptive knowledge consolidation. International Journal of Computer Vision , pages 1–16, 2024. [12] Siyuan Li, Li Sun, and Qingli Li. Clip-reid: Exploiting vision-language model for image re-identification without concrete text labels. In AAAI , 2023. [13] W. Li and Xiaogang Wang. Locally aligned feature trans-forms across views. CVPR , 2013. [14] W. Li, Rui Zhao, and Xiaogang Wang. Human reidentifica-tion with transferred metric learning. In ACCV , 2012. [15] Wei Li, Rui Zhao, Tong Xiao, and Xiaogang Wang. Deep-reid: Deep filter pairing neural network for person re-identification. CVPR , 2014. [16] Zhizhong Li and Derek Hoiem. Learning without forgetting. 
+
+IEEE transactions on pattern analysis and machine intelli-gence , 40(12):2935–2947, 2017. [17] Shiben Liu, Huijie Fan, Qiang Wang, Baojie Fan, Yan-dong Tang, and Liangqiong Qu. Distribution-aware for-getting compensation for exemplar-free lifelong person re-identification. arXiv preprint arXiv:2504.15041 , 2025. [18] Chen Change Loy, T. Xiang, and S. Gong. Multi-camera activity correlation analysis. In CVPR , 2009. [19] Nan Pu, Wei Chen, Yu Liu, Erwin M. Bakker, and Michael S. Lew. Lifelong person re-identification via adaptive knowl-edge accumulation. In CVPR , 2021. [20] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural language supervision. In ICML , 2021. [21] Ergys Ristani, Francesco Solera, Roger Zou, Rita Cucchiara, and Carlo Tomasi. Performance measures and a data set for multi-target, multi-camera tracking. In ECCV workshops ,2016. [22] James Seale Smith, Leonid Karlinsky, Vyshnavi Gutta, Paola Cascante-Bonilla, Donghyun Kim, Assaf Arbelle, Rameswar Panda, Rogerio Feris, and Zsolt Kira. Coda-prompt: Contin-ual decomposed attention-based prompting for rehearsal-free continual learning. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , pages 11909–11919, 2023. [23] Zhicheng Sun and Yadong Mu. Patch-based knowledge dis-tillation for lifelong person re-identification. In Proceedings of the 30th ACM International Conference on Multimedia ,pages 696–707, 2022. [24] Runqi Wang, Xiaoyue Duan, Guoliang Kang, Jianzhuang Liu, Shaohui Lin, Songcen Xu, Jinhu L¨ u, and Baochang Zhang. Attriclip: A non-incremental learner for incremental knowledge learning. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pages 3654–3663, 2023. [25] Yabin Wang, Zhiwu Huang, and Xiaopeng Hong. S-prompts learning with pre-trained transformers: An occam’s razor for domain incremental learning. Advances in Neural Informa-tion Processing Systems , 35:5682–5695, 2022. [26] Zifeng Wang, Zizhao Zhang, Sayna Ebrahimi, Ruoxi Sun, Han Zhang, Chen-Yu Lee, Xiaoqi Ren, Guolong Su, Vin-cent Perot, Jennifer Dy, et al. Dualprompt: Complementary prompting for rehearsal-free continual learning. In ECCV ,2022. [27] Zifeng Wang, Zizhao Zhang, Chen-Yu Lee, Han Zhang, Ruoxi Sun, Xiaoqi Ren, Guolong Su, Vincent Perot, Jen-nifer Dy, and Tomas Pfister. Learning to prompt for continual learning. In CVPR , 2022. [28] Longhui Wei, Shiliang Zhang, Wen Gao, and Qi Tian. Person transfer gan to bridge domain gap for person re-identification. In CVPR , 2018. [29] Guile Wu and Shaogang Gong. Generalising without forget-ting for lifelong person re-identification. In AAAI , 2021. [30] Tong Xiao, Shuang Li, Bochao Wang, Liang Lin, and Xiao-gang Wang. Joint detection and identification feature learn-ing for person search. CVPR , 2017. [31] Kunlun Xu, Xu Zou, Yuxin Peng, and Jiahuan Zhou. Distribution-aware knowledge prototyping for non-exemplar lifelong person re-identification. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 16604–16613, 2024. [32] Kunlun Xu, Xu Zou, and Jiahuan Zhou. Lstkc: Long short-term knowledge consolidation for lifelong person re-identification. In AAAI , 2024. [33] Kunlun Xu, Chenghao Jiang, Peixi Xiong, Yuxin Peng, and Jiahuan Zhou. Dask: Distribution rehearsing via adaptive style kernel learning for exemplar-free lifelong person re-identification. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 8915–8923, 2025. [34] Kunlun Xu, Fan Zhuo, Jiangmeng Li, Xu Zou, and Ji-ahuan Zhou. Self-reinforcing prototype evolution with dual-knowledge cooperation for semi-supervised lifelong person re-identification. In Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , 2025. [35] Zexian Yang, Dayan Wu, Chenming Wu, Zheng Lin, Jingzi Gu, and Weiping Wang. A pedestrian is worth one prompt: Towards language guidance person re-identification. In Pro-ceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 17343–17353, 2024. [36] Chunlin Yu, Ye Shi, Zimo Liu, Shenghua Gao, and Jingya Wang. Lifelong person re-identification via knowledge re-freshing and consolidation. In AAAI , 2023. [37] Chenyang Yu, Xuehu Liu, Yingquan Wang, Pingping Zhang, and Huchuan Lu. Tf-clip: Learning text-free clip for video-based person re-identification. In AAAI , 2024. [38] Yajing Zhai, Yawen Zeng, Zhiyong Huang, Zheng Qin, Xin Jin, and Da Cao. Multi-prompts learning with cross-modal alignment for attribute-based person re-identification. In 
+
+AAAI , 2024. [39] Haiyu Zhao, Maoqing Tian, Shuyang Sun, Jing Shao, Junjie Yan, Shuai Yi, Xiaogang Wang, and Xiaoou Tang. Spindle net: Person re-identification with human body region guided feature decomposition and fusion. CVPR , 2017. [40] Liang Zheng, Liyue Shen, Lu Tian, Shengjin Wang, Jing-dong Wang, and Qi Tian. Scalable person re-identification: A benchmark. ICCV , 2015. [41] Wei-Shi Zheng, Shaogang Gong, and Tao Xiang. Associat-ing groups of people. In BMVC , 2009. [42] Da-Wei Zhou, Kai-Wen Li, Jingyi Ning, Han-Jia Ye, Lijun Zhang, and De-Chuan Zhan. External knowledge injection for clip-based class-incremental learning. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , pages 3314–3325, 2025. [43] Jiahuan Zhou, Kunlun Xu, Fan Zhuo, Xu Zou, and Yuxin Peng. Distribution-aware knowledge aligning and prototyp-ing for non-exemplar lifelong person re-identification. IEEE Transactions on Pattern Analysis and Machine Intelligence ,2025. [44] Xiaohan Zou, Wenchao Ma, and Shu Zhao. Learning con-ditional space-time prompt distributions for video class-incremental learning. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 4862–4873, 2025. Prompt-Anchored Vision–Text Distillation for Lifelong Person Re-identification 
+
+# Supplementary Material 
+
+## Overview 
+
+This supplementary document provides additional ablation studies and evaluation protocols to complement the analysis in the main paper. We first report results on an alternative lifelong protocol where DukeMTMC-reID is replaced by LPW-s2, verifying the robustness of PAD under different domain compositions. We then examine the influence of distillation strength on both the textual and visual branches. Next, we provide additional ablations on AKA-order2 and on the number of unfrozen transformer blocks. Finally, we study the VA-Prompt pool allocation strategy under a fixed capacity. All experimental settings remain identical to those in the main paper unless otherwise specified. 
+
+## A. Evaluation with LPW-s2 
+
+To validate the effectiveness on more evaluation protocols, we also report the results of PAD under the LPW-s2 [34] substitution protocol, where DukeMTMC-reID is replaced by LPW-s2 following recent practice in lifelong ReID. The rest of the configuration remains identical to the main paper. This evaluation is intended to verify that the behavior of PAD is stable when domain composition is slightly altered. The performance on the LPW-based versions of AKA-order1 and AKA-order2 is summarized in Tabs. S1 and S2, where the final stage average mAP/R1 on seen and unseen domains is shown for both orders. Across both orders, PAD retains the same qualitative be-havior as reported in the main paper, and the results confirm that the proposed framework is robust to reasonable data changes in the lifelong sequence. 
+
+## B. Ablation on Distillation Strength 
+
+B.1. Textual Distillation 
+
+The main paper applies a weak but stable textual distillation on top of the frozen text feature bank, aiming to keep the TA-Prompt semantically anchored while leaving sufficient room for domain-specific adaptation. To study the role of this component, we vary the overall strength of textual dis-tillation by jointly modifying the KL weight λlogit , temper-ature τ , logit scale γ, and the number of negatives, while keeping all other settings fixed. We evaluate five configurations of textual distillation, de-noted T1–T5, arranged from weak to strong. T1 adopts a lighter KL weight λlogit and a mild logit scale γ. T2 corre-sponds to the baseline setting used in the main paper. T3 increases only λlogit while keeping the temperature τ , logit scale γ, and the number of negatives per batch fixed, form-ing a clean “pure-weight” variant for isolating the effect of KL strength. T4 strengthens the distillation by lowering τ
+
+and substantially enlarging γ, and additionally increases the negative batch size to enlarge the contrastive space, produc-ing a sharper and more globally stable teacher signal. T5 further increases λlogit on top of this sharper configuration while slightly reducing γ relative to T4 (still higher than T2), and maintains the larger negative batch size, ensuring a monotonic progression of overall distillation strength. In other words, T4 emphasizes sharper logits through a larger 
+
+γ, whereas T5 emphasizes a stronger KL constraint via a larger λlogit , allowing the two settings to reinforce tex-tual distillation along complementary dimensions. Results for both seen and unseen domains under AKA-order1 are summarized in Tab. S3, and all hyperparameters match the YAML blocks included in the main paper. The results indicate that mild-to-moderate textual super-vision (T1–T3) yields the most stable performance across stages, maintaining a consistent balance between seen and unseen domains. As the distillation becomes increasingly sharp (T4) or overly dominant (T5), the representation be-gins to bias toward the teacher distribution, leading to gradual degradation in both seen and unseen performance. These trends suggest that a weak textual constraint provides reliable trade-off between semantic alignment and continual adaptability. 
+
+B.2. Visual Distillation 
+
+PAD applies multi-level visual distillation through an EMA teacher, combining feature-level and logit-level alignment. The default configuration in the main paper uses a balanced weighting (λfeat , λ logit ) = (0 .5, 0.5) with a temperature τ =4.0, while the EMA momentum is fixed to 0.997 throughout training. To assess how the strength of visual supervision influ-ences continual adaptation, we vary the three distillation pa-rameters λfeat , λlogit , and τ while keeping all other compo-nents identical. Five variants are tested, ranging from very weak to very strong, constructed by progressively increas-ing the distillation weights and adjusting the temperature accordingly. Performance on both seen and unseen domains under AKA-order1 is summarized in Tab. S4. The results show a clear upward trend from V1 to V3, indicating that moderate visual supervision effectively sta-bilizes the partially unfrozen backbone and yields consis-tent improvements across both seen and unseen domains. Once the distillation weights continue to increase and the temperature is lowered (V4–V5), the gains begin to saturate Table S1. Performance comparison with LReID methods on Training Order-1 : Market-1501 → CUHK-SYSU → LPW → MSMT17 →
+
+CUHK03. The optimal and suboptimal values are highlighted in red and blue. 
+
+Method Venue Market-1501 CUHK-SYSU LPW MSMT17 CUHK03 Seen-Avg Unseen-Avg 
+
+mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 PatchKD [23] MM’22 71.6 87.7 77.0 79.6 33.2 41.9 7.0 18.5 29.5 30.4 43.7 51.6 47.8 41.4 LSTKC [32] AAAI’24 57.0 78.6 82.9 84.9 47.2 58.4 18.4 41.1 42.3 43.7 49.6 61.3 57.8 50.2 DKP [31] CVPR’24 60.0 80.3 84.1 85.9 46.0 57.9 17.7 38.5 41.0 41.4 49.8 60.8 57.5 50.7 
+
+SPRED [34] ICCV’25 63.1 81.7 83.2 84.8 50.6 60.7 15.2 34.5 48.6 50.0 52.1 62.3 58.7 50.7 PAD (Ours) 81.4 92.1 92.2 92.9 65.2 73.8 44.7 71.1 68.0 69.1 70.3 79.8 77.6 69.7 
+
+Table S2. Performance comparison with LReID methods on Training Order-2 : LPW → MSMT17 → Market-1501 → CUHK-SYSU →
+
+CUHK03. The optimal and suboptimal values are highlighted in red and blue. 
+
+Method Venue LPW MSMT17 Market-1501 CUHK-SYSU CUHK03 Seen-Avg Unseen-Avg 
+
+mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 PatchKD [23] MM’22 58.0 69.0 6.3 16.7 46.3 70.6 75.7 78.5 29.6 30.2 43.2 53.0 45.3 38.5 LSTKC [32] AAAI’24 46.7 57.6 14.9 33.9 56.5 78.0 84.0 86.1 42.1 43.7 48.8 59.9 57.4 49.5 DKP [31] CVPR’24 49.5 61.4 14.1 32.6 60.3 80.6 84.5 86.4 43.6 43.7 50.4 60.9 59.5 52.4 
+
+SPRED [34] ICCV’25 51.8 62.4 10.4 26.2 56.8 77.0 84.5 85.9 42.9 43.8 49.3 59.1 57.1 49.1 
+
+PAD (Ours) 71.5 79.7 38.3 64.7 77.7 89.6 93.4 94.2 65.7 68.2 69.3 79.3 77.3 69.8 
+
+Table S3. Effect of textual distillation strength (T1–T5). We report final stage average performance on both seen and unseen domains. Each configuration varies only in the KL weight λlogit , temperature 
+
+τ , and logit scale γ, whose values are listed in the table. T1–T3 use a negative batch size of 256, while T4–T5 increase it to 512 to enlarge the contrastive space. T2 is used as the baseline in the main paper. 
+
+ID λ τ γ Seen Unseen mAP R1 mAP R1 T1 0.25 0.07 4.0 70.7 81.3 78.5 71.2 
+
+T2 0.50 0.07 7.0 70.7 81.0 78.6 71.4 
+
+T3 0.70 0.07 7.0 70.8 81.3 78.3 71.0 T4 0.70 0.05 16.0 70.3 81.0 78.2 71.1 T5 1.00 0.05 12.0 69.5 80.2 77.4 70.3 and eventually reverse, with stronger variants showing mild degradation in both metrics. This suggests that while a bal-anced level of visual guidance is beneficial, overly strong constraints still narrow the adaptation space and hinder the model’s ability to adjust to new domains. 
+
+## C. Component Analysis on AKA-order2 
+
+To verify that the component-wise conclusions in the main paper are not specific to AKA-order1, we further conduct the same ablation study on AKA-order2. Following the set-ting in the main paper, we report four configurations: VA-Prompt only (S2), S2 + TEXKD (S3), S2 + VISKD (S4), and the full PAD model (S5). The results are summarized in Table S5. 
+
+Table S4. Effect of visual distillation strength (V1–V5). We re-port final stage average performance on both seen and unseen do-mains. Each configuration varies only in the feature- and logit-level weights (λfeat , λ logit ) and the temperature τ . The EMA mo-mentum is fixed to 0.997 throughout training. V3 corresponds to the configuration adopted in the main paper. 
+
+ID λfeat λlogit τ Seen Unseen mAP R1 mAP R1 V1 0.25 0.25 4.0 70.0 80.9 77.3 69.9 V2 0.35 0.35 4.0 70.2 81.0 77.7 70.5 
+
+V3 0.50 0.50 4.0 70.7 81.0 78.6 71.4 
+
+V4 0.75 0.75 3.5 70.5 80.9 78.2 70.8 V5 1.00 1.00 3.0 70.0 80.3 77.1 69.7 The trend is broadly consistent with AKA-order1. VA-Prompt already restores substantial plasticity, while TEXKD and VISKD further improve stability from the tex-tual and visual sides. On AKA-order2, the gains of the two distillation pathways are not strictly monotonic, but the overall results still support their complementary roles under different lifelong orders. 
+
+## D. Selective Layer Unfreezing 
+
+The main paper updates the last 4 transformer blocks of the visual backbone. To justify this choice, we compare four variants that unfreeze the last 2, 4, 6, or 8 blocks while keep-ing all other settings fixed. Table S6 reports the final-stage seen-domain average, Market1501 performance as a proxy for early-domain re-Table S5. Ablation study on AKA-order2. Columns indicate modules: Freeze —PAD freezing scheme, VA —Visual Adaptive Prompt,                                                                                     
+
+> TEXKD —textual fixed distillation, VISKD —visual EMA distillation. ID Freeze VA TEXKD VISKD DukeMTMC MSMT17 Market1501 CUHK-SYSU CUHK03 Seen Avg mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 mAP R1 S2 ✓✓63.4 78.4 33.0 59.8 70.2 86.8 91.9 93.0 67.8 70.4 65.3 77.7 S3 ✓✓✓65.5 79.5 33.4 60.0 72.1 87.1 92.5 93.8 67.9 70.7 66.3 78.2 S4 ✓✓✓71.0 82.7 38.0 64.5 77.3 89.7 93.8 94.7 66.2 68.8 69.3 80.1
+> S5 ✓✓✓✓71.1 82.6 37.7 64.0 77.5 89.8 93.9 94.9 66.4 68.5 69.3 80.0 Table S6. Effect of the number of unfrozen blocks. We report the final-stage seen-domain average, Market1501 performance, and trainable parameters. 4 blocks corresponds to the configuration used in the main paper.
+
+Blocks Seen Market1501 Trainable mAP R1 mAP R1 Param Ratio 2 68.7 79.3 82.0 91.8 23.6M 16.29% 
+
+4 70.7 81.0 81.2 92.0 37.8M 26.07% 6 71.9 82.3 77.5 90.0 52.0M 35.84% 8 72.0 82.6 74.3 88.3 66.2M 45.61% tention, and the trainable parameter scale. Unfreezing more blocks slightly improves the overall average, but also re-duces retention on the earliest domain and increases the training cost. Therefore, we adopt 4 blocks in the main pa-per as a practical balance between adaptation and efficiency. 
+
+## E. Ablation on VA-Prompt Pool Allocation 
+
+The VA-Prompt module maintains a small pool of ex-pert prompts, and the main paper adopts the allocation 
+
+[8 , 8, 8, 8, 4] , which reflects a combined consideration of dataset size and the ordering of domains. To assess the role of this allocation strategy, we keep the global prompts and the Top-K routing fixed, and vary only the distribution of expert slots. We evaluate four alternative layouts: a uniformly small configuration with reduced overall capacity; a uniform-full design that preserves the total capacity of the default but distributes it evenly; a head-heavy variant that allocates more slots to earlier domains; and a tail-heavy version that emphasizes later domains. The final stage average perfor-mance on seen and unseen domains under AKA-order1 is summarized in Tab. S7. The uniform-small configuration (P2) performs clearly worse than the default, showing that the expert pool can-not be compressed too aggressively without harming se-quential performance. Among capacity-matched variants (P3–P5), the uniform-full layout remains slightly weaker than the default, indicating that a balanced but non-uniform assignment is more effective than an equal split. Both the   
+
+> Table S7. Ablation on VA-Prompt pool allocation (P1–P5). We re-port final stage average performance on both seen and unseen do-mains. Each variant modifies only the allocation of expert prompt slots, while the global prompt remains unchanged. P1 corresponds to the default configuration used in the main paper.
+
+ID Slot Total Seen Unseen mAP R1 mAP R1 
+
+P1 [8,8,8,8,4] 36 70.7 81.0 78.6 71.4 
+
+P2 [4,4,4,4,4] 20 68.7 80.0 76.5 69.0 P3 [8,7,7,7,7] 36 70.2 80.7 77.8 70.5 P4 [12,8,8,4,4] 36 70.5 81.2 77.7 70.2 P5 [4,4,8,8,12] 36 70.5 81.2 77.3 70.1 head-heavy and tail-heavy allocations yield comparable but consistently lower results, suggesting that concentrating ca-pacity at either end of the domain sequence provides no ad-vantage. Overall, the results indicate that PAD is not overly sensitive to reasonable capacity-matched allocations, while overly compressed or strongly imbalanced assignments lead to inferior performance.
