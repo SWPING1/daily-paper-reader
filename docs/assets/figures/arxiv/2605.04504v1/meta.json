@@ -1,0 +1,126 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-001.webp",
+      "caption": "Table 6. Backbone transfer to BLIP-ITC. We compare BLIP-ITC and BLIP-ITC + SpecPL under the base-to-novel protocol on seven benchmarks. Best results are highlighted in bold.",
+      "page": 15,
+      "index": 1,
+      "width": 537,
+      "height": 414
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-002.webp",
+      "caption": "Table 1. Base-to-novel generalization on 11 datasets (16-shot). The upper part lists representative and recent prompt-learning methods. The lower part evaluates SpecPL as a plug-in booster on top of representative baselines (+Ours).",
+      "page": 7,
+      "index": 2,
+      "width": 858,
+      "height": 987
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-003.webp",
+      "caption": "Table 5. Hyperparameters of SpecPL used in our experiments.",
+      "page": 14,
+      "index": 3,
+      "width": 811,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-004.webp",
+      "caption": "Figure 6. Hyperparameter sensitivity across five datasets. We report Base, Novel, and HM. The ablations quantify the contribution of each SpecPL component, and the sensitivity plots vary key hyperparameters (e.g., bank size, bank temperature, and shared input modality).",
+      "page": 14,
+      "index": 4,
+      "width": 1017,
+      "height": 781
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-005.webp",
+      "caption": "Figure 2. SpecPL framework (train vs. inference). Given an input image, a frozen pretrained VAE encoder provides spatial latents that are factorized by a lightweight Spatial–Spectral Proxy (sliding average pooling) into a low-frequency base band (semantic invariants) and a high-frequency residual detail band (instance granules). Two lightweight projection heads map the two bands into the CLIP embedding space, producing tlow and thigh; the CLIP backbone remains frozen while prompts and lightweight modules are optimized. The low-band prototypes initialize a Visual Semantic Bank and enable compositional text refinement via soft retrieval followed by an MLP+LN residual aggregator, yielding refined class text features used for the main classification loss Lcls. A semantic anchoring loss Lsem aligns the expected text direction with tlow (stop-gradient through pseudo-labels). Training only, SpecPL adds a FiLM-style modulation branch conditioned on fused shared semantics and thigh to impose factual and counterfactual granule supervision (Lf g , Lcf g ). Inference discards the VAE teacher and FiLM branch, relying solely on bank-based refinement and standard CLIP similarity for prediction.",
+      "page": 3,
+      "index": 5,
+      "width": 995,
+      "height": 363
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-006.webp",
+      "caption": "Figure 8. Few-shot HM under the base-to-novel protocol on 11 datasets. HM curves for CoOp and CoOp + SpecPL under 1/2/4/8/16-shot settings.",
+      "page": 18,
+      "index": 6,
+      "width": 935,
+      "height": 577
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-007.webp",
+      "caption": "Figure 9. Few-shot Base/Novel/HM performance under the base-to-novel protocol on 11 datasets. We report full Base, Novel, and HM curves to show how SpecPL affects both base-class fitting and novel-class transfer.",
+      "page": 18,
+      "index": 7,
+      "width": 935,
+      "height": 583
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-008.webp",
+      "caption": "Table 4. Ablation on CoOp / FGVC-Aircraft (base-to-novel, 16-shot). Rows with Bank enabled use refined text; “Raw+” rows use raw CoOp text prompts without bank refinement. ∆HM is computed w.r.t. CoOp+Ours (HM=35.98).",
+      "page": 8,
+      "index": 8,
+      "width": 475,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-009.webp",
+      "caption": "Figure 3. Visualization of SpecPL’s spatial–spectral proxy decomposition. For each example, we show the original image, the full representation (ALL), and the disentangled Base (low-frequency proxy) and Detail (high-frequency proxy) components. The Base captures stable semantic invariants and global structure (e.g., shape/topology), while the Detail highlights fine-grained textures and local variations that provide discriminative evidence, helping alleviate the stability–generalization tension in prompt learning.",
+      "page": 4,
+      "index": 9,
+      "width": 1017,
+      "height": 280
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-010.webp",
+      "caption": "Figure 10. Conventional all-class few-shot performance on 11 datasets. Unlike the base-to-novel setting in Figures 8 and 9, this protocol samples few-shot training data from all categories and evaluates on the full label space. We report all-class performance curves for CoOp and CoOp + SpecPL under 1/2/4/8/16-shot settings.",
+      "page": 19,
+      "index": 10,
+      "width": 935,
+      "height": 583
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-011.webp",
+      "caption": "Table 9. Few-shot base-to-novel average results. Average Base, Novel, and HM results across 1/2/4/8/16-shot settings on the 11-dataset base-to-novel benchmark.",
+      "page": 17,
+      "index": 11,
+      "width": 700,
+      "height": 210
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-012.webp",
+      "caption": "Table 10. HM stability from 8-shot to 16-shot. CoOp often loses HM when increasing from 8 to 16 shots, whereas SpecPL is generally more stable and improves on average.",
+      "page": 17,
+      "index": 12,
+      "width": 979,
+      "height": 182
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-013.webp",
+      "caption": "Figure 11. Spectral energy curves across all datasets. Each subplot reports the overlap scores (VAE/CLIP) in the title; one shared legend is shown on top.",
+      "page": 20,
+      "index": 13,
+      "width": 1002,
+      "height": 1159
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-014.webp",
+      "caption": "Table 7. Average teacher/decomposition ablation. We report average Base, Novel, and HM results on the 11-dataset base-to-novel benchmark.",
+      "page": 16,
+      "index": 14,
+      "width": 977,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2605.04504v1/fig-015.webp",
+      "caption": "Figure 7. Training convergence on DTD. We plot epoch-wise optimization curves for CoOp + SpecPL under the 16-shot base-to-novel setting. The leftmost panel summarizes the total objective L = Lcls + λ1Lsem + λ2Lf g + λ3Lcf g , and the remaining panels show the",
+      "page": 16,
+      "index": 15,
+      "width": 995,
+      "height": 494
+    }
+  ]
+}
