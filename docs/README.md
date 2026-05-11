@@ -6,46 +6,53 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-09
-- 运行时间：2026-05-09 20:15:18 UTC
+- 最新运行日期：2026-05-11
+- 运行时间：2026-05-11 20:52:34 UTC
 - 运行状态：成功
-- 本次总论文数：8
-- 精读区：4
-- 速读区：4
+- 本次总论文数：11
+- 精读区：1
+- 速读区：10
 
 ### 今日简报（AI）
-今日精选 8 篇多模态论文，重点突破不完整观测下的逻辑推理与复杂情感识别难题。
-满分成果 LIMSSR 与 EmoMM 揭示了利用 LLM 驱动序列评分及在冲突环境下增强情感理解的全新范式。
-建议关注如何通过大模型推理能力提升模型在数据缺失或标签偏差场景下的鲁棒性。
-- 详情：[/202605/09/README](/202605/09/README)
+今日精选 11 篇论文，重点解析得分 8.0 的全器官基础模型 Pan-FM 及其在处理缺失数据
+- 详情：[/202605/11/README](/202605/11/README)
 
 ### 精读区论文标签
-1. [LIMSSR: LLM-Driven Sequence-to-Score Reasoning under Training-Time Incomplete Multimodal Observations](/202605/09/2605.00434v1-limssr-llm-driven-sequence-to-score-reasoning-under-training-time-incomplete-multimodal-observations)  
-   标签：评分：10.0/10、query:missing-modality
-   evidence：训练阶段不完整观测下的不完整多模态学习
-2. [EmoMM: Benchmarking and Steering MLLM for Multimodal Emotion Recognition under Conflict and Missingness](/202605/09/2605.01024v1-emomm-benchmarking-and-steering-mllm-for-multimodal-emotion-recognition-under-conflict-and-missingness)  
-   标签：评分：10.0/10、query:missing-modality
-   evidence：模态冲突和缺失情况下的多模态情感识别
-3. [Modality-Aware Contrastive and Uncertainty-Regularized Emotion Recognition](/202605/09/2605.06245v1-modality-aware-contrastive-and-uncertainty-regularized-emotion-recognition)  
-   标签：评分：9.5/10、query:missing-modality
-   evidence：针对异构模态组合和可用性的鲁棒情感预测
-4. [AffectGPT-RL: Revealing Roles of Reinforcement Learning in Open-Vocabulary Emotion Recognition](/202605/09/2605.06126v1-affectgpt-rl-revealing-roles-of-reinforcement-learning-in-open-vocabulary-emotion-recognition)  
+1. [Pan-FM: A Pan-Organ Foundation Model with Saliency-Guided Masking for Missing Robustness](/202605/11/2605.07055v1-pan-fm-a-pan-organ-foundation-model-with-saliency-guided-masking-for-missing-robustness)  
    标签：评分：8.0/10、query:missing-modality
-   evidence：开放词汇多模态情感识别 (OV-MER)
+   evidence：处理器官缺失及器官缺失场景
 
 ### 速读区论文标签
-1. [Multimodal Deep Generative Model for Semi-Supervised Learning under Class Imbalance](/202605/09/2605.06289v1-multimodal-deep-generative-model-for-semi-supervised-learning-under-class-imbalance)  
-   标签：评分：6.5/10、query:missing-modality
-   evidence：用于部分监督和互补模态的多模态深度生成模型
-2. [Debiased Multimodal Personality Understanding through Dual Causal Intervention](/202605/09/2605.06371v1-debiased-multimodal-personality-understanding-through-dual-causal-intervention)  
-   标签：评分：6.5/10、query:missing-modality
-   evidence：多模态人格理解与学习丰富的多模态表示
-3. [PC-MNet: Dual-Level Congruity Modeling for Multimodal Sarcasm Detection via Polarity-Modulated Attention](/202605/09/2605.02447v1-pc-mnet-dual-level-congruity-modeling-for-multimodal-sarcasm-detection-via-polarity-modulated-attention)  
+1. [Multimodal synthesis of MRI and tabular data with diffusion in a joint latent space via cross-attention](/202605/11/2605.06699v1-multimodal-synthesis-of-mri-and-tabular-data-with-diffusion-in-a-joint-latent-space-via-cross-attention)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：通过交叉注意力进行多模态合成与联合表示学习
+2. [Decoupling Semantics and Fingerprints: A Universal Representation for AI-Generated Image Detection](/202605/11/2605.07074v1-decoupling-semantics-and-fingerprints-a-universal-representation-for-ai-generated-image-detection)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：通过特征解耦实现语义与指纹的解耦
+3. [UniD-Shift: Towards Unified Semantic Segmentation via Interpretable Share-Private Multimodal Decomposition](/202605/11/2605.07356v1-unid-shift-towards-unified-semantic-segmentation-via-interpretable-share-private-multimodal-decomposition)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：共享-私有多模态分解
+4. [Anisotropic Modality Align](/202605/11/2605.07825v1-anisotropic-modality-align)  
+   标签：评分：7.0/10、query:missing-modality
+   evidence：模态间隙与互换性
+5. [TCDA: Thread-Constrained Discourse-Aware Modeling for Conversational Sentiment Quadruple Analysis](/202605/11/2605.01717v2-tcda-thread-constrained-discourse-aware-modeling-for-conversational-sentiment-quadruple-analysis)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：多模态讽刺检测及文本与非语言线索间的不一致性建模
-4. [Render, Don't Decode: Weight-Space World Models with Latent Structural Disentanglement](/202605/09/2605.06298v1-render-dont-decode-weight-space-world-models-with-latent-structural-disentanglement)  
+   evidence：对话情感四元组分析
+6. [MooD: An Efficient VA-Driven Affective Image Editing Framework via Fine-Grained Semantic Control](/202605/11/2605.02521v1-mood-an-efficient-va-driven-affective-image-editing-framework-via-fine-grained-semantic-control)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：具有潜空间结构解耦的世界模型
+   evidence：通过连续的效价-唤醒值进行情感图像编辑
+7. [Active Learning for Conditional Generative Compressed Sensing](/202605/11/2605.05435v1-active-learning-for-conditional-generative-compressed-sensing)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：使用生成模型从有限测量中恢复结构化信号
+8. [Learning Cross-Atlas Consistent Brain Disorder Representations via Disentangled Multi-Atlas Functional Connectivity Learning](/202605/11/2605.07026v1-learning-cross-atlas-consistent-brain-disorder-representations-via-disentangled-multi-atlas-functional-connectivity-learning)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：解耦的多图谱功能连接学习
+9. [PRIMED: Adaptive Modality Suppression for Referring Audio-Visual Segmentation via Biased Competition](/202605/11/2605.07154v1-primed-adaptive-modality-suppression-for-referring-audio-visual-segmentation-via-biased-competition)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：自适应模态抑制以增强对无关模态的鲁棒性
+10. [PersonaGest: Personalized Co-Speech Gesture Generation with Semantic-Guided Hierarchical Motion Representation](/202605/11/2605.07252v1-personagest-personalized-co-speech-gesture-generation-with-semantic-guided-hierarchical-motion-representation)  
+   标签：评分：6.0/10、query:missing-modality
+   evidence：解耦运动内容与手势风格
 
 
 <div class="dpr-home-promo-card">

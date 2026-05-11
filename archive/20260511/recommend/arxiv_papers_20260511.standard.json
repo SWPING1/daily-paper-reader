@@ -1,0 +1,460 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-11T20:50:16.661919+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 10,
+    "quick_skim_target": 11,
+    "quick_selected": 10
+  },
+  "deep_dive": [
+    {
+      "id": "2605.07055v1",
+      "source": "arxiv",
+      "title": "Pan-FM: A Pan-Organ Foundation Model with Saliency-Guided Masking for Missing Robustness",
+      "abstract": "Foundation models (FMs) have shown great promise in medical imaging, but most FMs are trained on unimodal data within isolated domains, such as brain MRI alone. Human aging and disease arise through coordinated biological processes across organs, therefore motivating multimodal FMs that learn whole-body representations. A key challenge, however, is that real-world multimodal biomedical data are often missing not at random, which can reduce power, limit generalizability, and introduce bias. We propose Pan-FM, a pan-organ foundation model pre-trained on imaging from seven organs (Brain, Heart, Adipose, Liver, Kidney, Spleen, and Pancreas) under realistic missing-organ scenarios. Pan-FM uses a unified backbone that handles organ missingness during both training and inference, and is pre-trained with masking-based self-distillation. We find that naive multimodal pre-training leads to dominant-organ shortcut learning bias, with the model over-relying on dominant organs such as adipose and heart. To address this, we introduce Saliency-Guided Masking (SGM), which uses the model attention distribution to adaptively mask dominant organs during pre-training, thus encouraging more balanced cross-organ, whole-body learning. Notably, SGM introduces negligible computational overhead and can be seamlessly integrated into existing self-supervised learning frameworks to improve multi-organ representation learning. On the UK Biobank, Pan-FM achieves stronger prediction across 13 disease categories and 14 single disease entities than single-organ and multi-organ baselines, with improved robustness under missing-organ settings. Pan-FM serves as a scalable solution to realistic modality-missingness in multimodal learning in system neuroscience and as a step toward more generalizable whole-body FMs.",
+      "authors": [
+        "Qiangqiang Wu",
+        "Grace McIlvain",
+        "Zhou Yu",
+        "Junhao Wen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-08T00:04:25+00:00",
+      "link": "https://arxiv.org/pdf/2605.07055v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "handles organ missingness and missing-organ scenarios",
+      "llm_evidence_cn": "处理器官缺失及器官缺失场景",
+      "llm_evidence": "处理器官缺失及器官缺失场景",
+      "canonical_evidence": "处理器官缺失及器官缺失场景",
+      "llm_tldr_en": "A pan-organ foundation model designed for robustness against missing modalities in medical imaging.",
+      "llm_tldr_cn": "一种泛器官基础模型，旨在增强医疗影像中缺失模态的鲁棒性。",
+      "llm_tldr": "一种泛器官基础模型，旨在增强医疗影像中缺失模态的鲁棒性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.06699v1",
+      "source": "arxiv",
+      "title": "Multimodal synthesis of MRI and tabular data with diffusion in a joint latent space via cross-attention",
+      "abstract": "We propose a multimodal latent diffusion model that jointly synthesizes volumetric magnetic resonance imaging (MRI) and tabular clinical data within a shared latent space via cross-attention. This approach enables coherent joint representation learning of MRI and tabular modalities for generative modeling. Our model utilizes a variational autoencoder to fuse the two modalities before diffusion-based synthesis, allowing modality-appropriate reconstruction with separate decoders for MRI and tabular data. We evaluated the framework on data from the German National Cohort (NAKO Gesundheitsstudie), comprising over 10,000 participants with MRI scans and clinical tabular features such as age, sex, body measurements, and ethnicity. The generated MRI volumes exhibited anatomical plausibility and body composition consistent with the synthesized tabular attributes. Quantitative evaluation using Fréchet distance and precision-recall metrics confirmed high-fidelity image generation. In the tabular modality, our model outperformed CTGAN across standard evaluation metrics and achieved results comparable to TVAE, demonstrating competitive performance relative to established unimodal baselines. This work is, to our knowledge, the first to demonstrate the feasibility of jointly modeling MRI and mixed-type tabular data in a single latent diffusion framework, offering a proof-of-concept for generating coherent synthetic multimodal patient data and aligning with the broader goal of developing digital twins in healthcare.",
+      "authors": [
+        "Daniel Mensing",
+        "Jan Kapar",
+        "Jochen G. Hirsch",
+        "Matthias Günther",
+        "Horst Hahn",
+        "Marvin N. Wright"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.AI",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-05T08:30:20+00:00",
+      "link": "https://arxiv.org/pdf/2605.06699v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal synthesis and joint representation learning via cross-attention",
+      "llm_evidence_cn": "通过交叉注意力进行多模态合成与联合表示学习",
+      "llm_evidence": "通过交叉注意力进行多模态合成与联合表示学习",
+      "canonical_evidence": "通过交叉注意力进行多模态合成与联合表示学习",
+      "llm_tldr_en": "Uses a latent diffusion model to jointly synthesize MRI and tabular data within a shared latent space.",
+      "llm_tldr_cn": "利用潜扩散模型在共享潜空间内联合合成MRI和表格数据，实现多模态生成。",
+      "llm_tldr": "利用潜扩散模型在共享潜空间内联合合成MRI和表格数据，实现多模态生成。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.01717v2",
+      "source": "arxiv",
+      "title": "TCDA: Thread-Constrained Discourse-Aware Modeling for Conversational Sentiment Quadruple Analysis",
+      "abstract": "Conversational Aspect-based Sentiment Quadruple Analysis (DiaASQ) needs to capture the complex interrelationships in multiple rounds of dialogues. Existing methods usually employ simple Graph Convolutional Networks (GCN), which introduce structural noise and fail to consider the temporal sequence of the dialogues, or use standard RoPE, which implicitly captures relative distances in a flat sequence but cannot clearly separate the token-level syntactic order from the utterance-level progression, and may suffer from the Distance Dilution problem. To address these issues, we propose a new framework that combines Thread-Constrained Directed Acyclic Graph (TC-DAG) and Discourse-Aware Rotary Position Embedding (D-RoPE). Specifically, TC-DAG filters out cross-thread noise based on thread constraints, maintains global connectivity through root anchoring, and incorporates the temporal sequence of the dialogues. D-RoPE aligns multi-layer semantics using dual-stream projection and multi-scale frequency signals, captures thread dependencies using tree-like distances, and alleviates the token-level Distance Dilution problem by incorporating utterance-level progressions. Experimental results on two benchmark datasets demonstrate that our framework achieves state-of-the-art performance.",
+      "authors": [
+        "Xinran Li",
+        "Xinze Che",
+        "Yifan Lyu",
+        "Zhiqi Huang",
+        "Xiujuan Xu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "published": "2026-05-03T05:18:24+00:00",
+      "link": "https://arxiv.org/pdf/2605.01717v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "conversational sentiment quadruple analysis",
+      "llm_evidence_cn": "对话情感四元组分析",
+      "llm_evidence": "对话情感四元组分析",
+      "canonical_evidence": "对话情感四元组分析",
+      "llm_tldr_en": "A framework for conversational sentiment analysis using thread-constrained modeling and discourse embeddings.",
+      "llm_tldr_cn": "一种利用线程约束建模和话语嵌入进行对话情感分析的框架。",
+      "llm_tldr": "一种利用线程约束建模和话语嵌入进行对话情感分析的框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.07074v1",
+      "source": "arxiv",
+      "title": "Decoupling Semantics and Fingerprints: A Universal Representation for AI-Generated Image Detection",
+      "abstract": "Detecting AI-generated images across unseen architectures remains challenging, as existing models often overfit to generator-specific fingerprints and semantic content rather than learning universal forgery traces. We attribute this failure to feature entanglement: detectors learn these factors as a single entangled representation, where universal forgery traces are inextricably confounded with both generator-specific fingerprints and semantic content. Crucially, our spectral analysis reveals that this entanglement is avoidable: distinct generator-specific fingerprints (e.g., GAN stripes vs. Diffusion Model spots) occupy disjoint frequency subspaces and coexist as independent superpositions. Leveraging this physical orthogonality, we propose the Orthogonal Decomposition and Purification Network (ODP-Net) to structurally disentangle these factors. Specifically, ODP-Net employs (1) Instance-aware Orthogonal Decomposition to project features into mutually exclusive subspaces: universal forgery traces, generator-specific fingerprints, and semantic content; (2) Perturbation-based Purification to enforce semantic invariance via cross-sample feature injection; and (3) Manifold Alignment to bridge domain gaps. By explicitly decoupling universal forgery traces from generator-specific fingerprints and semantic content, ODP-Net achieves state-of-the-art performance on unseen architectures (e.g., Stable Diffusion 3), validating that structural disentanglement is key to generalization.",
+      "authors": [
+        "Zhiyuan Wang",
+        "Yanxiang Chen",
+        "Yuanzhi Yao",
+        "Yunfeng Diao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-08T00:48:47+00:00",
+      "link": "https://arxiv.org/pdf/2605.07074v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decoupling semantics and fingerprints via feature decoupling",
+      "llm_evidence_cn": "通过特征解耦实现语义与指纹的解耦",
+      "llm_evidence": "通过特征解耦实现语义与指纹的解耦",
+      "canonical_evidence": "通过特征解耦实现语义与指纹的解耦",
+      "llm_tldr_en": "Decouples semantics from generator fingerprints to improve AI-generated image detection.",
+      "llm_tldr_cn": "将语义与生成器指纹解耦，以提高AI生成图像检测的通用性。",
+      "llm_tldr": "将语义与生成器指纹解耦，以提高AI生成图像检测的通用性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.02521v1",
+      "source": "arxiv",
+      "title": "MooD: An Efficient VA-Driven Affective Image Editing Framework via Fine-Grained Semantic Control",
+      "abstract": "Affective image editing (AIE) aims to edit visual content to evoke target emotions. However, existing methods often overlook inference efficiency and predominantly depend on discrete emotion representations, which to some extent limits their practical applicability and makes it challenging to capture complex and subtle human emotions. To tackle these gaps, we propose MooD, the first framework that directly leverages continuous Valence-Arousal (VA) values for fine-grained and efficient AIE. Specifically, we first introduce a VA-Aware retrieval strategy to bridge vague affective values and concrete visual semantics. Building upon this, MooD integrates visual transfer and semantic guidance to achieve controllable AIE. Furthermore, we construct AffectSet, a VA-annotated dataset to support model optimization and evaluation. Extensive qualitative and quantitative experimental results demonstrate that our MooD achieves superior performance in both affective controllability and visual fidelity while maintaining high efficiency. A series of ablation studies further reveal the crucial factors of our design. Our code and data will be made publicly open soon.",
+      "authors": [
+        "Xinyi Yin",
+        "Yiduo Wang",
+        "Tingqi Hu",
+        "Meicong Si",
+        "Yunyun Shi",
+        "Shi Chen",
+        "Hao Wang",
+        "Junxiao Xue",
+        "Xuecheng Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-04T12:22:43+00:00",
+      "link": "https://arxiv.org/pdf/2605.02521v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "affective image editing via continuous Valence-Arousal values",
+      "llm_evidence_cn": "通过连续的效价-唤醒值进行情感图像编辑",
+      "llm_evidence": "通过连续的效价-唤醒值进行情感图像编辑",
+      "canonical_evidence": "通过连续的效价-唤醒值进行情感图像编辑",
+      "llm_tldr_en": "MooD enables fine-grained affective image editing using continuous emotion representations and semantic control.",
+      "llm_tldr_cn": "MooD利用连续的情感表示和语义控制实现了细粒度的情感图像编辑。",
+      "llm_tldr": "MooD利用连续的情感表示和语义控制实现了细粒度的情感图像编辑。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.07356v1",
+      "source": "arxiv",
+      "title": "UniD-Shift: Towards Unified Semantic Segmentation via Interpretable Share-Private Multimodal Decomposition",
+      "abstract": "Semantic segmentation of large-scale 3D point clouds is crucial for applications such as autonomous driving and urban digital twins. However, the sparse sampling pattern of LiDAR and the view-dependent geometric distortion in image observations complicate cross-modal alignment and hinder stable fusion. Inspired by the fact that 2D images captured by cameras are representations of the 3D world, we recognize that the features learned from 2D and 3D segmentation share some common semantics, while other aspects remain modality-specific. This insight motivates a unified multimodal framework for joint 2D-3D semantic segmentation. We combine a SAM-based vision encoder with a SPTNet-based geometric encoder to extract complementary semantic and geometric representations. The resulting features from both modalities are explicitly decomposed into shared and private subspaces, where the shared components summarize semantic factors common to both domains, and the private components preserve properties that are unique to each modality. A lightweight attention-based fusion module aggregates the shared features into a consistent cross-modal representation, and a regularized training objective ensures both semantic alignment and subspace independence. Experiments on the SemanticKITTI and nuScenes benchmarks demonstrate consistent improvements in segmentation accuracy over representative multimodal baselines, accompanied by competitive computational efficiency. Cross-domain evaluation on nuScenes USA-Singapore shows stable performance under distribution shifts, demonstrating strong generalization. The implementation code is publicly available at: https://github.com/shuaizhang69/UniD-Shift.",
+      "authors": [
+        "Shuai Zhang",
+        "Zhecheng Shi",
+        "Zhuxiao Li",
+        "Jing Ou",
+        "Tengxi Wang",
+        "Yuan Liu",
+        "Wufan Zhao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-08T07:09:08+00:00",
+      "link": "https://arxiv.org/pdf/2605.07356v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "share-private multimodal decomposition",
+      "llm_evidence_cn": "共享-私有多模态分解",
+      "llm_evidence": "共享-私有多模态分解",
+      "canonical_evidence": "共享-私有多模态分解",
+      "llm_tldr_en": "Uses shared-private decomposition for unified 2D-3D semantic segmentation across modalities.",
+      "llm_tldr_cn": "使用共享-私有分解进行跨模态的统一2D-3D语义分割。",
+      "llm_tldr": "使用共享-私有分解进行跨模态的统一2D-3D语义分割。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.05435v1",
+      "source": "arxiv",
+      "title": "Active Learning for Conditional Generative Compressed Sensing",
+      "abstract": "Generative compressed sensing uses the range of a pretrained generator as a nonlinear model for recovering structured signals from limited measurements. We study a conditional version of this problem for image recovery from subsampled Fourier measurements using prompt-conditioned generative models. Our framework separates two roles of conditioning: the prompt used to design the sampling distribution and the prompt used to define the recovery model. For ReLU and Lipschitz conditional generators, we prove stable recovery bounds showing that prompt-matched Christoffel sampling retains the same Christoffel complexity constant as existing near-optimal generative compressed sensing theory, while prompt mismatch incurs an explicit compatibility penalty. Experiments with Stable Diffusion show that prompts meaningfully reshape Christoffel sampling distributions and influence image recovery. Overall, our results suggest that prompts should be treated as design variables with distinct effects on sensing, approximation, and recovery.",
+      "authors": [
+        "Alexander DeLise",
+        "Nick Dexter"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "math.NA"
+      ],
+      "published": "2026-05-06T20:50:14+00:00",
+      "link": "https://arxiv.org/pdf/2605.05435v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "recovering structured signals from limited measurements using generative models",
+      "llm_evidence_cn": "使用生成模型从有限测量中恢复结构化信号",
+      "llm_evidence": "使用生成模型从有限测量中恢复结构化信号",
+      "canonical_evidence": "使用生成模型从有限测量中恢复结构化信号",
+      "llm_tldr_en": "Studies conditional generative compressed sensing for signal recovery from subsampled measurements.",
+      "llm_tldr_cn": "研究条件生成压缩感知，用于从欠采样测量中恢复信号。",
+      "llm_tldr": "研究条件生成压缩感知，用于从欠采样测量中恢复信号。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Reconstructing missing modalities before feature decoupling in multimodal learning",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.07825v1",
+      "source": "arxiv",
+      "title": "Anisotropic Modality Align",
+      "abstract": "Training multimodal large language models has long been limited by the scarcity of high-quality paired multimodal data. Recent studies show that the shared representation space of pretrained multimodal contrastive models can serve as a bridge, enabling models to perform multimodal training with unimodal data. However, the key premise of this paradigm remains insufficiently understood: can representations from different modalities be reliably interchanged? The core obstacle lies in the persistent Modality Gap in the shared space. In this work, we revisit the geometric nature of the modality gap. We find that modality representations already share compatible dominant semantic geometry. What truly hinders modality interchangeability is not a simple global shift, but an anisotropic residual structure concentrated along a small number of dominant directions. Based on this finding, we further propose the principle of anisotropic modality gap alignment: effective modality alignment should align with the target-modality distribution while preserving the semantic structure of the source modality. Guided by this principle, we propose an anisotropic geometric correction framework, AnisoAlign, for unpaired modality alignment. This framework leverages the internal geometric prior of the target modality and performs bounded correction on source-modality representations, thereby constructing substitute representations in the target modality. Experiments confirm its benefits in both geometric diagnostics and text-only MLLM training. Overall, this work recasts the modality gap from an empirical observation into a correctable, structured geometric phenomenon and provides a new representation alignment perspective for training multimodal models with unimodal data.",
+      "authors": [
+        "Xiaomin Yu",
+        "Yijiang Li",
+        "Yuhui Zhang",
+        "Hanzhen Zhao",
+        "Yue Yang",
+        "Hao Tang",
+        "Yue Song",
+        "Xiaobin Hu",
+        "Chengwei Qin",
+        "Shuicheng Yan",
+        "Hui Xiong"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.CV"
+      ],
+      "published": "2026-05-08T14:53:24+00:00",
+      "link": "https://arxiv.org/pdf/2605.07825v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "modality gap and interchangeability",
+      "llm_evidence_cn": "模态间隙与互换性",
+      "llm_evidence": "模态间隙与互换性",
+      "canonical_evidence": "模态间隙与互换性",
+      "llm_tldr_en": "Analyzes the modality gap to improve the interchangeability of representations in multimodal models.",
+      "llm_tldr_cn": "分析模态间隙以提高多模态模型中表示的可互换性。",
+      "llm_tldr": "分析模态间隙以提高多模态模型中表示的可互换性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.07026v1",
+      "source": "arxiv",
+      "title": "Learning Cross-Atlas Consistent Brain Disorder Representations via Disentangled Multi-Atlas Functional Connectivity Learning",
+      "abstract": "Functional connectivity (FC) derived from resting-state fMRI is widely used to characterize large-scale brain network alterations in neurological and psychiatric disorders. However, FC construction critically depends on the choice of brain atlas, and different parcellations may emphasize distinct organizational features, leading to heterogeneous and sometimes inconsistent representations. Existing multi-atlas approaches partially alleviate this issue but often fuse atlas-derived features or predictions at a relatively shallow level, while single-atlas disentanglement methods do not explicitly address cross-atlas heterogeneity. We propose Multi-Atlas Disentangled Connectivity LEarning (MADCLE), a multi-branch representation learning framework that jointly encodes FC matrices derived from different brain atlases. Rather than introducing a single explicitly shared latent variable across parcellations, MADCLE learns atlas-wise disease-related representations and encourages them to be cross-atlas consistent through distributional alignment. Meanwhile, covariate-related and atlas-dependent residual factors are modeled separately using covariate similarity supervision, atlas-specific reconstruction, and decorrelation constraints, thereby reducing the leakage of non-disease and parcellation-dependent information into the disease-related embeddings. Experiments on the ADNI and ADHD-200 datasets suggest that MADCLE achieves competitive or improved performance compared with single-atlas baselines, multi-atlas GNN/Transformer models, and recent multi-atlas consistency frameworks. These results support the potential value of structured disentanglement for FC-based disorder identification under heterogeneous parcellation schemes.",
+      "authors": [
+        "Minheng Chen",
+        "Chao Cao",
+        "Jing Zhang",
+        "Tianming Liu",
+        "Dajiang Zhu"
+      ],
+      "primary_category": "q-bio.NC",
+      "categories": [
+        "q-bio.NC",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-05-07T23:14:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.07026v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentangled multi-atlas functional connectivity learning",
+      "llm_evidence_cn": "解耦的多图谱功能连接学习",
+      "llm_evidence": "解耦的多图谱功能连接学习",
+      "canonical_evidence": "解耦的多图谱功能连接学习",
+      "llm_tldr_en": "MADCLE uses disentangled representation learning to achieve cross-atlas consistency in brain disorder analysis.",
+      "llm_tldr_cn": "MADCLE利用解耦表示学习在脑部疾病分析中实现跨图谱的一致性。",
+      "llm_tldr": "MADCLE利用解耦表示学习在脑部疾病分析中实现跨图谱的一致性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.07154v1",
+      "source": "arxiv",
+      "title": "PRIMED: Adaptive Modality Suppression for Referring Audio-Visual Segmentation via Biased Competition",
+      "abstract": "Referring Audio-Visual Segmentation (Ref-AVS) seeks to localize and segment target objects in video frames based on visual, auditory, and textual referring cues. The task is challenging because the relevance of different modalities varies across referring expressions and scenes, while existing methods typically treat multimodal cues as homogeneous inputs for fusion, prompting, or reasoning, making them vulnerable to irrelevant or misleading modalities. To address this problem, we propose PRIMED, inspired by the biased competition theory in cognitive neuroscience, which explicitly models both visual perception and language-driven prior modulation, and enables more accurate Ref-AVS by adaptive modality suppression. Specifically, a Modality Prior Decoder first estimates whether the referring expression relies primarily on audio, vision, or their joint interaction, generating a modality prior to adaptively guide high-level attention. A Token Distiller further extracts compact global visual tokens from high-level features and shares them across Competition-aware Cross-modal Fusion modules to provide hierarchical global context. Additionally, we introduce a Spatial-Aware Semantic Alignment loss to further enhance foreground-background discrimination through contrastive learning. Extensive experiments on the Ref-AVS benchmark demonstrate that PRIMED achieves state-of-the-art overall performance.",
+      "authors": [
+        "Yuchen He",
+        "Jing Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-08T02:40:34+00:00",
+      "link": "https://arxiv.org/pdf/2605.07154v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "adaptive modality suppression for robustness against irrelevant modalities",
+      "llm_evidence_cn": "自适应模态抑制以增强对无关模态的鲁棒性",
+      "llm_evidence": "自适应模态抑制以增强对无关模态的鲁棒性",
+      "canonical_evidence": "自适应模态抑制以增强对无关模态的鲁棒性",
+      "llm_tldr_en": "Proposes PRIMED for adaptive modality suppression in audio-visual segmentation to handle misleading cues.",
+      "llm_tldr_cn": "提出PRIMED框架，通过自适应模态抑制处理视听分割中误导性模态的问题。",
+      "llm_tldr": "提出PRIMED框架，通过自适应模态抑制处理视听分割中误导性模态的问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.07252v1",
+      "source": "arxiv",
+      "title": "PersonaGest: Personalized Co-Speech Gesture Generation with Semantic-Guided Hierarchical Motion Representation",
+      "abstract": "Co-speech gesture generation aims to synthesize realistic body movements that are semantically coherent with speech and faithful to a user-specified gestural style. Existing VQ-VAE based co-speech gesture generation methods improve generation quality but fail to encode semantic structure into the motion representation or explicitly disentangle content from style, limiting both semantic coherence and personalization fidelity. We present PersonaGest, a two-stage framework addressing both limitations. In the first stage, a semantic-guided RVQ-VAE disentangles motion content and gestural style within the residual quantization structure, where a Semantic-Aware Motion Codebook (SMoC) organizes the content codebook by gesture semantics and contrastive learning further enforces content-style separation. In the second stage, a Masked Generative Transformer generates content tokens via a semantic-aware re-masking strategy, followed by a cascade of Style Residual Transformers conditioned on a reference motion prompt for style control. Extensive experiments demonstrate state-of-the-art performance on objective metrics and perceptual user studies, with strong style consistency to the reference prompt. Our project page with demo videos is available at https://danny-nus.github.io/PersonaGest/",
+      "authors": [
+        "Junchuan Zhao",
+        "Qifan Liang",
+        "Ye Wang"
+      ],
+      "primary_category": "cs.GR",
+      "categories": [
+        "cs.GR",
+        "cs.CV",
+        "cs.MM"
+      ],
+      "published": "2026-05-08T05:20:03+00:00",
+      "link": "https://arxiv.org/pdf/2605.07252v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentangles motion content and gestural style",
+      "llm_evidence_cn": "解耦运动内容与手势风格",
+      "llm_evidence": "解耦运动内容与手势风格",
+      "canonical_evidence": "解耦运动内容与手势风格",
+      "llm_tldr_en": "A framework that disentangles motion content and style for personalized co-speech gesture generation.",
+      "llm_tldr_cn": "一种通过解耦运动内容和风格来实现个性化协同语音手势生成的框架。",
+      "llm_tldr": "一种通过解耦运动内容和风格来实现个性化协同语音手势生成的框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
