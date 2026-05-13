@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-001.webp",
+      "caption": "Table 2 | Main perception results. HRBench4K reports Overall, FSP, and FCP; MMStar reports Overall; MMERealWorld-Lite reports Overall, Reasoning, and Perception. Avg-P averages HRBench4K Overall, MMStar Overall, and MME-RealWorld-Lite Overall. Best results are in green and second-best in yellow.",
+      "page": 7,
+      "index": 1,
+      "width": 804,
+      "height": 296
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-002.webp",
+      "caption": "Figure 1 | Conceptual overview of GAP. GAP addresses visual latent learning through three alignment levels: context-grounded latent supervision at the data level, a PCA-aligned latent head at the feature level, and difficulty-aware latent supervision at the model level.",
+      "page": 3,
+      "index": 2,
+      "width": 835,
+      "height": 563
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-003.webp",
+      "caption": "Figure 5 | Composition of the 49K curated training set (49,309 examples). Visual CoT is the largest source, followed by chart, GEOQA, and multimodal math data; the remaining sources emphasize geometry, counting, visual search, and focused visual reasoning.",
+      "page": 18,
+      "index": 3,
+      "width": 860,
+      "height": 559
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-004.webp",
+      "caption": "Figure 3 | Interleaved visual latent inference and latent-token generation. (a) The MLLM generates ordinary text tokens through the LM head and generates visual latent tokens inside a <latent> span. Each generated latent token is fed back autoregressively as a subsequent latent-token input, giving a response format of text, visual latent tokens, and text. (b) A latent token is generated from the final decoder state by applying the backbone’s native final RMSNorm, a PCA-aligned latent head that predicts PCA coefficients, and a fixed PCA reconstruction step. The reconstructed embedding is then used as the next latent token; auxiliary-image targets are used only to train this path.",
+      "page": 13,
+      "index": 4,
+      "width": 979,
+      "height": 541
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-005.webp",
+      "caption": "Table 4 | Component comparison for latent supervision data and assignment strategy. Best results are in green and second-best in yellow.",
+      "page": 8,
+      "index": 5,
+      "width": 983,
+      "height": 215
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-006.webp",
+      "caption": "Table 3 | Main reasoning results. MathVista measures multimodal mathematical reasoning, and WeMath is reported with strict (S) and loose (L) accuracy. Avg-R averages MathVista, WeMath-S, and WeMath-L. Best results are in green and second-best in yellow.",
+      "page": 8,
+      "index": 6,
+      "width": 750,
+      "height": 261
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-007.webp",
+      "caption": "Figure 2 | Feature-space mismatch and GAP reconstruction on HRBench4K samples. (a) In Monet-7B, text and vision hidden-state log norms grow sharply through the decoder stack and remain far above the input embedding regime; shaded bands show one standard deviation of log(L2 norm) for hidden-state norms only. (b) The final decoder hidden state used by output-as-input latent feedback is about 8.6× larger than the query vision-embedding norm, whereas GAP reconstruction maps generated latents back to the same norm regime before autoregressive re-injection.",
+      "page": 4,
+      "index": 7,
+      "width": 976,
+      "height": 318
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-008.webp",
+      "caption": "Figure 4 | Effect of latent-token budget. We sweep the number of generated visual latent tokens while keeping the backbone, training data, PCA-aligned latent head, and difficulty-aware rule fixed. The gray dashed line is the Qwen2.5-VL 7B baseline. Panel subtitles report average image resolution estimated from the evaluated benchmark images. Positive token counts are square latent grids: 4=2×2, 16=4×4, 36=6×6, 64=8×8, and 144=12×12.",
+      "page": 17,
+      "index": 8,
+      "width": 919,
+      "height": 593
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-009.webp",
+      "caption": "Table 6 | Latent content intervention. The zero-latent checkpoint row uses GAP with latent-token generation suppressed, while the noise row replaces predicted PCA coefficients with Gaussian noise before reconstruction. Avg-2 averages HRBench4K Overall and MathVista; Δ is relative to Qwen2.5-VL-7B Avg-2. Best results are in green and second-best in yellow.",
+      "page": 9,
+      "index": 9,
+      "width": 983,
+      "height": 240
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12374v1/fig-010.webp",
+      "caption": "Table 9 | Inference cost on HRBench4K and MathVista. Latency is wall-clock seconds per sample. Mean latency is the primary cost metric; relative latency uses Avg-2 mean latency and Dense Caption SFT as the denominator. Avg-2 performance averages HRBench4K Overall and MathVista. For latency and relative cost, lower is better; for Avg-2, higher is better. Best results are in green and second-best in yellow.",
+      "page": 16,
+      "index": 10,
+      "width": 693,
+      "height": 201
+    }
+  ]
+}

@@ -1,0 +1,966 @@
+Title: CAST: Collapse-Aware multi-Scale Topology Fusion for Multimodal Coreset Selection
+
+URL Source: https://arxiv.org/pdf/2605.11705v1
+
+Published Time: Wed, 13 May 2026 00:51:51 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# CAST: Collapse-Aware multi-Scale Topology Fusion for Multimodal Coreset Selection 
+
+Boran Zhao ∗
+
+School of Software Engineering, the National Key Laboratory of Human-Machine Hybrid Augmented Intelligence, National Engineering Research Center for Visual Information and Applications, and Institute of Artificial Intelligence and Robotics Xi’an Jiaotong University 
+
+boranzhao@xjtu.edu.cn 
+
+Hetian Liu ∗
+
+School of Software Engineering Xi’an Jiaotong University 
+
+hetianliu@stu.xjtu.edu.cn 
+
+Zhenxian Hu 
+
+XJTU-POLIMI Joint School Xi’an Jiaotong University 
+
+zhenxian.hu@mail.polimi.it 
+
+Yuqing Yuan 
+
+Faculty of Electronic and Information Engineering Xi’an Jiaotong University 
+
+2213420425@stu.xjtu.edu.cn 
+
+Yu Yan 
+
+School of Human Settlements and Civil Engineering Xi’an Jiaotong University 
+
+2227402307@stu.xjtu.edu.cn 
+
+Pengju Ren 
+
+the National Key Laboratory of Human-Machine Hybrid Augmented Intelligence, National Engineering Research Center for Visual Information and Applications, and Institute of Artificial Intelligence and Robotics Xi’an Jiaotong University 
+
+pengjuren@xjtu.edu.cn 
+
+Abstract 
+
+The training of large multimodal models fundamentally relies on massive image-text datasets, which inevitably incur prohibitive computational overhead. Dataset selection offers a promising paradigm by identifying a highly informative core-set. However, existing approaches suffer from two critical limitations: (i) single-modality-dominated sampling methods, which ignore the fine-grained cross-modal information imbalance inherent in multimodal datasets and thus lead to semantic loss in the other modality; and (ii) coarse-grained sample-scoring-based sampling methods, where the selected coreset tends to be biased toward the scoring model, making it difficult to guarantee distributional equivalence between the coreset and the original dataset. Meanwhile, existing distribution matching and discrete sampling strategies often fail to jointly account for global semantic structure, local 
+
+> ∗Equal contribution. Preprint.
+> arXiv:2605.11705v1 [cs.CV] 12 May 2026
+
+fine-grained details, and redundancy-aware coverage in dense regions. To this end, we propose CAST, a Collapse-Aware multi-Scale Topology fusion framework for multimodal coreset selection. We first construct image- and text-modality topologies, and derive a unified topology via local-collapse-aware refinement and 
+
+cross-modal fusion . We then introduce a multi-scale distribution matching crite-rion in the diffusion wavelet domain, encouraging the coreset to approximate the original dataset at multiple scales. Finally, we introduce a local soft relational cov-erage mechanism that extends pure geometric coverage to relation-aware indirect coverage, penalizing redundant selections in dense clusters. Extensive experiments on Flickr30K and MS-COCO show that CAST outperforms existing dataset selec-tion baselines, showcasing great superiority in cross-architecture generalization and energy efficiency over state-of-the-art multimodal synthesis methods. 
+
+1 Introduction 
+
+The unprecedented success of multimodal large language models (MLLMs) is largely attributed to training on large-scale datasets. However, scaling up datasets incurs prohibitive energy consumption (for instance, training the Gemini [ 1] large language model required approximately O(10 3) MWh of energy, enough to power 94 households for an entire year [ 2]). Furthermore, prior studies have demonstrated that these massive datasets exhibit substantial redundancy, and only a small fraction of critical samples plays a pivotal role in advancing model capabilities [ 3 ]. To this end, researchers have proposed dataset compression techniques, which aim to obtain a minimal yet highly informative set of samples to act as a surrogate for the full dataset during training. Unimodal dataset compression methods include dataset synthesis and selection. Dataset synthesis methods [ 4– 6] typically train specific architectures to generate synthetic samples, which may in-troduce architecture bias and limit generalization to unseen architectures [ 7]. In contrast, dataset selection methods directly select representative samples from the original dataset without relying on specific architectures, forming coresets with better independence and generalization [ 8 ]. Therefore, dataset selection has emerged as a promising direction for multimodal dataset compression. However, unlike unimodal datasets, multimodal datasets exhibit several unique characteristics. First, as shown in the left part of Figure 1, multimodal datasets are characterized by fine-grained information imbalance . Existing methods often ignore sample-level information content and rely on a single dominant modality, resulting in informative sample loss and limited generalization. For instance, PreSel [ 9] and ViSA [ 10 ] predominantly anchor their sampling processes on the image modality. However, we observe that the visual modality is not universally dominant; samples retention should be adaptively determined through a holistic evaluation of information from both modalities. To this end, we adopt a topology-graph-based modality information fusion strategy by constructing modality-specific graphs. We first introduce a local-collapse-aware refinement mechanism to alleviate intra-modal fine-grained information imbalance, and then employ a cross-modal fusion mechanism to adaptively adjust the information extraction ratios. In this way, the limitation of fixed single-modality reliance is mitigated, and multimodal graphs are integrated into a unified topology. Second, the current unimodal state-of-the-art FAST [ 8] transforms the topology graph into the spectral domain and evaluates the distributional discrepancy by selecting global frequencies. Given its identical objective of topology matching, FAST is theoretically applicable to our framework. However, as shown in the right part of Figure 1, we find that in fused multimodal topology, the optimal evaluation frequency bands are location-dependent [ 11 –13 ]. To overcome this global-scale limitation, we propose a wavelet-domain multi-scale distribution matching criterion that jointly accounts for topological scale and node location, enabling adaptive measurement of the structural discrepancy between the coreset and the original dataset across diverse topological regions. Finally, existing methods [ 8, 14 ] underestimate the ability of proxy points to cover multiple similar samples within the original dataset, resulting in redundant proxy coverage in high-density regions. To tackle this, we introduce the Local Soft Relational Coverage (LSRC) mechanism. The main contributions of this work are: (1) Local-collapse-aware refinement and cross-modal fusion mechanisms to resolve fine-grained information imbalance; (2) A wavelet-domain multi-scale distribution matching criterion that overcomes location-dependent frequency limitations by preserving 2Textual  
+
+> Redundancy
+> (Low Info.)
+> Visual
+> Diversity
+> (High Info. )
+> This is a
+> mammal.
+> This is a
+> mammal.
+> (a) Visual-dominant pairs
+> Textual
+> Diversity
+> (High Info. )
+> Visual
+> Redundancy
+> (Low Info.)
+> I am
+> Korean.
+> I am
+> Japanese.
+> (b) Textual -dominant pairs (d) Adaptive local bands
+> Low
+> Mid
+> High
+> Adaptive local bands
+> (c) Global band mismatch
+> One global band
+> Mismatch
+
+Figure 1: Illustration of fine-grained cross-modal information imbalance and spatially varying frequency distributions . Information density varies drastically across modalities. (a) Visual-dominant pairs with textual redundancy. (b) Text-dominant pairs with visual redundancy. (c) Global spectral band ignores region-specific frequency variations and causes local mismatches. (d) Adaptive local bands capture spatially varying topology by selecting region-specific frequency ranges. global structures and local semantics; and (3) A local soft relational coverage mechanism that softly covers structural neighborhoods, mitigating proxy redundancy and maximizing coreset diversity. 
+
+2 Related Work 
+
+Dataset Compression. Dataset compression is generally classified into dataset synthesis and dataset selection [ 15 ]. Dataset synthesis [ 4 – 6] aims to distill the information of original datasets into artificially generated samples. Existing methods typically synthesize such samples by matching training parameters [ 16 ], gradients [ 17 , 18 ], or trajectories [ 19 , 20 ] between real and synthetic data. Recently, some efforts have extended to multimodal scenarios. For instance, LoRS [ 21 ]overlooks intra-modal structures, leading to modality collapse. While RepBlend [ 22 ] mitigates this via representation blending, it misattributes the collapse to the compression process. Instead, we argue that modality collapse stems from inherent cross-modal information imbalance: samples indistinguishable in one modality may remain distinct in another. Furthermore, dataset synthesis paradigms inherently suffer from prohibitive computational overhead and inevitably sacrifice the fine-grained semantics and structural details of authentic samples. In contrast, dataset selection directly selects real samples from the original dataset to form a coreset, avoiding semantic distortion from synthesized samples and additional generation costs. 
+
+Multimodal Dataset Selection. Multimodal dataset selection mainly falls into two categories. The first adopts the image modality as the primary anchor for sampling. For instance, PreSel [ 9 ] and ViSA [ 10 ] filter redundancy based on clustering in the visual feature space and visual complexity, respectively. However, this unimodal strategy ignores inherent cross-modal imbalances, risking the loss of complementary information and weakening coreset representativeness. To incorporate infor-mation from different modalities, another line of methods evaluates samples through coarse-grained scoring. For instance, RAP [ 3] filters samples according to output-level reasoning discrepancies, while DataProphet [ 23 ] ranks dataset value using metrics based on multimodal perplexity, similarity, and diversity. Self-filter [ 14 ] uses the Vision-Language Model (VLM) itself as a filter and trains a scoring network for sample evaluation and selection. However, such scoring-centric methods are susceptible to the scoring model or heuristic metrics, making it difficult to ensure distributional equivalence between the coreset and the original dataset. These limitations indicate that multimodal dataset selection requires a unified representation that integrates visual and textual semantics. Graph topologies, by modeling pairwise similarity relations, are well-suited to capture the distribution of the original dataset. While graph topologies naturally capture macroscopic dataset distributions, existing "graph abstraction–graph fusion" methods [ 24 , 25 ]operate under the idealized premise that independently constructed unimodal graphs possess high structural reliability. This ignores fine-grained multimodal imbalances, causing unrefined modality-specific graphs to propagate unreliable relations during fusion. To address this, we propose an cross-modal local-collapse-aware refinement and cross-modal fusion mechanism, correcting locally degraded structures prior to region-adaptive fusion. 
+
+Distribution Matching and Coreset Selection. Coreset quality hinges on robust distribution matching and effective sampling strategies. Traditional Euclidean (e.g., MSE [ 26 ], MMD [ 27 ]) or 3Use the more reliable modality            
+
+> to refine locally collapsed regions
+> Multi-Scale
+> Distribution Matching
+> Graph
+> Encoder
+> Graph
+> Encoder
+> Original
+> Dataset
+> Image
+> Text
+> Coreset
+> Align
+> Proxy
+> Local-Collapse-Aware
+> Bidirectional Refinement
+> Original Graphs Refined Graphs
+> Refine
+> Refine
+> Fine scale
+> Sn
+> Middle scale
+> S2
+> Coarse scale
+> S1
+> Wavelet-Domain
+> Unified Graph Fusion
+> Adaptively fuse responses
+> across scales
+> SnS3S2S1
+> SnS3S2S1
+> Matching
+> health area collapse d area text node image node fused node
+
+Figure 2: The overall pipeline of the proposed CAST framework. probabilistic (e.g., KL [ 28 ]) metrics fail to capture high-order structural moments. While FAST [ 8 ]introduces global frequency-domain alignment to address this, its macroscopic approach overlooks location-dependent discrepancies in multimodal topologies. Consequently, we propose a wavelet-domain multi-scale matching criterion to explicitly inject topological locality into frequency selection. Furthermore, existing methods [ 8, 14 ] typically adopt independent hard sampling mechanisms. This rigid one-to-one mapping ignores a proxy’s ability to indirectly cover its neighborhood. To address this, our local soft relational coverage mechanism enables proxies to softly cover locally similar samples, significantly improving the coreset’s information density and diversity. 
+
+3 Method 
+
+3.1 Overview 
+
+Given a multimodal dataset D = {xi}Ni=1 , where xi = ( x(I) 
+
+> i
+
+, x (T ) 
+
+> i
+
+), our objective is to select a compact coreset C ⊂ D with |C| = K, such that C preserves the structural distribution of D across modalities. To this end, we propose CAST, a Collapse-Aware multi-Scale Topology fusion framework for multimodal coreset selection. As illustrated in Figure 2, our methodology is systematically carried out in four stages. First, we construct original graphs via Graph Encoder. Second, we derive a unified topology via a local-collapse-aware bidirectional refinement and wavelet-domain unified fusion mechanism. Third, anchored on the fused topology, we formulate a multi-scale distribution matching criterion, ensuring that the proxy maintains consistency with the original dataset. Finally, we cast the coreset selection process as a local soft relational coverage problem, empowering each selected proxy to cover its local topological neighborhood. 
+
+3.2 Graph Construction 
+
+To capture the intra-modal neighborhood similarity, we construct unimodal graphs for both modalities. Specifically, we first extract modality-specific feature representations for each sample, denoted as 
+
+z(I) 
+
+> i
+
+and z(T ) 
+
+> i
+
+. Notably, the feature extractors only serve as a foundational representation provider, rather than surrogate models co-optimized. Subsequently, we construct a local k-nearest neighbor (k-NN) graph based on the fuzzy topology theory of UMAP [ 29 ]. For a given node i within modality 
+
+m ∈ { I, T }, the local scale parameter σ(m) 
+
+> i
+
+is derived by solving the following constraint: 
+
+> k
+
+X
+
+> j=1
+
+exp − max(0 , d (m)(xi, x j ) − ρ(m) 
+
+> i
+
+)
+
+σ(m)
+
+> i
+
+!
+
+= log 2 k
+
+where d(m)(xi, x j ) denotes the distance in the feature space of modality m. The term ρ(m) 
+
+> i
+
+is determined by the distance to the nearest neighbor. Since the underlying manifold topology should be represented by undirected relations, we further symmetrize the directed edges and construct the unimodal topology matrix as B(m) 
+
+> ij
+
+= A(m) 
+
+> i→j
+
++ A(m) 
+
+> j→i
+
+− A(m) 
+
+> i→j
+
+A(m)
+
+> j→i
+
+. Ultimately, we derive the visual 4topological graph B(I) and the textual topological graph B(T ), which serve as the foundational inputs for the subsequent cross-modal refinement phase. 
+
+3.3 Collapse-aware Refinement and Fusion Cross-modal Local-Collapse-Aware Bidirectional Refinement. As discussed earlier, multimodal data often exhibit fine-grained information imbalance, which leads to local collapsed structures within both B(I) and B(T ). Therefore, we introduce an cross-modal bidirectional local-collapse-aware refinement mechanism before constructing the unified graph. Specifically, we quantify the collapse severity using the local relation redundancy R(m) 
+
+> i
+
+and the neighborhood inseparability S(m) 
+
+> i
+
+, and then use the healthy local topology of one modality to refine the structure of the other. Specifically, for node i within modality m ∈ { I, T }, we characterize its local structural degradation from two complementary perspectives: local relation redundancy R(m) 
+
+> i
+
+and neighborhood insep-arability S(m) 
+
+> i
+
+. The former measures whether the local patterns of node i and its neighbors N (i)
+
+are overly similar, with a larger R(m) 
+
+> i
+
+signifying a more homogenized connectivity landscape in modality m. The latter evaluates the degradation of discriminability; a larger S(m) 
+
+> i
+
+implies a flattened edge weight distribution towards N (i), indicating a local collapse that blurs fine-grained semantic boundaries among neighbors. Formally, let b(m) 
+
+> i
+
+denote the edge weight vector of node i over the unified candidate neighborhood, these two metrics are formulated as: 
+
+R(m) 
+
+> i
+
+= 1
+
+|N (i)|
+
+X 
+
+> j∈N (i)
+
+sim 
+
+
+
+b(m) 
+
+> i
+
+, b (m)
+
+> j
+
+
+
+, S(m) 
+
+> i
+
+= − 1log |N (i)|
+
+X 
+
+> j∈N (i)
+
+p(m) 
+
+> ij
+
+log( p(m) 
+
+> ij
+
++ ϵ)
+
+where sim (·, ·) represents the similarity (e.g, cosine similarity) between the local edge weight patterns of two nodes, and p(m) 
+
+> ij
+
+represents the local edge weight distribution obtained by normalizing the raw weights B(m) 
+
+> ij
+
+across all neighbors of node i under modality m. Intuitively, if this distribution approaches uniformity, distinguishing fine-grained structural subtleties becomes exceedingly difficult, which is precisely reflected by a larger S(m) 
+
+> i
+
+.Synthesizing R(m) 
+
+> i
+
+and S(m) 
+
+> i
+
+, we assess node-level structural degeneration to detect local collapse. This degradation is then propagated to estimate the reliability of each edge. For cross-modal refinement, edges with significantly lower reliability in one modality receive bounded compensation from the other. This selective constraint prevents excessive topological distortion. Consequently, the raw graphs B(I) and B(T ) are refined into ˆB(I) and ˆB(T ) for subsequent unified fusion. 
+
+Diffusion-Wavelet-Based Multi-scale Latent Topology Fusion. To simultaneously preserve the global semantic backbone and local fine-grained structures of multimodal data, we propose a multi-scale latent topology fusion method in the diffusion wavelet domain. Specifically, we first project the refined graphs ˆB(I) and ˆB(T ) into a multi-scale diffusion response space, and evaluate the reliability of the two modalities at different topological scales s. Here, the scale s denotes the step size of the diffusion process, and also corresponds to the observation granularity of the topology. Small scales focus on local neighborhoods and high-frequency boundaries, while large scales capture the global semantic skeletons after long-range diffusion. Guided by these scale-dependent reliabilities, we adaptively fuse the bimodal responses and further reconstruct a unified latent topology graph B∗.Specifically, we first derive the random walk transition matrix P (m) = ( D(m))−1 ˆB(m) for the refined graph ˆB(m), where D(m) is the degree matrix associated with ˆB(m). Subsequently, the diffusion wavelet response at scale s is defined as W (m) 
+
+> s
+
+= ( P (m))sQ − (P (m))2sQ. Here, Q serves as a probe signal used to observe the responses of the image/text graphs at different scales. To determine which modality provides more reliable structural information at different scales and adaptively allocate fusion weights, we formulate the response entropy for modality m at scale s as follows: 
+
+H(m) 
+
+> s
+
+= − 1log N
+
+X
+
+> i
+
+π(m) 
+
+> s,i
+
+log( π(m) 
+
+> s,i
+
++ ϵ)
+
+where the term π(m) 
+
+> s,i
+
+= ∥W (m)     
+
+> s,i ∥22
+> P
+> u∥W(m)
+> s,u ∥22+ϵ
+
+measures the normalized response energy of node i under scale s within modality m.5Multimodal        
+
+> Fused Graph
+> Latent Density
+> High Low
+> Local Soft Relational Coverage
+> Before(proxy collapse )After(improved coverage)
+> Wavelet-Domain Multi-Scale Matching
+> Low
+> (global)
+> Middle
+> (local)
+> High
+> (boundary)
+> Coarse  Middle  Fine
+> Dataset Scales Wavelet Basis Proxy Set Text
+> Text
+> Text
+> Text
+> Mapping
+> align
+> align
+> Proxy
+
+Figure 3: Illustration of the coreset selection optimization in CAST. A higher H(m) 
+
+> s
+
+indicates a balanced response distribution across nodes, whereas a lower value implies that the structural representation at that scale may be dominated by localized regions. Guided by entropy-derived weights, we fuse the visual and textual diffusion wavelet responses to derive the target consensus response at each scale. Finally, by assessing pairwise similarities within this consensus, we inversely reconstruct the unified graph B∗ over the joint candidate edge support set of the refined bimodal graphs (details deferred to Appendix A.1). 
+
+3.4 Wavelet-Domain Multi-scale Matching 
+
+Based on the unified latent graph B∗, we optimize a set of continuous proxy points Y =
+
+{y1, y 2, . . . , y K } and then map these proxy points back to real samples to construct the coreset 
+
+C ⊂ D with |C| = K. As illustrated in Figure 3, to compel these proxies to faithfully approximate the distribution of the original dataset across varying scales, we jointly compute three matching losses: distribution alignment, edge protection, and frequency-domain coverage. To formulate the optimization objectives, we first define the diffusion wavelet response: Φs(Z) = (P ∗)sZ − (P ∗)2sZ where P ∗ denotes the random walk transition matrix constructed on B∗. The term Z represents the fused representations, derived by concatenating the normalized image features 
+
+z(I) 
+
+> i
+
+, text features z(T ) 
+
+> i
+
+, and the diffusion embeddings on B∗, followed by a final normalization. Correspondingly, the diffusion wavelet response of a proxy point yk at scale s is parameterized as a soft interpolation of its topological neighbors: 
+
+Φs(yk) = X  
+
+> i∈N (yk)
+
+ηki Φs(zi), X  
+
+> i∈N (yk)
+
+ηki = 1 
+
+where the term ηki serves as a distance-aware soft interpolation weight, effectively computed via a normalized exponential decay based on the proximity between yk and its neighbors. To faithfully represent the original dataset, our matching strategy is primarily driven by a global distribution alignment loss , supplemented by two auxiliary objectives: an edge protection loss 
+
+and a frequency-domain coverage loss . Specifically, the primary loss enforces overall consistency by minimizing the Sliced Wasserstein Distance (SWD) between the diffusion wavelet responses. Concurrently, to prevent high-frequency details from being smoothed out, the edge loss forces proxies to cover boundaries by penalizing the distance δ(s) 
+
+> i
+
+= min k ∥Φs(zi) − Φs(yk)∥22 for nodes with high inherent response energy e(s) 
+
+> i
+
+= ∥Φs(zi)∥22. Meanwhile, to explicitly prevent sparse regions from being overlooked, the auxiliary coverage loss evaluates the negative log-likelihood of the proxy-to-node coverage degree cov (s) 
+
+> i
+
+= (1 /K ) PKk=1 exp  −∥ Φs(zi) − Φs(yk)∥22/τ . These three concurrent objectives at scale s are succinctly formulated as: 
+
+L(s) 
+
+> dist
+
+= SWD  Φs(Z), Φs(Y ), L(s) 
+
+> edge
+
+=
+
+P 
+
+> i
+
+e(s) 
+
+> i
+
+δ(s)
+
+> i
+
+P 
+
+> i
+
+e(s) 
+
+> i
+
++ ϵ , L(s) 
+
+> cov
+
+= − 1
+
+N
+
+X
+
+> i
+
+log(cov (s) 
+
+> i
+
++ϵ)
+
+6By integrating them, we employ a coarse-to-fine scale activation strategy to formulate the total matching objective in the wavelet domain: 
+
+Lwavelet = X
+
+> s∈S t
+
+βs
+
+h
+
+L(s) 
+
+> dist
+
++ λedge L(s) 
+
+> edge
+
++ λcov L(s)
+
+> cov
+
+i
+
+This strategy drives the proxy points to capture the global macro-distribution at coarse scales, while progressively unlocking finer scales to firmly anchor near regions with drastic structural changes and complete frequency coverage. 
+
+3.5 Local Soft Relational Coverage 
+
+While multi-scale distribution matching effectively approximates the dataset, relying solely on geometric distance may causes redundant proxy assignments in dense local regions. To mitigate this, we introduce the Local Soft Relational Coverage (LSRC) module, which extends point-to-point geometric coverage to a relation-aware indirect paradigm. Specifically, we extend the coverage mechanism to the spatial domain. By introducing the soft relation graph R—which explicitly fuses spatial geometric proximity with cross-modal topological priors—we propagate the basic spatial direct coverage hi of proxy points on node zi (calculated in the same form as cov (s) 
+
+> i
+
+, but based on the geometric distance ∥zi − yk∥22 in the underlying spatial domain) through relation-aware propagation, forming the relation-aware indirect coverage ¯hi. Therefore, proxy points not only cover their current geometric space but can also represent their neighboring nodes based on topological priors, generating a strong local coverage repulsion. The derived LSRC loss (which unifies the indirect coverage sufficiency and the local relation smoothness constraint) is simplified as follows: 
+
+LLSRC = − 1
+
+N
+
+X
+
+> i
+
+log( ¯hi + ϵ) + μ
+
+P 
+
+> (i,j )
+
+Rij (hi − hj )2
+
+P 
+
+> (i,j )
+
+Rij + ϵ
+
+Finally, by combining the scale-dependent wavelet matching with the scale-independent spatial coverage, the overall objective for continuous proxy optimization is integrated as: 
+
+L = Lwavelet + λLSRC LLSRC + λreg Lreg 
+
+where Lreg contains auxiliary regularization terms such as anti-collapse and diversity constraints. Jointly governed by this unified objective, the proxy points not only seamlessly maintain multi-scale consistency with the raw dataset but also actively circumvent redundant resource allocation in dense regions. Upon convergence, following FAST [ 8 ], we employ the Hungarian algorithm to map the optimized continuous proxy points back to authentic image-text pairs, thereby forming the final coreset C ⊂ D (details deferred to Appendix A.2). 
+
+4 Experiments 
+
+4.1 Experimental Setup Datasets and Metrics. Following [ 21 ] and [ 22 ], we evaluate our method on image captioning datasets: Flickr30K [ 30 ] and MS-COCO [ 31 ]. We adopt the Karpathy split [ 32 ], where Flickr30K contains 29k/1k/1k images and MS-COCO contains 113k/5k/5k images for training/validation/test. Each image is paired with five human-annotated captions. We evaluate bidirectional retrieval performance using Recall@K with K ∈ { 1, 5, 10 }. Specifically, IR@K denotes text-to-image retrieval, and TR@K denotes image-to-text retrieval. 
+
+Baselines. We compare our method with three groups of baselines. (1) unimodal dataset selection methods: Random, Herding [ 33 ], Glister [ 34 ], EL2N [ 35 ], Entropy [ 36 ], GradMatch [ 37 ], and FAST [ 8]. Since these methods are not originally designed for image-text pairs, we adapt them by constructing a fused multimodal representation from normalized image and text features. (2) multi-modal dataset selection methods: ViSA [ 10 ], PreSel [ 9], Dyn-Prune [ 38 ], and DataProphet [ 23 ]. Since these methods are mainly developed for multimodal instruction selection, we adapt them to image-text pair selection while preserving their original scoring or filtering principles. (3) multi-modal dataset synthesis methods: LoRS [ 21 ] and RepBlend [ 22 ]. Since these methods generate 7Table 1: Results of bidirectional image-text retrieval on the Flickr30K dataset across varying com-pression budgets. The best performance is highlighted in bold .
+
+Budget Metric Unimodal Selection Baselines Multimodal Selection Baselines Ours 
+
+Random Herding Glister EL2N Entropy GradMatch FAST ViSA PreSel Dyn-Prune Prophet 100 IR@1 1.20 ±0.14 1.20 ±0.15 1.40 ±0.18 1.00 ±0.12 0.90 ±0.10 1.60 ±0.17 1.60 ±0.19 0.40 ±0.12 0.50 ±0.08 1.00 ±0.15 0.80 ±0.11 2.88 ±0.74 
+
+IR@5 6.20 ±0.52 5.60 ±0.48 5.80 ±0.55 5.00 ±0.42 2.40 ±0.28 4.70 ±0.39 5.80 ±0.51 1.70 ±0.21 2.40 ±0.28 4.10 ±0.35 2.60 ±0.22 9.52 ±1.07 
+
+IR@10 10.50 ±0.85 10.20 ±0.78 8.90 ±0.65 9.00 ±0.71 3.90 ±0.36 7.90 ±0.62 9.80 ±0.88 3.40 ±0.33 4.20 ±0.38 6.50 ±0.46 4.70 ±0.29 14.98 ±0.94 
+
+TR@1 1.18 ±0.15 0.48 ±0.07 0.84 ±0.11 0.58 ±0.08 0.50 ±0.06 0.80 ±0.12 1.00 ±0.13 0.52 ±0.10 0.62 ±0.12 0.70 ±0.14 0.44 ±0.09 1.50 ±0.08 
+
+TR@5 4.20 ±0.38 2.34 ±0.25 3.42 ±0.31 2.80 ±0.29 1.82 ±0.21 2.76 ±0.28 4.04 ±0.41 2.44 ±0.25 2.10 ±0.18 2.38 ±0.22 2.44 ±0.27 6.15 ±0.57 
+
+TR@10 7.48 ±0.65 4.84 ±0.42 5.56 ±0.48 5.36 ±0.51 3.48 ±0.33 4.58 ±0.44 7.02 ±0.59 3.96 ±0.31 3.62 ±0.29 4.56 ±0.37 4.12 ±0.34 10.45 ±0.94 
+
+200 IR@1 3.20 ±0.35 2.00 ±0.22 2.30 ±0.26 2.20 ±0.24 1.20 ±0.14 2.50 ±0.28 2.10 ±0.21 1.00 ±0.16 0.90 ±0.14 1.50 ±0.18 1.20 ±0.15 3.83 ±0.59 
+
+IR@5 10.20 ±0.88 8.20 ±0.75 8.30 ±0.68 6.60 ±0.59 4.20 ±0.41 8.10 ±0.72 10.30 ±0.91 3.20 ±0.28 4.00 ±0.31 5.60 ±0.42 4.50 ±0.33 12.13 ±0.72 
+
+IR@10 15.50 ±1.15 14.00 ±1.22 13.20 ±1.08 11.10 ±0.95 6.00 ±0.55 13.60 ±1.12 16.80 ±1.35 6.60 ±0.45 7.20 ±0.41 9.20 ±0.53 7.60 ±0.48 19.10 ±0.77 
+
+TR@1 1.66 ±0.18 0.84 ±0.11 0.98 ±0.12 0.98 ±0.10 0.84 ±0.12 1.20 ±0.15 1.76 ±0.21 0.80 ±0.13 0.74 ±0.11 1.00 ±0.15 0.92 ±0.14 2.05 ±0.23 
+
+TR@5 6.94 ±0.61 4.06 ±0.38 4.68 ±0.42 4.16 ±0.35 3.06 ±0.29 4.54 ±0.41 7.12 ±0.68 3.42 ±0.27 2.54 ±0.22 3.84 ±0.31 3.72 ±0.28 7.64 ±0.59 
+
+TR@10 11.40 ±0.92 7.14 ±0.65 7.82 ±0.71 7.44 ±0.68 5.30 ±0.45 8.04 ±0.76 12.04 ±1.05 5.74 ±0.39 5.08 ±0.33 6.78 ±0.44 6.18 ±0.36 13.15 ±0.91 
+
+500 IR@1 5.00 ±0.45 3.50 ±0.31 3.50 ±0.38 2.90 ±0.26 2.50 ±0.22 4.50 ±0.41 5.00 ±0.52 2.70 ±0.22 2.80 ±0.25 3.00 ±0.27 2.30 ±0.19 5.60 ±1.03 
+
+IR@5 14.80 ±1.12 15.10 ±1.25 14.10 ±1.18 13.20 ±1.05 8.70 ±0.75 14.10 ±1.21 15.60 ±1.32 8.40 ±0.46 7.20 ±0.42 7.70 ±0.41 7.90 ±0.43 17.43 ±0.81 
+
+IR@10 23.50 ±1.65 23.30 ±1.58 22.60 ±1.42 20.40 ±1.35 14.20 ±1.15 23.30 ±1.55 23.10 ±1.14 12.30 ±0.62 11.10 ±0.55 13.80 ±0.68 12.10 ±0.58 26.78 ±0.60 
+
+TR@1 3.12 ±0.28 2.70 ±0.25 2.44 ±0.21 2.18 ±0.18 1.92 ±0.16 2.38 ±0.22 3.08 ±0.29 1.72 ±0.18 1.74 ±0.21 1.50 ±0.16 1.64 ±0.17 3.21 ±0.25 
+
+TR@5 9.76 ±0.85 9.22 ±0.78 9.44 ±0.82 8.84 ±0.75 6.38 ±0.55 9.08 ±0.81 11.32 ±0.95 5.58 ±0.35 5.82 ±0.38 6.38 ±0.33 6.32 ±0.36 11.67 ±0.44 
+
+TR@10 16.70 ±1.25 15.42 ±1.18 14.88 ±1.12 14.30 ±1.05 10.44 ±0.85 15.10 ±1.22 17.62 ±1.38 9.16 ±0.47 9.60 ±0.52 10.68 ±0.55 10.42 ±0.49 19.37 ±0.79 IR@1 IR@5 IR@10                       
+
+> Ours Random Best Unimodal Best Mutimodal
+> Budget (pairs) Budget (pairs) Budget (pairs) Budget (pairs) Budget (pairs) Budget (pairs)
+> Recall (%)  3.0
+> 2.5
+> 2.0
+> 1.5
+> 1.0
+> 0.5
+> 100 200 500
+> 8
+> 6
+> 4
+> 2
+> 100 200 500
+> 15.0
+> 12.5
+> 10.0
+> 7.5
+> 5.0
+> 2.5
+> 100 200 500
+> 2.5
+> 2.0
+> 1.5
+> 1.0
+> 0.5 100 200 500 100 200 500 100 200 500
+> 10
+> 8
+> 6
+> 4
+> 14
+> 12
+> 10
+> 8
+> 6
+> 4
+
+TR@1 TR@5 TR@10 
+
+> 16
+
+Figure 4: Quantitative results of bidirectional image-text retrieval on the MS-COCO dataset across varying compression budgets, detailed results are provided in Appendix A.4. synthetic image-text surrogates rather than selecting real samples, we mainly compare with them in cross-architecture generalization and efficiency analysis. 
+
+Implementation Details. We extract multimodal features using geometric distances at the pixel-level for images and a frozen BERT [ 39 ] for text. For CAST configurations, the topology is modeled via a 
+
+k-NN graph ( k = 15 ) constructed based on the common neighbors of nodes. The diffusion wavelet scales are defined as St = {1, 2, 4}. All experiments are conducted on NVIDIA RTX A6000 GPU. 
+
+4.2 Main Results on Image-Text Retrieval 
+
+We evaluate bidirectional image-text retrieval under data budgets of 100, 200, and 500 pairs, summa-rizing Flickr30K results in Table 1 and MS-COCO trends in Figure 4. CAST consistently achieves the best performance on Flickr30K and obtains highly competitive results on MS-COCO, especially dominating all text retrieval metrics. Naively adapted unimodal selection methods yield sub-optimal results because they treat concatenated multimodal features as a flat space, ignoring the inherent structural discrepancies between modalities. In contrast, by introducing a collapse-aware bidirectional refinement and fusion mechanism, our method prevents modality-specific structural degradation from compromising the final coreset. Furthermore, multimodal baselines (e.g., ViSA [ 10 ], PreSel [ 9]) gen-erally underperform because their unimodal-dominant sampling strategies fail to capture the global joint distribution of multimodal data, leading to dense-region redundancy and long-tail omissions. To overcome this, by leveraging multi-scale spectral topology and LSRC, CAST circumvents such redundancy and firmly anchors continuous proxies to critical semantic boundaries. 
+
+4.3 Generalization and Efficiency Cross-Architecture Generalization. To assess coreset robustness against architecture bias, we conduct cross-architecture experiments on Flickr30K under a 3% compression budget. In our setup, CAST utilizes decoupled raw-pixel and frozen-BERT features, whereas the baselines rely on NFNet [ 40 ] for image features and BERT for text features. We evaluate CLIP-style [ 41 ] dual encoders with three backbone combinations: ViT [ 42 ]+BERT, ResNet50 [ 43 ]+BERT, and NFNet+BERT. As illustrated in Figure 5 (a), baselines severely overfit to their upstream CNN priors, leading to a 8Table 2: Performance comparison between our method and random sampling under different subset ratios across multiple benchmarks. The best results for each budget are highlighted in bold .                                            
+
+> Ratio GQA ScienceQA MMBench TextVQA POPE
+> Ours Rand Ours Rand Ours Rand Ours Rand Ours Rand 1% 59.71 58.62 72.87 71.78 71.74 70.82 79.68 78.13 89.28 87.86 5% 59.43 58.29 72.82 72.48 70.51 70.19 79.40 78.61 88.48 87.87 10% 59.33 58.98 73.01 72.62 70.86 70.12 79.43 79.15 88.72 88.08
+
+substantial degradation on the Transformer-based ViT. In contrast, CAST’s architecture-agnostic selection better preserves global structural information. This robust unbiased topology allows high-capacity models like ViT to better exploit their representation capacity. Appendix A.5 results further show that replacing the NFNet extractor in synthesis methods with a weaker ResNet10 [ 43 ] causes their performance to collapse, while CAST remains robust to such capacity bottlenecks. 
+
+Multimodal Instruction Fine-tuning. Beyond discriminative retrieval tasks, we further evaluate the cross-task transferability of CAST on generative multimodal instruction fine-tuning. Specifically, we use the LLaVA-1.5-mix-665K [ 44 ] dataset to fine-tune the Qwen2-VL-2B architecture under budgets of 1%, 5%, and 10%, comparing CAST-selected subsets against the Random baseline. The fine-tuned models are evaluated on a comprehensive suite of multimodal reasoning benchmarks, including GQA [ 45 ], ScienceQA [ 46 ], MMBench [ 47 ], TextVQA [ 48 ], and POPE [ 49 ]. Across all compression ratios, CAST consistently outperforms Random, achieving an average improvement of 1–2 points across benchmarks. As shown in Table 2, results show that CAST does not merely benefit retrieval matching, but also preserves dense and high-quality multimodal semantic structures required for complex visual question answering and generative reasoning. 
+
+Energy Efficiency and Compression Cost. A key motivation for prioritizing dataset selection over dataset synthesis is the prohibitive computational overhead of synthesis-based methods. As shown in Figure 5 (b), we evaluate the end-to-end processing cost required to obtain a 3% coreset on Flickr30K. Synthesis methods such as LoRS and RepBlend incur substantial GPU hours and energy consumption because they rely on continuous gradient matching, forward-backward passes, or complex synthetic features. In contrast, CAST adheres strictly to the dataset selection paradigm, directly extracting a representative coreset rather than synthesizing new samples. By bypassing generative hallucination and its associated computational burden, CAST provides an energy-efficient solution. 
+
+4.4 Ablation Studies Component Ablation. We conduct component-wise ablations on Flickr30K under a constrained 3% compression budget. The full CAST model is compared with three variants: w/o LSRC , which removes Local Soft Relational Coverage; w/o Refinement & Fusion , which bypasses local-collapse-aware refinement and adaptive cross-modal fusion; and w/o Wavelet Alignment , which replaces multi-scale diffusion wavelet matching with standard frequency-domain alignment. As shown in Figure 5 (c), all components are necessary. Removing Wavelet Alignment yields the largest Mean Recall drop ( −3.07 ), highlighting the importance of multi-scale topology-aware distribution matching. Removing Refinement & Fusion also degrades performance ( −1.92 ), confirming the need to handle cross-modal structural imbalance. Without LSRC, performance drops by 1.59 due to increased proxy redundancy. The full CAST achieves the best Mean Recall of 20 .99 , demonstrating the complementarity of these modules. Additional ablations are provided in the Appendix A.3. 
+
+Hyperparameter Sensitivity. We further analyze the sensitivity of CAST to the diffusion wavelet scale s. On Flickr30K under a 3% budget, we compare single-scale settings ( s ∈ { 1, 2, 4}) with multi-scale spans {1, 2, 4}, {1, 4, 8}, and {1, 8, 16 }. As shown in Table 3, the results show that {1, 2, 4}
+
+achieves the best average retrieval performance, confirming the benefit of jointly capturing local high-frequency boundaries and global low-frequency structures. In contrast, overly large spans cause severe degradation due to topological over-smoothing, which washes out discriminative semantic boundaries. Therefore, we adopt {1, 2, 4} as the default configuration. 9(a) Generalization Ability (b) Energy Cost (c) Ablation Summary        
+
+> NFNet +
+> BERT
+> ResNet50 +
+> BERT Vit-B/16 +
+> BERT
+> Selection
+> Energy
+> Avg. Total
+> Energy
+> Mean Recall
+> Energy Efficiency (Wh, log scale)
+> Full /
+> Ours w/o LSRC
+> w/o Wavelet
+> Alignment
+> w/o Refinement+
+> Fusion
+> Mean Recall
+> Ours RepBlend Lors
+> 19.04
+> 23.56
+> 15.07
+> 20.22
+> 34.08
+> 7.95 7.91
+> 2.34
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> 30
+> 45
+> 50
+> 180
+> 16.8k 12.9k
+> 468
+> 17.3k 13.2k
+> 20.99
+> 19.40(-1.59)
+> 19.07(-1.92)
+> 17.92(-3.07) 18
+> 19
+> 17
+> 21
+> 20
+> 10.28
+> 100
+> 10k
+> 100k
+
+Figure 5: Summary of CAST (a) generalization, (b) efficiency, and (c) ablation results. Table 3: Sensitivity analysis of different diffusion wavelet scales on bidirectional retrieval perfor-mance. The best results for each task are highlighted in bold .
+
+Metric Image-to-Text Text-to-Image 
+
+{1} {2} {4} {1,2,4} {2,4,8} {4,8,16} {1} {2} {4} {1,2,4} {2,4,8} {4,8,16} R@1 5.00 4.00 3.70 4.94 3.60 3.40 1.78 2.38 1.68 2.44 2.32 2.20 R@5 12.20 12.60 11.10 13.00 12.10 11.00 7.94 8.38 7.48 8.48 8.38 8.80 R@10 19.40 19.30 18.70 19.80 19.78 18.10 13.38 14.18 13.00 14.28 13.56 14.26 
+
+5 Conclusion 
+
+In this paper, we propose CAST, a novel Collapse-Aware multi-Scale Topology fusion framework to address the prohibitive computational overhead of training large multimodal models. To resolve fine-grained cross-modal information imbalance, we integrate modality-specific graphs via local-collapse-aware refinement and adaptive cross-modal fusion. Furthermore, to capture location-dependent frequencies, we formulate a multi-scale distribution matching criterion in the wavelet domain, preserving both global structural skeletons and local high-frequency semantics. Additionally, our local soft relational coverage mechanism effectively mitigates proxy redundancy in dense regions, maximizing coreset diversity. Extensive evaluations demonstrate that CAST outperforms state-of-the-art selection baselines, achieving cross-architecture generalization and energy efficiency comparable to computationally expensive synthesis methods. Ultimately, CAST provides a robust and sustainable paradigm for advancing multimodal models under strict computational constraints. 
+
+References 
+
+[1] Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, Katie Millican, et al. Gemini: a family of highly capable multimodal models. arXiv preprint arXiv:2312.11805 , 2023. [2] Boran Zhao, Hetian Liu, Zihang Yuan, Li Zhu, Fan Yang, Lina Xie, Tian Xia, Wenzhe Zhao, and Pengju Ren. Adapsne: Adaptive fireworks-optimized and entropy-guided dataset sampling for edge dnn training. IEEE Transactions on Circuits and Systems I: Regular Papers , 2026. [3] Shenshen Li, Kaiyuan Deng, Lei Wang, Hao Yang, Chong Peng, Peng Yan, Fumin Shen, Heng Tao Shen, and Xing Xu. Truth in the few: High-value data selection for efficient multi-modal reasoning. arXiv preprint arXiv:2506.04755 , 2025. [4] Noel Loo, Ramin Hasani, Alexander Amini, and Daniela Rus. Efficient dataset distillation using random feature approximation. Advances in Neural Information Processing Systems , 35: 13877–13891, 2022. [5] Ganlong Zhao, Guanbin Li, Yipeng Qin, and Yizhou Yu. Improved distribution matching for dataset condensation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 7856–7865, 2023. [6] George Cazenavette, Tongzhou Wang, Antonio Torralba, Alexei A Efros, and Jun-Yan Zhu. Generalizing dataset distillation via deep generative prior. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 3739–3748, 2023. 10 [7] Daquan Zhou, Kai Wang, Jianyang Gu, Xiangyu Peng, Dongze Lian, Yifan Zhang, Yang You, and Jiashi Feng. Dataset quantization. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 17205–17216, 2023. [8] Jin Cui, Boran Zhao, Jiajun Xu, Jiaqi Guo, Shuo Guan, and Pengju Ren. Fast: Topology-aware frequency-domain distribution matching for coreset selection. arXiv preprint arXiv:2511.19476 ,2025. [9] Bardia Safaei, Faizan Siddiqui, Jiacong Xu, Vishal M Patel, and Shao-Yuan Lo. Filter images first, generate instructions later: Pre-instruction data selection for visual instruction tuning. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 14247–14256, 2025. [10] Zhenyu Liu, Yunxin Li, Baotian Hu, Wenhan Luo, Yaowei Wang, and Min Zhang. Picking the cream of the crop: Visual-centric data selection with collaborative agents. arXiv preprint arXiv:2502.19917 , 2025. [11] Ljubiša Stankovi´ c, Danilo Mandic, Miloš Dakovi´ c, Bruno Scalzo, Miloš Brajovi´ c, Ervin Sejdi´ c, and Anthony G Constantinides. Vertex-frequency graph signal processing: A comprehensive review. Digital signal processing , page 102802, 2020. [12] David I Shuman, Sunil K Narang, Pascal Frossard, Antonio Ortega, and Pierre Vandergheynst. The emerging field of signal processing on graphs: Extending high-dimensional data analysis to networks and other irregular domains. IEEE signal processing magazine , 30(3):83–98, 2013. [13] David K Hammond, Pierre Vandergheynst, and Rémi Gribonval. Wavelets on graphs via spectral graph theory. Applied and computational harmonic analysis , 30(2):129–150, 2011. [14] Ruibo Chen, Yihan Wu, Lichang Chen, Guodong Liu, Qi He, Tianyi Xiong, Chenxi Liu, Junfeng Guo, and Heng Huang. Your vision-language model itself is a strong filter: Towards high-quality instruction tuning with data selection. In Findings of the Association for Computational Linguistics: ACL 2024 , pages 4156–4172, 2024. [15] Noveen Sachdeva and Julian McAuley. Data distillation: A survey. arXiv preprint arXiv:2301.04272 , 2023. [16] Bo Zhao and Hakan Bilen. Dataset condensation with distribution matching. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision , pages 6514–6523, 2023. [17] Bo Zhao, Konda Reddy Mopuri, and Hakan Bilen. Dataset condensation with gradient matching. 
+
+arXiv preprint arXiv:2006.05929 , 2020. [18] Jang-Hyun Kim, Jinuk Kim, Seong Joon Oh, Sangdoo Yun, Hwanjun Song, Joonhyun Jeong, Jung-Woo Ha, and Hyun Oh Song. Dataset condensation via efficient synthetic-data param-eterization. In International Conference on Machine Learning , pages 11102–11118. PMLR, 2022. [19] Justin Cui, Ruochen Wang, Si Si, and Cho-Jui Hsieh. Scaling up dataset distillation to imagenet-1k with constant memory. In International Conference on Machine Learning , pages 6565–6590. PMLR, 2023. [20] Yanqing Liu, Jianyang Gu, Kai Wang, Zheng Zhu, Wei Jiang, and Yang You. Dream: Efficient dataset distillation by representative matching. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 17314–17324, 2023. [21] Yue Xu, Zhilin Lin, Yusong Qiu, Cewu Lu, and Yong-Lu Li. Low-rank similarity mining for multimodal dataset distillation. arXiv preprint arXiv:2406.03793 , 2024. [22] Xin Zhang, Ziruo Zhang, Jiawei Du, Zuozhu Liu, and Joey Tianyi Zhou. Beyond modal-ity collapse: Representations blending for multimodal dataset distillation. arXiv preprint arXiv:2505.14705 , 2025. [23] Xuan Qi, Luxi He, Dan Roth, and Xingyu Fu. Dataprophet: Demystifying supervision data generalization in multimodal llms. arXiv preprint arXiv:2603.19688 , 2026. 11 [24] Jiangfeng Sun, Sihao He, Zhonghong Ou, and Meina Song. Structures meet semantics: Multi-modal fusion via graph contrastive learning. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 25691–25699, 2026. [25] Dexuan Ding, Lei Wang, Liyun Zhu, Tom Gedeon, and Piotr Koniusz. Learnable expansion of graph operators for multi-modal feature fusion. arXiv preprint arXiv:2410.01506 , 2024. [26] Pascal Vincent, Hugo Larochelle, Yoshua Bengio, and Pierre-Antoine Manzagol. Extracting and composing robust features with denoising autoencoders. In Proceedings of the 25th international conference on Machine learning , pages 1096–1103, 2008. [27] Arthur Gretton, Karsten M Borgwardt, Malte J Rasch, Bernhard Schölkopf, and Alexander Smola. A kernel two-sample test. The journal of machine learning research , 13(1):723–773, 2012. [28] Diederik P Kingma and Max Welling. Auto-encoding variational bayes. arXiv preprint arXiv:1312.6114 , 2013. [29] Leland McInnes, John Healy, and James Melville. Umap: Uniform manifold approximation and projection for dimension reduction. arXiv preprint arXiv:1802.03426 , 2018. [30] Bryan A Plummer, Liwei Wang, Chris M Cervantes, Juan C Caicedo, Julia Hockenmaier, and Svetlana Lazebnik. Flickr30k entities: Collecting region-to-phrase correspondences for richer image-to-sentence models. In Proceedings of the IEEE international conference on computer vision , pages 2641–2649, 2015. [31] Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva Ramanan, Piotr Dollár, and C Lawrence Zitnick. Microsoft coco: Common objects in context. In European conference on computer vision , pages 740–755. Springer, 2014. [32] Andrej Karpathy and Li Fei-Fei. Deep visual-semantic alignments for generating image descriptions. In Proceedings of the IEEE conference on computer vision and pattern recognition ,pages 3128–3137, 2015. [33] Max Welling. Herding dynamical weights to learn. In Proceedings of the 26th annual interna-tional conference on machine learning , pages 1121–1128, 2009. [34] Krishnateja Killamsetty, Durga Sivasubramanian, Ganesh Ramakrishnan, and Rishabh Iyer. Glis-ter: Generalization based data subset selection for efficient and robust learning. In Proceedings of the AAAI conference on artificial intelligence , pages 8110–8118, 2021. [35] Mansheej Paul, Surya Ganguli, and Gintare Karolina Dziugaite. Deep learning on a data diet: Finding important examples early in training. Advances in neural information processing systems , 34:20596–20607, 2021. [36] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E Hinton. Imagenet classification with deep convolutional neural networks. Advances in neural information processing systems , 25, 2012. [37] Krishnateja Killamsetty, Sivasubramanian Durga, Ganesh Ramakrishnan, Abir De, and Rishabh Iyer. Grad-match: Gradient matching based data subset selection for efficient deep model training. In International Conference on Machine Learning , pages 5464–5474. PMLR, 2021. [38] Suorong Yang, Peijia Li, Yujie Liu, Zhiming Xu, Peng Ye, Wanli Ouyang, Furao Shen, and Dongzhan Zhou. Multimodal-guided dynamic dataset pruning for robust and efficient data-centric learning. arXiv preprint arXiv:2507.12750 , 2025. [39] Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova. Bert: Pre-training of deep bidirectional transformers for language understanding. In Proceedings of the 2019 conference of the North American chapter of the association for computational linguistics: human language technologies, volume 1 (long and short papers) , pages 4171–4186, 2019. [40] Andy Brock, Soham De, Samuel L Smith, and Karen Simonyan. High-performance large-scale image recognition without normalization. In International conference on machine learning ,pages 1059–1071. PMLR, 2021. 12 [41] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning ,pages 8748–8763. PMLR, 2021. [42] Alexey Dosovitskiy, Lucas Beyer, Alexander Kolesnikov, Dirk Weissenborn, Xiaohua Zhai, Thomas Unterthiner, Mostafa Dehghani, Matthias Minderer, Georg Heigold, Sylvain Gelly, et al. An image is worth 16x16 words: Transformers for image recognition at scale. arXiv preprint arXiv:2010.11929 , 2020. [43] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In Proceedings of the IEEE conference on computer vision and pattern recognition ,pages 770–778, 2016. [44] Haotian Liu, Chunyuan Li, Yuheng Li, and Yong Jae Lee. Improved baselines with visual instruction tuning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 26296–26306, 2024. [45] Drew A Hudson and Christopher D Manning. Gqa: A new dataset for real-world visual reasoning and compositional question answering. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 6700–6709, 2019. [46] Tanik Saikh, Tirthankar Ghosal, Amish Mittal, Asif Ekbal, and Pushpak Bhattacharyya. Sci-enceqa: A novel resource for question answering on scholarly articles. International Journal on Digital Libraries , 23(3):289–301, 2022. [47] Yuan Liu, Haodong Duan, Yuanhan Zhang, Bo Li, Songyang Zhang, Wangbo Zhao, Yike Yuan, Jiaqi Wang, Conghui He, Ziwei Liu, et al. Mmbench: Is your multi-modal model an all-around player? In European conference on computer vision , pages 216–233. Springer, 2024. [48] Amanpreet Singh, Vivek Natarajan, Meet Shah, Yu Jiang, Xinlei Chen, Dhruv Batra, Devi Parikh, and Marcus Rohrbach. Towards vqa models that can read. In 2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 8309–8318, 2019. doi: 10.1109/ CVPR.2019.00851. [49] Yifan Li, Yifan Du, Kun Zhou, Jinpeng Wang, Xin Zhao, and Ji-Rong Wen. Evaluating object hallucination in large vision-language models. In Proceedings of the 2023 conference on empirical methods in natural language processing , pages 292–305, 2023. 13 A Technical appendices and supplementary material 
+
+A.1 Details of Unified Graph Reconstruction 
+
+As described in the main text, after deriving the response entropy H(m) 
+
+> s
+
+, a lower entropy implies that the structural representation at scale s is heavily concentrated on localized regions, indicating a potential risk of structural collapse. To explicitly quantify this, we define the scale collapse score as: 
+
+C(m) 
+
+> s
+
+= 1 − H(m) 
+
+> s
+
+.
+
+Based on this metric, we map the bimodal collapse scores into adaptive fusion weights using a softmax function parameterized by a temperature T :
+
+γ(m) 
+
+> s
+
+= exp( −C(m) 
+
+> s
+
+/T )exp( −C(I) 
+
+> s
+
+/T ) + exp( −C(T ) 
+
+> s
+
+/T ) .
+
+This formulation ensures that the modality with a lower degree of collapse at a specific scale is assigned a higher weight. Consequently, the target unified response at scale s is constructed by linearly combining the bimodal responses: 
+
+Y target  
+
+> s
+
+= γ(I) 
+
+> s
+
+W (I) 
+
+> s
+
++ γ(T ) 
+
+> s
+
+W (T ) 
+
+> s
+
+.
+
+Subsequently, rather than naively averaging in the original edge-weight space, we inversely reconstruct the unified graph over the joint candidate edge support set of the refined bimodal graphs. For each candidate edge (i, j ), the unified edge weight is estimated based on the cosine similarity of the node pairs within the multi-scale target consensus response: 
+
+˜B∗ 
+
+> ij
+
+= X
+
+> s∈S
+
+ωs max  0, cos  Y target  
+
+> s,i
+
+, Y target 
+
+> s,j
+
+ ,
+
+where ωs represents the predefined scale coefficient. Finally, to guarantee that the unified graph imposes valid and reasonable structural constraints, we apply non-negative, symmetric, and sparsity-inducing operations: 
+
+B∗ 
+
+> ij
+
+= Sym 
+
+
+
+max( ˜B∗ 
+
+> ij
+
+− λsp , 0) 
+
+
+
+,
+
+where λsp is the threshold controlling the graph sparsity. Through this wavelet-domain multi-scale fusion and inverse reconstruction, the resulting unified latent topology B∗ effectively absorbs both the local texture boundaries from the image modality and the global semantic skeletons from the text modality, laying a robust geometric foundation for the subsequent coreset sampling. 
+
+A.2 Details of Soft Relation Graph Construction and Discrete Realization Construction of the Soft Relation Graph R. As introduced in the main text, the Local Soft Relational Coverage (LSRC) module mitigates redundant proxy assignments by propagating the direct spatial coverage hi into a relation-aware indirect coverage ¯hi. This propagation relies on the construction of the local soft relation graph R. Specifically, for any two authentic nodes zi and zj in the spatial domain, we first define a base geometric decay term: 
+
+gij = exp 
+
+
+
+− ∥zi − zj ∥22
+
+σ2
+
+
+
+where σ controls the spatial bandwidth. To incorporate the underlying topological priors rather than relying solely on Euclidean distances, we fuse this geometric decay with the local cross-modal topological support rcross  
+
+> ij
+
+derived from the refined bimodal graphs. The soft relation graph R is thus formulated as: 
+
+Rij = gij · η · rcross  
+
+> ij
+
++ (1 − η)
+
+where η ∈ [0 , 1] is a balancing hyperparameter. Subsequently, the direct spatial coverage hi of the proxy points Y = {y1, . . . , y K } on node zi is explicitly calculated as: 
+
+hi = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+exp 
+
+
+
+− ∥zi − yk∥22
+
+τc
+
+
+
+14 where τc is the coverage temperature. Operating like a diffusion process on the relation network, this direct coverage is propagated via R to form the relation-aware indirect coverage ¯hi:
+
+¯hi = (1 − β)hi + β X
+
+> j
+
+Rij hj
+
+where β denotes the propagation rate. This mechanism ensures that a proxy point structurally represents not only its immediate geometric neighbors but also the broader local semantic cluster, laying the foundation for the LLSRC formulation in the main text. 
+
+Cost Formulation for Discrete Realization. Upon convergence of the continuous proxies, we map them back to the authentic dataset to form the discrete coreset C. Following the protocol established in FAST, for each proxy point yk and authentic node zi, we construct a comprehensive matching cost matrix Ck,i :
+
+Ck,i = αdddiff (yk, z i) + αwdwavelet (yk, z i) + αtctopo (i) − αq qi
+
+Here, ddiff evaluates the geometric distance in the unified spatial domain, dwavelet measures the discrep-ancy in the multi-scale wavelet signature space, and ctopo (i) represents the intrinsic topological cost of the authentic node. Notably, qi denotes the relation-aware coverage confidence derived from LSRC. The negative sign preceding αq intrinsically rewards nodes that possess higher representativeness within their local relational coverage. Finally, we apply the Hungarian matching algorithm to solve for the optimal one-to-one discrete assignment: 
+
+π∗ = arg min 
+
+> πK
+
+X
+
+> k=1
+
+Ck,π (k)
+
+The authentic image-text pairs corresponding to the optimized indices {π∗(1) , . . . , π ∗(K)} constitute the final discrete coreset C.Table 4: Detailed ablation study on Flickr across different budget values. 
+
+Method Budget TR@1 TR@5 TR@10 IR@1 IR@5 IR@10 
+
+Full / Ours 100 3.9 10.8 16.7 1.50 6.24 10.86 Full / Ours 200 4.4 13.0 19.8 2.24 8.38 14.18 Full / Ours 500 7.5 19.3 28.0 3.56 12.08 20.16 Full / Ours 0.01 7.5 21.7 31.1 4.54 16.66 25.28 Full / Ours 0.02 7.6 23.5 33.7 5.12 18.32 27.36 Full / Ours 0.03 7.9 23.9 34.6 6.54 21.62 31.38 w/o LSRC 100 2.5 9.3 16.6 1.42 6.02 9.98 w/o LSRC 200 3.3 11.7 18.8 1.84 8.04 13.68 w/o LSRC 500 6.9 18.9 28.7 3.94 12.34 20.06 w/o LSRC 0.01 5.1 19.7 30.4 4.06 15.34 24.20 w/o LSRC 0.02 7.1 21.9 32.8 5.32 17.78 27.48 w/o LSRC 0.03 6.4 22.5 32.9 6.24 19.26 29.08 w/o Correction + Adaptive Fusion 100 3.1 8.7 14.7 1.26 4.96 9.26 w/o Correction + Adaptive Fusion 200 4.8 12.8 18.6 1.82 7.34 13.38 w/o Correction + Adaptive Fusion 500 5.0 17.5 26.4 3.02 11.44 18.76 w/o Correction + Adaptive Fusion 0.01 5.3 19.3 29.6 4.32 14.70 22.94 w/o Correction + Adaptive Fusion 0.02 6.4 20.4 29.9 4.36 16.78 25.94 w/o Correction + Adaptive Fusion 0.03 6.4 20.9 32.8 5.70 19.34 29.26 w/o Wavelet Alignment 100 2.1 9.5 15.6 1.48 6.02 9.98 w/o Wavelet Alignment 200 3.0 10.4 17.7 1.76 6.98 11.74 w/o Wavelet Alignment 500 4.9 17.3 25.9 3.06 11.26 18.28 w/o Wavelet Alignment 0.01 5.9 18.1 29.1 4.64 14.78 23.34 w/o Wavelet Alignment 0.02 8.0 22.3 31.7 5.16 16.38 25.50 w/o Wavelet Alignment 0.03 6.4 19.6 30.8 5.48 18.00 27.26 
+
+A.3 Ablation Supplement 
+
+Table 4 reports the detailed ablation results on Flickr under different budget values. The results further validate the contribution of each component in CAST, including local-collapse-aware refinement with adaptive fusion, LSRC, and wavelet alignment. 15 Table 5: Results of bidirectional image-text retrieval on the COCO dataset across varying compression budgets. The best performance is highlighted in bold .                                                                                                                                                                                                                                
+
+> Budget Metric Unimodal Selection Baselines Multimodal Selection Baselines Ours
+> Random Herding Glister EL2N Entropy GradMatch FAST ViSA PreSel Dyn-Prune Prophet 100 IR@1 0.43 0.88 0.84 0.30 0.44 0.56 0.91 0.35 0.42 0.62 0.78 0.84 IR@5 1.61 3.38 3.52 1.44 1.78 2.90 3.61 1.36 1.58 2.36 3.04 3.74
+> IR@10 3.05 6.04 6.48 2.52 3.12 5.58 6.42 2.72 3.08 4.92 5.84 6.51
+> TR@1 0.90 0.37 0.45 0.17 0.26 0.41 0.72 0.31 0.34 0.53 0.68 1.00
+> TR@5 2.94 1.66 1.82 0.80 1.28 1.82 3.48 1.54 1.76 2.38 2.71 4.26
+> TR@10 5.40 3.14 3.57 1.64 2.38 3.32 6.12 2.93 3.16 4.38 4.92 7.70
+> 200 IR@1 0.64 1.32 0.88 0.40 0.58 1.30 1.42 0.58 0.67 0.92 1.18 1.36 IR@5 3.06 4.60 3.82 1.96 2.70 4.44 4.54 2.48 2.76 3.82 4.61 4.78
+> IR@10 5.65 8.12 6.76 3.40 4.44 7.80 8.72 4.84 5.12 6.92 7.86 8.79
+> TR@1 1.18 0.56 0.56 0.26 0.38 0.64 1.21 0.48 0.53 0.72 0.96 1.94
+> TR@5 5.24 2.59 2.45 1.16 1.70 2.73 5.68 2.26 2.57 3.62 4.74 6.36
+> TR@10 9.24 4.79 4.55 2.26 3.21 4.88 9.86 4.28 4.75 6.42 7.82 11.26
+> 500 IR@1 1.29 2.44 1.70 0.70 1.16 2.46 2.58 1.18 1.32 1.74 2.15 2.72
+> IR@5 5.30 7.58 6.84 3.36 4.88 7.30 8.34 4.26 4.72 6.28 7.46 8.24 IR@10 9.29 14.58 11.28 5.78 8.20 11.96 14.32 7.66 8.35 10.84 12.73 14.66
+> TR@1 2.28 1.26 1.16 0.46 0.82 1.11 2.36 0.92 1.06 1.42 1.78 2.58
+> TR@5 8.44 4.98 4.39 2.02 3.24 4.58 8.76 3.86 4.24 5.82 7.16 9.10
+> TR@10 14.22 8.86 7.73 3.85 5.85 7.99 14.68 7.18 7.86 10.24 12.58 14.96
+
+Table 6: Cross-architecture results of synthesis-based methods using ResNet-10 as the upstream model. 
+
+Method Eval. Backbone TR@1 TR@5 TR@10 IR@1 IR@5 IR@10 
+
+RepBlend NFNet 2.40 6.40 11.90 0.86 3.54 6.34 RepBlend ResNet-50 0.20 1.00 2.00 0.22 1.00 1.92 RepBlend ViT-B/16 1.66 6.84 11.28 2.30 9.10 16.30 RepBlend ResNet-10 0.30 2.30 4.10 0.40 2.16 3.76 LORS NFNet 0.10 0.50 1.00 0.16 0.62 1.14 LORS ResNet-50 0.70 3.50 5.30 0.72 3.02 5.10 LORS ViT-B/16 0.10 0.40 1.10 0.10 0.70 1.32 LORS ResNet-10 0.20 0.70 1.70 0.24 0.98 1.68 Ours NFNet 7.70 22.30 32.00 5.48 18.74 28.00 Ours ResNet-50 5.00 16.00 24.40 4.90 15.68 24.44 Ours ViT-B/16 16.80 43.30 55.00 11.74 32.50 45.12 Ours ResNet-10 3.80 12.60 19.40 3.24 10.82 17.36 
+
+A.4 Results on the MS-COCO Dataset 
+
+Table 5 reports the bidirectional image-text retrieval results on the COCO dataset under extremely low compression budgets. Overall, CAST achieves the best performance on most retrieval metrics, obtaining the top result on 15 out of 18 metric-budget combinations. In particular, CAST consistently outperforms all unimodal and multimodal selection baselines on all text retrieval metrics, including TR@1, TR@5, and TR@10, across the three budgets. This demonstrates that the proposed collapse-aware topology refinement and multi-scale matching strategy effectively preserves cross-modal semantic information for text-to-image retrieval. 
+
+A.5 Cross-architecture Results of Synthesis-based Methods 
+
+Table 6 reports the cross-architecture retrieval results of two synthesis-based methods, RepBlend and LORS, when ResNet-10 is used as the upstream model. We evaluate the synthesized data on multiple downstream backbones, including NFNet, ResNet-50, ViT-B/16, and ResNet-10. The results show that the performance of synthesis-based methods varies significantly across evaluation backbones, indicating that synthetic data generated from a fixed upstream architecture may not consistently transfer to different downstream architectures. 16 Table 7: Results of bidirectional image-text retrieval on the Flickr30K dataset across ratio-based compression budgets. The best performance is highlighted in bold .                                                                                                                                                                                                                                   
+
+> Budget Metric Unimodal Selection Baselines Multimodal Selection Baselines Ours
+> Random Herding Glister EL2N Entropy GradMatch FAST ViSA PreSel Dyn-Prune Prophet 0.01 IR@1 3.64 1.76 1.76 1.46 1.18 1.64 4.18 3.14 2.48 2.24 2.98 4.54
+> IR@5 13.30 7.04 6.38 6.56 4.24 6.50 15.14 9.74 9.58 8.74 10.22 16.66
+> IR@10 21.62 12.62 11.96 10.48 7.22 11.20 23.78 15.12 14.24 14.24 15.82 25.28
+> TR@1 6.10 2.20 2.10 1.80 0.50 2.20 6.60 3.70 4.40 3.40 4.00 7.50
+> TR@5 20.30 8.30 8.40 6.80 3.00 7.90 20.20 11.70 11.40 10.30 11.50 21.70
+> TR@10 30.00 14.60 14.10 11.80 5.00 12.70 30.50 18.20 17.70 16.50 17.40 31.10
+> 0.02 IR@1 5.24 5.34 5.24 4.80 3.92 4.92 5.50 3.04 3.58 2.36 3.48 5.42 IR@5 15.12 17.50 17.04 14.74 12.34 15.92 17.46 11.64 11.60 9.14 12.60 18.32
+> IR@10 17.93 26.28 25.84 22.10 18.86 24.64 26.88 17.60 18.00 15.42 18.56 27.36
+> TR@1 6.00 6.90 6.80 5.80 3.20 7.50 6.70 4.40 3.70 3.00 5.30 7.60
+> TR@5 22.60 20.80 20.90 18.00 12.40 19.60 22.10 11.50 11.90 11.50 13.90 23.50
+> TR@10 32.00 29.80 32.10 26.40 18.20 30.30 33.20 17.10 17.40 18.60 19.20 33.70
+> 0.03 IR@1 5.86 6.06 5.86 4.74 4.82 5.54 6.50 4.26 4.32 3.36 5.04 6.54
+> IR@5 19.16 18.86 17.76 17.24 14.98 17.18 20.58 13.44 12.52 11.24 13.60 21.62
+> IR@10 28.64 28.58 27.52 25.54 22.14 27.24 29.88 19.64 18.88 17.94 20.68 31.38
+> TR@1 7.70 8.42 5.90 7.80 6.40 7.30 8.40 4.20 3.80 3.80 5.70 8.27 TR@5 21.00 20.60 19.50 20.20 15.20 21.60 22.60 14.70 10.90 11.60 15.00 23.90
+> TR@10 32.00 33.00 30.00 29.70 22.70 33.10 33.70 22.00 16.30 18.50 21.40 34.60
+
+A.6 Flickr30K Results under Ratio-based Budgets 
+
+Table 7 reports the bidirectional image-text retrieval results on the Flickr30K dataset under ratio-based compression budgets of 1%, 2%, and 3%. We compare CAST against representative unimodal selection baselines (e.g., Random, Herding, Glister, EL2N, Entropy, GradMatch, and FAST), as well as multimodal selection baselines (e.g., ViSA, PreSel, Dynamic Pruning, and Data Prophet). The results show that CAST consistently achieves strong overall performance across different retrieval directions and budget ratios. 
+
+A.7 Limitations 
+
+While CAST shows promising performance in multimodal coreset selection, there remain several directions for further exploration. First, our current study mainly evaluates CAST on image-text retrieval benchmarks. Although these benchmarks provide a standard and representative setting for multimodal selection, extending the evaluation to broader multimodal scenarios, such as instruction tuning or video-language tasks, would further demonstrate its generality. Second, CAST currently uses fixed hyperparameter settings across experiments, including neighborhood size, diffusion scales, and loss weights. Exploring adaptive parameter selection may further improve convenience and robustness when applying CAST to new datasets. Third, our implementation focuses on validating the effectiveness of topology-aware selection, rather than optimizing system-level efficiency. Future work could further accelerate graph construction and multi-scale matching for larger-scale applications. 
+
+A.8 Broader Impacts 
+
+CAST aims to reduce the computational and energy costs of training multimodal models by selecting compact and informative coresets, which may improve the accessibility and sustainability of mul-timodal learning. Since the selected coresets are derived from existing multimodal datasets, their quality and safety are still influenced by the underlying data sources. Therefore, selected coresets should be used together with standard data governance practices, including dataset license checks, privacy filtering, bias evaluation, and safety screening, especially before real-world deployment. Overall, CAST is intended to support more efficient and responsible multimodal learning. 17

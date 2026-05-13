@@ -1,0 +1,1664 @@
+Title: Learning Subspace-Preserving Sparse Attention Graphs from Heterogeneous Multiview Data
+
+URL Source: https://arxiv.org/pdf/2605.11881v1
+
+Published Time: Wed, 13 May 2026 01:33:50 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# Learning Subspace-Preserving Sparse Attention Graphs from Heterogeneous Multiview Data 
+
+1st Jie Chen 
+
+College of Computer Science Sichuan University Chengdu, China chenjie2010@scu.edu.cn 
+
+2nd Yuanbiao Gou 
+
+College of Computer Science Sichuan University Chengdu, China gouyuanbiao@gmail.com 
+
+3rd Chuanbin Liu 
+
+School of Economics and Management China University of Petroleum (Beijing) Beijing, China liuchuanbin@cutech.edu.cn 
+
+4th Zhu Wang 
+
+Law School Sichuan University Chengdu, China wangzhu@@scu.edu.cn 
+
+5th Xi Peng 
+
+School of Artificial Intelligence Sichuan University Chengdu, China pengx.gm@gmail.com 
+
+Abstract—The high-dimensional features extracted from large-scale unlabeled data via various pretrained models with diverse architectures are referred to as heterogeneous multiview data. Most existing unsupervised transfer learning methods fail to faithfully recover intrinsic subspace structures when exploit-ing complementary information across multiple views. There-fore, a fundamental challenge involves constructing sparse similarity graphs that preserve these underlying subspace structures for achieving semantic alignment across heteroge-neous views. In this paper, we propose a sparse attention graph learning (SAGL) method that learns subspace-preserving sparse attention graphs from heterogeneous multiview data. Specifically, we introduce a bilinear attention factorization scheme to capture asymmetric similarities among the high-dimensional features, which breaks the symmetry bottleneck that is inherent in the traditional representation learning techniques. A dynamic sparsity gating mechanism then predicts a feature-specific compression factor for adaptively controlling the topological contributions of neighbors. Furthermore, we employ a structured sparse projection via α-entmax to generate subspace-preserving sparse attention graphs for individual views. SAGL leverages these view-specific graphs to conduct sparse information aggregation, yielding discriminative repre-sentations for multiview learning tasks. In addition, we provide a rigorous theoretical analysis that bridges differentiable sparse attention and probability simplex constraints. Extensive exper-iments conducted on multiple benchmark datasets demonstrate that SAGL consistently outperforms the state-of-the-art unsu-pervised transfer learning approaches. Index Terms—heterogeneous multiview data, transfer learn-ing, sparse attention graph, subspace learning 
+
+I. Introduction By leveraging transfer learning with pretrained models possessing diverse architectures, high-dimensional features can be obtained from large-scale unlabeled data, yielding heterogeneous multiview data [1], [2]. These features typi-cally lie close to low-dimensional structures corresponding to latent semantic categories [3]. Unsupervised knowledge transfer is aimed at bridging the discrepancy between such pretrained features and the intrinsic subspace structures for multiview learning. Recent advances in unsupervised knowledge transfer techniques have fundamentally reshaped the representa-tion learning process for downstream tasks [4]–[6]. By transferring knowledge from pretrained models, it has become possible to extract transferable features from large-scale unlabeled visual data across different domains. Numerous unsupervised transfer learning approaches have been developed to enforce the semantic alignment of fea-tures across multiple views, ensuring that their represen-tations remain discriminative without the need for manual annotations [7]–[9]. By taking advantage of the extensive semantic priors of foundation vision-language models, these unsupervised transfer methods consistently produce results that are competitive with those of the traditional supervised fine-tuning approaches [10], [11]. When samples approximately lie in a union of low-dimensional subspaces, the samples derived from the same subspace tend to exhibit stronger intrinsic correlations with each other than with samples obtained from different subspaces. However, most existing unsupervised transfer learning approaches fail to effectively capture such subspace structures when completing unsupervised knowledge transfer tasks. Multiview self-representation learning has achieved re-markable progress in terms of capturing the subspace structures that are embedded in multiview data [12]–[17]. Most existing self-representation learning-based methods can be broadly categorized into graph representation learning [14]–[16] and self-supervised graph learning tech-niques [12], [13], [18], [19]. These methods focus primarily on exploiting complementary information by recover-ing subspace structures while simultaneously enforcing a shared consensus graph across multiple views. However, when ℓ0-norm or low-rank relaxations are integrated into shallow learning architectures, graph representation 
+
+> arXiv:2605.11881v1 [cs.CV] 12 May 2026
+
+learning approaches require computationally prohibitive iterative solvers [3], [15], [20]. As a result, this severely restricts their scalability to large-scale unlabeled data. In addition, the traditional contrastive learning architectures adopted by self-supervised graph representation learning approaches limit their ability to capture rich semantic knowledge from heterogeneous multiview data. The α-entmax transformation was proposed as a formal gener-alization of the standard softmax function for inducing structured sparsity in attention mechanisms [21], [22]. The theoretical relationship between α-entmax projection and 
+
+ℓ0-norm sparse self-representation across multiple views deserves further investigations in heterogeneous multiview learning scenarios. Therefore, a fundamental challenge lies in constructing sparse similarity graphs that faithfully capture the intrinsic subspace structures embedded in heterogeneous multiview data. In this paper, we propose a sparse attention graph learning (SAGL) method that learns subspace-preserving sparse attention graphs from heterogeneous multi-view data. By reformulating the ℓ0-norm sparse self-representation as a simplex-constrained differentiable opti-mization, we present an adaptive sparse self-representation learning framework that performs sparse information aggregation to produce discriminative representations. Specifically, we first introduce a bilinear attention factor-ization scheme to capture asymmetric similarities among features. This breaks the symmetry bottleneck inherent in traditional representation learning techniques. Then, we present a dynamic sparsity gating mechanism that adap-tively controls the topological contribution of neighbors to facilitate rigorous intrasubspace isolation. Furthermore, we employ a structured sparse projection via α-entmax to generate the subspace-preserving sparse attention graphs for individual views. Compared to existing multiview graph learning methods, SAGL enables fully unsupervised transfer learning without computationally expensive itera-tive solvers. In addition, we provide a rigorous theoretical analysis bridging differentiable sparse attention and prob-ability simplex constraints, demonstrating how structured sparsity enforces subspace-preserving representations. Ex-tensive experiments demonstrate that SAGL consistently outperforms state-of-the-art unsupervised transfer learn-ing approaches. The key contributions of this work are summarized as follows.  
+
+> •
+
+By reformulating sparse self-representation under probability simplex constraints, we present a sparse self-representation framework that learns subspace-preserving sparse attention graphs from heteroge-neous multiview data. These graphs are employed to perform sparse information aggregation, yielding discriminative representations for performing unsu-pervised transfer learning without requiring compu-tationally expensive iterative solvers.  
+
+> •
+
+We introduce a bilinear attention factorization scheme to capture the asymmetric similarities among features. This scheme is enhanced by a dynamic sparsity-based gating mechanism that predicts afeature-specific compression factor to adaptively con-trol the topological contributions of neighbors for implementing rigorous intrasubspace isolation.  
+
+> •
+
+We provide rigorous theoretical guarantees that bridge differentiable sparse attention and probability simplex constraints, demonstrating how structured sparsity enforces subspace-preserving representations in sparse self-representation learning. II. Related Work A. Multiview Self-Representation Learning The traditional self-representation learning approaches are aimed at uncovering the subspace structures embedded in high-dimensional data [3], [23], [24]. They typically assume that such data lie near low-dimensional subspaces corresponding to latent semantic categories [3], [25]. In-spired by these classic self-representation learning ap-proaches, multiview self-representation learning methods have been developed to exploit complementary subspace information across multiple views [15], [26]–[28]. For ex-ample, Chen et al. [15] proposed a low-rank tensor graph learning approach that enforces the alignment of spectral block-diagonal representations for high-dimensional mul-tiview data. However, the relaxations developed based on the nuclear norm require computationally prohibitive iter-ative solvers [3], [20], [25]. Xu et al. [28] introduced a self-representation learning framework (SRLF) that mitigates cross-modal discrepancies by deriving high-level semantic representations from low-level representations. However, this approach struggles to align heterogeneous feature distributions across multiple views. These studies indicate that integrating self-representation learning with view-specific structural constraints is essential for capturing the subspace structures of high-dimensional data. B. Unsupervised Knowledge Transfer Learning Transfer learning provides a fundamental paradigm for leveraging the semantic knowledge encoded in di-verse pretrained models to enhance the generalizability of representation learning techniques. Recent advances in unsupervised knowledge transfer have been aimed at learning discriminative representations from large-scale unlabeled data without manual supervision [7], [9], [29]. For example, Gadetsky et al. [9] proposed an unsuper-vised transfer learning method that exploits transferable features to learn linearly separable representations without manual annotation. Chen et al. [7] introduced a mul-tiview self-representation learning (MSRL) method that captures view-invariant representations by exploiting the self-representation property of features across heteroge-neous views. These studies demonstrate that unsupervised knowledge transfer improves the general applicability of transfer learning in real-world scenarios without the need for manual annotation. III. Sparse Attention Graph Learning A. Adaptive Sparse Self-Representation Learning Let Dtr = {x1, x2, ..., xn} be a training dataset consist-ing of n unlabeled samples, with each sample xi ∈ Rm.By utilizing L distinct pretrained models {ϕl}Ll=1 , amultiview dataset H = {H(1) , H(2) , . . . , H(L)} is generated through transfer learning, where H(l) =
+
+[
+
+h(l)1 , h(l)2 , ..., h(l)
+
+> n
+
+]
+
+(1 ≤ l ≤ L), and h(l) 
+
+> i
+
+∈ Rdl denotes the feature of sample 
+
+xi, i.e., 
+
+h(l) 
+
+> i
+
+= ϕl (xi) . (1) When at least two of these L pretrained models adopt different pretraining objectives, H is referred to as hetero-geneous multiview data. For simplicity, we utilize two pre-trained models, namely, ϕμ (·) and ϕν (·). Considering two linear models δ(μ) (· ; ·) and δ(ν) (· ; ·), the corresponding features z(μ) 
+
+> i
+
+∈ RC and z(ν) 
+
+> i
+
+∈ RC can be produced by 
+
+z(μ) 
+
+> i
+
+= δ(μ)(h(μ) 
+
+> i
+
+; Wμ), z(ν) 
+
+> i
+
+= δ(ν)(h(ν) 
+
+> i
+
+; Wν ) (2) where C represents the number of categories, and Wμ ∈
+
+Rdμ×C and Wν ∈ Rdν ×C denote the parameters of 
+
+δ(i) (· ; ·) and δ(j) (· ; ·), respectively. For the lth view, let Z(l) =
+
+[
+
+z(l)1 , z(l)2 , . . . , z(l)
+
+> n
+
+]⊤
+
+∈ Rn×C
+
+denote the matrix of features. Each feature can be rep-resented as a sparse linear combination of other features belonging to the same latent subspace. Specifically, the optimal sparse coefficient vector a(l) 
+
+> i
+
+can be obtained by solving the following ℓ0-norm minimization problem: 
+
+˜a(l) 
+
+> i
+
+= arg min 
+
+> a(l)
+> i
+
+∥∥∥∥z(l) 
+
+> i
+
+−
+
+(
+
+Z(l))T
+
+a(l)
+
+> i
+
+∥∥∥∥
+
+> 22
+
++ λ
+
+∥∥∥a(l)
+
+> i
+
+∥∥∥0
+
+(3) where λ > 0 is a trade-off parameter and ∥·∥ 0 denotes the number of nonzero entries contained in the vector. As the optimization problem in Eq. (3) is nonconvex and NP-hard, it is typically relaxed to a sparsity-inducing ℓ1-norm minimization problem. However, relying on traditional iterative solvers for this convex relaxation is computa-tionally prohibitive when applied to large-scale multiview data. To integrate the ℓ0-norm self-representation strat-egy into an end-to-end differentiable learning frame-work, we reformulate the sparse representation prob-lem as a simplex-projected attention scheme. Let 
+
+∆n−1 := 
+
+{
+
+a(l) 
+
+> i
+
+| 1⊤a(l) 
+
+> i
+
+= 1 , a(l) 
+
+> i
+
+≥ 0
+
+}
+
+denote the (n −
+
+1) -dimensional probability simplex. We formulate the simplex-constrained sparse self-representation problem as follows: 
+
+min  
+
+> a(l)
+> i∈∆n−1
+
+∥a(l) 
+
+> i
+
+∥0 + λ
+
+∥∥∥∥z(l) 
+
+> i
+
+−
+
+(
+
+Z(l))T
+
+a(l)
+
+> i
+
+∥∥∥∥
+
+> 22
+
+s.t. z(l) 
+
+> i
+
+= Z(l)a(l) 
+
+> i
+
++ e(l)
+
+> i
+
+(4) where e(l) 
+
+> i
+
+∈ Rdl denotes the sparse error term. Instead of algebraic optimization solutions, our goal is to adap-tively learn subspace-preserving sparse attention graphs 
+
+{A(l) ∈ Rn×n}Ll=1 for the multiview dataset H, where 
+
+A(l) =
+
+{
+
+a(l)1 , a(l)2 , ..., a(l)
+
+> n
+
+}
+
+, and an attention coefficient 
+
+a(l) 
+
+> ij
+
+∈ A(l) (1 ≤ i, j ≤ n) denotes the similarity between the features h(l) 
+
+> i
+
+and h(l) 
+
+> j
+
+in the lth view. To align the heterogeneous distributions across multiple views, we present an adaptive sparse self-representation learning framework. Specifically, we formulate the pro-cess of constructing subspace-preserving sparse attention graphs as an adaptive sparse representation learning problem: 
+
+min  
+
+> Wμ,Wν,A(μ),A(ν)
+> n
+
+∑
+
+> i=1
+
+L
+
+(
+
+p(μ) 
+
+> i
+
+, p(ν)
+
+> i
+
+)
+
++ λ ∑
+
+> l∈{ μ,ν }
+
+Ω( A(l))
+
+s.t. 
+
+(
+
+A(l))T
+
+1 = 1, A(l) ≥ 0
+
+(5) where L denotes a self-supervised alignment loss, and Ω ( ·)
+
+denotes the structural sparsity constraint imposed on the attention graphs. The fundamental challenge encountered when minimizing the objective function in Eq. (5) lies in efficiently optimizing the network weights to learn the subspace-preserving sparse attention graphs A(l) while satisfying the imposed sparse structural constraints. B. Learning Subspace-Preserving Sparse Attention Graphs According to Eq. (4), subspace-preserving sparse at-tention graphs determine the topological neighborhoods for feature-specific aggregation. These graphs can be constructed by evaluating the similarities between the features. However, the standard attention mechanisms inevitably result in densely connected graphs. Such dense connectivity leads to heavily entangled representations across different latent subspaces. We take advantage of the underlying subspace structures embedded in high-dimensional features to learn subspace-preserving sparse attention graphs. 1) Bilinear Attention Factorization: We introduce a bilinear attention factorization scheme that projects the encoded features Z(l) into two latent semantic subspaces via two learnable projection matrices U(l), V(l) ∈ RC×C .The raw similarity matrix S(l) ∈ Rn×n is computed as follows: 
+
+S(l) = (Z(l)U(l))( Z(l)V(l))⊤
+
+√C (6) where the scaling factor 1√C prevents the dot products from growing excessively large in high-dimensional feature spaces. The similarity matrix S(l) captures the global pair-wise semantic structure among all the samples in the lth view. Unlike the standard inner products that inherently produce symmetric undirected graphs, the introduction of two distinct projection matrices U(l) and V(l) generates an asymmetric similarity matrix S(l). This fundamental asymmetry effectively facilitates discriminative informa-tion aggregation among the features for self-representation learning. 2) Dynamic Sparsity Gate: Since the features derived from distinct latent subspaces exhibit varying degrees of topological uncertainty, applying an isotropic threshold across all features inevitably compromises the structural integrity of the learned graphs. To achieve precise intra-subspace isolation, it is imperative to dynamically adapt the sparsity level for each individual feature. To this end, we propose a dynamic sparsity gate that is formulated as a lightweight multilayer perceptron (MLP). For each feature 
+
+z(l) 
+
+> i
+
+, the gate predicts a feature-specific compression factor 
+
+ω(l) 
+
+> i
+
+∈ [0 , 1] :
+
+ω(l) 
+
+> i
+
+= σ
+
+(
+
+W2ReLU 
+
+(
+
+W1z(l)
+
+> i
+
+)) 
+
+(7) where σ(·) denotes the sigmoid activation function, and 
+
+W1 and W2 are learnable weight matrices. The directed similarities are subsequently adapted by this adaptive gate as follows: 
+
+˜s(l) 
+
+> i
+
+= s(l) 
+
+> i
+
+·
+
+(
+
+1 − ω(l)
+
+> i
+
+)
+
+(8) where s(l) 
+
+> i
+
+denotes the ith column of S(l). A larger ω(l)
+
+> i
+
+imposes a stronger penalty on the similarities, effectively forcing the model to concentrate on a narrower set of highly confident neighbors in the same latent subspace. As the feature-specific compression factor ω(l) 
+
+> i
+
+is dynami-cally learned during the optimization, we also present an alternative scheme to compute the directed similarities as follows: 
+
+˜s(l) 
+
+> ij
+
+= s(l)
+
+> ij
+
+1 − ω(l) 
+
+> i
+
++ ϵ (9) where ϵ is a small constant, e.g., ϵ = 10 −6. This scheme explicitly breaks the structural symmetry, i.e., ˜s(l)
+
+> ij
+
+̸ = ˜ s(l) 
+
+> ji
+
+.Consequently, the factor ω(l) 
+
+> i
+
+adaptively controls the topo-logical contributions of the neighbors during the feature aggregation. 3) Structured Sparse Projection: The bilinear attention factorization scheme can capture the global pairwise semantic information among all the features. However, it inevitably assigns nonzero similarities to all feature pairs regardless of their underlying subspace affiliations. This indicates that the similarity matrix S(l) remains densely connected, which violates the independent sub-space assumption underlying the sparse self-representation learning. Structural sparsity can be enforced for the simi-larity matrix S(l) by eliminating any spurious connections between features derived from different latent subspaces. Specifically, we project each column of the similarity ma-trix S(l) onto the (n − 1) -dimensional probability simplex 
+
+∆n−1 to obtain a subspace-preserving sparse attention graph A(l). The standard softmax function is intrinsically incapable of producing absolute zeros. Instead of utilizing the standard softmax function, the subspace-preserving sparse attention graph A(l) is generated by employing the 
+
+α-entmax transformation [21], [22] : a(l) 
+
+> i
+
+= entmax α
+
+(
+
+˜s(l)
+
+> i
+
+)
+
+.For any α > 1, the entmax mapping process induces sparse solutions via a thresholding mechanism: 
+
+a(l) 
+
+> i
+
+=
+
+[
+
+(α − 1) 
+
+(
+
+˜s(l) 
+
+> i
+
+− τ (l) 
+
+> i
+
+1
+
+)] 1
+
+> α−1
+> +
+
+(10) where τ (l) 
+
+> i
+
+∈ R is a unique threshold. By setting α = 1 .5,the transformation acts as a strict continuous thresholding operator. This operator forces the marginal inter-subspace similarities to exactly zero. By adaptively adjusting the factor ω(l) 
+
+> i
+
+, the projection assigns stronger inhibition to features with higher topological uncertainty while preserving the meaningful intrasubspace connections for features with distinct subspace affiliations. Consequently, it produces a subspace-preserving sparse attention graph 
+
+A(l) that reveals the block-diagonal structures of the underlying subspaces. Discussion. The strict thresholding property of α-entmax with α = 1 .5 provides a principled mechanism for recovering the block-diagonal subspace structures from the given features. Specifically, the α-entmax projec-tion inherently maps low-confidence similarities to exact zeros via Tsallis entropy regularization. The structural sparsity constraint Ω( A(μ), A(ν)) in Eq. (5) is implic-itly implemented through this differentiable thresholding mechanism, which produces sparse attention graphs with 
+
+A(l)̸ = I. Consequently, this projection ensures that the proposed SAGL model consistently produces directed sparse attention graphs without additional regularization terms. 4) Sparse Information Aggregation: To obtain view-specific representations, we introduce a sparse information aggregation strategy that integrates sparse representation learning with a residual connection. Given a subspace-preserving sparse attention graph A(l) (l ∈ { μ, ν }), the sparse information aggregation operation performed on 
+
+z(l) 
+
+> i
+
+, denoted as f
+
+(
+
+z(l) 
+
+> i
+
+; a(l)
+
+> i
+
+)
+
+, is defined as follows: 
+
+p(l) 
+
+> i
+
+= f
+
+(
+
+z(l) 
+
+> i
+
+; a(l)
+
+> i
+
+)
+
+=
+
+> n
+
+∑
+
+> j=1
+
+a(l) 
+
+> ij
+
+z(l) 
+
+> j
+
++z(l) 
+
+> i
+
+. (11) where a(l) 
+
+> i
+
+represents the ith column vector of A(l),and pi ∈ RC denotes the representation corresponding to sample xi. Unlike aggregating the information de-rived from all features, the sparse aggregation operation leverages the highly sparse nature of a(l) 
+
+> i
+
+. This ensures that p(l) 
+
+> i
+
+is represented as a sparse linear combination of spatially proximate neighbors belonging to the same latent subspace. By strictly restricting the aggregation procedure to the intrinsic subspace, this operation filters out inter-subspace noise. This significantly enhances the discriminative capabilities of representations. The probability simplex constraint A(l)1 = 1, A(l) ≥
+
+0 directly corresponds to the sparse self-representation constraint in Eq. (5). The sparse information aggregation uses the sparsity of A(l) to refine the representations in Eq. (11). By restricting the aggregation stage to intrinsic subspaces, the mechanism filters out intersubspace noise and produces more discriminative representations. For the 
+
+lth view, the assignment probability distribution of the representation p(l) 
+
+> i
+
+, i.e., q(l) 
+
+> i
+
+∈ ∆C−1, corresponding to sample xi (1 ≤ i ≤ n), is calculated as follows: 
+
+q(l) 
+
+> i
+
+= ρ
+
+(
+
+p(l)
+
+> i
+
+)
+
+(12) where ρ (·) is a softmax activation function and ∆C−1 de-notes the probability simplex. The complete optimization objective of SAGL is provided in the appendix. C. Theoretical Justification 1) Asymmetry of Bilinear Attention Factorization: The underlying relationship among high-dimensional features are typically directed. The directional dependency implies that the similarity relationship from z(l) 
+
+> j
+
+to z(l) 
+
+> i
+
+is inher-ently asymmetric. We provide a theoretical analysis of the asymmetric nature of bilinear attention factorization. The assumptions and proofs of all presented theorems are provided in the appendix. Theorem III.1 [Universal Representation Capacity for Asymmetric Subspaces] Let a linear feature matrix Z ∈
+
+Rn×c have full column rank, and let A∗ ∈ Rn×n be an arbitrary asymmetric adjacency matrix defining the di-rected similarity relationships among different subspaces. If A∗ resides within the bilinear span of the features, i.e., A∗ = ZW ∗Z⊤, for some latent structural matrix 
+
+W∗ ∈ Rc×c, the bilinear attention factorization scheme implemented via projection matrices U, V ∈ Rc×c is guaranteed to possess universal expressive power for the exact recovery of A∗.Theorem III.1 provides a rigorous theoretical justifica-tion for employing two distinct projection matrices, i.e., 
+
+U(l) and V(l), in Eq. (6). Specifically, it demonstrates that bilinear attention factorization has universal expres-sive power for pursuing the arbitrary directed similarity relationships of latent subspaces. The traditional rep-resentation learning techniques often evaluate similarity relationships via symmetric projections, which forces the underlying structural matrix W∗ to be strictly symmetric. In contrast, the proposed bilinear attention factorization scheme successfully breaks the symmetry bottleneck of standard inner product operations. This enables the pro-posed SAGL model to faithfully capture the directed relationships inherent in high-dimensional features. 2) Rethinking ℓ0-Norm Self-Representation as Simplex-Projected Attention: We establish a theoretical bridge between the ℓ0-norm self-representation and the differen-tiable probability simplex-projected attention. The prob-ability simplex constraint provides a principled convex relaxation that preserves the subspace-preserving property of the original ℓ0-norm solution. Definition III.2 [Subspace-Preserving Representation] Asparse coefficient vector a(l) 
+
+> i
+
+∈ Rn is said to be subspace-preserving for a feature z(l) 
+
+> i
+
+∈ S k if a(l)
+
+> ij
+
+̸ = 0 implies that 
+
+z(l) 
+
+> j
+
+∈ S k; i.e., all nonzero coefficients index features from the same latent subspace. Theorem III.3 [ ℓ0-Norm-to-Simplex Relaxation] Let the features {z(l) 
+
+> i
+
+}ni=1 be drawn from a union of linear sub-spaces {S k}Kk=1 . Under the independent subspace, suffi-cient intrasubspace sampling, and similarity separation as-sumptions (Assumptions A.1, A.2, and A.3, respectively), the following subspace-preserving properties hold: (1) Subspace-Preserving Property of the ℓ0-Norm So-lution: Consider the ℓ0-norm sparse self-representation problem: 
+
+˜a(l) 
+
+> i
+
+= arg min 
+
+> a(l)
+> i
+
+∥∥∥a(l)
+
+> i
+
+∥∥∥0
+
+s.t. z(l) 
+
+> i
+
+=
+
+(
+
+Z(l))T
+
+a(l) 
+
+> i
+
+, a(l) 
+
+> ii
+
+= 0 .
+
+(13) Then the solution ˜a(l) 
+
+> i
+
+is guaranteed to be subspace-preserving, i.e., ˜a(l)
+
+> ij
+
+̸ = 0 = ⇒ z(l) 
+
+> j
+
+∈ S yi .(2) Exact Subspace Preservation via Simplex Projection: Let ˜a(l) 
+
+> i
+
+= entmax α(˜ s(l) 
+
+> i
+
+) for α > 1, where ˜s(l) 
+
+> i
+
+is the sim-ilarity vector. Consider the entmax-regularized attention projection: 
+
+˜a(l) 
+
+> i
+
+= arg max  
+
+> a(l)
+> i∈∆n−1
+
+⟨a(l), ˜s(l) 
+
+> i
+
+⟩ − Ωα(a(l) 
+
+> i
+
+), (14) where Ωα(a(l)) is the Tsallis entropy for α > 1. If the directed similarities satisfy the similarity separation con-dition (Assumption A.3) with a sufficiently large margin 
+
+ϵ > 0, then the resulting sparse attention is exactly subspace-preserving, i.e., 
+
+˜a(l) 
+
+> ij
+
+> 0 = ⇒ z(l) 
+
+> j
+
+∈ S yi . (15) Theorem III.3 establishes the fact that the probability simplex constraint A(l)1 = 1, A(l) ≥ 0 in Eq. (5) provides a principled convex relaxation of the ℓ0-norm self-representation constraint. Under strict separation between intra- and intersubspace similarities, this thresholding mechanism guarantees that only intrasubspace connec-tions remain active, thereby preserving the subspace structure. By employing α-entmax with α = 1.5, we obtain a continuous analog of the ℓ0 sparsity operator. This formulation facilitates the end-to-end differentiable optimization process without relying on iterative algebraic solvers. Consequently, the subspace-preserving property established for simplex projection inherently extends to entmax-based attention under analogous separation con-ditions. IV. Experiments We conduct extensive experiments to evaluate the effec-tiveness of the proposed SAGL method on eight publicly available datasets: Pets, KITTI, Flowers, Caltech101, Eu-roSAT, SUN397, Food101 and ImageNet-1K [30]. Specif-ically, we consider three transfer learning tasks: self-supervised, zero-shot, and supervised transfer learning. For self-supervised transfer learning, three standard met-rics are employed to evaluate the clustering performance of all competing methods, i.e., clustering accuracy (ACC), normalized mutual information (NMI) and adjusted rand index (ARI) [7]. We compare SAGL against representative state-of-the-art methods, including SRLF [28], principle of rate reduction (PRR) [2], masked image modeling (MIM) [1], MSRL [7] and TURTLE [9]. For zero-shot transfer learning tasks, CLIP zero-shot transfer [9], LaFTer [31] and self-adaptive optimal transport (SAOT) [32] are included as baselines. For supervised transfer learning, we employ a supervised linear probe as the baseline. We utilize two representative pretrained backbones, i.e., DINOv3 [33] and SigLIP 2 [34], as backbones. The source codes of all the baselines are provided by their respective authors. The source code of SAGL is publicly available at https://github.com/chenjie20/SAGL. A. Performance Evaluation 1) Self-Supervised Transfer Learning: For self-supervised transfer learning, we follow the standard unsupervised evaluation protocol [7], [9], where label information is unavailable during training. The proposed SAGL model is trained on the training set of each dataset and evaluated on the test set without any fine-tuning. The number of clusters is set to the ground-truth number of semantic categories for each dataset. The clustering results of all competing methods on the self-supervised learning task are reported in Table I, where the best and second-best results are highlighted in bold and underlined, respectively. We observe that SAGL consistently outperforms the competing methods in terms of ACC, NMI, and ARI. In particular, the performance gap becomes increasingly evident on larger datasets, such as SUN397, Food101 and ImageNet-1K. For example, SAGL improves ACC by 2.16%, 2.61%, and 4.69% on SUN397, Food101, and ImageNet-1K, respectively. SRLF does not exploit the generalization capability of pretrained backbones for clustering tasks. Although PRR and MIM incorporate pretrained backbones, they rely on individual views that often fail to provide sufficient information for clustering tasks. In contrast, SAGL, MSRL and TURTLE employ various pretrained backbones on large-scale unlabeled data to produce multiple views, thereby effectively capturing complementary information across different views. Additionally, SAGL consistently outperforms both MSRL and TURTLE across all the datasets. This is because SAGL further considers the intrinsic subspace structures embedded in the high-dimensional multiview data. Consequently, these results validate the effectiveness of the proposed SAGL approach for self-supervised learning tasks.  
+
+> Fig. 1. A comparison of performance between SAGL and the zero-shot transfer learning baselines.
+
+2) Zero-Shot Transfer Learning: The zero-shot transfer learning baselines, such as CLIP zero-shot transfer (ZST), LaFTer, and SAOT, utilize descriptions of ground-truth classes as a form of supervision. CLIP ZST and LaFTer employ CLIP ViT-L/14 and ViT-B/32 backbones, respec-tively, while SAOT employs CLIP ViT-B/16 and DINOv3 as backbones under the inductive setting. Fig. 1 shows the clustering accuracies of SAGL and these zero-shot transfer learning baselines across all datasets except KITTI. The KITTI dataset is not included due to its relatively small number of clusters. SAGL outperforms these weakly su-pervised baselines across most datasets without requiring any class descriptions or label information. 3) Supervised Transfer Learning: We employ a super-vised linear probe as an important evaluation protocol to measure the performance gap between SAGL and supervised baselines. The probe is implemented via astandard logistic regression (LR) model. Specifically, for the supervised LR baselines, we freeze the pretrained backbones and train only a linear classifier on top of the features extracted by the individual pretrained backbones (i.e., DINOv3 and SigLIP 2) using all available labels. Ta-ble II shows a comparison between the clustering accuracy of SAGL and the classification accuracy of the supervised LR baselines across eight datasets. Despite the absence of label information during training, SAGL outperforms the supervised LR baselines on the Pets, Flowers, EuroSAT, and Food101 datasets. While the supervised baselines are often limited by the features produced by individ-ual pretrained backbones, SAGL effectively leverages the complementary information of multiple views to produce more discriminative representations, even without label supervision. B. Evaluating Various Pre-trained Model Combinations We construct feature pairs from different pretrained backbones, including DINOv3, SigLIP 2, CLIP ViT-L/14, and ConvNeXt V2. Specifically, we consider four combi-nations: (1) ConvNeXt V2 and DINOv3, (2) ConvNeXt V2 and SigLIP 2, (3) SigLIP 2, DINOv3, and ConvNeXt V2, and (4) SigLIP 2, DINOv3, and CLIP ViT-L/14. Table III shows clustering performance of SAGL with four pretrained model combinations across eight datasets. TABLE I Clustering performance of competing methods on eight datasets.                                        
+
+> Methods Pets KITTI Flowers Caltech101 EuroSAT SUN397 Food101 ImageNet-1K ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI SRLF 95.45 95.76 91.97 42.18 13.64 8.60 94.06 98.48 95.74 65.27 87.69 46.27 95.68 90.25 90.76 63.68 82.89 53.59 91.53 92.20 85.72 69.41 85.07 56.09 PRR 85.28 80.99 78.87 45.06 16.14 11.42 94.59 93.17 90.92 78.28 72.95 64.59 80.86 56.41 59.50 64.37 80.88 51.18 92.81 92.48 88.28 72.97 68.53 58.92 MIM 83.89 87.89 76.49 45.30 15.46 10.61 97.50 96.77 95.33 86.90 83.62 78.66 87.66 56.34 61.34 66.40 75.32 57.13 92.20 79.62 80.61 63.24 84.72 40.18 TURTLE 96.05 96.14 92.79 45.59 16.51 11.88 99.59 99.66 99.40 90.14 94.59 88.16 96.38 91.61 92.17 71.18 85.13 59.01 95.02 94.97 90.95 71.98 88.12 61.72 MSRL 97.38 97.18 95.00 53.74 19.39 16.94 99.72 99.76 99.59 90.38 94.69 86.92 99.88 99.67 99.73 70.26 85.33 59.61 95.07 95.13 91.09 74.65 89.17 65.14 SAGL 97.57 97.33 95.35 56.95 24.73 26.12 99.76 99.80 99.65 91.54 95.35 89.01 99.92 99.80 99.82 73.34 86.29 62.27 97.68 97.42 95.53 79.34 90.98 70.50
+
+TABLE II A comparison of performance between SAGL and the supervised LR baselines.                                 
+
+> Methods Pets KITTI Flowers Caltech101 EuroSAT SUN397 Food101 ImageNet-1K LR+SigLIP 2 96.76 73.33 99.66 97.22 96.14 83.52 96.91 87.04 LR+DINOv3 97.08 76.60 99.72 94.51 97.40 79.80 95.81 86.87 SAGL 97.57 56.95 99.76 91.54 99.92 73.34 97.68 79.34
+
+TABLE III Clustering performance of SAGL with different pretrained model combinations.                                      
+
+> Methods Pets KITTI Flowers Caltech101 EuroSAT SUN397 Food101 ImageNet-1K ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI (1) 94.63 95.82 91.73 52.14 21.01 20.01 99.71 99.75 99.56 85.39 92.46 83.72 99.62 99.00 99.16 63.49 82.09 52.39 92.11 93.52 87.36 72.45 87.97 62.07 (2) 93.19 95.07 89.79 52.41 18.60 15.34 69.78 87.47 65.28 77.38 87.44 82.38 92.60 88.35 85.48 59.88 81.48 49.93 98.32 98.08 96.72 71.36 87.59 61.60 (3) 90.79 94.15 85.72 48.93 24.53 14.84 84.55 93.41 45.75 88.53 94.21 82.46 88.76 81.66 77.22 69.81 84.17 32.59 94.02 94.67 88.45 75.85 89.36 47.75 (4) 92.31 95.58 89.95 52.21 22.16 17.85 88.24 95.10 59.99 89.74 94.22 85.44 99.72 99.32 99.38 65.71 81.58 11.83 97.60 97.59 95.51 75.75 89.72 65.50 SAGL 97.57 97.33 95.35 56.95 24.73 26.12 99.76 99.80 99.65 91.54 95.35 89.01 99.92 99.80 99.82 73.34 86.29 62.27 97.68 97.42 95.53 79.34 90.98 70.50
+
+TABLE IV Ablation study on the key components of the SAGL model.                                        
+
+> Methods Pets KITTI Flowers Caltech101 EuroSAT SUN397 Food101 ImageNet-1K ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI ACC NMI ARI SAGL i96.18 96.07 92.95 50.53 17.57 15.56 99.07 99.54 97.98 90.19 94.14 87.28 96.40 91.72 92.22 70.21 84.53 58.02 95.13 94.99 91.11 73.97 88.79 64.28 SAGL b63.61 72.98 50.04 52.47 21.85 19.36 99.32 99.66 99.41 80.08 88.20 70.45 86.34 76.86 73.43 31.99 57.39 2.70 67.72 77.91 54.66 18.86 47.04 0.24 SAGL w97.22 97.34 94.96 55.08 21.71 22.98 99.37 99.71 99.48 90.52 94.54 87.79 97.12 93.65 93.76 71.24 86.11 61.17 95.68 95.74 92.06 77.54 90.32 68.32 SAGL 97.57 97.33 95.35 56.95 24.73 26.12 99.76 99.80 99.65 91.54 95.35 89.01 99.92 99.80 99.82 73.34 86.29 62.27 97.68 97.42 95.53 79.34 90.98 70.50
+
+Incorporating additional views is generally expected to provide richer complementary information. However, the results indicate that increasing the number of views does not consistently lead to improved clustering performance. For example, SAGL with two-view combinations achieves better clustering performance than with three-view com-binations, such as (3) and (4). This is because highly uncorrelated views provide limited complementary infor-mation while increasing computational cost. These find-ings highlight the importance of carefully selecting view combinations that maximize complementary information rather than simply increasing the number of views. In ad-dition, model pairs sharing the same architecture achieve substantially higher clustering results than heterogeneous pairs combining different architectures. For example, the results show that a combination of ViT-based models con-sistently outperforms a mixed-architecture combination across most datasets. The large distributional gap between heterogeneous architecture pairs makes it difficult for the SAGL model to recover the intrinsic subspace structures across views. C. Ablation Study We conduct an ablation study to verify the contribution of each key component in SAGL. Specifically, we consider three variants of SAGL: (1) replacing the sparse attention graphs with identity matrices, denoted as SAGL i, (2) retaining only the dense attention graphs generated by bilinear attention factorization, denoted as SAGL b, and (3) removing the dynamic sparsity gating mechanism, denoted as SAGL w. Table IV reports the clustering performance of these three variants against the full SAGL model. The full SAGL model significantly outperforms its variants, SAGL i, SAGL b and SAGL w. For example, the performance gap between SAGL and SAGL i becomes particularly significant on the large-scale datasets. When the structured sparse projection is replaced with dense attention graphs, the clustering performance of SAGL b
+
+drops dramatically across most datasets compared to the full SAGL model. The results demonstrate the effective-ness of the sparse information aggregation operation in Eq. (11). Additionally, the clustering results of SAGL w
+
+also highlight the crucial role of the dynamic sparsity gate in adaptive neighbor selection. V. Conclusion In this paper, we present the SAGL method for learning subspace-preserving sparse attention graphs from het-erogeneous multiview data. SAGL utilizes bilinear at-tention factorization to capture asymmetric similarities among high-dimensional features, successfully breaking the symmetry constraints in traditional representation learning techniques. Moreover, we introduce a dynamic sparsity gating mechanism that adaptively controls the topological contributions of neighbors by predicting afeature-specific compression factor. To enforce structured sparsity, we adopt a structured sparse projection via 
+
+α-entmax to generate subspace-preserving sparse atten-tion graphs. By leveraging these view-specific graphs, SAGL conducts sparse information aggregation to produce discriminative representations for unsupervised transfer learning without the need for computationally expensive iterative solvers. Finally, we provide a rigorous theoretical analysis bridging the gap between differentiable sparse at-tention and probability simplex constraints. This analysis demonstrates how structured sparsity enforces subspace-preserving representations. Extensive experiments demon-strate that SAGL consistently outperforms state-of-the-art unsupervised transfer learning approaches. References 
+
+[1] B. Alkin, L. Miklautz, S. Hochreiter, and J. Brandstetter, “MIM-Refiner: A contrastive learning boost from intermediate pre-trained representations,” in Proc. 13th Int. Conf. Learn. Represent., Singapore, Apr. 2025, pp. 1–37. [2] T. Chu, S. Tong, T. Ding, X. Dai, B. D. Haeffele, R. Vidal, and Y. Ma, “Image clustering via the principle of rate reduction in the age of pretrained models,” in Proc. 12th Int. Conf. Learn. Represent., Vienna, Austria, May 2024, pp. 1–12. [3] M. Brbić and I. Kopriva, “ l0-motivated low-rank sparse sub-space clustering,” IEEE Trans. on Cyber., vol. 50, no. 4, pp. 1711–1725, 2020. [4] I. Ng, Y. Li, Z. Li, Y. Zheng, G. Chen, and K. Zhang, “A general representation-based approach to multi-source domain adaptation,” in Proc. 42nd Int. Conf. Mach. Learn., Vancouver, Canada, Jul. 2025, pp. 45 911–45 933. [5] J. Wang, J. Li, W. Zhuang, C. Chen, L. Lyu, and F. Ma, “En-hancing foundation models with federated domain knowledge infusion,” in Proc. 42nd Int. Conf. Mach. Learn., Vancouver, Canada, Jul. 2025, pp. 63 621–63 635. [6] Z. Chen, Y. Deng, Y. Li, and Q. Gu, “Understanding transfer-able representation learning and zero-shot transfer in CLIP,” in Proc. 12th Int. Conf. Learn. Represent., Vienna, Austria, May 2024, pp. 1–12. [7] J. Chen, Z. Wang, C. Liu, and X. Peng, “Multiview self-representation learning across heterogeneous views,” arXiv preprint arXiv:2602.04328, pp. 1–12, Jan. 2026. [8] C. Liu, R. Bing, X. Xi, W. Dai, and G. Yuan, “Heterogeneous graph structure learning for experts selection in academic evaluation,” IEEE Trans. Comput. Soc. Syst., vol. 12, no. 6, pp. 4677–4688, 2025. [9] A. Gadetsky, Y. Jiang, and M. Brbic, “Let go of your labels with unsupervised transfer,” in Proc. 41st Int. Conf. Mach. Learn., Vienna, Austria, Jul. 2024, pp. 14 382–14 407. [10] M. Fu, K. Zhu, Z. Ding, and J. Wu, “DTL: Parameter- and memory-efficient disentangled vision learning,” IEEE Trans. Pattern Anal. and Mach. Intell., vol. 48, no. 2, pp. 1736–1749, Feb. 2026. [11] C. Shang, M. Li, Y. Zhang, Z. Chen, J. Wu, F. Gu, Y. Lu, and Y. Cheung, “PRO-VPT: Distribution-adaptive visual prompt tuning via prompt relocation,” in Proc. IEEE/CVF Int. Conf. Comput. Vis., Hawaii, USA, Oct. 2025, pp. 1558–1568. [12] Q. Wang, B. Zhao, Z. Zhang, Q. Gao, and L. Jiao, “Dual self-supervised deep graph clustering,” IEEE Trans. Multi., pp. 1– 10, Jan. 2026. [13] G. Li, Z. Yu, K. Yang, J. Lv, and C. L. P. Chen, “Pseudo-label similarity graph-driven multi-view contrastive clustering,” IEEE Trans. Multi., pp. 1–13, Feb. 2026. [14] B. Jiang, C. Zhang, X. Liang, P. Zhou, J. Yang, X. Wu, J. Guan, W. Ding, and W. Sheng, “Collaborative similarity fusion and consistency recovery for incomplete multi-view clustering,” in Proc. AAAI Conf. Artif. Intell., vol. 39, no. 17, Philadelphia, Pennsylvania, USA, Feb. 2025, pp. 17 617–17 625. [15] J. Chen, H. Mao, W. L. Woo, C. Liu, Z. Wang, and X. Peng, “One-step adaptive graph learning for incomplete multiview subspace clustering,” IEEE Trans. Knowl. Data Eng., vol. 37, no. 5, pp. 2771–2783, May 2025. [16] M. Zhang, X. Liu, T. Han, X. Qu, and S. Niu, “Adaptive anchor-guided representation learning for efficient multi-view subspace clustering,” IEEE Trans. Image Process., vol. 34, pp. 6053–6067, Sept. 2025. [17] L. Fei, J. He, Q. Zhu, S. Zhao, J. Wen, and Y. Xu, “Deep multi-view contrastive clustering via graph structure awareness,” IEEE Trans. Image Process., vol. 34, pp. 3805–3816, Jun. 2025. [18] B. Deng, T. Wang, L. Fu, S. Huang, C. Chen, and T. Zhang, “THESAURUS: contrastive graph clustering by swapping fused gromov-wasserstein couplings,” in Proc. AAAI Conf. Artif. Intell., Philadelphia, Pennsylvania, USA, Feb. 2025, pp. 16 199– 16 207. [19] C. Liu, X. Zhang, H. Zhao, Z. Liu, X. Xi, and L. Yu, “LMCBert: An automatic academic paper rating model based on large lan-guage models and contrastive learning,” IEEE Trans. Cybern., vol. 55, no. 6, pp. 2970–2979, 2025. [20] E. Elhamifar and R. Vidal, “Sparse subspace clustering algo-rithm, theory, and applications,” IEEE Trans. Pattern Anal. and Mach. Intell., vol. 35, no. 11, pp. 2765–2781, 2013. [21] B. Peters, V. Niculae, and A. F. T. Martins, “Sparse sequence-to-sequence models,” in Proc. 57th Annu. Meet. Assoc. Comput. Linguist., Florence, Italy, Jul. 2019, pp. 1504–1519. [22] A. F. F. Martins and R. F. Astudillo, “From softmax to sparse-max: A sparse model of attention and multi-label classification,” in Proc. 33rd Int. Conf. Mach. Learn., New York, USA, Jun. 2016, pp. 1614–1623. [23] J. Chen, H. Mao, Y. Gou, and X. Peng, “Hierarchical sparse representation clustering for high-dimensional data streams,” IEEE Trans. Neural. Netw. Learn. Syst., vol. 36, no. 10, pp. 18 035–18 047, Oct. 2025. [24] S. Huang, Y. Zhang, L. Fu, and S. Wang, “Learnable multi-view matrix factorization with graph embedding and flexible loss,” IEEE Trans. on Multi., vol. 25, pp. 3259–3272, 2022. [25] L. Fu, Z. Chen, Y. Chen, and S. Wang, “Unified low-rank tensor learning and spectral embedding for multi-view subspace clustering,” IEEE Trans. on Multi., vol. 25, pp. 4972–4985, 2022. [26] J. Wen, J. Long, X. Lu, C. Liu, X. Fang, and Y. Xu, “Partial multiview incomplete multilabel learning via uncertainty-driven reliable dynamic fusion,” IEEE Trans. Pattern Anal. and Mach. Intell., vol. 48, no. 1, pp. 236–250, Jan. 2026. [27] J. Yang, C. Y. Lu, Z. Wang, H. T. Chen, G. K. Xu, C. Zhang, S. Dong, X. Liang, and B. Jiang, “Multi-view clustering with granularity-aware pseudo supervision,” in Proc. AAAI Conf. Artif. Intell., vol. 40, no. 19, Singapore, Jan. 2026, pp. 27 538– 27 546. [28] H. Xu, X. Su, S. Chen, G. Chen, and X. Chen, “Bridging optimization and neural networks for efficient multi-view clus-tering,” in Proc. AAAI Conf. Artif. Intell., vol. 40, no. 19, Singapore, Jan. 2026, pp. 16 066–16 074. [29] C. Liu, J. Guo, X. Zhang, D. Wu, and L. Yu, “Expert credi-bility prediction model based on fuzzy C-means clustering and similarity association,” IEEE Trans. on Cyber., vol. 33, no. 8, pp. 2719–2729, 2025. [30] A. Paszke, S. Gross, F. Massa, A. Lerer, J. Bradbury, G. Chanan, and et.al, “Pytorch: an imperative style, high-performance deep learning library,” in Proc. 33rd Adv. Neural Inf. Process. Syst., Vancouver, BC, Canada, Dec. 2019, pp. 8026–8037. [31] M. J. Mirza, L. Karlinsky, W. Lin, H. Possegger, M. K. R. Feris, and H. Bischof, “LaFTer: Label–free tuning of zero-shot classifier using language and unlabeled image collections,” in Proc. 37th Adv. Neural Inf. Process. Syst., New Orleans, Louisiana, USA, Dec. 2023, pp. 5765–5777. [32] Z. Hu, Q. Xu, Y. Duan, Y. Tai, and H. Li, “SOTA: Self-adaptive optimal transport for zero-shot classification with multiple foundation models,” pp. 1–20, 2025. [33] O. Sim’eoni, H. V. Vo, M. Seitzer, F. Baldassarre, M. Oquab, C. Jose, V. Khalidov, M. Szafraniec, S. Yi, M. Ramamonjisoa, F. Massa, D. Haziza, L. Wehrstedt, J. Wang, T. Darcet, T. Moutakanni, L. Sentana, C. Roberts, A. Vedaldi, J. Tolan, J. Brandt, C. Couprie, J. Mairal, H. J’egou, P. Labatut, and P. Bojanowski, “DINOv3,” pp. 1–67, 2025. [34] M. Tschannen, A. Gritsenko, X. Wang, M. F. Naeem, I. Al-abdulmohsin, N. Parthasarathy, T. Evans, L. Beyer, Y. Xia, B. Mustafa, O. Hénaff, J. Harmsen, A. Steiner, and X. Zhai, “SigLIP 2: Multilingual vision-language encoders with improved semantic understanding, localization, and dense features,” pp. 1–20, 2025. [35] D. P. Kingma and J. L. Ba, “ADAM: a method for stochastic optimization,” in Proc. 3rd Int. Conf. Learn. Represent., San Diego, CA, USA, May 2015, pp. 1–15. [36] S. Boyd, N. Parikh, E. Chu, B. Peleato, and J. Eckstein, “Dis-tributed optimization and statistical learning via the alternating direction method of multipliers,” Found. Trends Mach. Learn., vol. 3, no. 1, pp. 1–122, Mar. 2011. [37] S. Kornblith, M. Norouzi, H. Lee, and G. Hinton, “Similarity of neural network representations revisited,” in Proc. 36th Int. Conf. Mach. Learn., California, USA, Jun. 2019, pp. 3519–3529. [38] L. van der Maaten and G. Hinton, “Visualizing data using t-SNE,” J. Mach. Learn. Res, vol. 9, no. 11, pp. 2579–2605, 2008. 
+
+Algorithm 1 Optimization Procedure for SAGL Input: An unlabeled training dataset Dtr =
+
+{x1, x2, . . . , xn} and a testing dataset Dts =
+
+{ˆx1, ˆx2, . . . , ˆxˆn} belonging to C categories, and L
+
+pre-trained models. Parameters: The number of training epochs epochs , batch size B, and hyperparameters γ > 0 and β > 0.Output: The predicted labels Y = [ˆ y1, ˆy2, . . . , ˆyˆn] for 
+
+Dts . 
+
+> 1:
+
+Construct the multiview data Htr from Dtr via Eq. (1);  
+
+> 2:
+
+for t = 1 to epochs do  
+
+> 3:
+
+for each mini-batch B of size B sampled from Htr 
+
+do  
+
+> 4:
+
+for l = 1 to L do  
+
+> 5:
+
+Compute the linear features Z(l) for samples in 
+
+B via Eq. (2);  
+
+> 6:
+
+Compute the raw similarity matrix S(l) via Eq. (6);  
+
+> 7:
+
+Compute the directed similarities ˜S(l) via Eq. (8);  
+
+> 8:
+
+Construct the subspace-preserving sparse at-tention graph A(l) via Eq. (10);  
+
+> 9:
+
+Compute the assignment probability distribu-tion q(l) 
+
+> i
+
+for each sample xi ∈ B via Eq. (12);  
+
+> 10:
+
+end for  
+
+> 11:
+
+Determine the pseudolabel yi for each sample xi ∈B via Eq. (16);  
+
+> 12:
+
+Update the network parameters by minimizing L
+
+in Eq. (21);  
+
+> 13:
+
+end for  
+
+> 14:
+
+end for  
+
+> 15:
+
+Construct the multiview data Hts from Dts via Eq. (1);  
+
+> 16:
+
+Perform forward computation on Hts to predict the labels ˆyi for all samples ˆxi ∈ D ts via Eq. (16). Appendix A. Enforcing Multiview Alignment under Structural Spar-sity Constraints To align the heterogeneous representations across mul-tiple views in a fully unsupervised manner, SAGL is optimized by jointly minimizing three complementary components: pseudolabel prediction, cluster diversity reg-ularization, and cross-view consistency alignment [7]. We optimize the entire network using an adaptive momentum-based mini-batch gradient descent strategy [35], with the pretrained backbones remaining frozen during training. The complete optimization procedure of the proposed SAGL method is summarized in Algorithm 1. Pseudolabel Prediction Loss. Consider the view-specific representations q(l) 
+
+> i
+
+produced by the sparse information aggregation process described in Eq. (12). To enable self-supervised training to be implemented in the absence of ground-truth annotations, we construct pseudolabels by aggregating the predicted soft assignments across all L
+
+views: 
+
+ˆyi = arg max 
+
+> k
+
+1
+
+L
+
+> L
+
+∑
+
+> l=1
+
+q(l) 
+
+> ik
+
+(16) where q(l) 
+
+> ik
+
+denotes the predicted probability of sample 
+
+xi belonging to class k (1 ≤ k ≤ C) in the lth view. A negative log-likelihood loss is applied to refine each view-specific prediction: 
+
+Lpseudo = − 1
+
+n
+
+> L
+
+∑
+
+> l=1
+> n
+
+∑
+
+> i=1
+
+log q(l) 
+
+> iˆyi
+
+. (17) This loss encourages each independent view to produce predictions that align with the global consensus distribu-tion. Cluster Diversity Regularization. Unsupervised transfer learning-based clustering models are highly prone to producing trivial solutions, where all instances collapse into a single underlying subspace (i.e., a single cluster). We explicitly maximize the marginal entropy of the global cluster assignments. Let ¯q(l) 
+
+> c
+
+denote the average assignment probability of all instances that are assigned to category j. Cluster diversity can be achieved by minimizing the negative entropy: 
+
+Ldiv =
+
+> L
+
+∑
+
+> l=1
+> C
+
+∑
+
+> j=1
+
+¯q(l) 
+
+> j
+
+log ¯ q(l) 
+
+> j
+
+(18) where 
+
+¯q(l) 
+
+> j
+
+= 1
+
+n
+
+> n
+
+∑
+
+> i=1
+
+q(l) 
+
+> i,j
+
+. (19) Cross-View Consistency Alignment. The semantic as-signment probability distributions q(μ) 
+
+> i
+
+and q(ν) 
+
+> i
+
+produced by view μ and view ν, respectively, should exhibit strong semantic alignment. To enforce semantic consis-tency across heterogeneous views (μ, ν ), we minimize the cross-entropy among the soft assignment distributions of different pretrained models: 
+
+Lalign = − 1
+
+n
+
+> n
+
+∑
+
+> i=1
+> L
+
+∑
+
+> μ=1
+> L
+
+∑ 
+
+> ν=1 ,μ ̸=νC
+
+∑
+
+> j=1
+
+q(μ) 
+
+> i,j
+
+log q(ν) 
+
+> i,j
+
+. (20) Overall Objective. The overall optimization objective of SAGL is defined as follows: 
+
+Ltotal = Lpseudo + γLdiv + βLalign (21) where γ and β are the trade-off parameters. The overall objective Ltotal represents a specific implementation of the general self-supervised alignment loss L
+
+(
+
+p(μ) 
+
+> i
+
+, p(ν)
+
+> i
+
+)
+
+presented in Eq. (5). Limitations. SAGL relies on the availability of sufficient neighbors within the same latent subspace to perform sparse information aggregation. A limitation is intro-duced during mini-batch training when sample shuffling is applied, as it may lead to an insufficient number of samples from certain semantic categories within a single batch. This violates the sufficient intrasubspace sampling assumption, which requires each feature’s neighborhood to contain at least dk linearly independent samples from its corresponding subspace to ensure faithful recovery of the underlying subspace structures. In such cases, the 
+
+α-entmax projection may fail to establish robust and meaningful connections. As a result, this may degrade the separability of the learned representations and reduce overall clustering performance. B. Proof of Theorem III.1 Proof Let A∗ = ZW ∗Z⊤ denote the target adjacency matrix. The objective is to show that there exist matrices 
+
+U, V ∈ RC×C such that 
+
+1
+
+√c ZUV ⊤Z⊤ = A∗. (22) Since W∗ is an arbitrary (potentially asymmetric) matrix, we can perform singular value decomposition (SVD) on the scaled target √CW∗:
+
+√cW∗ = PΣQ ⊤ (23) where P, Q ∈ RC×C are orthogonal matrices containing the left and right singular vectors, respectively, and 
+
+Σ ∈ RC×C is the diagonal matrix of singular values. We can explicitly construct the optimal projection matrices as follows: 
+
+U = PΣ 1/2, V = QΣ 1/2. (24) Since the diagonal entries of Σ are nonnegative singular values, Σ1/2 is a strictly real-valued matrix, which ensures that U, V ∈ RC×C . Then, we have 
+
+UV ⊤ = ( PΣ 1/2)( QΣ 1/2)⊤
+
+= PΣ 1/2Σ1/2Q⊤
+
+= PΣQ ⊤
+
+= √cW∗
+
+(25) Upon substituting Eq. (25) back into the bilinear attention factorization formulation given in Eq. (6), we obtain 
+
+A = 1
+
+√c Z(UV ⊤)Z⊤
+
+= 1
+
+√c Z(√CW∗)Z⊤
+
+= ZW ∗Z⊤ = A∗
+
+(26) Therefore, U and V always exist such that the bilin-ear attention factorization exactly recovers any arbitrary asymmetric adjacency matrix A∗, where U and V are constructed independently from the left and right singular vectors, respectively. C. Proof of Theorem III.3 Proof (1) Let z(l) 
+
+> i
+
+∈ S k. Under the independent subspace assumption, any linear feature z(l) 
+
+> i
+
+∈ Sk cannot be represented as a linear combination of features derived from Sk′ (k′̸ = k). Consequently, assigning coefficients for the features located outside Sk does not reduce the reconstruction error 
+
+∥∥∥z(l) 
+
+> i
+
+− Z(l)a(l)
+
+> i
+
+∥∥∥22
+
+. Conversely, this strictly increases the ℓ0-norm penalty. Thus, the optimal solution ˜a(l) 
+
+> i
+
+that minimizes Eq. (13) must assign zero to all cross-subspace features, resulting in a subspace-preserving representation. (2) The entmax operator for α > 1 is defined as follows: entmax α(˜ s(l) 
+
+> i
+
+)j = [( α − 1)˜ s(l) 
+
+> ij
+
+− τi]1/(α−1) + , (27) where [·]+ = max(0 , ·) and τi ∈ R is the unique threshold determined by the simplex constraint ∑ 
+
+> j
+
+a(l) 
+
+> ij
+
+= 1 .Let z(l) 
+
+> i
+
+∈ Syi . Under Assumption A.3, a margin 
+
+ϵ > 0 separates the intrasubspace similarities from the intersubspace similarities: 
+
+min  
+
+> j:z(l)
+> j∈S yi
+
+˜s(l) 
+
+> ij
+
+> max  
+
+> j:z(l)
+> j/∈S yi
+
+˜s(l) 
+
+> ij
+
++ ϵ. (28) Step 1: Intersubspace sparsity. If the separation margin 
+
+ϵ is sufficiently large (combined with the sufficient intra-subspace sampling of Syi from Assumption A.2), then the threshold τi strictly exceeds the values of all inter-subspace similarity terms (α − 1)˜ s(l) 
+
+> ij
+
+for j : z(l) 
+
+> j
+
+/∈ S yi ; i.e., 
+
+τi ≥ (α − 1) max  
+
+> j:z(l)
+> j/∈S yi
+
+˜s(l) 
+
+> ij
+
+. (29) For any cross-subspace feature z(l) 
+
+> j
+
+/∈ S yi , we have 
+
+(α − 1)˜ s(l) 
+
+> ij
+
+− τi ≤ 0, ∀j / ∈ S yi . (30) This implies that ˜a(l) 
+
+> ij
+
+= 0 , ∀j / ∈ S yi .Step 2: Intrasubspace sparsity. To satisfy the unit sum constraint ∑ 
+
+> j
+
+a(l) 
+
+> ij
+
+= 1 , the threshold τi must be bounded from above by the similarity of the active intrasubspace elements. Thus, there exists a threshold τi such that 
+
+(α − 1) max  
+
+> j:z(l)
+> j/∈S yi
+
+˜s(l) 
+
+> ij
+
+≤ τi < (α − 1) max  
+
+> j:z(l)
+> j∈S yi
+
+˜s(l) 
+
+> ij
+
+. (31) In Syi , the threshold τi is not required to be below all intrasubspace similarities. On the contrary, τi is uniquely determined by the simplex constraint and the distribution of intrasubspace similarities. Specifically, for j : z(l) 
+
+> j
+
+∈ S yi :
+
+˜a(l) 
+
+> ij
+
+> 0 ⇐⇒ (α − 1)˜ s(l) 
+
+> ij
+
+> τ i. (32) By refining ˜s(l) 
+
+> ij
+
+to amplify the similarity gap within 
+
+Syi , the dynamic sparsity gating mechanism ensures that only the most spatially proximate intrasubspace neighbors satisfy the connection condition, resulting in a sparse attention graph. Therefore, the support set Ai = {j : ˜a(l) 
+
+> ij
+
+> 0} contains only a specific subset of intrasubspace features, i.e., |A i| ≪ |S yi |, which successfully preserves the subspace structures while enforcing the sparse attention property of the ℓ0-norm. D. Theoretical Bridge: Investigating Block-Diagonal Structures in Directed Similarity Graphs Assumption A.1 [Independent Subspaces] A collection of 
+
+K latent subspaces {S k}Kk=1 is linearly independent if for any k ∈ { 1, . . . , K }, the following holds: 
+
+Sk ∩ ∑ 
+
+> j̸=k
+
+Sj = {0}. (33) Assumption A.2 [Sufficient Intrasubspace Sampling] For any feature z(l) 
+
+> i
+
+∈ S k, its neighborhood set Ni contains at least dk linearly independent samples from Sk, such that span 
+
+(
+
+{z(l) 
+
+> j
+
+}j∈N i∩S k
+
+)
+
+= Sk, (34) where dk = dim( Sk).Assumption A.3 [Similarity Separation] For any feature 
+
+z(l) 
+
+> i
+
+∈ Sk, the directed similarities satisfy a margin condition: there exists a sufficiently large margin ϵ > 0
+
+such that 
+
+max  
+
+> j:z(l)
+> j/∈S k
+
+˜s(l) 
+
+> ij
+
+< min  
+
+> j:z(l)
+> j∈S k
+
+˜s(l) 
+
+> ij
+
+− ϵ, (35) where ˜s(l) 
+
+> ij
+
+denotes the directed similarity between z(l) 
+
+> i
+
+and 
+
+z(l) 
+
+> j
+
+.Theorem A.4 [Sparse Attention Recovers Block-Diagonal Structures] Under Assumption A.1, let A(l) ∈ Rn×n be the attention graph produced via the α-entmax projection method with α = 1 .5. If the bilinear similarity s(l) 
+
+> i
+
+satisfies the separation condition (Assumption A.3), there exists a permutation matrix P such that the permuted matrix 
+
+˜A(l) = PA (l)P⊤ (36) has a block-diagonal structure, i.e., 
+
+˜A(l) =
+
+
+
+B(l)1 0 · · · 00 B(l)2 · · · 0
+
+... . . . ...
+
+0 0 · · · B(l)
+
+> K
+
+ (37) where B(l) 
+
+> k
+
+∈ Rnk ×nk denotes the intrasubspace attention submatrix corresponding to Sk.Proof Under Assumption A.1, each feature z(l) 
+
+> i
+
+belongs to a unique subspace Sk. According to Theorem III.3, the entmax operator with α > 1 produces a subspace-preserving sparse representation. Specifically, for each 
+
+z(l) 
+
+> i
+
+∈ S k, we have 
+
+˜a(l) 
+
+> ij
+
+= 0 , ∀j such that z(l) 
+
+> j
+
+/∈ S k. (38) Therefore, the nonzero entries of A(l) are confined to pairs 
+
+(i, j ) with z(l) 
+
+> i
+
+, z(l) 
+
+> j
+
+∈ S k for some k.We consider a permutation matrix P that reorders the indices such that all samples acquired from the same subspace are grouped together. Let 
+
+˜A(l) = PA (l)P⊤. (39) Since the cross-subspace entries are zero, ˜A(l) has a block-diagonal structure, i.e., 
+
+˜A(l) =
+
+
+
+B(l)1 0 · · · 00 B(l)2 · · · 0
+
+... . . . ...
+
+0 0 · · · B(l)
+
+> K
+
+ , (40) where B(l) 
+
+> k
+
+∈ Rnk ×nk corresponds to the intrasubspace attention structure contained in Sk. Thus, A(l) is block-diagonal up to a permutation of the indices. Theorem A.4 suggests that the sparse attention graph 
+
+A(l) can recover a complete block-diagonal structure if two conditions are satisfied: sufficient intrasubspace sampling (Assumption A.2) and the similarity separation condition (Assumption A.3). Under these conditions, the 
+
+α-entmax projection maps all cross-subspace attention weights to exactly zero regardless of feature positions. Because the memberships of features in different subspaces are determined by relative similarities rather than absolute locations, the block-diagonal structure is preserved for unseen test samples. This guarantees consistent clustering performance across both training and test sets. E. Theoretical Bridge: From the ℓ0-Norm to Simplex Projection The sparse self-representation lies in the discrete ℓ0-norm constraint in Eq. (4), which strictly limits the num-ber of nonzero reconstruction coefficients, i.e., ∥a(l) 
+
+> i
+
+∥0 ≪
+
+n. However, directly optimizing the ℓ0-norm over high-dimensional data is an NP-hard and strictly nondiffer-entiable problem. The traditional continuous relaxation schemes, such as the ℓ1-norm regularization, often re-quire computationally prohibitive iterative solvers, e.g., an alternating direction method of multipliers framework [36]. To overcome this limitation, SAGL formulates the construction of the sparse attention graph as a Tsallis entropy-regularized projection onto the probability sim-plex ∆n−1. We provide the following theorem to establish the equivalence between the continuous simplex projection and the discrete ℓ0-norm constraint. Theorem A.5 [Differentiable Relaxation and Support Sparsity of the ℓ0-Norm Constraint] Let ˜s(l) 
+
+> i
+
+∈ Rn be the directed similarity vector for the ith feature. The structured sparse projection imposed on the probability simplex ∆n−1 via the α-entmax transformation acts as a continuous and differentiable relaxation of the discrete 
+
+ℓ0-norm constraint. Specifically, it guarantees a strictly sparse support set supp (a(l) 
+
+> i
+
+) = {j | a(l) 
+
+> ij
+
+> 0}, where the discrete cardinality ∥a(l) 
+
+> i
+
+∥0 is exactly determined by the continuous topological uncertainty factor τ (l) 
+
+> i
+
+.Proof The α-entmax transformation computes the at-tention distribution by solving a constrained variational optimization problem over the probability simplex ∆n−1:
+
+a(l) 
+
+> i
+
+= arg max  
+
+> a(l)
+> i∈∆n−1
+
+((
+
+a(l)
+
+> i
+
+)⊤
+
+˜s(l) 
+
+> i
+
++ HTα
+
+(
+
+a(l)
+
+> i
+
+))
+
+(41) where the Tsallis α-entropy for α > 1 is defined as 
+
+HTα (a(l) 
+
+> i
+
+) = 1
+
+α(α − 1) 
+
+∑
+
+> j
+
+(
+
+a(l) 
+
+> ij
+
+−
+
+(
+
+a(l)
+
+> ij
+
+)α)
+
+. (42) To reveal its connection with the ℓ0-norm, we formulate the Lagrangian of this optimization problem by incorpo-rating the probability simplex constraints ( 1⊤a(l) 
+
+> i
+
+= 1 and 
+
+a(l) 
+
+> i
+
+≥ 0): 
+
+L(a(l) 
+
+> i
+
+, ρ, μ) = 
+
+> n
+
+∑
+
+> j=1
+
+a(l) 
+
+> ij
+
+˜s(l) 
+
+> ij
+
++ 1
+
+α(α − 1) 
+
+> n
+
+∑
+
+> j=1
+
+(
+
+a(l) 
+
+> ij
+
+−
+
+(
+
+a(l)
+
+> ij
+
+)α)
+
+− ρ
+
+
+
+> n
+
+∑
+
+> j=1
+
+a(l) 
+
+> ij
+
+− 1
+
+ +
+
+> n
+
+∑
+
+> j=1
+
+μj a(l)
+
+> ij
+
+(43) where ρ ∈ R and μ ∈ Rn 
+
+> +
+
+are the Lagrange multipliers for the unit-sum and non-negativity constraints, respectively. Setting the partial derivative with respect to a(l) 
+
+> ij
+
+to zero gives the Karush-Kuhn-Tucker (KKT) stationarity condition: 
+
+∂L
+
+∂a (l)
+
+> ij
+
+= ˜ s(l) 
+
+> ij
+
++1 − α
+
+(
+
+a(l)
+
+> ij
+
+)α−1
+
+α(α − 1) − ρ + μj = 0 . (44) By the KKT complementary slackness condition, μj = 0 
+
+whenever a(l) 
+
+> ij
+
+> 0. Upon solving for a(l) 
+
+> ij
+
+under this active support condition, we obtain 
+
+a(l) 
+
+> ij
+
+=
+
+[
+
+(α − 1) 
+
+(
+
+˜s(l) 
+
+> ij
+
+− ρ
+
+)
+
++ 1
+
+α
+
+] 1
+
+> α−1
+
+. (45) Letting ρ∗ = ( α − 1) ρ − 1 
+
+> α
+
+and applying the truncation operator [x]+ = max( x, 0) to enforce nonnegativity, we have the exact closed-form solution: 
+
+a(l) 
+
+> ij
+
+=
+
+[
+
+(α − 1) 
+
+(
+
+˜s(l)
+
+> ij
+
+)
+
+− ρ∗] 1
+
+> α−1
+> +
+
+. (46) By substituting the similarity ˜s(l) 
+
+> ij
+
+= s(l) 
+
+> ij
+
+·
+
+(
+
+1 − ω(l)
+
+> i
+
+)
+
+in Eq. (8) into the above equation, we obtain 
+
+a(l) 
+
+> ij
+
+=
+
+[
+
+(α − 1) 
+
+(
+
+s(l) 
+
+> ij
+
+·
+
+(
+
+1 − ω(l)
+
+> i
+
+)) 
+
+− ρ∗] 1
+
+> α−1
+> +
+
+. (47) The truncation operator [·]+ sets any similarity that is below the threshold ρ∗ to zero, which directly bounds the ℓ0-norm such that ∥a(l) 
+
+> i
+
+∥0 ≪ n. Moreover, as the feature-specific compression factor ω(l) 
+
+> i
+
+increases toward 
+
+1, the variance of the similarities increases. This results TABLE V Statistics of the datasets.                            
+
+> Name Train Test Classes Pets 3,680 3,669 37 KITTI 5,985 1,496 4Flowers 2,040 6,149 102 Caltech101 3,060 6,084 102 EuroSAT 10,000 5,000 10 SUN397 19,850 19,850 397 Food101 75,750 25,250 101 ImageNet-1K 1,281,167 50, 000 1,000
+
+in the threshold operator to prune more connections. Therefore, the number of nonzero entries of the ℓ0-norm is continuously controlled through the differentiable simplex projection. Theorem A.5 shows that the α-entmax projection onto the probability simplex ∆n−1 provides an exact differ-entiable relaxation of the discrete ℓ0-norm constraint. This eliminates the need for computationally expensive iterative solvers, enabling efficient end-to-end optimization of sparse attention graphs.  
+
+> Fig. 2. Training times (in seconds) of TURTLE, MSRL, and SAGL on eight vision datasets.
+
+F. Experimental Details The statistics of the datasets are summarized in Ta-ble V. All experiments are performed on a Linux work-station equipped with a GeForce RTX 4090 GPU (24 GB memory), an Intel Xeon Platinum 8336C CPU, and 128 GB of RAM. SAGL is implemented in PyTorch [30]. 1) Parameter Settings: During both training and test-ing, the learning rate for the proposed SAGL model is empirically set to 5 × 10 −4 for the KITTI, Flowers, Food101 and ImageNet-1K datasets and to 1×10 −3 for all other datasets. The batch size for both training and testing is selected from the set {100 , 500 , 1,000 , 5,000 , 10 ,000 }.Specifically, the batch size is determined by scaling the number of clusters by an approximate multiplier 
+
+a ∈ {5, 10 , 20 , 50 , 100 }. For datasets with a relatively small number of clusters, we apply smaller multipliers (e.g., 5, 10, or 20), whereas larger multipliers are used otherwise. The proposed SAGL model is trained for 600 epochs. The dropout rate is selected from the set 
+
+{0.0, 0.1, 0.2, 0.3, 0.4}, with lower values applied to smaller datasets and higher values applied to larger datasets. We employ a grid search strategy to determine the optimal combination of hyperparameter values, selecting γ from the set {5.0, 10 .0, 20 .0}, and β from the set {0.2, 0.5, 1.0}.We report the best-tuned performance for all competing methods to ensure a fair comparison. 2) Measuring Similarity Across Heterogeneous Views: Different backbones exhibit different representation levels: transformer-based models (e.g., DINOv3, SigLIP 2 and CLIP ViT-L/14) typically produce global semantic repre-sentations, while convolutional models (e.g., ConvNeXt V2) capture more localized spatial features. We adopt centered kernel alignment (CKA) [37] to measure the simi-larity between feature distributions produced by different pretrained model pairs. CKA summarizes the similarity between two feature distributions as a scalar value in [0 , 1] .A higher CKA score indicates that the feature distribu-tions of a pair of sets tend to be identical. Table VI shows the CKA scores for various pretrained model pairs. As expected, the CKA scores between transformer-based and convolutional architectures are relatively low, reflecting their fundamentally different feature distributions. 3) Comparison of Training Times for Self-Supervised Learning: To evaluate the training efficiency of the pro-posed SAGL method, we compare the computational costs of TURTLE, MSRL, and SAGL on the training sets of all eight datasets. For fair comparison, we report the computational cost of the competing methods that utilize two pretrained backbones. Fig. 2 shows the training times of TURTLE, MSRL, and SAGL on eight datasets. MSRL runs faster than TURTLE and SAGL on most datasets. This is because it directly employs standard dense at-tention without considering intrinsic subspace structures embedded in the high-dimensional multiview data. As observed, SAGL achieves training efficiency compared to TURTLE on small and medium-scale datasets while maintaining consistently superior clustering performance. However, SAGL requires more training time on large-scale datasets such as ImageNet-1K. This is due to the structured sparse projection based on the α-entmax trans-formation. This represents a reasonable computational trade-off for the significant performance gains achieved. 4) Visualizations: To evaluate the learned representa-tions, we employ t-SNE [38] to visualize three levels of features on three representative datasets of varying scales: Pets, Caltech101, and Food101. Specifically, the three levels are: (1) the original features extracted from the two pretrained backbones, (2) the projected features after the linear transformation layers, and (3) the final rep-resentations constructed by SAGL via sparse information aggregation. Figs. 3-8 show the t-SNE visualizations across these three levels. We can observe that the learned rep-resentations exhibit significantly better class separability than those in the earlier stages. These results indicate that SAGL produces more discriminative representations (a) The original features (b) The linear features (c) The corresponding representations Fig. 3. The t-SNE visualization of three levels of features generated by SAGL on the Pets dataset, where the original features are extracted using SigLIP 2. 
+
+(a) The original features (b) The linear features (c) The corresponding representations Fig. 4. The t-SNE visualization of three levels of features generated by SAGL on the Pets dataset, where the original features are extracted using DINOv3. 
+
+(a) The original features (b) The linear features (c) The corresponding representations Fig. 5. The t-SNE visualization of three levels of features generated by SAGL on the SUN397 dataset, where the original features are extracted using SigLIP 2. (a) The original features (b) The linear features (c) The reconstructed representations Fig. 6. The t-SNE visualization of three levels of features generated by SAGL on the SUN397 dataset, where the original features are extracted using DINOv3. 
+
+(a) The original features (b) The linear features (c) The reconstructed representations Fig. 7. The t-SNE visualization of three levels of features generated by SAGL on the Food101 dataset, where the original features are extracted using SigLIP 2. 
+
+(a) The original features (b) The linear features (c) The reconstructed representations Fig. 8. The t-SNE visualization of three levels of features generated by SAGL on the Food101 dataset, where the original features are extracted using DINOv3. (a) Caltech101 View 1 (b) Caltech101 View 2 (c) Food101 View 1 (d) Food101 View 2 Fig. 9. Sparsity ratio evolution of sparse attention graphs during training. 
+
+(a) Caltech101 View 1 (b) Caltech101 View 2 (c) Food101 View 1 (d) Food101 View 2 Fig. 10. Block-diagonal structures of the learned sparse attention graphs on the Caltech101 and Food101 datasets. 
+
+(a) ACC (b) NMI (c) ARI Fig. 11. Clustering results of SAGL on the Pets dataset across different batch sizes. 
+
+(a) ACC (b) NMI (c) ARI Fig. 12. Clustering results of SAGL on the SUN397 dataset across different batch sizes. TABLE VI CKA scores for various pretrained model pairs                                                         
+
+> DINOv3 SigLIP 2 CLIP ViT-L/14 ConvNeXt V2 Pets KITTI Flowers Caltech101 EuroSAT SUN397 Food101 ImageNet-1K
+> ✓✓0.63 0.84 0.65 0.62 0.70 0.49 0.67 0.46
+> ✓✓0.59 0.81 0.61 0.57 0.70 0.48 0.64 0.41
+> ✓✓0.06 0.19 0.15 0.07 0.16 0.07 0.04 0.06
+> ✓✓0.85 0.86 0.76 0.79 0.70 0.75 0.78 0.79
+> ✓✓0.05 0.18 0.25 0.09 0.18 0.08 0.07 0.09
+
+(a) ACC (b) NMI (c) ARI Fig. 13. Clustering results of SAGL on the Food101 dataset across different batch sizes. 
+
+(a) ACC (b) NMI (c) ARI Fig. 14. The clustering results of SAGL under different γ and β combinations on the Pets dataset. 
+
+(a) ACC (b) NMI (c) ARI Fig. 15. The clustering results of SAGL under different γ and β combinations on the SUN397 dataset. (a) ACC (b) NMI (c) ARI Fig. 16. The clustering results of SAGL under different γ and β combinations on the Food101 dataset.        
+
+> (a) Pets (b) KITTI (c) Flowers (d) Caltech101
+> (e) EuroSAT (f) SUN397 (g) Food101 (h) ImageNet-1K Fig. 17. Convergence results of Algorithm 1 on all the datasets.
+
+for improved clustering performance. 5) Sparsity Analysis on Sparse Attention Graphs: We first analyze the sparsity of the learned attention graphs during training. The sparsity ratio (SR) is defined as the number of nonzero elements in A(l) divided by the total number of elements. Specifically, we examine the sparsity ratios of sparse attention graphs on the two representative datasets, Caltech101 and Food101, during training. Fig. 9 illustrates the evolution of sparsity ratios of the learned sparse attention graphs during training, where View 1 and View 2 correspond to features extracted from SigLIP 2 and DINOv3, respectively. We can observe that the sparsity ratio drops rapidly in the first few epochs and fluctuates slightly during the remaining epochs. To investigate the subspace-preserving property of the proposed SAGL model, we further examine subspace structures of the learned sparse attention graphs dur-ing testing. Fig. 10 illustrates that the learned sparse attention graphs exhibit clear block-diagonal structures, where each diagonal block corresponds to a distinct latent semantic category. This block-diagonal pattern directly reflects the intrinsic subspace structures embedded in the high-dimensional multiview data. These results provide intuitive evidence that SAGL faithfully recovers the un-derlying subspace structures. 6) Parameter Sensitivity Analysis: By exploiting the sparse self-representation property of features, each rep-resentation is constructed as a sparse linear combination of spatially proximate neighbors. Consequently, the batch size plays an important role in determining the quality of the learned sparse attention graphs. To investigate the sensitivity of SAGL to batch size, we evaluate the clustering performance on three representative datasets of varying scales: Pets, SUN397, and Food101. Following the batch size selection strategy provided in Section F1, the candidate batch sizes are set to {100 , 500 , 1,000 } for Pets and {2,000 , 5,000 , 10 ,000 } for SUN397 and Food101. The parameter γ is selected from {5.0, 10 .0, 20 .0}, and β is fixed at 1.0. Figs. 11-13 show the clustering performance of SAGL under different batch sizes on the Pets, SUN397, and Food101 datasets, respectively. The clustering perfor-mance of SAGL remains relatively stable across different batch sizes, particularly on large-scale datasets such as SUN397 and Food101. This indicates that SAGL yields competitive clustering results across a wide range of batch sizes. We further evaluate the sensitivity of the proposed SAGL model to hyperparameters γ and β. Specifi-cally, we investigate the clustering performance of SAGL under different combinations of hyperparameters γ ∈{5.0, 10 .0, 20 .0} and β ∈ { 0.1, 0.2, 0.5, 1.0}. Figs. 14-16 illustrate the clustering performance of SAGL in terms of ACC, NMI, and ARI on the Pets, SUN397, and Food101 datasets. The proposed SAGL method performs steadily with relatively wide ranges of the parameters γ and β.According to the sensitivity experiments, we empirically observe that setting γ ∈ { 5.0, 10 .0} with β = 1 .0 often yields satisfactory clustering results for SAGL. 7) Convergence Analysis: We empirically evaluate the convergence property of the proposed method across all eight datasets. Fig. 17 shows the convergence curves of Algorithm 1, where the x-axis corresponds to iterations, and the y-axis represents the objective loss defined in Eq. (21). A positive constant is added to the y-axis values for better readability. As observed in the figures, the objective value drops dramatically within the first few dozen iterations and quickly converges to a steady state. These results empirically validate the rapid and stable convergence properties of the proposed method in practice.
