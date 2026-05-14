@@ -1,0 +1,514 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-14T20:44:06.681129+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 5,
+    "deep_cap": 6,
+    "deep_selected": 5,
+    "quick_candidates": 8,
+    "quick_skim_target": 11,
+    "quick_selected": 8
+  },
+  "deep_dive": [
+    {
+      "id": "2605.12584v1",
+      "source": "arxiv",
+      "title": "Towards Robust Federated Multimodal Graph Learning under Modality Heterogeneity",
+      "abstract": "Recently, multimodal graph learning (MGL) has garnered significant attention for integrating diverse modality information and structured context to support various network applications. However, real-world graphs are often isolated due to data-sharing limitations across multiple parties, and their modalities are frequently incomplete. This highlights an urgent need to develop a robust federated approach. However, we find that existing methods remain insufficient. On the one hand, centralized MGL methods that handle missing modalities overlook the knowledge sharing and generalization in federated scenarios. On the other hand, while federated MGL methods have become increasingly mature, they primarily target non-graph data. Based on these technologies, we identify a two-stage pipeline wherein client-side completion reconstructs missing modalities, and server-side aggregation integrates the client-updated parameters of both the modality generator and the backbone models. Although this serves as a general solution, we identify two primary challenges in achieving greater robustness: (1) Topology-Isolated Local Completion: Client-side modality generation struggles to effectively leverage global semantics. (2) Reliability-Imbalanced Global Aggregation: Server-side multi-party collaboration is hindered by client updates with varying modality availability and recovery reliability. To address these challenges, we propose \\textsc{FedMPO}, which utilizes topology-aware cross-modal generation to recover missing features using comprehensive graph context, missing-aware expert routing to locally filter out noisy recovered signals, and reliability-aware aggregation to appropriately down-weight unreliable updates. Extensive experiments on 3 tasks across 6 datasets demonstrate that FedMPO outperforms baselines, achieving performance gains of up to 4.10% and 5.65% in high-missing and non-IID settings.",
+      "authors": [
+        "Sirui Zhang",
+        "Haonan Wang",
+        "Xunkai Li",
+        "Zekai Chen",
+        "Shumeng Li",
+        "Hongchao Qin",
+        "Rong-Hua Li",
+        "Guoren Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-12T17:30:15+00:00",
+      "link": "https://arxiv.org/pdf/2605.12584v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "robust federated multimodal graph learning under incomplete modalities",
+      "llm_evidence_cn": "不完整模态下的鲁棒联邦多模态图学习",
+      "llm_evidence": "不完整模态下的鲁棒联邦多模态图学习",
+      "canonical_evidence": "不完整模态下的鲁棒联邦多模态图学习",
+      "llm_tldr_en": "Addresses missing modalities in federated multimodal graph learning for improved robustness and knowledge sharing.",
+      "llm_tldr_cn": "解决了联邦多模态图学习中的模态缺失问题，提高了鲁棒性和知识共享。",
+      "llm_tldr": "解决了联邦多模态图学习中的模态缺失问题，提高了鲁棒性和知识共享。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.13081v1",
+      "source": "arxiv",
+      "title": "PRA-PoE: Robust Alzheimer's Diagnosis with Arbitrary Missing Modalities",
+      "abstract": "Missing modalities are prevalent in real-world Alzheimer's disease (AD) assessment and pose a significant challenge to multimodal learning, particularly when the distribution of observed modality subsets differs between training and deployment. Such missingness pattern mismatch induces a conditional representation shift across modality subsets. Existing approaches that rely on implicit imputation or modality synthesis often fail to explicitly model modality availability and uncertainty, leading to overconfident dependence on synthesized features, reduced robustness, and miscalibrated uncertainty estimates. To address these limitations, we propose PRA-PoE, an incomplete multimodal learning framework that is equipped with Prototype-anchored Representation Alignment (PRA) and an Uncertainty-aware Product of Experts (UA-PoE) fusion mechanism. First, PRA uses learnable global prototypes and availability-conditioned tokens to encode modality availability, distinguish observed from missing modalities, re-synthesize features for missing modalities, and adaptively refine observed representations to align latent spaces across modality subsets, with the goal of reducing representation shift under varying missingness patterns. Second, UA-PoE models each modality as a Gaussian expert and performs closed-form Product of Experts fusion, where experts with higher uncertainty are automatically down-weighted via lower precision, improving uncertainty reliability. We evaluate PRA-PoE under a clinically realistic protocol by training with naturally missing data and testing on all non-empty modality combinations. PRA-PoE consistently outperforms the state-of-the-art across datasets, achieving a 5.4% relative improvement in average accuracy on ADNI and a 10.9% relative gain in average F1 on OASIS-3 over the strongest baseline across all non-empty modality subsets.",
+      "authors": [
+        "Guangqian Yang",
+        "Ye Du",
+        "Wenlong Hou",
+        "Qian Niu",
+        "Shujun Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-13T06:54:21+00:00",
+      "link": "https://arxiv.org/pdf/2605.13081v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "robust diagnosis with arbitrary missing modalities and incomplete multimodal learning",
+      "llm_evidence_cn": "任意缺失模态下的鲁棒诊断与不完整多模态学习",
+      "llm_evidence": "任意缺失模态下的鲁棒诊断与不完整多模态学习",
+      "canonical_evidence": "任意缺失模态下的鲁棒诊断与不完整多模态学习",
+      "llm_tldr_en": "PRA-PoE addresses arbitrary missing modalities in multimodal learning using prototype-anchored representations.",
+      "llm_tldr_cn": "PRA-PoE通过原型锚定表示处理多模态学习中任意模态缺失的问题。",
+      "llm_tldr": "PRA-PoE通过原型锚定表示处理多模态学习中任意模态缺失的问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.13059v1",
+      "source": "arxiv",
+      "title": "BrainAnytime: Anatomy-Aware Cross-Modal Pretraining for Brain Image Analysis with Arbitrary Modality Availability",
+      "abstract": "Clinical diagnostic workups typically follow a modality escalation pathway: after initial clinical evaluation, clinicians begin with routine structural imaging (e.g., MRI), selectively add sequences such as FLAIR or T2 to refine the differential, and reserve molecular imaging (e.g., amyloid-PET) for cases that remain uncertain after standard evaluation. Consequently, patients are observed with heterogeneous and often incomplete modality subsets. However, most current AI models assume fixed data modalities as the model inputs. In this paper, we present BrainAnytime, a unified pretraining framework pretrained on 34,899 3D brain scans from five datasets that support brain image analysis under arbitrary modality availability spanning multi-sequence MRI and amyloid-PET. A single model accepts whatever imaging is available, from a lone T1 scan to a full multimodal workup. Pretraining learns structural-molecular correspondences between MRI and PET via cross-modal distillation (RCMD) and prioritizes disease-vulnerable anatomy via atlas-guided curriculum masking (PACM), all within a shared 3D masked autoencoder (Multi-MAE3D). Across four downstream tasks and five clinically motivated modality settings, BrainAnytime largely outperforms modality-specific models, missing-modality baselines, and large-scale brain MRI pretrained foundation models on most modality settings. Notably, it surpasses the strongest missing-modality baselines with relative improvements of 6.2% and 7.0% in average accuracy on CN vs. AD and CN vs. MCI classification, respectively. Code is available at https://github.com/SDH-Lab/BrainAnytime.",
+      "authors": [
+        "Guangqian Yang",
+        "Tong Ding",
+        "Wenlong Hou",
+        "Yue Xun",
+        "Ye Du",
+        "Qian Niu",
+        "Shujun Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-13T06:32:28+00:00",
+      "link": "https://arxiv.org/pdf/2605.13059v1",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Pretraining framework for brain image analysis under arbitrary modality availability and incomplete subsets.",
+      "llm_evidence_cn": "针对任意模态可用性和不完整子集的脑图像分析预训练框架。",
+      "llm_evidence": "针对任意模态可用性和不完整子集的脑图像分析预训练框架。",
+      "canonical_evidence": "针对任意模态可用性和不完整子集的脑图像分析预训练框架。",
+      "llm_tldr_en": "BrainAnytime enables robust brain image analysis regardless of which specific modalities are missing.",
+      "llm_tldr_cn": "BrainAnytime支持在任意模态缺失的情况下进行鲁棒的脑图像分析。",
+      "llm_tldr": "BrainAnytime支持在任意模态缺失的情况下进行鲁棒的脑图像分析。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.08252v1",
+      "source": "arxiv",
+      "title": "Multimodal Emotion Recognition via Causal-Diffusion Bridge (Affect-Diff)",
+      "abstract": "Multimodal emotion recognition on CMU-MOSEI faces an extreme imbalance as Happy accounts for 65.9% of samples while three Ekman categories collectively represent under 7%, causing standard fusion models to maximize accuracy by ignoring minority emotions entirely. We present Affect-Diff, a Causal-Diffusion Bridge that addresses this through three jointly trained mechanisms: a NOTEARS-learned causal graph that re-weights modality contributions before fusion, a beta-VAE bottleneck for regularized latent compression, and a stop-gradiented 1D DDPM prior that structures the latent space against majority-class collapse. On 3,292 aligned CMU-MOSEI samples, Affect-Diff achieves validation balanced accuracy 0.384, an 18% relative improvement over the strongest baseline (TETFN: 0.324), while all evaluated baselines produce zero F1 on Fear, Disgust, and Surprise. Ablation studies confirm independent, non-redundant contributions from the diffusion prior (-24% without it) and causal graph (-13%). Notably, only the deterministic-encoder variant detects all six emotion classes, revealing KL regularization strength as a direct lever for minority-class sensitivity.",
+      "authors": [
+        "Ankit Sanjyal"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-07T18:29:26+00:00",
+      "link": "https://arxiv.org/pdf/2605.08252v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.5,
+      "llm_evidence_en": "multimodal emotion recognition with beta-VAE bottleneck and diffusion prior",
+      "llm_evidence_cn": "结合beta-VAE瓶颈和扩散先验的多模态情感识别",
+      "llm_evidence": "结合beta-VAE瓶颈和扩散先验的多模态情感识别",
+      "canonical_evidence": "结合beta-VAE瓶颈和扩散先验的多模态情感识别",
+      "llm_tldr_en": "Uses a causal-diffusion bridge and VAE bottleneck to improve multimodal emotion recognition on imbalanced data.",
+      "llm_tldr_cn": "利用因果扩散桥和VAE瓶颈，在不平衡数据上提升多模态情感识别性能。",
+      "llm_tldr": "利用因果扩散桥和VAE瓶颈，在不平衡数据上提升多模态情感识别性能。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.12838v1",
+      "source": "arxiv",
+      "title": "Multimodal Hidden Markov Models for Persistent Emotional State Tracking",
+      "abstract": "Tracking an interpretable emotional arc of a conversation via the sentiment of individual utterances processed as a whole is central to both understanding and guiding communication in applied, especially clinical, conversational contexts. Existing approaches to emotion recognition operate at the utterance level, obscuring the persistent phases that characterize real conversational dynamics. We propose a lightweight framework that models conversational emotion as a sequence of latent emotional regimes using sticky factorial HDP-HMMs over multimodal valence-arousal representations derived from simultaneous video, audio and textual input. We evaluate the quality of regime prediction using LLM-as-a-Judge, geometric, and temporal consistency metrics, demonstrating that the sticky HDP-HMM produces more interpretable regime sequences than the baseline Gaussian HMM at a fraction of the computational cost of LLM-based dialogue state tracking methods. In addition, Question-Answer experiments in a clinical dataset suggest that meaningful emotional phases can reliably be recovered from multimodal valence-arousal trajectories and used to improve the quality of LLM responses in unstable affective regimes via context augmentation. This framework thus opens a path toward interpretable, lightweight, and actionable analysis of conversational emotion dynamics at scale.",
+      "authors": [
+        "Anamika Ragu",
+        "Aneesh Jonelagadda"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-13T00:16:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.12838v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal emotion recognition using simultaneous video, audio, and textual input.",
+      "llm_evidence_cn": "利用同步视频、音频和文本输入进行多模态情感识别。",
+      "llm_evidence": "利用同步视频、音频和文本输入进行多模态情感识别。",
+      "canonical_evidence": "利用同步视频、音频和文本输入进行多模态情感识别。",
+      "llm_tldr_en": "Proposes an HMM-based framework for tracking persistent emotional states from multimodal conversational data.",
+      "llm_tldr_cn": "提出基于隐马尔可夫模型的框架，从多模态对话数据中追踪持久情感状态。",
+      "llm_tldr": "提出基于隐马尔可夫模型的框架，从多模态对话数据中追踪持久情感状态。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.12145v2",
+      "source": "arxiv",
+      "title": "Cross-Modal-Domain Generalization Through Semantically Aligned Discrete Representations",
+      "abstract": "Multimodal learning seeks to integrate information across diverse sensory sources, yet current approaches struggle to balance cross-modal generalizability with modality-specific structure. Continuous (implicit) methods preserve fine-grained priors but render generalization challenging, while discrete (explicit) approaches enforce shared prototypes at the expense of modality specificity. We introduce CoDAAR (Cross-modal Discrete Alignment And Reconstruction), a novel framework that resolves this long-standing trade-off by establishing semantic consensus across modality-specific codebooks through index-level alignment. This design uniquely allows CoDAAR to preserve modality-unique structures while achieving generalizable cross-modal representations within a unified discrete space. CoDAAR combines two complementary mechanisms: Discrete Temporal Alignment (DTA), which enables fine-grained temporal quantization, and Cascading Semantic Alignment (CSA), which promotes progressive cross-modal semantic agreement. Together, they establish a competition-free unified representation space. Trained with self-supervised reconstruction objectives on paired multimodal sequences, CoDAAR demonstrates robust cross-modal and cross-domain generalization. Across Cross-Modal Generalization benchmarks, including event classification, localization, video segmentation, and cross-dataset transfer, CoDAAR achieves state-of-the-art performance, establishing a new paradigm for discrete and generalizable multimodal representation learning.",
+      "authors": [
+        "Souptik Sen",
+        "Raneen Younis",
+        "Zahra Ahmadi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-12T14:03:30+00:00",
+      "link": "https://arxiv.org/pdf/2605.12145v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.5,
+      "llm_evidence_en": "Cross-modal discrete alignment and reconstruction for generalizable representations",
+      "llm_evidence_cn": "跨模态离散对齐与重建以实现可泛化的表示",
+      "llm_evidence": "跨模态离散对齐与重建以实现可泛化的表示",
+      "canonical_evidence": "跨模态离散对齐与重建以实现可泛化的表示",
+      "llm_tldr_en": "Introduces CoDAAR to balance modality-specific structure and cross-modal generalization via semantic alignment.",
+      "llm_tldr_cn": "引入CoDAAR框架，通过语义对齐平衡模态特定结构与跨模态泛化。",
+      "llm_tldr": "引入CoDAAR框架，通过语义对齐平衡模态特定结构与跨模态泛化。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.12034v1",
+      "source": "arxiv",
+      "title": "Boosting Omni-Modal Language Models: Staged Post-Training with Visually Debiased Evaluation",
+      "abstract": "Omni-modal language models are intended to jointly understand audio, visual inputs, and language, but benchmark gains can be inflated when visual evidence alone is enough to answer a query. We study whether current omni-modal benchmarks separate visual shortcuts from genuine audio-visual-language evidence integration, and how post-training behaves under a visually debiased evaluation setting. We audit nine omni-modal benchmarks with visual-only probing, remove visually solvable queries, and retain full subsets when filtering is undefined or would make comparisons unstable. This yields OmniClean, a cleaned evaluation view with 8,551 retained queries from 16,968 audited queries. On OmniClean, we evaluate OmniBoost, a three-stage post-training recipe based on Qwen2.5-Omni-3B: mixed bi-modal SFT, mixed-modality RLVR, and SFT on self-distilled data. Balanced bi-modal SFT gives limited and uneven gains, RLVR provides the first broad improvement, and self-distillation reshapes the benchmark profile. After SFT on self-distilled data, the 3B model reaches performance comparable to, and in aggregate slightly above, Qwen3-Omni-30B-A3B-Instruct without using a stronger omni-modal teacher. These results show that omni-modal progress is easier to interpret when evaluation controls visual leakage, and that small omni-modal models can benefit from staged post-training with self-distilled omni-query supervision.",
+      "authors": [
+        "Che Liu",
+        "Lichao Ma",
+        "Xiangyu Tony Zhang",
+        "Yuxin Zhang",
+        "Haoyang Zhang",
+        "Xuerui Yang",
+        "Fei Tian"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-05-12T12:16:11+00:00",
+      "link": "https://arxiv.org/pdf/2605.12034v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.5,
+      "llm_evidence_en": "robustness of omni-modal models against visual shortcuts",
+      "llm_evidence_cn": "全模态模型针对视觉捷径的鲁棒性",
+      "llm_evidence": "全模态模型针对视觉捷径的鲁棒性",
+      "canonical_evidence": "全模态模型针对视觉捷径的鲁棒性",
+      "llm_tldr_en": "Audits and improves omni-modal language models by removing visual shortcuts to ensure genuine modal integration.",
+      "llm_tldr_cn": "通过消除视觉捷径来审计和改进全模态语言模型，确保真实的模态融合。",
+      "llm_tldr": "通过消除视觉捷径来审计和改进全模态语言模型，确保真实的模态融合。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.13188v1",
+      "source": "arxiv",
+      "title": "LLMs as Implicit Imputers: Uncertainty Should Scale with Missing Information",
+      "abstract": "Large language models (LLMs) are increasingly deployed in settings where the available context is incomplete or degraded. We argue that an LLM generating answers under incomplete context can be viewed as an implicit imputer, and evaluated against a criterion from the multiple imputation (MI) literature: uncertainty should scale with the amount of missing information. We assess this criterion on SQuAD, using a controlled framework in which context availability is varied across five levels. We evaluate two answer-level uncertainty measures that can be estimated from repeated sampling: sampling-based confidence (empirical mode frequency) and response entropy. Confidence fails to reflect increasing missingness: it remains high even as accuracy collapses. Entropy, by contrast, increases with context removal, consistent with the MI analogy, and explains substantially more variance in accuracy than confidence across all evidence levels (quadratic $R^2$ gap up to 0.057). We further introduce a black-box diagnostic $ρ_R(α)$ that estimates the proportion of baseline uncertainty resolved by context level $α$, requiring only repeated sampling with and without context. These results suggest that entropy is a more responsive black-box uncertainty measure than confidence under incomplete context.",
+      "authors": [
+        "Stef van Buuren"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.CL",
+        "cs.LG",
+        "stat.ME"
+      ],
+      "published": "2026-05-13T08:43:57+00:00",
+      "link": "https://arxiv.org/pdf/2605.13188v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.5,
+      "llm_evidence_en": "LLMs as implicit imputers for incomplete context",
+      "llm_evidence_cn": "LLM作为处理不完整上下文的隐式插补器",
+      "llm_evidence": "LLM作为处理不完整上下文的隐式插补器",
+      "canonical_evidence": "LLM作为处理不完整上下文的隐式插补器",
+      "llm_tldr_en": "Evaluates LLMs as implicit imputers for missing information using uncertainty scaling.",
+      "llm_tldr_cn": "研究LLM在缺失信息下的隐式插补能力，并利用不确定性进行评估。",
+      "llm_tldr": "研究LLM在缺失信息下的隐式插补能力，并利用不确定性进行评估。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.12876v1",
+      "source": "arxiv",
+      "title": "Certified Robustness under Heterogeneous Perturbations via Hybrid Randomized Smoothing",
+      "abstract": "Randomized smoothing provides strong, model-agnostic robustness certificates, but existing guarantees are limited to single modalities, treating continuous and discrete inputs in isolation. This limitation becomes critical in multimodal models, where decisions depend on cross-modal semantics and adversaries can jointly perturb heterogeneous inputs, rendering unimodal certificates insufficient. We introduce a unified randomized smoothing framework for mixed discrete--continuous inputs based on an analytically tractable Neyman--Pearson formulation of the joint worst-case problem. By analyzing the joint likelihood ordering induced by factorized discrete and continuous noise, our approach yields a closed-form, one-dimensional certificate that strictly generalizes both Gaussian (image-only) and discrete (text-only) randomized smoothing. We validate the framework on multimodal safety filtering, providing, to our knowledge, the first model-agnostic Neyman--Pearson certificate for joint discrete-token and continuous-image perturbations in interaction-dependent text--image safety filtering.",
+      "authors": [
+        "Blaise Delattre",
+        "Hengyu Wu",
+        "Paul Caillon",
+        "Wei Yang Bryan Lim",
+        "Yang Cao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-13T01:44:31+00:00",
+      "link": "https://arxiv.org/pdf/2605.12876v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.5,
+      "llm_evidence_en": "Certified robustness framework for multimodal models under joint perturbations.",
+      "llm_evidence_cn": "多模态模型在联合扰动下的认证鲁棒性框架。",
+      "llm_evidence": "多模态模型在联合扰动下的认证鲁棒性框架。",
+      "canonical_evidence": "多模态模型在联合扰动下的认证鲁棒性框架。",
+      "llm_tldr_en": "Provides a unified randomized smoothing framework for certified robustness in multimodal models.",
+      "llm_tldr_cn": "为多模态模型的认证鲁棒性提供统一的随机平滑框架。",
+      "llm_tldr": "为多模态模型的认证鲁棒性提供统一的随机平滑框架。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.13312v1",
+      "source": "arxiv",
+      "title": "Supervised Deep Multimodal Matrix Factorization for Interpretable Brain Network Analysis",
+      "abstract": "We present Supervised Deep Multimodal Matrix Factorization (SD3MF), an interpretable framework for integrative brain network analysis that generalizes Symmetric Nonnegative Matrix Tri-Factorization (SNMTF) from unsupervised single-graph clustering to supervised prediction over populations of multimodal graphs. SD3MF learns deep hierarchical factorizations for each modality together with a shared latent representation that aligns subjects across views. An encoder-decoder formulation jointly optimizes graph reconstruction and supervised prediction, while adaptive weights enable data-driven multimodal fusion. By representing each subject through community-level interaction matrices, the model yields interpretable and discriminative features. Experiments on multimodal connectome datasets show that SD3MF consistently outperforms strong deep learning baselines such as CNNs and GNNs, while enabling biologically interpretable insights. Code for reproducibility is available at: https://github.com/amjadseyedi/SD3MF.",
+      "authors": [
+        "Amjad Seyedi",
+        "Lifang He",
+        "Songlin Zhao",
+        "Akwum Onwunta",
+        "Nicolas Gillis"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-13T10:26:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.13312v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Multimodal matrix factorization for reconstruction and prediction",
+      "llm_evidence_cn": "用于重建和预测的多模态矩阵分解",
+      "llm_evidence": "用于重建和预测的多模态矩阵分解",
+      "canonical_evidence": "用于重建和预测的多模态矩阵分解",
+      "llm_tldr_en": "Integrates multimodal graphs via deep matrix factorization for reconstruction and prediction.",
+      "llm_tldr_cn": "通过深度矩阵分解整合多模态图，实现数据重建与监督预测。",
+      "llm_tldr": "通过深度矩阵分解整合多模态图，实现数据重建与监督预测。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.10705v1",
+      "source": "arxiv",
+      "title": "TransmissiveGS: Residual-Guided Disentangled Gaussian Splatting for Transmissive Scene Reconstruction and Rendering",
+      "abstract": "Transmissive scenes are ubiquitous in daily life, yet reconstructing and rendering them remains highly challenging due to the inherent entanglement between near-field reflections from the surrounding environment on the transmissive surface, and the transmitted content of the scene behind it. This coupling gives rise to dual surface geometries and dual radiance components within each observation, posing ambiguities for standard methods. We present TransmissiveGS, a novel framework for disentangled reconstruction and rendering of transmissive scenes. Specifically, we model the scene with a dual-Gaussian representation and introduce a deferred shading function to jointly render the two Gaussian components. To separate reflection and transmission, we exploit the inherent multi-view inconsistency of reflections and leverage the residuals from reconstructing multi-view consistent content as cues for disentangled geometry and appearance modeling. We further propose a reflection light field that enables high-fidelity estimation of near-field reflections. During training, we introduce a high-frequency regularization to preserve fine details. We also contribute a new synthetic dataset for evaluating transmissive surface reconstruction. Experiments on both synthetic and real-world scenes demonstrate that TransmissiveGS consistently outperforms prior Gaussian Splatting-based methods in both reconstruction and rendering quality for transmissive scenes.",
+      "authors": [
+        "Zhenyu Liang",
+        "Xiao Zhang",
+        "Tianchao Li",
+        "Jack C. P. Cheng",
+        "Chi-Keung Tang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-11T15:19:04+00:00",
+      "link": "https://arxiv.org/pdf/2605.10705v1",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "disentangled reconstruction and rendering of transmissive scenes",
+      "llm_evidence_cn": "透射场景的解耦重建与渲染",
+      "llm_evidence": "透射场景的解耦重建与渲染",
+      "canonical_evidence": "透射场景的解耦重建与渲染",
+      "llm_tldr_en": "Introduces TransmissiveGS for disentangled reconstruction of reflections and transmitted content in complex scenes.",
+      "llm_tldr_cn": "引入 TransmissiveGS，用于复杂场景中反射和透射内容的解耦重建。",
+      "llm_tldr": "引入 TransmissiveGS，用于复杂场景中反射和透射内容的解耦重建。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.11444v1",
+      "source": "arxiv",
+      "title": "Leveraging Multimodal Large Language Models for All-in-One Image Restoration via a Mixture of Frequency Experts",
+      "abstract": "All-in-one image restoration seeks to recover clean images from inputs affected by diverse and unknown degradations using a unified framework. Recent methods have shown strong performance by identifying degradation characteristics to guide the restoration process. However, many of them treat degradations as discrete categories, which limits their ability to model the continuous relational structure that arises in composite degradations. To address this issue, we propose a multimodal large language model (MLLM)-guided image restoration framework that exploits multimodal embeddings as guidance for low-level restoration. Specifically, MLLM-derived features are injected into an encoder-decoder architecture through an MLLM-guided fusion block (MGFB) to enhance degradation-aware representations. In addition, we incorporate a mixture-of-frequency-experts (MoFE) module that adaptively combines frequency experts using MLLM-guided contextual cues. To further improve expert routing, we design an MLLM-guided router with a relational alignment loss that encourages routing patterns consistent with the embedding-space relationships of degraded inputs. Extensive experiments on multiple benchmarks show that the proposed method achieves strong performance across diverse restoration settings and establishes a new state of the art on the challenging CDD11 dataset, outperforming previous methods by up to 1.35 dB.",
+      "authors": [
+        "Eunho Lee",
+        "Youngbae Hwang",
+        "Rei Kawakami"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-12T02:55:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.11444v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal embeddings as guidance for image restoration",
+      "llm_evidence_cn": "多模态嵌入作为图像修复的引导",
+      "llm_evidence": "多模态嵌入作为图像修复的引导",
+      "canonical_evidence": "多模态嵌入作为图像修复的引导",
+      "llm_tldr_en": "Uses multimodal large language model embeddings to guide all-in-one image restoration across diverse degradations.",
+      "llm_tldr_cn": "利用多模态大语言模型嵌入来引导处理多种退化的全能图像修复。",
+      "llm_tldr": "利用多模态大语言模型嵌入来引导处理多种退化的全能图像修复。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.12872v1",
+      "source": "arxiv",
+      "title": "SMA: Submodular Modality Aligner For Data Efficient Multimodal Learning",
+      "abstract": "Despite the recent success of Multimodal Foundation Models (FMs), their reliance on massive paired datasets limits their applicability in low-data and rare-scenario settings where aligned data is scarce and expensive. A key bottleneck is the adoption of an instance-level formulation, which learns alignment by maximizing correlation between individual image-text pairs while neglecting the underlying geometric structure across modalities resulting in a modality gap across input modalities. In this paper, we propose a combinatorial paradigm for multimodal alignment that moves beyond pairwise learning and introduce the \\emph{Submodular Modality Aligner (SMA)}, which treats multiple augmentations and descriptions of an entity as a set, leveraging multiple descriptions of the data to capture richer cross-modal structure. We instantiate SMA using a principled objective based on Submodular Mutual Information (SMI), which jointly maximizes inter-modality mutual information while reducing cross-modal divergence. This formulation enables the model to effectively utilize multiple positive associations and extract significantly more information from limited data. We evaluate SMA on 14 zero-shot classification and retrieval tasks from the CLIP benchmark and demonstrate consistent gains in the low-data regime. Notably, SMA achieves strong multimodal generalization using only tens of thousands of samples. This is orders of magnitude fewer than standard approaches. Our results highlight the importance of set-based formulations and submodular objectives for data-efficient multimodal learning.",
+      "authors": [
+        "Truong Pham",
+        "Anay Majee",
+        "Rishabh Iyer"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-13T01:36:43+00:00",
+      "link": "https://arxiv.org/pdf/2605.12872v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Submodular modality aligner for data efficient learning",
+      "llm_evidence_cn": "用于高效学习的子模态对齐器",
+      "llm_evidence": "用于高效学习的子模态对齐器",
+      "canonical_evidence": "用于高效学习的子模态对齐器",
+      "llm_tldr_en": "Addresses modality gaps in multimodal learning using a combinatorial alignment paradigm.",
+      "llm_tldr_cn": "提出子模态对齐器，通过组合范式解决多模态学习中的模态间隙。",
+      "llm_tldr": "提出子模态对齐器，通过组合范式解决多模态学习中的模态间隙。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

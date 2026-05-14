@@ -6,56 +6,61 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-13
-- 运行时间：2026-05-13 21:12:28 UTC
+- 最新运行日期：2026-05-14
+- 运行时间：2026-05-14 20:46:37 UTC
 - 运行状态：成功
-- 本次总论文数：12
-- 精读区：3
-- 速读区：9
+- 本次总论文数：13
+- 精读区：5
+- 速读区：8
 
 ### 今日简报（AI）
-今日深度复盘 12 篇多模态前沿论文，重点攻克模态缺失下的学习鲁棒性
-- 详情：[/202605/13/README](/202605/13/README)
+今日聚焦多模态学习的鲁棒性突破，深度解析异构图网络与医疗诊断的前沿进展。
+满分论文重点攻克了联邦学习下的模态异构难题，并实现了任意模态缺失下的阿尔茨海默症精准诊断。
+建议关注 LLM 在信息补全中的不确定性建模，以及如何通过语义对齐提升跨领域模型的泛化能力。
+- 详情：[/202605/14/README](/202605/14/README)
 
 ### 精读区论文标签
-1. [Resilient Vision-Tabular Multimodal Learning under Modality Missingness](/202605/13/2605.12031v1-resilient-vision-tabular-multimodal-learning-under-modality-missingness)  
+1. [Towards Robust Federated Multimodal Graph Learning under Modality Heterogeneity](/202605/14/2605.12584v1-towards-robust-federated-multimodal-graph-learning-under-modality-heterogeneity)  
    标签：评分：10.0/10、query:missing-modality
-   evidence：明确设计用于普遍模态缺失情况下的多模态学习
-2. [Multimodal Emotion Recognition via Causal-Diffusion Bridge (Affect-Diff)](/202605/13/2605.08252v1-multimodal-emotion-recognition-via-causal-diffusion-bridge-affect-diff)  
-   标签：评分：9.5/10、query:missing-modality
-   evidence：使用因果扩散桥和beta-VAE瓶颈的多模态情感识别
-3. [EmoS: A High-Fidelity Multimodal Benchmark for Fine-grained Streaming Emotional Understanding](/202605/13/2605.08847v1-emos-a-high-fidelity-multimodal-benchmark-for-fine-grained-streaming-emotional-understanding)  
+   evidence：不完整模态下的鲁棒联邦多模态图学习
+2. [PRA-PoE: Robust Alzheimer's Diagnosis with Arbitrary Missing Modalities](/202605/14/2605.13081v1-pra-poe-robust-alzheimers-diagnosis-with-arbitrary-missing-modalities)  
+   标签：评分：10.0/10、query:missing-modality
+   evidence：任意缺失模态下的鲁棒诊断与不完整多模态学习
+3. [BrainAnytime: Anatomy-Aware Cross-Modal Pretraining for Brain Image Analysis with Arbitrary Modality Availability](/202605/14/2605.13059v1-brainanytime-anatomy-aware-cross-modal-pretraining-for-brain-image-analysis-with-arbitrary-modality-availability)  
+   标签：评分：9.0/10、query:missing-modality
+   evidence：针对任意模态可用性和不完整子集的脑图像分析预训练框架。
+4. [Multimodal Emotion Recognition via Causal-Diffusion Bridge (Affect-Diff)](/202605/14/2605.08252v1-multimodal-emotion-recognition-via-causal-diffusion-bridge-affect-diff)  
    标签：评分：8.5/10、query:missing-modality
-   evidence：细粒度流式情感理解的多模态基准
+   evidence：结合beta-VAE瓶颈和扩散先验的多模态情感识别
+5. [Multimodal Hidden Markov Models for Persistent Emotional State Tracking](/202605/14/2605.12838v1-multimodal-hidden-markov-models-for-persistent-emotional-state-tracking)  
+   标签：评分：8.0/10、query:missing-modality
+   evidence：利用同步视频、音频和文本输入进行多模态情感识别。
 
 ### 速读区论文标签
-1. [Cross-Modal-Domain Generalization Through Semantically Aligned Discrete Representations](/202605/13/2605.12145v1-cross-modal-domain-generalization-through-semantically-aligned-discrete-representations)  
+1. [Cross-Modal-Domain Generalization Through Semantically Aligned Discrete Representations](/202605/14/2605.12145v2-cross-modal-domain-generalization-through-semantically-aligned-discrete-representations)  
    标签：评分：7.5/10、query:missing-modality
-   evidence：跨模态离散对齐与重建
-2. [UMEDA: Unified Multi-modal Efficient Data Fusion for Privacy-Preserving Graph Federated Learning via Spectral-Gated Attention and Diffusion-Based Operator Alignment](/202605/13/2605.08288v1-umeda-unified-multi-modal-efficient-data-fusion-for-privacy-preserving-graph-federated-learning-via-spectral-gated-attention-and-diffusion-based-operator-alignment)  
+   evidence：跨模态离散对齐与重建以实现可泛化的表示
+2. [LLMs as Implicit Imputers: Uncertainty Should Scale with Missing Information](/202605/14/2605.13188v1-llms-as-implicit-imputers-uncertainty-should-scale-with-missing-information)  
+   标签：评分：7.5/10、query:missing-modality
+   evidence：LLM作为处理不完整上下文的隐式插补器
+3. [Supervised Deep Multimodal Matrix Factorization for Interpretable Brain Network Analysis](/202605/14/2605.13312v1-supervised-deep-multimodal-matrix-factorization-for-interpretable-brain-network-analysis)  
    标签：评分：7.0/10、query:missing-modality
-   evidence：当客户端传感器模态和分辨率不同时的鲁棒性
-3. [AffectCodec: Emotion-Preserving Neural Speech Codec for Expressive Speech Modeling](/202605/13/2605.11098v1-affectcodec-emotion-preserving-neural-speech-codec-for-expressive-speech-modeling)  
-   标签：评分：7.0/10、query:missing-modality
-   evidence：情感保留神经语音编解码器与情感识别
-4. [MindMirror: A Local-First Multimodal State-Aware Support System for Digital Workers](/202605/13/2605.11700v1-mindmirror-a-local-first-multimodal-state-aware-support-system-for-digital-workers)  
+   evidence：用于重建和预测的多模态矩阵分解
+4. [Boosting Omni-Modal Language Models: Staged Post-Training with Visually Debiased Evaluation](/202605/14/2605.12034v1-boosting-omni-modal-language-models-staged-post-training-with-visually-debiased-evaluation)  
    标签：评分：6.5/10、query:missing-modality
-   evidence：利用面部表情和文本的多模态状态感知支持系统
-5. [Emergent Communication for Co-constructed Emotion Between Embodied Agents via Collective Predictive Coding](/202605/13/2605.09522v1-emergent-communication-for-co-constructed-emotion-between-embodied-agents-via-collective-predictive-coding)  
+   evidence：全模态模型针对视觉捷径的鲁棒性
+5. [Certified Robustness under Heterogeneous Perturbations via Hybrid Randomized Smoothing](/202605/14/2605.12876v1-certified-robustness-under-heterogeneous-perturbations-via-hybrid-randomized-smoothing)  
+   标签：评分：6.5/10、query:missing-modality
+   evidence：多模态模型在联合扰动下的认证鲁棒性框架。
+6. [TransmissiveGS: Residual-Guided Disentangled Gaussian Splatting for Transmissive Scene Reconstruction and Rendering](/202605/14/2605.10705v1-transmissivegs-residual-guided-disentangled-gaussian-splatting-for-transmissive-scene-reconstruction-and-rendering)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：整合多模态身体信号进行情感构建
-6. [Simultaneous Long-tailed Recognition and Multi-modal Fusion for Highly Imbalanced Multi-modal Data](/202605/13/2605.10498v1-simultaneous-long-tailed-recognition-and-multi-modal-fusion-for-highly-imbalanced-multi-modal-data)  
+   evidence：透射场景的解耦重建与渲染
+7. [Leveraging Multimodal Large Language Models for All-in-One Image Restoration via a Mixture of Frequency Experts](/202605/14/2605.11444v1-leveraging-multimodal-large-language-models-for-all-in-one-image-restoration-via-a-mixture-of-frequency-experts)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：针对高度不平衡数据的多模态融合及信息量估计
-7. [CAST: Collapse-Aware multi-Scale Topology Fusion for Multimodal Coreset Selection](/202605/13/2605.11705v1-cast-collapse-aware-multi-scale-topology-fusion-for-multimodal-coreset-selection)  
+   evidence：多模态嵌入作为图像修复的引导
+8. [SMA: Submodular Modality Aligner For Data Efficient Multimodal Learning](/202605/14/2605.12872v1-sma-submodular-modality-aligner-for-data-efficient-multimodal-learning)  
    标签：评分：6.0/10、query:missing-modality
-   evidence：多模态数据集中的跨模态信息失衡与语义损失
-8. [Learning Subspace-Preserving Sparse Attention Graphs from Heterogeneous Multiview Data](/202605/13/2605.11881v1-learning-subspace-preserving-sparse-attention-graphs-from-heterogeneous-multiview-data)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：跨异构视图的语义对齐和子空间结构恢复
-9. [Fill the GAP: A Granular Alignment Paradigm for Visual Reasoning in Multimodal Large Language Models](/202605/13/2605.12374v1-fill-the-gap-a-granular-alignment-paradigm-for-visual-reasoning-in-multimodal-large-language-models)  
-   标签：评分：6.0/10、query:missing-modality
-   evidence：中间视觉证据作为连续标记以解决特征空间不匹配
+   evidence：用于高效学习的子模态对齐器
 
 
 <div class="dpr-home-promo-card">

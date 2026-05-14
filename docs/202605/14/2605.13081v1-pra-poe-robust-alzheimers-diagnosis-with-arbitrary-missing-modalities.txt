@@ -1,0 +1,270 @@
+Title: PRA-PoE: Robust Alzheimer's Diagnosis with Arbitrary Missing Modalities
+
+URL Source: https://arxiv.org/pdf/2605.13081v1
+
+Published Time: Thu, 14 May 2026 00:45:54 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# PRA-PoE: Robust Multimodal Alzheimer’s Disease Classification under Arbitrary Modality Missingness 
+
+Guangqian Yang 1, Ye Du 1, Wenlong Hou 1, Qian Niu 2B, Shujun Wang 1,3B, and for the Alzheimer’s Disease Neuroimaging Initiative  
+
+> 1
+
+Department of Biomedical Engineering, The Hong Kong Polytechnic University, Hong Kong SAR, China  
+
+> 2
+
+Department of Technology Management for Innovation, The University of Tokyo, Japan  
+
+> 3
+
+Department of Data Science and Artificial Intelligence, The Hong Kong Polytechnic University, Hong Kong SAR, China 
+
+qian.niu@weblab.t.u-tokyo.ac.jp, shu-jun.wang@polyu.edu.hk 
+
+B Corresponding authors. 
+
+Abstract. Missing modalities are prevalent in real-world Alzheimer’s disease (AD) assessment and pose a significant challenge to multimodal learning, particularly when the distribution of observed modality sub-sets differs between training and deployment. Such missingness pattern mismatch induces a conditional representation shift across modality sub-sets. Existing approaches that rely on implicit imputation or modality synthesis often fail to explicitly model modality availability and uncer-tainty, leading to overconfident dependence on synthesized features, re-duced robustness, and miscalibrated uncertainty estimates. To address these limitations, we propose PRA-PoE, an incomplete multimodal learn-ing framework that is equipped with Prototype-anchored Representation Alignment (PRA) and an Uncertainty-aware Product of Experts (UA-PoE) fusion mechanism. First, PRA uses learnable global prototypes and availability-conditioned tokens to encode modality availability, distin-guish observed from missing modalities, re-synthesize features for missing modalities, and adaptively refine observed representations to align latent spaces across modality subsets, with the goal of reducing representation shift under varying missingness patterns. Second, UA-PoE models each modality as a Gaussian expert and performs closed-form Product of Ex-perts fusion, where experts with higher uncertainty are automatically down-weighted via lower precision, improving uncertainty reliability. We evaluate PRA-PoE under a clinically realistic protocol by training with naturally missing data and testing on all non-empty modality combi-nations. PRA-PoE consistently outperforms the state-of-the-art across datasets, achieving a 5.4% relative improvement in average accuracy on ADNI and a 10.9% relative gain in average F1 on OASIS-3 over the strongest baseline across all non-empty modality subsets. Code is avail-able at https://github.com/SDH-Lab/PRA-PoE .        
+
+> arXiv:2605.13081v1 [cs.CV] 13 May 2026 2G. Yang et al.
+> Fig. 1. Modality missing patterns and sample counts for each combination in the ADNI dataset [11].
+> Keywords: Missing modality ·Alzheimer’s disease ·Prototype learning
+> ·Product of Experts
+
+## 1 Introduction 
+
+Accurate classification of Alzheimer’s disease (AD) relies on multimodal ev-idence [16, 10, 6]. Structural Magnetic Resonance Imaging (sMRI), Positron Emission Tomography (PET) (e.g., FDG-PET and Amyloid-PET), and clinical assessments provide complementary cues on anatomy, metabolism/pathology, and symptoms, making multimodal learning a key paradigm for AD staging [7, 13]. However, in real-world clinical cohorts, multimodal acquisition is rou-tinely incomplete due to cost, scanner availability, patient burden, contraindica-tions, and protocol heterogeneity [8, 20], as illustrated in Fig. 1. This missingness is largely protocol-driven. Tabular data (e.g., demographic information and cog-nitive assessments) are routinely available, while MRI/PET can be absent due to contraindications, radiation concerns, and cost [17, 2], yielding non-random and highly imbalanced modality subsets. Consequently, modality availability varies across subjects, and models must remain accurate and reliable under heteroge-neous missingness. To learn under heterogeneous modality availability, prior work on incomplete multimodal learning mainly follows two lines: (i) missingness-robust determinis-tic fusion, e.g., modality dropout [4, 26], mixture-of-fusion strategies [22, 5, 23], and knowledge distillation [8]; and (ii) imputation or cross-modal translation that predicts missing modalities or their features from observed ones [24, 25, 3, 18, 12]. Yet clinical AD cohorts exhibit a long-tailed distribution over observed modality subsets (Fig. 1) due to hierarchical acquisition protocols [17, 2], creat-ing a missingness pattern mismatch between the dominant subsets seen during training and the rare subsets encountered at deployment. This mismatch raises two challenges. First, models tend to co-adapt to frequent modality subsets, so the representation of a modality can vary with its surrounding context (i.e., PRA-PoE: Robust Alzheimer’s Diagnosis with Arbitrary Missing Modalities 3
+
+which other modalities are present), leading to missingness-induced represen-tation shift and degraded generalization on rare subsets [14]. Second, although imputation-based approaches can yield uncertain feature estimates, the previous methods [24, 1] often treat synthesized features as if they were fully observed, lacking an explicit mechanism to down-weight unreliable estimates. Such blind fusion can induce negative transfer, where noisy imputations corrupt multimodal aggregation and reduce performance even when strong observed modalities are available. To address these challenges, we propose Prototype-anchored Representation Alignment with Product-of-Experts fusion (PRA-PoE), a unified framework for robust multimodal learning under missing data. PRA introduces learnable global prototypes together with availability-conditioned tokens to (i) align modality representations into a subset-consistent space, reducing context-dependent rep-resentation shift, and (ii) synthesize missing modality features from the observed ones at the feature level. Building on these representations, UA-PoE treats each modality as a Gaussian expert and performs adaptive Product-of-Experts fusion, where experts with higher uncertainty contribute less via lower precision. This explicitly prevents overconfident reliance on synthesized features and mitigates negative transfer under severe missingness. We evaluate PRA-PoE under a clin-ically realistic protocol that trains with naturally missing modalities and tests on all non-empty modality subsets, including rare long-tailed patterns. Exten-sive experiments on two large-scale benchmarks demonstrate the effectiveness of PRA-PoE, which surpasses the strongest baseline by relative improvements of 5.4% in average accuracy on ADNI and 10.9% in average F1 on OASIS-3 under arbitrary missing-modality scenarios. 
+
+## 2 Method 
+
+2.1 Overview and Problem Formulation Overview. We study AD stage classification with incomplete multimodal in-puts. Training follows the naturally missing modalities, while testing must work with any non-empty observed subset. This subset-dependent input creates a representation shift and can cause negative transfer when missing modalities are completed with overconfident features. We propose PRA-PoE : modality en-coders map inputs to a shared latent space, PRA performs subset-conditioned prototype-anchored alignment and completion, and UA-PoE fuses modalities by Gaussian product of experts with uncertainty-aware down-weighting, followed by Monte Carlo sampling for prediction. 
+
+Problem formulation. Let D = {(Xi, y i)}Ni=1 , where yi ∈ { CN , MCI , AD }
+
+and Xi = {xmi }Mm=1 contains M = 4 modalities: T1-sMRI, FDG-PET, Amyloid-PET, and tabular clinical or demographic variables. We use an observation mask 
+
+δi,m ∈ { 0, 1} and define the observed set Oi = {m | δi,m = 1 }. Tabular variables are usually present but can be missing, while imaging modalities are often absent, which yields imbalanced modality subsets. 4 G. Yang et al.  
+
+> Fig. 2. Overall Framework of PRA-PoE.
+
+2.2 Unified Feature Encoding 
+
+We employ modality-specific encoders Em(·) to map the heterogeneous inputs into a shared D-dimensional space, defined as hi,m = Em(xmi ) ∈ RD . For 3D neuroimaging modalities (T1-sMRI, FDG-PET, Amyloid-PET), Em(·) is a 3D volume encoder; for tabular data, Em(·) is an MLP on standardized variables. When modality m is missing, we set hi,m = 0 to maintain tensor-shape consis-tency. These zero placeholders do not contribute to cross-modal aggregation, as they are excluded from attention via an availability mask in PRA (Sec. 2.3). 
+
+2.3 Prototype-Anchored Representation Alignment (PRA) 
+
+Direct fusion of incomplete multimodal features leads to missingness-induced representation shift , where a modality’s embedding becomes dependent on the specific subset of co-observed modalities, resulting in context-dependent drift and unstable alignment. To mitigate this issue, we propose PRA , which en-forces subset-invariant semantics prior to fusion. PRA maps each modality into a shared semantic space by anchoring representations to learnable global proto-types and refining them via availability-conditioned cross-modal attention. Ap-plied to all modalities, including observed ones, PRA explicitly corrects subset-induced drift by constraining representations toward global anchors while lever-aging the available cross-modal context. 
+
+Prototype-anchored Query with Availability Embedding. For each modal-ity m, we use a learnable global prototype Pm ∈ RD and two learnable availability-conditioned tokens tobs , tmis ∈ RD to construct query for each modality m, as follows: 
+
+ai,m = δi,m tobs + (1 − δi,m )tmis , qi,m = ϕm([ Pm ∥ ai,m ]) ∈ RD , (1) PRA-PoE: Robust Alzheimer’s Diagnosis with Arbitrary Missing Modalities 5
+
+where ϕm : R2D → RD is a linear layer and [ · ∥ · ] denotes concatenation. 
+
+Masked Multi-head Cross-Attention. For sample i and target modality m,we stack the features of the remaining M −1 modalities into a context matrix 
+
+Ci,m = [ hi,m 1 ; . . . ; hi,m M −1 ] ∈ R(M −1) ×D , where {m1, . . . , m M −1} = {1, . . . , M }\ {m}. The prototype-anchored query qi,m serves as the query, and Ci,m serves as both keys and values. To prevent attention to missing modalities, we derive an additive bias Bi,m ∈ R1×(M −1) directly from the observation mask: (Bi,m )j =
+
+(
+
+0, if δi,m j = 1 ,
+
+−∞ , otherwise , (2) and compute the refined representation via multi-head cross-attention: ˆhi,m = softmax qi,m C⊤
+
+> i,m
+
+√dk
+
++ Bi,m 
+
+!
+
+Ci,m , (3) where dk is the per-head dimension. This formulation maintains a fixed ( M −1)-token context shape regardless of the missing pattern, while ensuring that only observed modalities contribute to cross-modal refinement. 
+
+Adaptive Calibration and PRA Output. For observed modalities, we adap-tively fuse the original feature hi,m with the aligned feature ˆhi,m :
+
+αi,m = σ
+
+
+
+ψm([ hi,m ∥ ˆhi,m ]) 
+
+
+
+, fi,m = αi,m hi,m + (1 − αi,m )ˆhi,m , (4) where ψm is a linear layer. The final aligned representation is 
+
+zi,m = LN 
+
+
+
+δi,m fi,m + (1 − δi,m )ˆhi,m 
+
+
+
+. (5) Thus, missing modalities never serve as cross-modal information sources; their zi,m are inferred from Oi via ˆhi,m , while observed modalities are calibrated to reduce subset-induced drift. 
+
+2.4 Uncertainty-Aware Product-of-Experts (UA-PoE) 
+
+Given the PRA-aligned features {zi,m }Mm=1 , we formulate multimodal fusion as Gaussian PoE in a shared latent space [15]. The standard strategy for handling missing modalities removes absent experts from the product, fusing only over 
+
+Oi. In contrast, we retain all M experts, including those whose features are completed by PRA, and let each expert independently predict its own mean and variance. Because PRA-completed features carry higher epistemic uncertainty, their corresponding experts learn larger variances and thus contribute less preci-sion to the fused posterior, achieving implicit uncertainty-aware down-weighting within the closed-form PoE framework. Concretely, a lightweight head Gm(·) maps each zi,m to a diagonal Gaus-sian expert qi,m (s | XOi ) = N (s; μi,m , diag( σ2
+
+> i,m
+
+)). Combined with a standard 6 G. Yang et al. 
+
+normal prior p(s) = N (0, I), the product p(s) QMm=1 qi,m yields a closed-form Gaussian qi(s | XOi ) = N (μi, diag( σ2 
+
+> i
+
+)) via precision aggregation: 
+
+σ−2 
+
+> i
+
+= 1 +
+
+> M
+
+X
+
+> m=1
+
+σ−2
+
+> i,m
+
+, μi = σ2 
+
+> i
+
+⊙
+
+> M
+
+X
+
+> m=1
+
+ μi,m ⊙ σ−2
+
+> i,m
+
+. (6) Note that all M experts participate regardless of missingness; experts backed by imputed features naturally exhibit larger σ2 
+
+> i,m
+
+and thus contribute less precision to the fused result. 
+
+Prediction via Monte Carlo (MC) Sampling. We draw L samples from the fused posterior and average the classifier outputs: 
+
+pi = 1
+
+L
+
+> L
+
+X
+
+> k=1
+
+Softmax( W s(k) 
+
+> i
+
++ b), s(k) 
+
+> i
+
+∼ qi(s | XOi ). (7) 
+
+2.5 Loss Function 
+
+We train the model with the cross-entropy loss. To regularize the fused distri-bution and avoid over-confident experts, we add a Kullback-Leibler (KL) Diver-gence penalty to the standard normal prior p(s) = N (0, I): 
+
+L = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+
+
+LCE (pi, y i) + β D KL 
+
+ qi(s | XOi ) ∥ p(s)
+
+, (8) where pi is the predictive probability (Sec. 2.4) and qi(s | XOi ) is the UA-PoE fused Gaussian, β is a hyper-parameter. 
+
+## 3 Experimental Results 
+
+3.1 Dataset and Implementation Details Datasets. We evaluate on baseline ADNI [11] and OASIS-3 [9]. ADNI contains T1-sMRI, FDG-PET, Amyloid-PET, and tabular variables (Age, gender, edu-cation, marital status, MMSE, APOE4, ADNI EF, ADNI MEM); OASIS-3 con-tains T1-sMRI, Flair-MRI, Amyloid-PET, and tabular variables (Age, gender, education, APOE4, MMSE), which are commonly used in AD multimodal learn-ing [20, 13, 21]. We follow [20] for 3D image preprocessing and Min–Max normal-ize tabular features; all volumes are resized to 128 3. We split complete subjects into dev/test (1:1), then split (dev + incomplete) into train/val (6:1) stratified by diagnosis, resulting in 1504/259/471 (ADNI) and 757/127/104 (OASIS-3) for train/val/test. Train sets exhibit realistic missingness (e.g., 37.4% AV45 avail-able), while test sets are complete to simulate arbitrary missing-modality subsets at inference (Fig. 1). 
+
+Implementation Details. We train with Adam (LR 2 ×10 −4), 15-epoch warm-up + cosine decay, batch size 32, up to 100 epochs with early stopping (patience 40); β = 0 .001 unless specified. Experiments use two NVIDIA RTX 4090 GPUs. PRA-PoE: Robust Alzheimer’s Diagnosis with Arbitrary Missing Modalities 7
+
+Table 1. Performance comparison (mean (std), %) on ADNI and OASIS-3 for average metrics on 15 modality combinations, with computational efficiency. The orange back-ground refers to the best one, and the second-best results are underlined.                                                                                
+
+> Methods CN vs. MCI vs. AD CN vs. AD Computational Efficiency ACC AUC Macro-F1 ACC AUC F1 AD
+> Params (M) FLOPs (G) Speed (ms)
+> mmFormer [26] 51.7 (2.1) 68.4 (1.1) 44.6 (2.6) 86.8 (2.1) 72.8 (6.2) 40.3 (12.2) 26.4 65.2 31.7 ShareSpec [19] 56.9 (1.9) 73.6 (1.4) 54.1 (1.0) 87.7 (0.0) 88.2 (2.4) 51.0 (13.5) 144.1 482.4 43.9 AnyMod [4] 59.7 (1.1) 76.6 (1.3) 56.8 (3.6) 85.5 (1.6) 82.3 (4.8) 51.5 (4.5) 11.9 92.4 129.8 M3Care [24] 59.7 (1.1) 78.7 (1.5) 59.9 (2.0) 88.5 (1.7) 88.7 (0.7) 52.9 (6.2) 19.2 18.4 11.9 FuseMoE [5] 58.5 (1.2) 77.6 (0.3) 57.0 (2.0) 88.9 (1.7) 86.6 (1.3) 57.7 (5.9) 118.8 18.5 2.5 Flex-MoE [22] 57.1 (1.7) 74.3 (1.4) 48.1 (2.5) 88.7 (2.3) 87.5 (1.0) 57.3 (7.0) 13.8 18.4 28.0 MoE-retriever [23] 60.6 (3.1) 78.3 (1.9) 57.5 (2.6) 89.8 (0.3) 86.4 (1.9) 58.0 (2.8) 15.1 18.4 74.2
+> PRA-PoE (Ours) 63.9 (0.4) 81.4 (0.3) 61.7 (0.8) 90.3 (0.6) 89.5 (0.5) 64.3 (0.9) 13.8 18.4 8.1
+
+Table 2. ACC comparison under 8 clinical common modality combinations on ADNI dataset.                                                                                             
+
+> Modalities ACC (%)
+> Tab T1 FDG Amyloid mmFormer ShareSpec AnyMod M3Care FuseMoE Flex-MoE MoE-retr PRA-PoE
+> ✓56.8 (5.0) 67.9 (3.5) 64.2 (2.4) 60.3 (2.9) 63.6 (2.5) 65.2 (3.3) 61.3 (7.6) 65.3 (0.5)
+> ✓✓56.3 (4.0) 56.3 (3.7) 64.8 (1.8) 63.4 (5.4) 61.1 (4.6) 64.8 (2.3) 63.7 (7.5) 68.7 (1.6)
+> ✓✓60.6 (2.0) 59.9 (1.7) 67.4 (0.5) 65.6 (1.1) 68.0 (0.9) 69.1 (0.7) 65.0 (2.6) 70.1 (0.5)
+> ✓✓53.3 (2.8) 58.5 (3.3) 65.9 (0.6) 61.1 (3.3) 59.7 (3.1) 62.1 (2.3) 62.0 (6.2) 68.4 (0.5)
+> ✓✓✓60.2 (1.8) 60.7 (1.9) 66.8 (1.0) 66.7 (2.7) 68.3 (1.2) 70.3 (0.4) 67.3 (2.1) 69.5 (1.2)
+> ✓✓✓53.8 (3.0) 57.7 (4.6) 66.2 (0.6) 64.1 (4.4) 60.4 (5.4) 66.0 (3.4) 64.0 (5.0) 69.1 (0.8)
+> ✓✓✓59.9 (2.1) 61.7 (3.3) 67.3 (0.8) 65.7 (1.3) 69.4 (1.5) 69.8 (0.8) 69.3 (2.1) 71.9 (2.1)
+> ✓✓✓✓61.0 (1.9) 60.7 (3.6) 66.9 (1.4) 65.8 (2.8) 68.8 (1.8) 69.5 (0.1) 69.0 (4.0) 72.1 (0.8) Average 57.7 (2.7) 60.4 (2.5) 66.2 (1.0) 64.1 (0.7) 64.9 (1.2) 67.1 (1.2) 65.2 (4.1) 69.4 (1.3)
+
+3.2 Comparison with State-of-the-art Methods. 
+
+We evaluate all methods under arbitrary missing-modality settings for CN vs. MCI vs. AD (ADNI) and CN vs. AD (OASIS-3). For each test subject, we ran-domly drop modalities to form different modality subsets and report the average performance over all 15 non-empty modality combinations. We compare PRA-PoE with state-of-the-art approaches for incomplete multimodal learning, includ-ing mmFormer [26] and ShareSpec [19] (adapted to classification by replacing decoders with classification heads), M3Care [24], AnyMod [4], and recent flexible Mixture-of-Experts (MoE) frameworks (FuseMoE [5], Flex-MoE [22], and MoE-retriever [23]). All experiments are repeated three times with different random seeds, and results are reported as mean(standard deviation). The overall quantitative results are summarized in Table 1. For CN vs. MCI vs. AD, PRA-PoE achieves the best average performance across modality com-binations, with an average ACC of 63.9%, AUC of 81.4%, and Macro-F1 of 61.7%, outperforming MoE-retriever (the best baseline in ACC) by relative im-provements of 5.4% in ACC, 4.0% in AUC, and 7.8% in Macro-F1 score on the ADNI dataset. For CN vs. AD, PRA-PoE outperforms other methods with an average ACC of 90.3%, AUC of 89.5%, and F1 AD of 64.3% on the OASIS-3 dataset. Due to page limitations, we only present the Accuracy of 8 clinically common modality combinations in ADNI and OASIS-3 in Table 2 and Table 3. 8 G. Yang et al. 
+
+In addition, Table 1 reports model complexity: PRA-PoE is parameter-efficient (13.8M) and computationally lightweight (18.4G FLOPs), while maintaining fast inference (8.1 ms/sample), making it suitable for practical low-latency deploy-ment. 
+
+Table 3. ACC (%) comparison under 8 clinical common modality combinations on OASIS-3 dataset.                                                                                             
+
+> Modalities ACC (%)
+> Tab T1 Flair Amyloid mmFormer ShareSpec AnyMod M3Care FuseMoE Flex-MoE MoE-retr PRA-PoE
+> ✓85.6 (1.7) 86.5 (6.7) 90.4 (1.0) 89.7 (2.8) 89.4 (1.0) 88.5 (1.0) 89.1 (2.1) 90.4 (1.9)
+> ✓✓85.6 (3.5) 89.4 (1.0) 86.2 (1.5) 87.5 (3.3) 88.8 (1.5) 85.3 (4.5) 90.7 (2.4) 91.7 (1.1)
+> ✓✓82.7 (2.5) 84.3 (2.4) 84.6 (2.9) 86.2 (2.4) 85.3 (4.5) 88.1 (2.8) 86.5 (1.9) 89.7 (0.6)
+> ✓✓87.5 (4.4) 90.4 (1.0) 90.4 (3.3) 89.1 (3.1) 92.9 (0.6) 91.3 (1.7) 90.4 (1.7) 92.9 (2.2)
+> ✓✓✓86.5 (1.0) 87.8 (1.5) 84.3 (1.5) 87.8 (2.0) 87.8 (2.9) 86.2 (3.6) 92.3 (1.7) 91.3 (1.0)
+> ✓✓✓88.8 (3.1) 90.7 (2.0) 89.7 (3.6) 90.4 (2.5) 92.6 (1.5) 89.7 (1.5) 92.3 (1.0) 92.0 (0.6)
+> ✓✓✓88.5 (1.0) 87.5 (1.9) 87.5 (5.4) 90.7 (1.1) 90.7 (2.4) 92.0 (2.2) 92.3 (0.0) 92.9 (1.1)
+> ✓✓✓✓88.5 (1.7) 88.5 (1.0) 88.1 (4.9) 90.1 (2.0) 90.1 (2.4) 89.7 (3.6) 93.3 (1.0) 93.6 (0.6) Average 86.7 (2.2) 88.1 (0.3) 87.7 (2.7) 88.9 (1.7) 89.7 (1.4) 88.9 (2.1) 90.9 (0.8) 91.8 (0.8)
+
+Fig. 3. Ablation study (a) and hyperparameter sensitivity analysis (b). 
+
+3.3 Ablation Study and Sensitivity Analysis 
+
+Fig. 3 reports ablations and hyperparameter sensitivity on ADNI. In Fig. 3(a), PRA-PoE achieves the best average performance compared to variants with-out PRA, UA-PoE, or MC sampling across missingness patterns, showing all components contribute to robustness. Removing PRA yields the largest drop (Average ACC 64 .1% → 61 .0%), indicating its key role in mitigating distribu-tion shift, while removing UA-PoE also degrades performance (Average ACC 64 .1% → 62 .2%), supporting uncertainty-aware fusion. In Fig. 3(b), increasing MC draws L improves performance and saturates at L ≈ 10. The best KL weight is β = 0 .001; larger β hurts performance, suggesting overly strong regularization limits discriminative representations. PRA-PoE: Robust Alzheimer’s Diagnosis with Arbitrary Missing Modalities 9
+
+## 4 Conclusion 
+
+In this paper, we propose PRA-PoE, a robust framework for AD classification under arbitrary modality missingness. By combining Prototype-anchored Rep-resentation Alignment to mitigate missingness-induced representation shift with uncertainty-aware precision fusion to attenuate unreliable modality estimates, PRA-PoE delivers robust predictions across diverse missing patterns. Exper-iments on two datasets demonstrate improved performance over strong base-lines, indicating its potential for clinical application. Future work will extend the framework to longitudinal modeling and external multi-center validation to further assess generalizability. 
+
+Acknowledgments. This work was partially supported by RGC Collaborative Re-search Fund (No. C5055-24G), the Start-up Fund of The Hong Kong Polytechnic Uni-versity (No. P0045999), the Seed Fund of the Research Institute for Smart Ageing (No. P0050946), and Tsinghua-PolyU Joint Research Initiative Fund (No. P0056509), and PolyU UGC funding (No. P0053716). 
+
+## References 
+
+1. Akpinar, M.H., Sengur, A., Salvi, M., Seoni, S., Faust, O., Mir, H., Molinari, F., Acharya, U.R.: Synthetic data generation via generative adversarial networks in healthcare: A systematic review of image-and signal-based studies. IEEE Open Journal of Engineering in Medicine and Biology 6, 183–192 (2024) 2. Casanova, R., Hsu, F.C., Barnard, R.T., Anderson, A.M., Talluri, R., Whitlow, C.T., Hughes, T.M., Griswold, M., Hayden, K.M., Gottesman, R.F., et al.: Com-paring data-driven and hypothesis-driven MRI-based predictors of cognitive im-pairment in individuals from the atherosclerosis risk in communities (ARIC) study. Alzheimer’s & Dementia 18 (4), 561–571 (2022) 3. Chen, Y., Pan, Y., Xia, Y., Yuan, Y.: Disentangle first, then distill: a unified frame-work for missing modality imputation and Alzheimer’s disease diagnosis. IEEE Transactions on Medical Imaging 42 (12), 3566–3578 (2023) 4. Feng, Y., Gao, B., Deng, S., Qiu, A., Qin, J.: Unified multi-modal learning for any modality combinations in Alzheimer’s disease diagnosis. In: International Con-ference on Medical Image Computing and Computer-Assisted Intervention. pp. 487–497. Springer (2024) 5. Han, X., Nguyen, H., Harris, C., Ho, N., Saria, S.: FuseMoE: Mixture-of-experts transformers for fleximodal fusion. Advances in Neural Information Processing Sys-tems 37 , 67850–67900 (2025) 6. Hou, W., Yang, G., Du, Y., Lau, Y., Liu, L., He, J., Long, L., Wang, S.: Ada-gent: Llm agent for alzheimer’s disease analysis with collaborative coordinator. In: International Workshop on Agentic AI for Medicine. pp. 23–32. Springer (2025) 7. Jasodanand, V.H., Kowshik, S.S., Puducheri, S., Romano, M.F., Xu, L., Au, R., Kolachalama, V.B.: AI-driven fusion of multimodal data for Alzheimer’s disease biomarker assessment. Nature Communications 16 (1), 7407 (2025) 8. Kwak, M.G., Mao, L., Zheng, Z., Su, Y., Lure, F., Li, J.: A cross-modal mutual knowledge distillation framework for Alzheimer’s disease diagnosis: Addressing in-complete modalities. IEEE Transactions on Automation Science and Engineering 
+
+22 , 14218–14233 (2025) 10 G. Yang et al. 9. LaMontagne, P.J., Benzinger, T.L., Morris, J.C., Keefe, S., Hornbeck, R., Xiong, C., Grant, E., Hassenstab, J., Moulder, K., Vlassenko, A.G., et al.: OASIS-3: longitudinal neuroimaging, clinical, and cognitive dataset for normal aging and Alzheimer disease. medrxiv pp. 2019–12 (2019) 10. Lei, B., Li, Y., Fu, W., Yang, P., Chen, S., Wang, T., Xiao, X., Niu, T., Fu, Y., Wang, S., et al.: Alzheimer’s disease diagnosis from multi-modal data via feature inductive learning and dual multilevel graph neural network. Medical Image Anal-ysis 97 , 103213 (2024) 11. Mueller, S.G., Weiner, M.W., Thal, L.J., Petersen, R.C., Jack, C., Jagust, W., Trojanowski, J.Q., Toga, A.W., Beckett, L.: The Alzheimer’s disease neuroimaging initiative. Neuroimaging Clinics 15 (4), 869–877 (2005) 12. Pan, Y., Liu, M., Xia, Y., Shen, D.: Disease-image-specific learning for diagnosis-oriented neuroimage synthesis with incomplete multi-modality data. IEEE trans-actions on pattern analysis and machine intelligence 44 (10), 6839–6853 (2022) 13. Qiu, S., Miller, M.I., Joshi, P.S., Lee, J.C., Xue, C., Ni, Y., Wang, Y., De Anda-Duran, I., Hwang, P.H., Cramer, J.A., et al.: Multimodal deep learning for Alzheimer’s disease dementia assessment. Nature Communications 13 (1), 3404 (2022) 14. Shen, M., Huang, Y., Yin, J., Zou, H., Rajan, D., See, S.: Towards balanced active learning for multimodal classification. In: Proceedings of the 31st ACM Interna-tional Conference on Multimedia. pp. 3434–3445 (2023) 15. Shi, Y., Paige, B., Torr, P., et al.: Variational mixture-of-experts autoencoders for multi-modal deep generative models. Advances in Neural Information Processing Systems 32 (2019) 16. Teipel, S., Drzezga, A., Grothe, M.J., Barthel, H., Ch´ etelat, G., Schuff, N., Skud-larski, P., Cavedo, E., Frisoni, G.B., Hoffmann, W., et al.: Multimodal imaging in Alzheimer’s disease: validity and usefulness for early detection. The Lancet Neu-rology 14 (10), 1037–1053 (2015) 17. Teipel, S., Gustafson, D., Ossenkoppele, R., Hansson, O., Babiloni, C., Wagner, M., Riedel-Heller, S.G., Kilimann, I., Tang, Y.: Alzheimer disease: standard of diagnosis, treatment, care, and prevention. Journal of Nuclear Medicine 63 (7), 981–985 (2022) 18. Wang, C., Piao, S., Huang, Z., Gao, Q., Zhang, J., Li, Y., Shan, H., Initiative, A.D.N., et al.: Joint learning framework of cross-modal synthesis and diagnosis for Alzheimer’s disease by mining underlying shared modality information. Medical Image Analysis 91 , 103032 (2024) 19. Wang, H., Chen, Y., Ma, C., Avery, J., Hull, L., Carneiro, G.: Multi-modal learning with missing modality via shared-specific feature modelling. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 15878– 15887 (2023) 20. Xue, C., Kowshik, S.S., Lteif, D., Puducheri, S., Jasodanand, V.H., Zhou, O.T., Walia, A.S., Guney, O.B., Zhang, J.D., Po´ esy, S., et al.: AI-based differential diag-nosis of dementia etiologies on multimodal data. Nature Medicine 30 (10), 2977– 2989 (2024) 21. Yang, G., Du, K., Yang, Z., Du, Y., Cheung, E.Y.W., Zheng, Y., Yang, M., Kourtzi, Z., Schonlieb, C.B., Wang, S.: ADFound: A foundation model for diagnosis and prognosis of Alzheimer’s disease. IEEE Journal of Biomedical and Health Infor-matics 29 (11), 8395–8408 (2025) 22. Yun, S., Choi, I., Peng, J., Wu, Y., Bao, J., Zhang, Q., Xin, J., Long, Q., Chen, T.: Flex-MoE: Modeling arbitrary modality combination via the flexible mixture-PRA-PoE: Robust Alzheimer’s Diagnosis with Arbitrary Missing Modalities 11 of-experts. Advances in Neural Information Processing Systems 37 , 98782–98805 (2025) 23. Yun, S., Xin, J., Choi, I., Peng, J., Ding, Y., Long, Q., Chen, T.: Generate, then retrieve: Addressing missing modalities in multimodal learning via generative AI and MoE. In: Workshop on Large Language Models and Generative AI for Health at AAAI 2025 (2025) 24. Zhang, C., Chu, X., Ma, L., Zhu, Y., Wang, Y., Wang, J., Zhao, J.: M3Care: Learning with missing modalities in multimodal healthcare data. In: Proceedings of the 28th ACM SIGKDD conference on knowledge discovery and data mining. pp. 2418–2428 (2022) 25. Zhang, J., He, X., Liu, Y., Cai, Q., Chen, H., Qing, L.: Multi-modal cross-attention network for Alzheimer’s disease diagnosis with multi-modality data. Computers in Biology and Medicine 162 , 107050 (2023) 26. Zhang, Y., He, N., Yang, J., Li, Y., Wei, D., Huang, Y., Zhang, Y., He, Z., Zheng, Y.: mmFormer: Multimodal medical transformer for incomplete multimodal learn-ing of brain tumor segmentation. In: International Conference on Medical Image Computing and Computer-Assisted Intervention. pp. 107–117. Springer (2022)
