@@ -1,0 +1,561 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-16T20:22:07.383935+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 11,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2605.14878v1",
+      "source": "arxiv",
+      "title": "Decision-Level Fusion for Robust Wearable Affect Recognition",
+      "abstract": "Automatic recognition of affective state from wearable physiology has clear societal impact for public health, preventive care, and stress-aware interventions, but real deployments require robustness to non-stationary dynamics, artefacts, and missing sensors. We study this problem on WESAD, using baseline, stress, and amusement conditions, where common fixed-basis spectral features such as FFT bandpower and Welch PSD can oversmooth short-lived discriminative patterns. We propose a non-stationary pipeline that combines Fourier-Bessel Series Expansion (FBSE) with EWT data-driven spectral segmentation to extract mode-wise transient descriptors. For multimodal integration, we adopt decision-level aggregation over per-modality predictors and weight each modality by predictive uncertainty and modality reliability. Results on WESAD, using 15 subjects and ECG, EDA, BVP, EMG, and ACC signals across three classes, indicate that decision-level aggregation is approximately 84 percent of the time at least as good as feature-level aggregation, and approximately 48 percent of the time strictly better, suggesting improved robustness under heterogeneous and partially reliable sensing.",
+      "authors": [
+        "Lokesh Singh",
+        "Athina Georgara",
+        "Jayati Deshmukh",
+        "Tan Viet Tuyen Nguyen",
+        "Sarvapali D. Ramchurn"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA"
+      ],
+      "published": "2026-05-14T14:23:13+00:00",
+      "link": "https://arxiv.org/pdf/2605.14878v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "robust wearable affect recognition under missing sensors",
+      "llm_evidence_cn": "传感器缺失下的鲁棒可穿戴情感识别",
+      "llm_evidence": "传感器缺失下的鲁棒可穿戴情感识别",
+      "canonical_evidence": "传感器缺失下的鲁棒可穿戴情感识别",
+      "llm_tldr_en": "Develops a decision-level fusion pipeline for robust affect recognition despite missing sensors and noise.",
+      "llm_tldr_cn": "开发了一种决策级融合流水线，用于在传感器缺失和噪声环境下进行鲁棒的情感识别。",
+      "llm_tldr": "开发了一种决策级融合流水线，用于在传感器缺失和噪声环境下进行鲁棒的情感识别。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.12852v1",
+      "source": "arxiv",
+      "title": "Multitask Multimodal Fusion with Tabular Foundation Models for Peak and Durability Prediction of Pertussis Booster Response",
+      "abstract": "Pertussis booster vaccination produces immune responses that vary widely across individuals in both peak magnitude and long-term durability. These two phases are governed by partly distinct biological compartments:peak reflects acute B-cell activation and antibody secretion, while durability reflects the establishment of long-term humoral memory. Yet most computational models target only one, missing the full boost-and-wane trajectory. Jointly predicting both is non-trivial because the two endpoints are biologically dissociated rather than redundant; samples are small, modalities are heterogeneous with structured missingness, and the two tasks rely on different measurement windows. We propose a multi-task contrastive multimodal fusion architecture combining frozen TabPFN-v2 per-modality encoders, a dual-label supervised contrastive loss that treats two subjects as a positive pair if they agree on the Task 1 label or the Task 2 label, modality dropout calibrated to empirical missingness, and missingness-masked attention fusion. Applied to a curated subset of the CMI-PB pertussis booster dataset (n = 158 subjects, four modalities, 44.9% with at least one modality missing; Spearman r = -0.58 between peak and durability, n = 96), the model achieves test AUROC 0.797 (95% CI [0.621, 0.948]) for peak response and 0.755 (95% CI [0.519, 0.945]) for durability, with both significant under joint label permutation (N = 1000; p = 0.002 and p = 0.045). Across logistic regression, XGBoost, and MLP baselines on raw features and on TabPFN embeddings, the proposed model is the only one whose 95% CIs lie above chance on both tasks simultaneously. Per-modality contribution analyses recover task-specific modality contributions consistent with the underlying immunology: peak prediction is carried by cytokine signatures, while durability is carried by baseline antibody features.",
+      "authors": [
+        "Divya Sitani"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "q-bio.QM"
+      ],
+      "published": "2026-05-13T01:00:50+00:00",
+      "link": "https://arxiv.org/pdf/2605.12852v1",
+      "tags": [
+        "keyword:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "heterogeneous modalities with structured missingness",
+      "llm_evidence_cn": "具有结构化缺失的异构模态",
+      "llm_evidence": "具有结构化缺失的异构模态",
+      "canonical_evidence": "具有结构化缺失的异构模态",
+      "llm_tldr_en": "Proposes a multimodal fusion model for vaccine response prediction handling structured missing data.",
+      "llm_tldr_cn": "提出一种处理结构化缺失数据的多模态融合模型，用于疫苗反应预测。",
+      "llm_tldr": "提出一种处理结构化缺失数据的多模态融合模型，用于疫苗反应预测。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.12145v2",
+      "source": "arxiv",
+      "title": "Cross-Modal-Domain Generalization Through Semantically Aligned Discrete Representations",
+      "abstract": "Multimodal learning seeks to integrate information across diverse sensory sources, yet current approaches struggle to balance cross-modal generalizability with modality-specific structure. Continuous (implicit) methods preserve fine-grained priors but render generalization challenging, while discrete (explicit) approaches enforce shared prototypes at the expense of modality specificity. We introduce CoDAAR (Cross-modal Discrete Alignment And Reconstruction), a novel framework that resolves this long-standing trade-off by establishing semantic consensus across modality-specific codebooks through index-level alignment. This design uniquely allows CoDAAR to preserve modality-unique structures while achieving generalizable cross-modal representations within a unified discrete space. CoDAAR combines two complementary mechanisms: Discrete Temporal Alignment (DTA), which enables fine-grained temporal quantization, and Cascading Semantic Alignment (CSA), which promotes progressive cross-modal semantic agreement. Together, they establish a competition-free unified representation space. Trained with self-supervised reconstruction objectives on paired multimodal sequences, CoDAAR demonstrates robust cross-modal and cross-domain generalization. Across Cross-Modal Generalization benchmarks, including event classification, localization, video segmentation, and cross-dataset transfer, CoDAAR achieves state-of-the-art performance, establishing a new paradigm for discrete and generalizable multimodal representation learning.",
+      "authors": [
+        "Souptik Sen",
+        "Raneen Younis",
+        "Zahra Ahmadi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-12T14:03:30+00:00",
+      "link": "https://arxiv.org/pdf/2605.12145v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "cross-modal discrete alignment and reconstruction for generalizable representations",
+      "llm_evidence_cn": "跨模态离散对齐与重建，实现可泛化的表示",
+      "llm_evidence": "跨模态离散对齐与重建，实现可泛化的表示",
+      "canonical_evidence": "跨模态离散对齐与重建，实现可泛化的表示",
+      "llm_tldr_en": "A framework for cross-modal alignment and reconstruction to balance specificity and generalizability.",
+      "llm_tldr_cn": "一种通过跨模态对齐与重建来平衡模态特异性与泛化性的框架。",
+      "llm_tldr": "一种通过跨模态对齐与重建来平衡模态特异性与泛化性的框架。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.12122v1",
+      "source": "arxiv",
+      "title": "Disentangled Sparse Representations for Concept-Separated Diffusion Unlearning",
+      "abstract": "Unlearning specific concepts in text-to-image diffusion models has become increasingly important for preventing undesirable content generation. Among prior approaches, sparse autoencoder (SAE)-based methods have attracted attention due to their ability to suppress target concepts through lightweight manipulation of latent features, without modifying model parameters. However, SAEs trained with sparse reconstruction objectives do not explicitly enforce concept-wise separation, resulting in shared latent features across concepts. To address this, we propose SAEParate, which organizes latent representations into concept-specific clusters via a concept-aware contrastive objective, enabling more precise concept suppression while reducing unintended interference during unlearning. In addition, we enhance the encoder with a GeLU-based nonlinear transformation to increase its expressive capacity under this separation objective, enabling a more discriminative and disentangled latent space. Experiments on UnlearnCanvas demonstrate state-of-the-art performance, with particularly strong gains in joint style-object unlearning, a challenging setting where existing methods suffer from severe interference between target and non-target concepts.",
+      "authors": [
+        "Hyeonjin Kim",
+        "Hangyeol Jung",
+        "Heechan Yun",
+        "Sungjun Yun",
+        "Dong-Jun Han"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-05-12T13:39:07+00:00",
+      "link": "https://arxiv.org/pdf/2605.12122v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "disentangled sparse representations via concept-aware contrastive objective for precise concept suppression",
+      "llm_evidence_cn": "通过概念感知对比目标实现解耦稀疏表示，用于精确的概念抑制",
+      "llm_evidence": "通过概念感知对比目标实现解耦稀疏表示，用于精确的概念抑制",
+      "canonical_evidence": "通过概念感知对比目标实现解耦稀疏表示，用于精确的概念抑制",
+      "llm_tldr_en": "SAEParate organizes latent representations into concept-specific clusters for precise disentangled unlearning.",
+      "llm_tldr_cn": "SAEParate将潜表示组织成特定概念簇，实现了精确的解耦遗忘学习。",
+      "llm_tldr": "SAEParate将潜表示组织成特定概念簇，实现了精确的解耦遗忘学习。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.08891v1",
+      "source": "arxiv",
+      "title": "Bilinear autoencoders find interpretable manifolds",
+      "abstract": "Sparse autoencoders have become a standard tool for uncovering interpretable latent representations in neural networks. Yet salient concepts often span manifolds that current linear methods cannot capture without post hoc analysis. This paper uses quadratic latents to close this gap: we implement these with bilinear autoencoders, which decompose activations into low-rank quadratic forms, compose linearly in weight space, and admit input-independent geometric analysis. This qualitative difference in what concepts quadratic latents can detect challenges the standard linear representation hypothesis. Our experiments and visualisations show that multi-dimensional geometries are highly prevalent and that composite latents capture them well, systematically improving reconstruction error in language models. Furthermore, we show that autoencoders with varying geometric priors recover the same input subspace despite their dictionary entries being distinct. Practically, these models serve as an unsupervised tool for manifold discovery, which we demonstrate through an interactive online visualizer for Qwen 3.5. This is a step toward nonlinear but mathematically tractable latent representations whose composition is expressive and interpretable by design.",
+      "authors": [
+        "Thomas Dooms",
+        "Ward Gauderis",
+        "Geraint Wiggins",
+        "Jose Oramas"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-09T11:16:34+00:00",
+      "link": "https://arxiv.org/pdf/2605.08891v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "interpretable latent representations and quadratic latents",
+      "llm_evidence_cn": "可解释的潜表示与二次潜变量",
+      "llm_evidence": "可解释的潜表示与二次潜变量",
+      "canonical_evidence": "可解释的潜表示与二次潜变量",
+      "llm_tldr_en": "Uses bilinear autoencoders to find interpretable manifolds and improve latent representation quality.",
+      "llm_tldr_cn": "使用双线性自编码器寻找可解释流形并提高潜表示质量。",
+      "llm_tldr": "使用双线性自编码器寻找可解释流形并提高潜表示质量。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.13312v1",
+      "source": "arxiv",
+      "title": "Supervised Deep Multimodal Matrix Factorization for Interpretable Brain Network Analysis",
+      "abstract": "We present Supervised Deep Multimodal Matrix Factorization (SD3MF), an interpretable framework for integrative brain network analysis that generalizes Symmetric Nonnegative Matrix Tri-Factorization (SNMTF) from unsupervised single-graph clustering to supervised prediction over populations of multimodal graphs. SD3MF learns deep hierarchical factorizations for each modality together with a shared latent representation that aligns subjects across views. An encoder-decoder formulation jointly optimizes graph reconstruction and supervised prediction, while adaptive weights enable data-driven multimodal fusion. By representing each subject through community-level interaction matrices, the model yields interpretable and discriminative features. Experiments on multimodal connectome datasets show that SD3MF consistently outperforms strong deep learning baselines such as CNNs and GNNs, while enabling biologically interpretable insights. Code for reproducibility is available at: https://github.com/amjadseyedi/SD3MF.",
+      "authors": [
+        "Amjad Seyedi",
+        "Lifang He",
+        "Songlin Zhao",
+        "Akwum Onwunta",
+        "Nicolas Gillis"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-13T10:26:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.13312v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "deep hierarchical factorizations for each modality and shared latent representation",
+      "llm_evidence_cn": "各模态的深度分层分解与共享潜表示",
+      "llm_evidence": "各模态的深度分层分解与共享潜表示",
+      "canonical_evidence": "各模态的深度分层分解与共享潜表示",
+      "llm_tldr_en": "Presents a supervised matrix factorization framework for multimodal brain network analysis and reconstruction.",
+      "llm_tldr_cn": "提出一种用于多模态大脑网络分析与重建的有监督矩阵分解框架。",
+      "llm_tldr": "提出一种用于多模态大脑网络分析与重建的有监督矩阵分解框架。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.09151v1",
+      "source": "arxiv",
+      "title": "MultiMedVision: Multi-Modal Medical Vision Framework",
+      "abstract": "Multi-modal medical imaging enables comprehensive diagnostics, yet current foundation models process 2D (e.g. X-ray) and 3D (e.g. CT) data with separate, dimensionality-specific architectures. We present MultiMedVision, a unified framework for joint 2D/3D representation learning built on a Sparse Vision Transformer. Our model uses 3D Rotary Positional Embeddings and variable-length sequence packing to process mixed-modality batches natively within a shared latent space, without modality-specific adapters or treating 3D volumes as 2D slice sequences. Trained with a self-supervised objective on chest X-rays (MIMIC-CXR) and CT scans (CT-RATE), and using a single shared encoder with 5x less data, MultiMedVision achieves competitive performance on both 2D benchmarks (Macro AUROC 0.82 on MIMIC, 0.84 on CheXpert) and 3D tasks (0.85 on CT-RATE). Analysis of the learned representations reveals coexisting modality-specific and shared feature subspaces, demonstrating that unified cross-dimensional representation learning is feasible without sacrificing modality-specific performance.",
+      "authors": [
+        "Frank Li",
+        "Bardia Khosravi",
+        "Mohammadreza Chavoshi",
+        "Young Seok Jeon",
+        "Theo Dapamede",
+        "Hari Trivedi",
+        "Janice Newsome",
+        "Judy Gichoya"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-09T20:29:24+00:00",
+      "link": "https://arxiv.org/pdf/2605.09151v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "unified framework for joint 2D/3D representation learning within a shared latent space",
+      "llm_evidence_cn": "共享潜空间内联合2D/3D表示学习的统一框架",
+      "llm_evidence": "共享潜空间内联合2D/3D表示学习的统一框架",
+      "canonical_evidence": "共享潜空间内联合2D/3D表示学习的统一框架",
+      "llm_tldr_en": "MultiMedVision uses a shared encoder and latent space to process mixed-modality medical imaging data natively.",
+      "llm_tldr_cn": "MultiMedVision使用共享编码器和潜空间原生处理混合模态医学影像数据。",
+      "llm_tldr": "MultiMedVision使用共享编码器和潜空间原生处理混合模态医学影像数据。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.13621v1",
+      "source": "arxiv",
+      "title": "WD-FQDet: Multispectral Detection Transformer via Wavelet Decomposition and Frequency-aware Query Learning",
+      "abstract": "Infrared-visible object detection improves detection performance by combining complementary features from multispectral images. Existing backbone-specific and backbone-shared approaches still suffer from the problems of severe bias of modality-shared features and the insufficiency of modality-specific features. To address these issues, we propose a novel detection framework WD-FQDet that explicitly decouples modality-shared and modality-specific information from infrared and visible modalities in the new view of low- and high-frequency domains, allowing fusion strategies tailored to their frequency characteristics. Specifically, a low-frequency homogeneity alignment module is proposed to align modality-shared features across modalities via a cross-modal attention mechanism, and a high-frequency specificity retention module is proposed to preserve modality-specific features through the multi-scale gradient consistency loss. To reinforce the feature representation in the frequency domain, we propose a hybrid feature enhancement module that incorporates spatial cues. Furthermore, considering that the contributions of homogeneous and modality-specific features to object detection vary across scenarios, we propose a frequency-aware query selection module to dynamically regulate their contributions. Experimental results on the FLIR, LLVIP, and M3FD datasets demonstrate that WD-FQDet achieves state-of-the-art performance across multiple evaluation metrics.",
+      "authors": [
+        "Chunjin Yang",
+        "Xiwei Zhang",
+        "Yiming Xiao",
+        "Fanman Meng"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-13T14:51:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.13621v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "explicitly decouples modality-shared and modality-specific information",
+      "llm_evidence_cn": "显式解耦模态共享和模态特定信息",
+      "llm_evidence": "显式解耦模态共享和模态特定信息",
+      "canonical_evidence": "显式解耦模态共享和模态特定信息",
+      "llm_tldr_en": "Proposes WD-FQDet to decouple modality-shared and specific features in multispectral object detection.",
+      "llm_tldr_cn": "提出WD-FQDet，在多光谱目标检测中解耦模态共享和特定特征。",
+      "llm_tldr": "提出WD-FQDet，在多光谱目标检测中解耦模态共享和特定特征。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.10815v2",
+      "source": "arxiv",
+      "title": "Probing Cross-modal Information Hubs in Audio-Visual LLMs",
+      "abstract": "Audio-visual large language models (AVLLMs) have recently emerged as a powerful architecture capable of jointly reasoning over audio, visual, and textual modalities. In AVLLMs, the bidirectional interaction between audio and video modalities introduces intricate processing dynamics, necessitating a deeper understanding of their internal mechanisms. However, unlike extensively studied text-only or large vision language models, the internal workings of AVLLMs remain largely unexplored. In this paper, we focus on cross-modal information flow between audio and visual modalities in AVLLMs, investigating where information derived from one modality is encoded within the token representations of the other modality. Through an analysis of multiple recent AVLLMs, we uncover two common findings. First, AVLLMs primarily encode integrated audio-visual information in sink tokens. Second, sink tokens do not uniformly hold cross-modal information. Instead, a distinct subset of sink tokens, which we term cross-modal sink tokens, specializes in storing such information. Based on these findings, we further propose a simple training-free hallucination mitigation method by encouraging reliance on integrated cross-modal information within cross-modal sink tokens. Our code is available at https://github.com/kaistmm/crossmodal-hub.",
+      "authors": [
+        "Jihoo Jung",
+        "Chaeyoung Jung",
+        "Ji-Hoon Kim",
+        "Joon Son Chung"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "eess.AS"
+      ],
+      "published": "2026-05-11T16:34:18+00:00",
+      "link": "https://arxiv.org/pdf/2605.10815v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "investigating cross-modal information flow and where information from one modality is encoded in another",
+      "llm_evidence_cn": "研究跨模态信息流以及一种模态的信息如何编码在另一种模态中",
+      "llm_evidence": "研究跨模态信息流以及一种模态的信息如何编码在另一种模态中",
+      "canonical_evidence": "研究跨模态信息流以及一种模态的信息如何编码在另一种模态中",
+      "llm_tldr_en": "This study probes cross-modal information hubs in AVLLMs to understand internal multimodal processing dynamics.",
+      "llm_tldr_cn": "该研究探讨了音视频大模型中的跨模态信息枢纽，以理解内部多模态处理机制。",
+      "llm_tldr": "该研究探讨了音视频大模型中的跨模态信息枢纽，以理解内部多模态处理机制。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.11572v1",
+      "source": "arxiv",
+      "title": "TB-AVA: Text as a Semantic Bridge for Audio-Visual Parameter Efficient Finetuning",
+      "abstract": "Audio-visual understanding requires effective alignment between heterogeneous modalities, yet cross-modal correspondence remains challenging when temporally aligned audio and visual signals lack clear semantic correspondence.We propose to use text as a semantic anchor for audio-visual representation learning.To this end, we introduce a parameter-efficient adaptation frameworkbuilt on frozen audio and visual encoders, centered on Text-Bridged Audio-Visual Adapter (TB-AVA), which enables text-mediated interaction between audio and visual streams. At the core of TB-AVA, Gated Semantic Modulation (GSM) selectively modulates feature channels based on text-inferred semantic relevance. We evaluate the proposed approach on multiple benchmarks, including AVE, AVS, and AVVP, where the proposed framework achieves state-of-the-art performance, demonstrating text as an effective semantic anchor for parameter-efficient fine-tuning (PEFT) in audio-visual learning.",
+      "authors": [
+        "Seongah Kim",
+        "Dinh Phu Tran",
+        "Hyeontaek Hwang",
+        "Saad Wazir",
+        "Duc Do Minh",
+        "Daeyoung Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-12T05:59:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.11572v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "text as a semantic bridge for audio-visual alignment and interaction",
+      "llm_evidence_cn": "文本作为视听对齐和交互的语义桥梁",
+      "llm_evidence": "文本作为视听对齐和交互的语义桥梁",
+      "canonical_evidence": "文本作为视听对齐和交互的语义桥梁",
+      "llm_tldr_en": "Uses text as a semantic anchor to improve audio-visual representation learning and alignment.",
+      "llm_tldr_cn": "利用文本作为语义锚点，改进视听表示学习和对齐。",
+      "llm_tldr": "利用文本作为语义锚点，改进视听表示学习和对齐。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.11572v2",
+      "source": "arxiv",
+      "title": "TB-AVA: Text as a Semantic Bridge for Audio-Visual Parameter Efficient Finetuning",
+      "abstract": "Audio-visual understanding requires effective alignment between heterogeneous modalities, yet cross-modal correspondence remains challenging when temporally aligned audio and visual signals lack clear semantic correspondence. We propose to use text as a semantic anchor for audio-visual representation learning. To this end, we introduce a parameter-efficient adaptation framework built on frozen audio and visual encoders, centered on Text-Bridged Audio-Visual Adapter (TB-AVA), which enables text-mediated interaction between audio and visual streams. At the core of TB-AVA, Gated Semantic Modulation (GSM) selectively modulates feature channels based on text-inferred semantic relevance. We evaluate the proposed approach on multiple benchmarks, including AVE, AVS, and AVVP, where the proposed framework achieves state-of-the-art performance, demonstrating text as an effective semantic anchor for parameter-efficient fine-tuning (PEFT) in audio-visual learning.",
+      "authors": [
+        "Seongah Kim",
+        "Dinh Phu Tran",
+        "Hyeontaek Hwang",
+        "Saad Wazir",
+        "Duc Do Minh",
+        "Daeyoung Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-12T05:59:23+00:00",
+      "link": "https://arxiv.org/pdf/2605.11572v2",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "text-mediated interaction between audio and visual streams",
+      "llm_evidence_cn": "音频和视觉流之间以文本为中介的交互",
+      "llm_evidence": "音频和视觉流之间以文本为中介的交互",
+      "canonical_evidence": "音频和视觉流之间以文本为中介的交互",
+      "llm_tldr_en": "Employs a text-bridged adapter to facilitate semantic alignment in audio-visual understanding.",
+      "llm_tldr_cn": "采用文本桥接适配器，促进视听理解中的语义对齐。",
+      "llm_tldr": "采用文本桥接适配器，促进视听理解中的语义对齐。",
+      "llm_tags": [
+        "query:missing-modality:composite"
+      ],
+      "matched_query_tag": "query:missing-modality:composite",
+      "matched_query_text": "Papers central to 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。, especially work that connects or combines: M; Multimodal Emotion Recognition; Robust Multimodal Learning; Disentangled Representation; Incomplete Multimodal; Missing Modality; Robust multimodal sentiment analysis and emotion recognition under incomplete modalities; Generative approaches and imputation methods for missing modality robustness; Disentangled representation learning for multimodal emotion recognition with missing data; Reconstructing missing modalities before feature decoupling in multimodal learning.",
+      "matched_requirement_id": "req-composite-missing-modality",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.14270v1",
+      "source": "arxiv",
+      "title": "Diagnosing and Correcting Concept Omission in Multimodal Diffusion Transformers",
+      "abstract": "Multimodal Diffusion Transformers (MM-DiTs) have achieved remarkable progress in text-to-image generation, yet they frequently suffer from concept omission, where specified objects or attributes fail to emerge in the generated image. By performing linear probing on text tokens, we demonstrate that text embeddings can distinguish a characteristic `omission signal' representing the absence of target concepts. Leveraging this insight, we propose Omission Signal Intervention (OSI), which amplifies the omission signal to actively catalyze the generation of missing concepts. Comprehensive experiments on FLUX.1-Dev and SD3.5-Medium demonstrate that OSI significantly alleviates concept omission even in extreme scenarios.",
+      "authors": [
+        "Kanghyun Baek",
+        "Jaihyun Lew",
+        "Chaehun Shin",
+        "Jungbeom Lee",
+        "Sungroh Yoon"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-14T02:14:09+00:00",
+      "link": "https://arxiv.org/pdf/2605.14270v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "catalyze the generation of missing concepts in multimodal diffusion",
+      "llm_evidence_cn": "催化多模态扩散中缺失概念的生成",
+      "llm_evidence": "催化多模态扩散中缺失概念的生成",
+      "canonical_evidence": "催化多模态扩散中缺失概念的生成",
+      "llm_tldr_en": "Proposes Omission Signal Intervention to correct concept omission in multimodal diffusion transformers.",
+      "llm_tldr_cn": "提出省略信号干预，以纠正多模态扩散模型中的概念缺失问题。",
+      "llm_tldr": "提出省略信号干预，以纠正多模态扩散模型中的概念缺失问题。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.14635v1",
+      "source": "arxiv",
+      "title": "MultiEmo-Bench: Multi-label Visual Emotion Analysis for Multi-modal Large Language Models",
+      "abstract": "This paper introduces a multi-label visual emotion analysis benchmark dataset for comprehensively evaluating the ability of multimodal large language models (MLLMs) to predict the emotions evoked by images. Recent user studies report an unintuitive finding: humans may prefer the predictions of MLLMs over the labels in existing datasets. We argue that this phenomenon stems from the suboptimal annotation scheme used in existing datasets, where each annotator is shown a single candidate emotion for each image and judges whether it is evoked or not. This approach is clearly limited because a single image can evoke multiple emotions with varying intensities. As a result, evaluations based on these datasets may underestimate the capabilities of MLLMs, yet an appropriate benchmark for evaluating such models remains lacking. To address this issue, we introduce a new multi-label benchmark dataset for visual emotion analysis toward MLLMs evaluation. We hire $20$ annotators per image and ask them to select all emotions they feel from an image. Then, we aggregate the votes across all annotators, providing a more reliable and representative dataset labeled with a distribution of emotions. The resulting dataset contains $10,344$ images with $236,998$ valid votes across eight emotions. Based on this benchmark dataset, we evaluate several recent models, including Qwen3-VL, OpenAI's GPT, Gemini, and Claude. We assess model performance on both dominant emotion prediction and emotion distribution prediction. Our results demonstrate the progress achieved by recent MLLMs while also indicating that substantial room for improvement remains. Furthermore, our experiments with LLM-as-a-judge show that the method does not consistently improve MLLMs' performance, indicating its limitations for the subjective task of visual emotion analysis.",
+      "authors": [
+        "Tianwei Chen",
+        "Takuya Furusawa",
+        "Yuki Hirakawa",
+        "Ryotaro Shimizu",
+        "Mo Fan",
+        "Takashi Wada"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-14T09:49:32+00:00",
+      "link": "https://arxiv.org/pdf/2605.14635v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-label visual emotion analysis for MLLMs",
+      "llm_evidence_cn": "多模态大语言模型的多标签视觉情感分析",
+      "llm_evidence": "多模态大语言模型的多标签视觉情感分析",
+      "canonical_evidence": "多模态大语言模型的多标签视觉情感分析",
+      "llm_tldr_en": "Introduces a multi-label benchmark for evaluating visual emotion analysis in MLLMs.",
+      "llm_tldr_cn": "引入多标签基准，用于评估多模态大语言模型的视觉情感分析能力。",
+      "llm_tldr": "引入多标签基准，用于评估多模态大语言模型的视觉情感分析能力。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.14650v1",
+      "source": "arxiv",
+      "title": "Multimodal Learning for MIMO Beam Prediction Based on Variational Inference",
+      "abstract": "Accurate beam prediction is essential for mitigating signalling overhead and latency in integrated sensing and communication-enabled massive multi-input multi-output systems. With the aid of multimodal learning, the prediction accuracy can be enhanced by leveraging the complementary information from other existing sensors, but the practical deployment is often constrained by the high cost of acquiring semantically aligned multimodal datasets. This paper proposes a variational-inference-based multimodal framework that decouples the optimization problem into modular feature extraction and cross-modal semantic alignment. Specifically, we develop a two-stage training strategy where the model utilises abundant unimodal data for representation learning before performing refined alignment on limited multimodal samples. This design enhances data efficiency and ensures robust feature fusion under sensing uncertainties. Experimental results on the DeepSense6G dataset demonstrate that the proposed framework achieves competitive beam prediction accuracy and maintains high reliability, while only requiring 20% of the multimodal training data compared to conventional end-to-end benchmarks.",
+      "authors": [
+        "Zijian Zheng",
+        "Wenqiang Yi",
+        "Hyundong Shin",
+        "Arumugam Nallanathan"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-05-14T10:07:59+00:00",
+      "link": "https://arxiv.org/pdf/2605.14650v1",
+      "tags": [
+        "keyword:Missing-Modality",
+        "query:Missing-Modality"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decouples optimization into modular feature extraction and cross-modal semantic alignment",
+      "llm_evidence_cn": "将优化解耦为模块化特征提取和跨模态语义对齐",
+      "llm_evidence": "将优化解耦为模块化特征提取和跨模态语义对齐",
+      "canonical_evidence": "将优化解耦为模块化特征提取和跨模态语义对齐",
+      "llm_tldr_en": "A variational-inference framework that decouples features and alignment for robust multimodal beam prediction.",
+      "llm_tldr_cn": "一种基于变分推理的多模态框架，通过解耦特征提取与对齐提升波束预测的鲁棒性。",
+      "llm_tldr": "一种基于变分推理的多模态框架，通过解耦特征提取与对齐提升波束预测的鲁棒性。",
+      "llm_tags": [
+        "query:missing-modality"
+      ],
+      "matched_query_tag": "query:missing-modality",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

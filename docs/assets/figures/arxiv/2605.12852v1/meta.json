@@ -1,0 +1,86 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-001.webp",
+      "caption": "Fig 6. Label-permutation null distributions confirm learned signal for both tasks. Histograms of test-set AUROC across N = 1000 joint label permutations (both Task 1 and Task 2 labels shuffled; full pipeline retrained per permutation). The dashed orange line marks the significance threshold (95th percentile of the null, p < 0.05); the rejection region is shaded lightly. The dotted grey line marks the null mean. Left: Task 1 (peak response); observed AUROC 0.797 exceeds the null at p = 0.002, approximately 3.0 null-SDs above the null mean. Right: Task 2 (durability); observed AUROC 0.755 exceeds the null at p = 0.045, approximately 1.7 null-SDs above the null mean. Null means (Task 1: 0.509; Task 2: 0.501) sit near chance, confirming the permutation procedure is well-calibrated.",
+      "page": 15,
+      "index": 1,
+      "width": 916,
+      "height": 291
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-002.webp",
+      "caption": "Fig 2. Multi-task contrastive multimodal fusion architecture. Four immune modalities are independently encoded by frozen TabPFN-v2 encoders and projected to a shared 64-dim space via per-modality MLP heads with l2 normalization. A dual-label supervised contrastive loss (dashed arrows; training only) aligns same-class representations across modalities. Modality dropout (p = 0.4; training only) masks each modality independently to encourage robustness to missing inputs. An attention-weighted fusion layer combines present modalities into a single representation, which is concatenated with subject metadata (infancy vac, biological sex), passed through a shared MLP, and branched into two classification heads: Task 1 (peak response, log2 IgG-PT day 14/day 0) and Task 2 (durability, log2 IgG-PT day 120/day 30).",
+      "page": 7,
+      "index": 2,
+      "width": 972,
+      "height": 890
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-003.webp",
+      "caption": "Table 2. Hyperparameter configuration.",
+      "page": 10,
+      "index": 3,
+      "width": 540,
+      "height": 237
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-004.webp",
+      "caption": "Fig 5. Bootstrap AUROC distributions on the held-out test set, both tasks overlaid. Histograms of test-set AUROC across B = 1000 bootstrap resamples (sampling subjects with replacement from the held-out test set, predictions held fixed). Task 1 (peak response, lavender): observed AUROC 0.797, 95% CI [0.621, 0.948]. Task 2 (durability, blue): observed AUROC 0.755, 95% CI [0.519, 0.945]. Solid coloured vertical lines: observed AUROC for each task. Dashed coloured vertical lines: 2.5th and 97.5th percentiles of the bootstrap distribution, defining the 95% percentile-method confidence interval. Red vertical line: null AUROC (0.5). The Task 2 distribution is wider than Task 1, reflecting the smaller test set (n = 21 vs n = 32).",
+      "page": 14,
+      "index": 4,
+      "width": 904,
+      "height": 552
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-005.webp",
+      "caption": "Fig 4. ROC curves on the held-out test set with 95% bootstrap confidence intervals, and validation-set ROCs for comparison. Left: Task 1 (peak response, ntest = 32); test AUROC 0.797 (95% CI [0.621, 0.948]), validation AUROC 0.801. Right: Task 2 (durability, ntest = 21); test AUROC 0.755 (95% CI [0.519, 0.945]), validation AUROC 0.844. Solid line: ROC on the observed test set. Shaded band: pointwise 95% confidence interval on the true positive rate at each false positive rate, from B = 1000 bootstrap resamples of the test set. Dashed line: validation-set ROC on the same trained model. Dotted diagonal: chance. Validation and test AUROC agree closely on Task 1 (0.801 vs 0.797). On Task 2 the validation AUROC (0.844) exceeds the test AUROC (0.755) by approximately 0.09. Given the small Task 2 test set (n = 21) and the use of validation AUROC for early stopping, this gap is consistent with mild optimism in validation-based model selection rather than a clear failure of generalization.",
+      "page": 13,
+      "index": 5,
+      "width": 913,
+      "height": 341
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-006.webp",
+      "caption": "Fig 1. Cohort × modality missingness pattern in CMI-PB. (A) Subject level modality availability for the Task 1 (peak response) cohort, organised by annual cohort (2020-2023). Each row is one subject; each column is one of the four data modalities. Filled cells indicate the modality is present; white cells indicate it is missing. Within each cohort, subjects are sorted by missingness pattern (subjects with more modalities at the top). Horizontal black lines separate cohorts. (B) The same visualization restricted to the Task 2 (durability) modelling subset: subjects with both a Task 1 and a Task 2 label (n = 96). Subjects with a Task 2 label but no Task 1 label (n = 4) are not modeled and are excluded here. The 2023 cohort is absent because antibody measurements at day 120 were not collected for that year. (C) Per-modality missingness rate within each task subset. The pattern reveals that missingness is structural and cohort driven, rather than reflecting random subject dropout: certain modalities were systematically not collected in certain cohort years. This motivates an architecture that handles arbitrary modality subsets at both training and inference time.",
+      "page": 4,
+      "index": 6,
+      "width": 943,
+      "height": 517
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-007.webp",
+      "caption": "Table 4. Test-set AUROC: comparison to baselines on raw features and on TabPFN-v2 embeddings. Bootstrap 95% confidence intervals from 1000 resamples. Baselines are fit on training subjects (ntrain = 94 for Task 1, ntrain = 56 for Task 2) with default hyperparameters. The same seed for train/test split is used throughout. “Raw features” baselines use concatenated raw features from all four modalities with per-feature training-set mean imputation; “TabPFN emb.” baselines use concatenated 1,536-dimensional TabPFN-v2 embeddings (one per modality, total 6,144 dimensions). Bold: best point estimate per task; †: lower 95% CI bound below 0.5; ‡: degenerate predictor (constant output, AUROC fixed at 0.5 across all bootstrap resamples).",
+      "page": 19,
+      "index": 7,
+      "width": 722,
+      "height": 249
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-008.webp",
+      "caption": "Fig 8. Graceful degradation under inference-time modality missingness. For each modality, a fraction ρ of test subjects have that modality randomly masked at inference, with attention renormalised over the remaining three. Test AUROC is computed at each ρ ∈ {0.0, 0.1, 0.2, 0.3, 0.5, 0.7, 1.0} under a fixed masking seed (13). Left: Task 1 (peak response). Right: Task 2 (durability). Dashed black line: meta-only baseline (the model’s AUROC when all four modalities are masked, leaving only infancy vac and biological sex). Dotted grey line: chance (0.5). On Task 1, all modality curves stay well above meta-only across the full range of ρ. On Task 2, only cytokine remains clearly above meta-only at ρ = 1; gene meets the meta-only line, while antibody and cell fall below it, with cell crossing meta-only by ρ ≈ 0.3.",
+      "page": 17,
+      "index": 8,
+      "width": 914,
+      "height": 315
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-009.webp",
+      "caption": "Fig 3. Peak and durability are anti-correlated phases of the humoral response. Scatter of log2 day 120/day 30 retention (durability, y-axis) versus log2 day 14/day 0 IgG-PT fold change (peak, x-axis) for the subjects with both labels available (n = 96). Subjects colored by childhood vaccination history. Dotted vertical line: peak median used to derive the Task 1 binary label. Dashed horizontal line: durability median used to derive the Task 2 binary label. The strong negative correlation (Spearman r = −0.58, p = 4.0× 10−10; Cohen’s κ = −0.52) reflects the dissociation between acute and long-term phases of the humoral response, motivating the multi-task framing. Childhood priming is significantly associated with the Task 1 binary label (2× 2 χ2 on priming × peak: p = 0.017, OR ≈ 2.27) but does not by itself separate responders from non-responders, motivating the use of multimodal immune measurements on top of priming history as model inputs.",
+      "page": 12,
+      "index": 9,
+      "width": 685,
+      "height": 531
+    },
+    {
+      "url": "assets/figures/arxiv/2605.12852v1/fig-010.webp",
+      "caption": "Fig 7. Per-modality contribution to peak and durability prediction. Top: Leave-one-out (LOO) analysis: change in test AUROC when each modality is masked out at inference, computed as ∆ = baseline AUROC− LOO AUROC. Positive values indicate the modality contributes to baseline performance; negative values indicate the modality is harmful to the ensemble. Bottom: Keep-one-out (KOO) analysis: test AUROC when only one modality is retained at inference. High values indicate standalone sufficiency. All-modalities AUROC is shown as a dashed reference line. For Task 1, cytokine dominates on both LOO (+0.068) and KOO (0.935), while cell frequency hurts the ensemble (LOO −0.058). For Task 2, antibody alone matches the full ensemble (KOO = 0.735). Both analyses are evaluated on the complete-case test subset.",
+      "page": 16,
+      "index": 10,
+      "width": 912,
+      "height": 545
+    }
+  ]
+}

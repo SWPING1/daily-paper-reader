@@ -1,0 +1,94 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-001.webp",
+      "caption": "Figure 13: The first few manifolds by index from our interactive viewer (indices 1 and 4 were excluded as they are dense and uninteresting, about 10% of latents are dense). This is a representative sample for how many features are primarily linear (top-left and top-right) versus more cluster-based (the others).",
+      "page": 21,
+      "index": 1,
+      "width": 829,
+      "height": 510
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-002.webp",
+      "caption": "Figure 4: Reconstruction error across even layers. The three priors consistently follow the same error ordering, quadratic < composite < atomic, indicating that composite latents capture more structure than their single-rank counterparts. We use a TopK (K = 32) baseline [Gao et al., 2024], whose reconstruction error is corrected to account for the lifted space (see Appendix F).",
+      "page": 7,
+      "index": 2,
+      "width": 738,
+      "height": 241
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-003.webp",
+      "caption": "Figure 9: Diagrammatic equation for computing the kernel K = WW⊤ efficiently using a sensible contraction order. The kernel matrix of a bilinear autoencoder can be evaluated by recasting it as an element-wise multiplication of two matrices.",
+      "page": 18,
+      "index": 3,
+      "width": 471,
+      "height": 290
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-004.webp",
+      "caption": "Figure 5: Comparison of the captured structure across ranks between quadratic and composite priors. The histograms show the captured variance of all latents for the top 1, 3 and 5 dimensions while the right plot shows their median as rank increases. With sparsity applied, most latents are very low rank with a tail of higher-dimensional structure. Without sparsity, the majority of latents are full-rank.",
+      "page": 8,
+      "index": 4,
+      "width": 732,
+      "height": 238
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-005.webp",
+      "caption": "Figure 2: Most autoencoders reconstruct their inputs nonlinearly. Instead, bilinear autoencoders linearly reconstruct X = xx⊤ ∼= x⊗ x in the d× d product space, which is quadratic in the input x.",
+      "page": 4,
+      "index": 5,
+      "width": 544,
+      "height": 233
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-006.webp",
+      "caption": "Figure 11: Sweep over selected layers on Llama-3.2-1B using the hyperparameters discussed in Appendix B. Reconstruction is much worse for both the topK baseline and our models, which is expected since k and h are kept constant despite d = 2048 being twice as large; this means the quadratic space is 4× as large.",
+      "page": 19,
+      "index": 6,
+      "width": 818,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-007.webp",
+      "caption": "Figure 10: Sweep over selected layers on Gemma-3-1B using the hyperparameters discussed in Appendix B. To clarify, k = 16k (i.e. not scaled with the slightly increased model dimension of d = 1152). The results are in line with subsection 4.1, likely because the model width and depth resemble Qwen3.5-0.8B.",
+      "page": 19,
+      "index": 7,
+      "width": 815,
+      "height": 269
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-008.webp",
+      "caption": "Figure 8: Diagrammatic formulation of Equation 7. Lines indicate tensor contractions over that index, while unconnected lines represent unmodified open indices. Thick lines represent a quadratic space.",
+      "page": 17,
+      "index": 8,
+      "width": 733,
+      "height": 213
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-009.webp",
+      "caption": "Figure 6: Frobenius (global) and Hungarian (per-latent) similarity between bilinear autoencoders with density penalties α ∈ [0, 1]. Autoencoders with varying hyperparameters reconstruct highly similar subspaces, yet their latent decompositions vary significantly, especially for the composite latents. The first entry corresponds to a randomly initialised autoencoder; the last column corresponds to similarity between autoencoder kinds at α = 0.3.",
+      "page": 9,
+      "index": 9,
+      "width": 649,
+      "height": 371
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-010.webp",
+      "caption": "Figure 12: Screenshot of the interactive viewer user interface for a particular latent: https:// bae-9xf.pages.dev/composite/06724.",
+      "page": 20,
+      "index": 10,
+      "width": 664,
+      "height": 410
+    },
+    {
+      "url": "assets/figures/arxiv/2605.08891v1/fig-011.webp",
+      "caption": "Figure 3: Linear atoms gain no expressivity under composition; quadratic atoms compose into quadric geometry. (Top) Linear atoms are signed half-space detectors: their sum is another half-space, merely averaging the directions. (Middle and bottom) Quadratic atoms are symmetric slabs measuring energy along a direction, ignoring phase. Composing two rank-1 forms yields a rank-2 symmetric matrix, unlocking quadric geometries. The sum is a semidefinite ellipsoid, a conjunction detector for w1 and w2; the difference is an indefinite hyperboloid, a detector for w1 and not w2. Linear composites span a flat set of directions; quadratic composites generate an algebra of symmetric matrices whose geometry ranges over paraboloids, ellipsoids, and hyperboloids.",
+      "page": 5,
+      "index": 11,
+      "width": 590,
+      "height": 420
+    }
+  ]
+}

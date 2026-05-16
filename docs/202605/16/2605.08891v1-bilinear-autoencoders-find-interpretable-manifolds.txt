@@ -1,0 +1,806 @@
+Title: Bilinear autoencoders find interpretable manifolds
+
+URL Source: https://arxiv.org/pdf/2605.08891v1
+
+Published Time: Tue, 12 May 2026 01:20:42 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# Bilinear autoencoders find interpretable manifolds 
+
+Thomas Dooms ∗
+
+University of Antwerp 
+
+doomsthomas@gmail.com 
+
+Ward Gauderis ∗
+
+Vrije Universiteit Brussel 
+
+ward.gauderis@vub.be 
+
+Geraint Wiggins 
+
+Vrije Universiteit Brussel 
+
+Jose Oramas 
+
+University of Antwerp, sqIRL 
+
+## Abstract 
+
+Sparse autoencoders have become a standard tool for uncovering interpretable latent representations in neural networks. Yet salient concepts often span manifolds that current linear methods cannot capture without post hoc analysis. This paper uses quadratic latents to close this gap: we implement these with bilinear autoencoders, which decompose activations into low-rank quadratic forms, compose linearly in weight space, and admit input-independent geometric analysis. This qualitative difference in what concepts quadratic latents can detect challenges the standard linear representation hypothesis. Our experiments and visualisations show that multi-dimensional geometries are highly prevalent and that composite latents capture them well, systematically improving reconstruction error in language models. Furthermore, we show that autoencoders with varying geometric priors recover the same input subspace despite their dictionary entries being distinct. Practically, these models serve as an unsupervised tool for manifold discovery, which we demonstrate through an interactive online visualizer for Qwen 3.5. This is a step toward nonlinear but mathematically tractable latent representations whose composition is expressive and interpretable by design. 
+
+Figure 1: Three hand-picked latent features from our interactive viewer using Qwen 3.5: https: //bae-9xf.pages.dev/ . Our proposed bilinear autoencoders capture low-dimensional manifolds. The above visuals are created by linearly projecting activations of input samples into the (3D) eigenspace of three different dictionary elements. The left latent fires selectively on years whose geometry represents them as superposed linear subspaces. The middle latent activates on U.S.-related tokens, and the inactive (grey) samples correspond to other locations. The geometry is scattered across all 3 dimensions, containing visible semantic clusters. The right latent activates positively on ‘for instance’ and ‘for example’ and negatively on ‘for’ in other contexts. Refer to subsection 4.2 for further explanation and to Appendix I for random examples. 
+
+> ∗Equal contribution. Preprint.
+> arXiv:2605.08891v1 [cs.LG] 9 May 2026
+
+## 1 Introduction 
+
+Neural networks are highly nonlinear systems shaped by emergent phenomena rather than explicit mechanisms. Logical human understanding, by contrast, is grounded in explicit structure and predictable composition. Mechanistic interpretability attempts to bridge this gap through reverse-engineering: identifying interpretable bases [Olah, 2022, Cunningham et al., 2023] and the circuits that act upon them. This lets us examine latent features in isolation, despite their co-dependence [Ameisen et al., 2025]. Yet the core problem remains: these latents often lack a compositional interpretation, since their isolated behaviour does not determine their role in the whole [Gauderis et al., 2026, Coecke, 2021]. Extracted latents have implicit domains of applicability, regions in input or activation space within which they are meaningful. Latent splitting and absorption [Chanin et al., 2025] illustrate this: a latent’s meaning is not fixed but depends on which other latents are active alongside it, so isolated study leaves this context-dependence invisible [Bhalla et al., 2026]. The isolated study of latents is therefore of limited value, since their interaction may skew interpretation even at small scales [Méloux et al., 2025]. Compositional understanding requires interactions that are explicit and computable [Tull et al., 2024, Gauderis et al., 2026]. Polynomials are a feature class with explicit compositional properties. They are nonlinear in input, but the parameters that define them combine linearly: a sum of quadratic latents is itself quadratic, parameterised by the sum of the original parameter vectors [Dooms et al., 24, Pearce et al., 2025]. Linear composition therefore happens in weight space, not on activations. We add, decompose, or compare latents by manipulating their coefficients directly, with no forward pass and no data. Their geometry is read off these coefficients and spectral properties [Lewis, 2019]. Such a latent can carve a surface, isolate a cluster, or trace an ellipsoid through a language model’s activation space (Figure 1). Recent work documents these structures through input-dependent and nonlinear projections [Engels et al., 2025, Modell et al., 2025], which recover the empirical geometry but sever its tie to the parameters that produced it. This paper develops bilinear autoencoders as a lens on representation geometry. They decompose activations into a dictionary of quadratic latents whose receptive fields admit closed-form geometric analysis. We motivate the architecture with a framework of structural priors that map directly to manifold shapes, and validate them against modern language models. We make three contributions 2
+
+• Architecture. We adapt bilinear autoencoders to dictionary learning, with efficient training via a kernel trick, and motivate the architecture as a natural and tractable extension of existing linear sparse autoencoders (section 2). • Framework. We propose three nested representation hypotheses (atomic, composite, quadratic), formalising how structural priors on the dictionary translate into receptive-field geometries: slabs, ellipsoids and hyperboloids, and arbitrary quadrics (section 3). • Empirics. Multi-dimensional geometries are prevalent in language models and composite latents capture them with lower reconstruction error. Bilinear autoencoders recover stable input subspaces across priors despite learning disjoint dictionaries (section 4). We write scalars (0-order tensors) as s (lower-case), vectors (1-order tensors) as v (bold lower-case), matrices (2-order tensors) as M (upper-case) and higher-order tensors as T (bold upper-case). Indexed tensors are denoted as Tijk and slicing along tensor dimensions as Tm:n. We use colour to distinguish weight-based from activation-based quantities; a glossary is provided in Appendix A. 
+
+## 2 Bilinear autoencoders 
+
+Autoencoders reconstruct their inputs through a bottleneck, forcing the model to capture structure in the data [Hinton and Salakhutdinov, 2006, Hindupur et al., 2025]. They have become a key tool in interpretability for extracting meaningful latents from neural representations [Olshausen and Field, 1996, Cunningham et al., 2023, Bricken et al., 2023]. Their interpretative goal is dual: reconstruct the input, and trace the extracted latents back to the original model. These goals pull against each other, trading expressivity for analysability.   
+
+> 2The code is publicly available at https://github.com/tdooms/bae .
+
+2The truncated singular value decomposition is itself a dimensionality-reducing autoencoder, but its compression is too restrictive: neural representations typically span all dimensions, so rank-based methods miss much of their structure [Elhage et al., 2022]. Sparse autoencoders instead focus on sparsity in a high-dimensional latent space, adding a sparsity-inducing nonlinearity to the encoder while keeping the decoder linear [Lewicki and Sejnowski, 2000, Aharon et al., 2006, Mairal et al., 2009]. They recover linearly separable latents that trace back to the original representations. Because each approach assumes a fixed geometry, the resulting latents mirror the imposed prior instead of the underlying structure of the data. [Engels et al., 2025, Buchanan et al., 2025, Hindupur et al., 2025]. 
+
+2.1 Geometric priors for dictionary learning 
+
+Current autoencoder architectures rest on the linear representation hypothesis : the claim that neural representations encode concepts mostly along linear directions [Park et al., 2024, Cunningham et al., 2023, Gao et al., 2024, Rajamanoharan et al., 2024]. Yet, recent research shows that salient concepts often span more intricate manifolds that existing methods cannot capture [Modell et al., 2025, Engels et al., 2025, Bhalla et al., 2026]. Increasing capacity is a natural response, but unbounded expressivity collapses to trivial solutions and defeats interpretation [Gao et al., 2024, Sutter et al., 2025]. Using autoencoders for interpretability is inherently about hypotheses [Hindupur et al., 2025] and finding the lens under which representations become understandable. Yet we do not know the neural representation geometry in advance; autoencoder architecture and its training should guide discovery toward simple latents without prescribing their form. We need primitives that are simple individually but compose into latents of varying complexity [Jenatton et al., 2011, Bhalla et al., 2026]. This requires measuring the complexity of the learned feature class itself, not just of the activations it produces. Minimum description length [Gauderis et al., 2026, Rissanen, 1978, Grünwald, 2007, Ayonrinde et al., 2024] is the natural candidate, but it requires a model class in which architectural description length independent of data is well-defined. Polynomials fit this role: their closed-form composition produces increasingly intricate, yet well-understood manifolds in their input space. 
+
+2.2 From gated units to quadratic latents 
+
+The simplest nonlinear instance of this idea is to model latents as quadratics. We implement this using bilinear autoencoders, which adapt sparse autoencoders to gated linear units [Shazeer, 2020, Dauphin et al., 2017]. These units apply two matrices L, R ∈ Rh×d to their input x ∈ Rd and project their element-wise multiplication using C ∈ Rk×h.
+
+GLU( x) = C σ(Lx) ⊙ Rx
+
+Removing the gating activation σ has a negligible impact on accuracy [Pearce et al., 2025, Shazeer, 2020]. What remains computes second-order polynomials of x, but remains linear in the ‘lifted’ 
+
+product space of pairwise interactions X = xx ⊤. The i-th latent activation is 
+
+zi := x⊤L⊤ diag( ci) R x = ⟨W i, X⟩F
+
+where ci is the i-th row of C and W i is the bilinear form of the i-th latent, 
+
+W i = X
+
+> j∈supp( ci)
+
+Cij lj r⊤ 
+
+> j
+
+.
+
+Stacking all W i into a third-order tensor gives the full encoder W ∈ Rk×(d×d). The autoencoder’s training objective is to approximate X through a symmetric bottleneck: 
+
+ˆX = W⊤W X.
+
+Lifting the input to X = xx ⊤ turns the autoencoding problem into a linear factorisation of quadratic latents. This representation makes the geometric structure explicit: quadric activation regions, such as ellipsoids, paraboloids and hyperboloids, are level sets of linear functionals of X (section 3; Figure 3). This lifted space has Θ( d2) dimensions, making direct materialisation of X intractable at scale; we instead evaluate the loss via a kernel trick (Appendix D). Since the model cannot degenerate to identity-like maps—as ordinary SAEs do without sparsity penalties—its bottleneck lies in which combinations to preserve. In other words, the learned W specifies exactly which second-order structure is kept and discarded. 3Figure 2: Most autoencoders reconstruct their inputs nonlinearly. Instead, bilinear autoencoders linearly reconstruct X = xx ⊤ ∼= x ⊗ x in the d × d product space, which is quadratic in the input x.
+
+2.3 Scale-invariant activation sparsity 
+
+The choice of W governs which second-order patterns survive; activation sparsity governs how cleanly each fires. The two are complementary. The standard approach minimises sparsity-inducing norms ( L0<p ≤1) on activations, but causes trivial shrinkage and can destabilise training by producing dead latents [Bricken et al., 2023]. Both pull against our goal: we want relative prominence across the sample dimension zi ∈ Rn (effective batch size n = samples × sequence length ), not uniformly small activations [Hoyer, 2004]. 
+
+Hoyer density (zi − bi) = ∥zi − bi∥1/∥zi − bi∥2 − 1
+
+√n − 1 (1) This measure runs from 0 for one-hot vectors to 1 for perfectly uniform ones, and is invariant to scale by construction and, through bi, to translation: each latent learns the offset that makes its activation distribution as sparse as possible. The penalty is minimised when activations concentrate around any level set zi = bi, rewarding latents whose level sets align with structure in the data. It pressures latents to fire selectively on inputs without collapsing to zero [Bussmann et al., 2024]. 
+
+## 3 Structural constraints of bilinear autoencoders 
+
+Any sparse autoencoder enforces two kinds of structural constraints: the decoder operationalises a hypothesis about how neural representations are constructed from concepts [Fel et al., 2025], while the encoder’s receptive fields encode assumptions about how those concepts appear in the activation space [Hindupur et al., 2025]. In bilinear autoencoders, encoder and decoder are mirrors of each other; aligned both sides by construction. This section unpacks what each side implies, working through three nested hypotheses of increasing structure: the quadratic hypothesis (subsection 3.1), the atomic refinement (subsection 3.2), and the composite refinement (subsection 3.3). 
+
+3.1 The quadratic representation hypothesis 
+
+Sparse autoencoders operationalise the linear representation hypothesis [Elhage et al., 2022, Fel et al., 2025]: representations decompose into a sparse sum of directions. 
+
+Definition 1 (Linear Representation Hypothesis) . A representation x ∈ Rd satisfies the linear representation hypothesis if there exists a dictionary of directions wi ∈ Rd and a sparse activation vector z ∈ Rk such that x = P 
+
+> i∈supp( z)
+
+zi wi.Bilinear decoders instead reconstruct X = xx ⊤, which lifts the problem to linear dictionary learning on the Veronese variety V = {xx ⊤ : x ∈ Rd} ⊂ Rd×d 
+
+> sym
+
+. This is the simplest non-linear relaxation of the linear hypothesis, and we formalise it accordingly. 
+
+Definition 2 (Quadratic Representation Hypothesis) . A representation x ∈ Rd satisfies the quadratic representation hypothesis if there exists a dictionary of symmetric matrices W i ∈ Rd×d 
+
+> sym
+
+and a sparse activation vector z ∈ Rk such that xx ⊤ = P 
+
+> i∈supp( z)
+
+zi W i.We adopt these hypotheses not as empirical claims but as the operationalising assumptions required for any form of dictionary learning [Nguyen et al., 2012, Fel et al., 2025]; whether neural representations 4Figure 3: Linear atoms gain no expressivity under composition; quadratic atoms compose into quadric geometry. (Top ) Linear atoms are signed half-space detectors: their sum is another half-space, merely averaging the directions. ( Middle and bottom ) Quadratic atoms are symmetric slabs measuring energy along a direction, ignoring phase. Composing two rank-1 forms yields a rank-2 symmetric matrix, unlocking quadric geometries. The sum is a semidefinite ellipsoid , a conjunction detector for w1 and w2; the difference is an indefinite hyperboloid , a detector for w1
+
+and not w2. Linear composites span a flat set of directions; quadratic composites generate an algebra of symmetric matrices whose geometry ranges over paraboloids, ellipsoids, and hyperboloids. actually satisfy the quadratic hypothesis is an empirical question which we address in section 4. Under it, the dictionary atoms W i are symmetric matrices rather than directions: each encodes a specific pattern of features that co-vary together, with diagonal entries x2 
+
+> i
+
+capturing the energy of individual dimensions and off-diagonal entries xixj encoding pairwise co-activations. Reconstructing X
+
+sparsely is therefore equivalent to decomposing the sample’s covariance structure into a small set of fundamental interaction patterns, equivalent to reconstruction ICA on the Veronese embedding [Le et al., 2011]. Where an SAE asks which directions activate , a bilinear autoencoder asks which co-occurrence patterns are active .Two structural consequences follow directly from targeting X rather than x. First, second-order sufficiency : a feature that survives training must explain not merely which dimensions activate but how they activate together, a strictly harder constraint that makes signed and mean-field structure inaccessible to the decoder. Second, antipodal symmetry : since (−x)( −x)⊤ = xx ⊤, the model inherently ignores global phase, making it the natural choice for features stored in antipodal superpo-sition [Elhage et al., 2022] where a signed direction ±w encodes a single concept and a standard SAE must spend two features on what is geometrically one direction. 
+
+3.2 Rank-1 atoms and energy separability 
+
+Just as SAEs build their dictionary from vectors, the simplest linear objects, bilinear autoencoders are most naturally studied when their atoms are rank-1 matrices, the simplest quadratic objects. 
+
+Definition 3 (Atomic Representation Hypothesis) . A representation satisfies the atomic representation hypothesis if the dictionary atoms in the quadratic representation hypothesis are rank-1: W i =
+
+wiw⊤ 
+
+> i
+
+.Reconstructing xx ⊤ = P 
+
+> i∈supp( z)
+
+zi wiw⊤ 
+
+> i
+
+assumes that the covariance structure decomposes into a sparse sum of rank-1 prototypes; a few directions alone jointly account for the observed interactions. 
+
+Receptive fields. The encoder traces this hypothesis back to the input space, and the difference from a standard SAE determines what concept geometry each can detect. An SAE computes a signed projection and thresholds it, while an atomic bilinear encoder computes a squared projection: 
+
+zlin  
+
+> i
+
+= ReLU( w⊤ 
+
+> i
+
+x), zatom  
+
+> i
+
+= ( w⊤ 
+
+> i
+
+x)2 = ⟨wiw⊤ 
+
+> i
+
+, X⟩F . (2) 5The second equality shows that each bilinear measurement is a linear functional on X, the inner product of the Veronese image with the rank-1 atom wiw⊤ 
+
+> i
+
+, or equivalently a Born-rule measurement: the expectation value of the projector wiw⊤ 
+
+> i
+
+on the pure state X. The encoder is a projection encoder [Hindupur et al., 2025] from the Veronese variety onto the space of diagonal matrices. The two receptive fields, for some threshold τ ≥ 0, are different: 
+
+Flin  
+
+> i
+
+= {x : w⊤ 
+
+> i
+
+x > τ }, Fatom  
+
+> i
+
+= {x : ( w⊤ 
+
+> i
+
+x)2 > τ }. (3) The SAE’s is a directed half-space [Hindupur et al., 2025]; the bilinear’s is a symmetric slab , two parallel hyperplanes around w⊥ 
+
+> i
+
+and symmetric about the origin. Where a linear atom asks which side of a hyperplane x lies on , a quadratic atom asks how close to a hyperplane x is , regardless of sign. The respective data assumptions are linear separability and energy separability : a concept detectable from the sign and magnitude of a projection, versus from its magnitude alone. See Figure 3 for a visual comparison 3.
+
+Intrinsic sparsity. The slab geometry has a further consequence: quadratic atoms are far more selective than linear ones in high dimensions. The proof is in Appendix E. 
+
+Theorem 1 (Exponential receptive field gap) . Let w ∈ Sd−1 and x ∼ Unif( Sd−1). For any fixed threshold τ ∈ (0 , 1) ,
+
+P (w⊤x)2 > τ 
+
+P w⊤x > τ  = Θ 
+
+
+
+e−dτ (1 −τ )/2
+
+.
+
+Quadratic atoms achieve intrinsic activation sparsity: their receptive fields shrink exponentially faster with dimension than those of linear atoms. At τ = 1 /2 and d = 1024 , the ratio is ≈ 10 −56 .
+
+3.3 Composite atoms and quadric separability 
+
+Linear atoms compose poorly: summing two SAE atoms yields another half-space, merely reoriented (Figure 3). Bhalla et al. [2026] identify this as the reason SAEs tile manifolds through many fragmented atoms rather than capturing them with a compact group, and call for featurizers that treat geometric objects as primitives from the outset. Quadratic atoms answer this directly: composing two rank-1 forms produces a rank-2 symmetric matrix whose receptive field is an ellipsoid or hyperboloid rather than a slab (Figure 3). We formalise the hypothesis that concepts exploit this structure. 
+
+Definition 4 (Composite Representation Hypothesis) . A representation satisfies the composite representation hypothesis if the dictionary atoms in the quadratic representation hypothesis are sparse mixtures of rank-1 matrices over a shared base dictionary {wj }hj=1 ⊂ Rd: W i =
+
+P 
+
+> j∈supp( ci)
+
+Cij wj w⊤ 
+
+> j
+
+, where ci is sparse and fixed per composite W i.Substituting into the quadratic hypothesis gives xx ⊤ = P 
+
+> i∈supp( z)
+
+zi
+
+P 
+
+> j∈supp( ci)
+
+Cij wj w⊤ 
+
+> j
+
+: the representation is reconstructed through two levels of sparsity, a dynamic activation z over composites and a static grouping ci of base atoms. This is related to hierarchical dictionary methods [Luo et al., 2026], but differs in that the grouping arises from a single global sparsity penalty on C rather than an added loss term, letting the optimiser allocate capacity unevenly across composites. 
+
+Receptive fields. A composite encoder computes a weighted sum of squared projections, equiva-lently the expectation value of a low-rank mixture of atomic projectors: 
+
+zcomp  
+
+> i
+
+= x⊤W ix = X
+
+> j
+
+λ(i)
+
+> j
+
+ v(i)⊤ 
+
+> j
+
+x2, W i = X
+
+> j∈supp( ci)
+
+Cij wj w⊤ 
+
+> j
+
+, (4) where λ(i) 
+
+> j
+
+, v(i) 
+
+> j
+
+are the eigenvalues and eigenvectors of W i. When W i is semidefinite, it aggregates slab detectors into a single quadratic form whose receptive field is an ellipsoidal region : an ellipsoid with principal axes given by the eigenvectors of W i and radii set by the eigenvalues. When W i
+
+is indefinite, it combines slab detectors with opposite signs, and the receptive field becomes a                     
+
+> 3Although li,rineed not be equal in practice (section 2), this is without loss of generality: since x⊤Ax=x⊤A+A⊤
+> 2xfor any A, only the symmetric part Wi=12(lir⊤
+> i+ril⊤
+> i)contributes to zi. This has rank at most 2 and its eigendecomposition reduces to a signed sum of two rank-1 atoms, i.e. the composite case of subsection 3.3.
+
+6hyperboloidal region : a hyperboloid whose positive sheet aligns with the positive eigenspace and the negative sheet with the negative eigenspace. In both cases, a composite atom asks how close to a quadric surface x is , a strict generalisation of the atomic question of how close to a hyperplane. The data assumption is low-rank quadratic separability : a concept is detectable from the projection of x
+
+onto a small subspace, with the subspace structure encoded in the eigenvectors of W i (Figure 3). A rank-r composite can achieve compact subspace capture [Bhalla et al., 2026] of any manifold living in the r-dimensional span of its eigenvectors, something that requires r separate atoms in a linear SAE: a circle needs a rank-2 composite, a sphere a rank-3 one. Whereas Bhalla et al. [2026] recover such groupings post-hoc from co-activation statistics, the sparse mixing layer C discovers them during training, baking manifold subspaces directly into the dictionary. 
+
+## 4 Empirical analysis of quadratic latents 
+
+The three hypotheses progressively weaken the constraint on C, increasing expressivity and de-creasing interpretability. Atomic fixes C = I, making each latent a single rank-1 atom. Composite 
+
+imposes a global top-K on C (allowing 0.1% non-zero entries), letting the optimiser allocate atoms unevenly across composites. Quadratic lifts the constraint entirely, freeing latents to reach arbitrary rank. Instantiating the full third-order tensor is impractical at scale, so it is approximated with a rank-h polyadic decomposition [Hitchcock, 1927]. See Appendix B for the experimental setup. The question is where this trade-off sits in practice. We measure reconstruction across priors, the prevalence of multi-dimensional geometry under each, and the stability of the recovered structure across runs, then qualitatively assess the extracted geometries through our interactive viewer. 
+
+4.1 Composite latents improve reconstruction 
+
+The simplest way to verify the utility of composites is to measure their reconstruction quality. Across even layers of Qwen 3.5 ( 0.8B), the three regimes order cleanly: quadratic reconstructs best, composite next, atomic worst (Figure 4). Atomic latents are too rigid; composition recovers structure they miss, and the gap between composite and quadratic suggests that even low-rank composites fall short. This provides systematic evidence that semantic manifolds inhabit far more ambient directions than their intrinsic dimension requires [Olah and Batson, 2024]. 0 2 4 6 8 10 12 14 16 18 20 22       
+
+> 0
+> 0.05
+> 0.1
+> 0.15
+> 0.2
+> 0.25
+> 0.3
+> 0.35
+> 0.4
+> quadratic composite atomic topk (raw) topk (corrected)
+> Layer
+> NMSE
+
+Figure 4: Reconstruction error across even layers. The three priors consistently follow the same error ordering, quadratic < composite < atomic , indicating that composite latents capture more structure than their single-rank counterparts. We use a TopK ( K = 32 ) baseline [Gao et al., 2024], whose reconstruction error is corrected to account for the lifted space (see Appendix F). 
+
+4.2 Multi-dimensional geometries are prevalent in language models 
+
+How prevalent are multi-dimensional geometries and what do they look like [Modell et al., 2025, Engels et al., 2025, Bhalla et al., 2026]? For this, we consider the spectral properties of the latents from the autoencoder on layer 18 of Qwen 3.5. Results depend on the structural regime: most composite latents are well-captured by 5 dimensions while the quadratic latents are consistently high-rank, as seen in Figure 5. The former indicates that, while much structure is single-dimensional, there is a long tail of more complicated geometries that are commonly missed [Sharkey et al., 2025]. The latter indicates that this structure does not emerge unless explicitly required. 70 0.2 0.4 0.6 0.8 1                  
+
+> 0
+> 500
+> 1000
+> 1500
+> 2000
+> 2500
+> 00.2 0.4 0.6 0.8 1
+> 0
+> 1000
+> 2000
+> 3000
+> 4000
+> 5000
+> 6000
+> 246810
+> 0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1
+> r=1 r=3 r=5 r=1 r=3 r=5 composite quadratic
+> Composite · fraction captured by top-r Quadratic · fraction captured by top-r Median · fraction captured by top-r
+
+Figure 5: Comparison of the captured structure across ranks between quadratic and composite priors. The histograms show the captured variance of all latents for the top 1, 3 and 5 dimensions while the right plot shows their median as rank increases. With sparsity applied, most latents are very low rank with a tail of higher-dimensional structure. Without sparsity, the majority of latents are full-rank. Next, we turn toward a qualitative assessment of our interactive viewer from which we discuss four common geometric patterns. The observed geometry is much richer than a linear prior would predict; especially the affine nature of certain concepts is interesting (e.g., two right manifolds in Figure 1). 
+
+Cone: a concept spans a line or cone, the simplest geometry. 6885 activates on specific years; 7552 activates on instances of the token ‘c’. The 3D visualisation often shows these latents in superposition, with non-orthogonal directions sharing a latent. 
+
+Cluster: A subspace populated by discrete groupings without linear structure. 1972 activates on references to the USA, with small clusters around each of the tokens in ‘U.S.’. 152 separates instances of “said” by context. Linear atoms could tile the point cloud but would lose the grouping. 
+
+Interpolation: A meaningful concept that smoothly interpolates between others. 2753 puts instances of ‘drug’ between common addictions (coffee, smoking, alcohol). 384 activates on ‘de’ in names (Catherine ‘de’ Medici), spanning between the English ‘of’ (Joan ‘of’ Arc) and unrelated ‘de’ tokens. 
+
+Subset: A latent that activates with opposite signs on distinct semantic regions of similar concepts. 190 distinguishes between occurrences of ‘for’. 3021 distinguishes ‘in’ tokens by whether the next token is a time or location. Together, our quantitative and qualitative results point toward an abundance of non-linear structure in the language models we studied. Dominant concepts are often approximately linear, but their surrounding geometry is not, and one-dimensional decompositions discard it. This explains why composite autoencoders achieve better reconstructions and positions them as a promising tool and lens for extracting and viewing manifolds. 
+
+4.3 Extracted subspaces are stable but individual latents are not 
+
+How consistent are autoencoders across runs? Existing answers rely on partial evidence: a subset of encoder directions align across runs; reconstructions correlate. Bilinear autoencoders allow an exact answer from weights alone. Each autoencoder is summarised by the kernel matrix K = WW ⊤, and two such matrices admit either a global Frobenius comparison (Equation 5) or a per-latent comparison via Hungarian matching (Equation 6), after Paulo and Belrose [2025]. 
+
+Sim F (K, K′) = 1 − ∥K − K′∥2
+
+> F
+
+∥K∥2 
+
+> F
+
++ ∥K′∥2
+
+> F
+
+= 2 Tr( K⊤K′)
+
+∥K∥2 
+
+> F
+
++ ∥K′∥2
+
+> F
+
+(5) 
+
+Sim H (W, W′) = ∥W⊤P W′∥F
+
+∥W′⊤W′∥F
+
+where P = arg max  
+
+> P∈P k
+
+Tr( W⊤P W′) (6) Where Pk denotes permutation of k latents. The two metrics tell different stories. Across bilinear autoencoders that differ only in their sparsity penalty, individual latents agree only 15–50%, while the global subspace they span agrees above 90% for similar sparsity levels (Figure 6). The gap widens across architectures: individual latents agree even less, while global similarity remains high. 8Current interpretability literature often discusses ‘true’ latents and canonical recovery [Paulo and Belrose, 2025, Leask et al., 2025, Song et al., 2025]. If different autoencoders recover the same structure through different decompositions, the question becomes less about which decomposition is true and more about which is interpretable, at competitive reconstruction [Gauderis et al., 2026]. 1.00 0.77 0.78 0.77 1.00 0.82 0.78 0.82 1.00                             
+
+> random ←dense sparse →random ←dense sparse →random ←dense sparse →
+> 1.00 0.09 0.04 0.09 1.00 0.07 0.04 0.07 1.00
+> quadratic composite atomic
+> Quadratic · Frobenius ⟨off-diag⟩ = 79% Composite · Frobenius ⟨off-diag⟩ = 86% Atomic · Frobenius ⟨off-diag⟩ = 89% Cross · Frobenius ⟨off-diag⟩ = 79%
+> Quadratic · Hungarian ⟨off-diag⟩ = 16% Composite · Hungarian ⟨off-diag⟩ = 16% Atomic · Hungarian ⟨off-diag⟩ = 53% Cross · Hungarian ⟨off-diag⟩ = 7%
+
+Figure 6: Frobenius (global) and Hungarian (per-latent) similarity between bilinear autoencoders with density penalties α ∈ [0 , 1] . Autoencoders with varying hyperparameters reconstruct highly similar subspaces, yet their latent decompositions vary significantly, especially for the composite latents. The first entry corresponds to a randomly initialised autoencoder; the last column corresponds to similarity between autoencoder kinds at α = 0 .3.
+
+## 5 Conclusion 
+
+Summary. Bilinear autoencoders decompose representations into polynomial latents that admit geometric analysis from weights alone. We argue that polynomials are an appealing non-linear primitive for interpretability: their composition stays inside the same algebraic class, and their geometry is read directly from their weight tensors. Section 3 formalises this through three nested hypotheses—atomic, composite, and quadratic—each a constraint on the mixing matrix C that trades expressivity for interpretability. The composite regime, a global topK on C, recovers low-dimensional manifolds automatically, without the post-hoc co-activation analysis other methods rely on. Our quantitative and qualitative analysis reveals that higher-rank geometries are prevalent in language model activations, that our autoencoders recover them in an interpretable form, and that the recovered input subspace is stable despite disagreement in the individual atoms. 
+
+Future work. This paper is intentionally scoped toward geometries and its interpretable extraction. Hence, the most fruitful future work is to causally ablate these latents. While manifold-based steering is inherently more involved than its linear counterpart, our autoencoder might make steering more reliable. By capturing the precise geometric structure through the weights, we can mathematically ensure we do not steer off-manifold and to reduce unintended effects of our edits. Next, the structural priors in this paper are a proof-of-concept; we did not sweep across priors to systematically assess which gave the best interpretative trade-off. We are excited about future work that builds atop polynomial latents and to characterise which kinds various models prefer. Finally, probing on quadratic latents is a natural next step given our results showing they capture concepts more naturally. 
+
+Impact. Bilinear autoencoders move beyond the linear representation hypothesis that dominates current interpretability, while remaining algebraically tractable. Because their computation and complexity admit a closed form, their description length is well-defined, which is rarely the case for nonlinear operations [Ayonrinde et al., 2024]. We believe this shifts the focus of interpretability from the search for isolated interpretable bases towards understandable compositional structures and interactions [Gauderis et al., 2026]. 9Acknowledgments and Disclosure of Funding References 
+
+Michal Aharon, Michael Elad, and Alfred Bruckstein. K-SVD: An algorithm for designing over-complete dictionaries for sparse representation. IEEE Transactions on Signal Processing , 54(11): 4311–4322, 2006. doi: 10.1109/TSP.2006.881199. Emmanuel Ameisen, Jack Lindsey, Adam Pearce, Wes Gurnee, Nicholas L. Turner, Brian Chen, Craig Citro, David Abrahams, Shan Carter, Basil Hosmer, Jonathan Marcus, Michael Sklar, Adly Templeton, Trenton Bricken, Callum McDougall, Hoagy Cunningham, Thomas Henighan, Adam Jermyn, Andy Jones, Andrew Persic, Zhenyi Qi, T. Ben Thompson, Sam Zimmerman, Kelley Rivoire, Thomas Conerly, Chris Olah, and Joshua Batson. Circuit tracing: Revealing computational graphs in language models, 2025. URL https://transformer-circuits.pub/ 2025/attribution-graphs/methods.html .Kola Ayonrinde, Michael T. Pearce, and Lee Sharkey. Interpretability as compression: Reconsidering sae explanations of neural activations with mdl-saes, 2024. URL https://arxiv.org/abs/ 2410.11179 .Usha Bhalla, Thomas Fel, Can Rager, Sheridan Feucht, Tal Haklay, Daniel Wurgaft, Siddharth Boppana, Matthew Kowal, Vasudev Shyam, Jack Merullo, Atticus Geiger, and Ekdeep Singh Lubana. Do sparse autoencoders capture concept manifolds?, 2026. URL https://arxiv.org/ abs/2604.28119 .Trenton Bricken, Adly Templeton, Joshua Batson, Brian Chen, Adam Jermyn, Tom Conerly, Nick Turner, Cem Anil, Carson Denison, Amanda Askell, Robert Lasenby, Yifan Wu, Shauna Kravec, Nicholas Schiefer, Tim Maxwell, Nicholas Joseph, Zac Hatfield-Dodds, Alex Tamkin, Karina Nguyen, Brayden McLean, Josiah E Burke, Tristan Hume, Shan Carter, Tom Henighan, and Christopher Olah. Towards monosemanticity: Decomposing language models with dictionary learning. Transformer Circuits Thread , 2023. https://transformer-circuits.pub/2023/monosemantic-features/index.html. Sam Buchanan, Druv Pai, Peng Wang, and Yi Ma. Learning Deep Representations of Data Distribu-tions . Online, 2025. Bart Bussmann, Patrick Leask, and Neel Nanda. Batchtopk sparse autoencoders, 2024. URL 
+
+https://arxiv.org/abs/2412.06410 .David Chanin, James Wilken-Smith, Tomáš Dulka, Hardik Bhatnagar, Satvik Golechha, and Joseph Bloom. A is for absorption: Studying feature splitting and absorption in sparse autoencoders, 2025. URL https://arxiv.org/abs/2409.14507 .Bob Coecke. Compositionality as we see it, everywhere around us, 2021. URL https://arxiv. org/abs/2110.05327 .Hoagy Cunningham, Aidan Ewart, Logan Riggs, Robert Huben, and Lee Sharkey. Sparse autoen-coders find highly interpretable features in language models, 2023. URL https://arxiv.org/ abs/2309.08600 .Yann N. Dauphin, Angela Fan, Michael Auli, and David Grangier. Language modeling with gated convolutional networks, 2017. URL https://arxiv.org/abs/1612.08083 .Thomas Dooms, Ward Gauderis, Geraint Wiggins, and Jose Antonio Oramas Mogrovejo. Composi-tionality Unlocks Deep Interpretable Models. In Connecting Low-Rank Representations in AI: At the 39th Annual AAAI Conference on Artificial Intelligence , November 24. Nelson Elhage, Tristan Hume, Catherine Olsson, Nicholas Schiefer, Tom Henighan, Shauna Kravec, Zac Hatfield-Dodds, Robert Lasenby, Dawn Drain, Carol Chen, Roger Grosse, Sam McCan-dlish, Jared Kaplan, Dario Amodei, Martin Wattenberg, and Christopher Olah. Toy models of superposition, 2022. URL https://arxiv.org/abs/2209.10652 .10 Joshua Engels, Eric J. Michaud, Isaac Liao, Wes Gurnee, and Max Tegmark. Not all language model features are one-dimensionally linear, 2025. URL https://arxiv.org/abs/2405.14860 .Thomas Fel, Binxu Wang, Michael A. Lepori, Matthew Kowal, Andrew Lee, Randall Balestriero, Sonia Joseph, Ekdeep S. Lubana, Talia Konkle, Demba Ba, and Martin Wattenberg. Into the Rabbit Hull: From Task-Relevant Concepts in DINO to Minkowski Geometry, October 2025. URL 
+
+http://arxiv.org/abs/2510.08638 . arXiv:2510.08638 [cs]. Leo Gao, Tom Dupré la Tour, Henk Tillman, Gabriel Goh, Rajan Troll, Alec Radford, Ilya Sutskever, Jan Leike, and Jeffrey Wu. Scaling and evaluating sparse autoencoders, 2024. URL https: //arxiv.org/abs/2406.04093 .Ward Gauderis, Thomas Dooms, Steven T. Homer, Kola Ayonrinde, and Geraint A. Wiggins. From Mechanistic to Compositional Interpretability. In Proceedings of the 2nd Workshop on Composi-tional Learning: Safety, Interpretability, and Agents . ICML, July 2026. Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, Amy Yang, Angela Fan, Anirudh Goyal, Anthony Hartshorn, Aobo Yang, Archi Mitra, Archie Sravankumar, Artem Korenev, Arthur Hinsvark, Arun Rao, Aston Zhang, Aurelien Rodriguez, Austen Gregerson, Ava Spataru, Baptiste Roziere, Bethany Biron, Binh Tang, Bobbie Chern, Charlotte Caucheteux, Chaya Nayak, Chloe Bi, Chris Marra, Chris McConnell, Christian Keller, Christophe Touret, Chunyang Wu, Corinne Wong, Cristian Canton Ferrer, Cyrus Nikolaidis, Damien Allonsius, Daniel Song, Danielle Pintz, Danny Livshits, Danny Wyatt, David Esiobu, Dhruv Choudhary, Dhruv Mahajan, Diego Garcia-Olano, Diego Perino, Dieuwke Hupkes, Egor Lakomkin, Ehab AlBadawy, Elina Lobanova, Emily Dinan, Eric Michael Smith, Filip Radenovic, Francisco Guzmán, Frank Zhang, Gabriel Synnaeve, Gabrielle Lee, Georgia Lewis Anderson, Govind Thattai, Graeme Nail, Gregoire Mialon, Guan Pang, Guillem Cucurell, Hailey Nguyen, Hannah Korevaar, Hu Xu, Hugo Touvron, Iliyan Zarov, Imanol Arrieta Ibarra, Isabel Kloumann, Ishan Misra, Ivan Evtimov, Jack Zhang, Jade Copet, Jaewon Lee, Jan Geffert, Jana Vranes, Jason Park, Jay Mahadeokar, Jeet Shah, Jelmer van der Linde, Jennifer Billock, Jenny Hong, Jenya Lee, Jeremy Fu, Jianfeng Chi, Jianyu Huang, Jiawen Liu, Jie Wang, Jiecao Yu, Joanna Bitton, Joe Spisak, Jongsoo Park, Joseph Rocca, Joshua Johnstun, Joshua Saxe, Junteng Jia, Kalyan Vasuden Alwala, Karthik Prasad, Kartikeya Upasani, Kate Plawiak, Ke Li, Kenneth Heafield, Kevin Stone, Khalid El-Arini, Krithika Iyer, Kshitiz Malik, Kuenley Chiu, Kunal Bhalla, Kushal Lakhotia, Lauren Rantala-Yeary, Laurens van der Maaten, Lawrence Chen, Liang Tan, Liz Jenkins, Louis Martin, Lovish Madaan, Lubo Malo, Lukas Blecher, Lukas Landzaat, Luke de Oliveira, Madeline Muzzi, Mahesh Pasupuleti, Mannat Singh, Manohar Paluri, Marcin Kardas, Maria Tsimpoukelli, Mathew Oldham, Mathieu Rita, Maya Pavlova, Melanie Kambadur, Mike Lewis, Min Si, Mitesh Kumar Singh, Mona Hassan, Naman Goyal, Narjes Torabi, Nikolay Bashlykov, Nikolay Bogoychev, Niladri Chatterji, Ning Zhang, Olivier Duchenne, Onur Çelebi, Patrick Alrassy, Pengchuan Zhang, Pengwei Li, Petar Vasic, Peter Weng, Prajjwal Bhargava, Pratik Dubal, Praveen Krishnan, Punit Singh Koura, Puxin Xu, Qing He, Qingxiao Dong, Ragavan Srinivasan, Raj Ganapathy, Ramon Calderer, Ricardo Silveira Cabral, Robert Stojnic, Roberta Raileanu, Rohan Maheswari, Rohit Girdhar, Rohit Patel, Romain Sauvestre, Ronnie Polidoro, Roshan Sumbaly, Ross Taylor, Ruan Silva, Rui Hou, Rui Wang, Saghar Hosseini, Sahana Chennabasappa, Sanjay Singh, Sean Bell, Seohyun Sonia Kim, Sergey Edunov, Shaoliang Nie, Sharan Narang, Sharath Raparthy, Sheng Shen, Shengye Wan, Shruti Bhosale, Shun Zhang, Simon Vandenhende, Soumya Batra, Spencer Whitman, Sten Sootla, Stephane Collot, Suchin Gururangan, Sydney Borodinsky, Tamar Herman, Tara Fowler, Tarek Sheasha, Thomas Georgiou, Thomas Scialom, Tobias Speckbacher, Todor Mihaylov, Tong Xiao, Ujjwal Karn, Vedanuj Goswami, Vibhor Gupta, Vignesh Ramanathan, Viktor Kerkez, Vincent Gonguet, Virginie Do, Vish Vogeti, Vítor Albiero, Vladan Petrovic, Weiwei Chu, Wenhan Xiong, Wenyin Fu, Whitney Meers, Xavier Martinet, Xiaodong Wang, Xiaofang Wang, Xiaoqing Ellen Tan, Xide Xia, Xinfeng Xie, Xuchao Jia, Xuewei Wang, Yaelle Goldschlag, Yashesh Gaur, Yasmine Babaei, Yi Wen, Yiwen Song, Yuchen Zhang, Yue Li, Yuning Mao, Zacharie Delpierre Coudert, Zheng Yan, Zhengxing Chen, Zoe Papakipos, Aaditya Singh, Aayushi Srivastava, Abha Jain, Adam Kelsey, Adam Shajnfeld, Adithya Gangidi, Adolfo Victoria, Ahuva Goldstand, Ajay Menon, Ajay Sharma, Alex Boesenberg, Alexei Baevski, Allie Feinstein, Amanda Kallet, Amit Sangani, Amos Teo, Anam Yunus, Andrei Lupu, Andres Alvarado, Andrew Caples, Andrew Gu, Andrew Ho, Andrew Poulton, Andrew Ryan, Ankit Ramchandani, Annie Dong, Annie Franco, Anuj Goyal, Aparajita Saraf, Arkabandhu Chowdhury, 11 Ashley Gabriel, Ashwin Bharambe, Assaf Eisenman, Azadeh Yazdan, Beau James, Ben Maurer, Benjamin Leonhardi, Bernie Huang, Beth Loyd, Beto De Paola, Bhargavi Paranjape, Bing Liu, Bo Wu, Boyu Ni, Braden Hancock, Bram Wasti, Brandon Spence, Brani Stojkovic, Brian Gamido, Britt Montalvo, Carl Parker, Carly Burton, Catalina Mejia, Ce Liu, Changhan Wang, Changkyu Kim, Chao Zhou, Chester Hu, Ching-Hsiang Chu, Chris Cai, Chris Tindal, Christoph Feichtenhofer, Cynthia Gao, Damon Civin, Dana Beaty, Daniel Kreymer, Daniel Li, David Adkins, David Xu, Davide Testuggine, Delia David, Devi Parikh, Diana Liskovich, Didem Foss, Dingkang Wang, Duc Le, Dustin Holland, Edward Dowling, Eissa Jamil, Elaine Montgomery, Eleonora Presani, Emily Hahn, Emily Wood, Eric-Tuan Le, Erik Brinkman, Esteban Arcaute, Evan Dunbar, Evan Smothers, Fei Sun, Felix Kreuk, Feng Tian, Filippos Kokkinos, Firat Ozgenel, Francesco Caggioni, Frank Kanayet, Frank Seide, Gabriela Medina Florez, Gabriella Schwarz, Gada Badeer, Georgia Swee, Gil Halpern, Grant Herman, Grigory Sizov, Guangyi, Zhang, Guna Lakshminarayanan, Hakan Inan, Hamid Shojanazeri, Han Zou, Hannah Wang, Hanwen Zha, Haroun Habeeb, Harrison Rudolph, Helen Suk, Henry Aspegren, Hunter Goldman, Hongyuan Zhan, Ibrahim Damlaj, Igor Molybog, Igor Tufanov, Ilias Leontiadis, Irina-Elena Veliche, Itai Gat, Jake Weissman, James Geboski, James Kohli, Janice Lam, Japhet Asher, Jean-Baptiste Gaya, Jeff Marcus, Jeff Tang, Jennifer Chan, Jenny Zhen, Jeremy Reizenstein, Jeremy Teboul, Jessica Zhong, Jian Jin, Jingyi Yang, Joe Cummings, Jon Carvill, Jon Shepard, Jonathan McPhie, Jonathan Torres, Josh Ginsburg, Junjie Wang, Kai Wu, Kam Hou U, Karan Saxena, Kartikay Khandelwal, Katayoun Zand, Kathy Matosich, Kaushik Veeraraghavan, Kelly Michelena, Keqian Li, Kiran Jagadeesh, Kun Huang, Kunal Chawla, Kyle Huang, Lailin Chen, Lakshya Garg, Lavender A, Leandro Silva, Lee Bell, Lei Zhang, Liangpeng Guo, Licheng Yu, Liron Moshkovich, Luca Wehrstedt, Madian Khabsa, Manav Avalani, Manish Bhatt, Martynas Mankus, Matan Hasson, Matthew Lennie, Matthias Reso, Maxim Groshev, Maxim Naumov, Maya Lathi, Meghan Keneally, Miao Liu, Michael L. Seltzer, Michal Valko, Michelle Restrepo, Mihir Patel, Mik Vyatskov, Mikayel Samvelyan, Mike Clark, Mike Macey, Mike Wang, Miquel Jubert Hermoso, Mo Metanat, Mohammad Rastegari, Munish Bansal, Nandhini Santhanam, Natascha Parks, Natasha White, Navyata Bawa, Nayan Singhal, Nick Egebo, Nicolas Usunier, Nikhil Mehta, Nikolay Pavlovich Laptev, Ning Dong, Norman Cheng, Oleg Chernoguz, Olivia Hart, Omkar Salpekar, Ozlem Kalinli, Parkin Kent, Parth Parekh, Paul Saab, Pavan Balaji, Pedro Rittner, Philip Bontrager, Pierre Roux, Piotr Dollar, Polina Zvyagina, Prashant Ratanchandani, Pritish Yuvraj, Qian Liang, Rachad Alao, Rachel Rodriguez, Rafi Ayub, Raghotham Murthy, Raghu Nayani, Rahul Mitra, Rangaprabhu Parthasarathy, Raymond Li, Rebekkah Hogan, Robin Battey, Rocky Wang, Russ Howes, Ruty Rinott, Sachin Mehta, Sachin Siby, Sai Jayesh Bondu, Samyak Datta, Sara Chugh, Sara Hunt, Sargun Dhillon, Sasha Sidorov, Satadru Pan, Saurabh Mahajan, Saurabh Verma, Seiji Yamamoto, Sharadh Ramaswamy, Shaun Lindsay, Shaun Lindsay, Sheng Feng, Shenghao Lin, Shengxin Cindy Zha, Shishir Patil, Shiva Shankar, Shuqiang Zhang, Shuqiang Zhang, Sinong Wang, Sneha Agarwal, Soji Sajuyigbe, Soumith Chintala, Stephanie Max, Stephen Chen, Steve Kehoe, Steve Satterfield, Sudarshan Govindaprasad, Sumit Gupta, Summer Deng, Sungmin Cho, Sunny Virk, Suraj Subramanian, Sy Choudhury, Sydney Goldman, Tal Remez, Tamar Glaser, Tamara Best, Thilo Koehler, Thomas Robinson, Tianhe Li, Tianjun Zhang, Tim Matthews, Timothy Chou, Tzook Shaked, Varun Vontimitta, Victoria Ajayi, Victoria Montanez, Vijai Mohan, Vinay Satish Kumar, Vishal Mangla, Vlad Ionescu, Vlad Poenaru, Vlad Tiberiu Mihailescu, Vladimir Ivanov, Wei Li, Wenchen Wang, Wenwen Jiang, Wes Bouaziz, Will Constable, Xiaocheng Tang, Xiaojian Wu, Xiaolan Wang, Xilun Wu, Xinbo Gao, Yaniv Kleinman, Yanjun Chen, Ye Hu, Ye Jia, Ye Qi, Yenda Li, Yilin Zhang, Ying Zhang, Yossi Adi, Youngjin Nam, Yu, Wang, Yu Zhao, Yuchen Hao, Yundi Qian, Yunlu Li, Yuzi He, Zach Rait, Zachary DeVito, Zef Rosnbrick, Zhaoduo Wen, Zhenyu Yang, Zhiwei Zhao, and Zhiyu Ma. The llama 3 herd of models, 2024. URL https://arxiv.org/abs/2407.21783 .Peter D. Grünwald. The Minimum Description Length Principle . Adaptive Computation and Machine Learning. MIT Press, Cambridge, MA, 2007. ISBN 978-0-262-07281-6. Foreword by Jorma Rissanen. Sai Sumedh R. Hindupur, Ekdeep Singh Lubana, Thomas Fel, and Demba Ba. Projecting assumptions: The duality between sparse autoencoders and concept geometry, 2025. URL https://arxiv. org/abs/2503.01822 .G. E. Hinton and R. R. Salakhutdinov. Reducing the dimensionality of data with neural networks, 2006. URL https://www.science.org/doi/abs/10.1126/science.1127647 .12 Frank L. Hitchcock. The expression of a tensor or a polyadic as a sum of products. Journal of Mathematics and Physics , 6(1-4):164–189, 1927. doi: https://doi.org/10.1002/sapm192761164. URL https://onlinelibrary.wiley.com/doi/abs/10.1002/sapm192761164 .Patrik O. Hoyer. Non-negative matrix factorization with sparseness constraints. J. Mach. Learn. Res. ,5:1457–1469, December 2004. ISSN 1532-4435. Rodolphe Jenatton, Julien Mairal, Guillaume Obozinski, and Francis Bach. Proximal methods for hierarchical sparse coding. Journal of Machine Learning Research , 12:2297–2334, 2011. Keller Jordan, Yuchen Jin, Vlado Boza, You Jiacheng, Franz Cesista, Laker Newhouse, and Jeremy Bernstein. Muon: An optimizer for hidden layers in neural networks, 2024. URL https: //kellerjordan.github.io/posts/muon/ .Quoc Le, Alexandre Karpenko, Jiquan Ngiam, and Andrew Ng. Ica with reconstruction cost for efficient overcomplete feature learning. In J. Shawe-Taylor, R. Zemel, P. Bartlett, F. Pereira, and K. Weinberger, editors, Advances in Neural Information Processing Systems , volume 24. Cur-ran Associates, Inc., 2011. URL https://proceedings.neurips.cc/paper_files/paper/ 2011/file/233509073ed3432027d48b1a83f5fbd2-Paper.pdf .Patrick Leask, Bart Bussmann, Michael Pearce, Joseph Bloom, Curt Tigges, Noura Al Moubayed, Lee Sharkey, and Neel Nanda. Sparse autoencoders do not find canonical units of analysis, 2025. URL https://arxiv.org/abs/2502.04878 .Michael S. Lewicki and Terrence J. Sejnowski. Learning overcomplete representations. Neural Computation , 12(2):337–365, 2000. doi: 10.1162/089976600300015826. Martha Lewis. Compositional Hyponymy with Positive Operators. In Proceedings - Natural Language Processing in a Deep Learning World , pages 638–647. Incoma Ltd., Shoumen, Bulgaria, October 2019. ISBN 978-954-452-056-4. doi: 10.26615/978-954-452-056-4_075. URL https: //acl-bg.org/proceedings/2019/RANLP2019/pdf/RANLP075.pdf .Yifan Luo, Yang Zhan, Jiedong Jiang, Tianyang Liu, Mingrui Wu, Zhennan Zhou, and Bin Dong. From Atoms to Trees: Building a Structured Feature Forest with Hierarchical Sparse Autoencoders, February 2026. URL http://arxiv.org/abs/2602.11881 . arXiv:2602.11881 [cs]. Julien Mairal, Francis Bach, Jean Ponce, and Guillermo Sapiro. Online dictionary learning for sparse coding. In Proceedings of the 26th Annual International Conference on Machine Learning (ICML) ,pages 689–696, 2009. doi: 10.1145/1553374.1553463. Alexander Modell, Patrick Rubin-Delanchy, and Nick Whiteley. The origins of representation manifolds in large language models, 2025. URL https://arxiv.org/abs/2505.18235 .Maxime Méloux, Silviu Maniu, François Portet, and Maxime Peyrard. Everything, everywhere, all at once: Is mechanistic interpretability identifiable?, 2025. URL https://arxiv.org/abs/2502. 20914 .Hien Van Nguyen, Vishal M. Patel, Nasser M. Nasrabadi, and Rama Chellappa. Kernel dictio-nary learning. In 2012 IEEE International Conference on Acoustics, Speech and Signal Pro-cessing (ICASSP) , pages 2021–2024, Kyoto, Japan, March 2012. IEEE. ISBN 978-1-4673-0046-9 978-1-4673-0045-2 978-1-4673-0044-5. doi: 10.1109/ICASSP.2012.6288305. URL 
+
+http://ieeexplore.ieee.org/document/6288305/ .Chris Olah. Mechanistic interpretability, variables, and the importance of interpretable bases, jun 27 2022. URL https://transformer-circuits.pub/2022/mech-interp-essay/index. html . Transformer Circuits Thread informal note. Chris Olah and Joshua Batson. What is a linear representation? what is a multidimensional feature? Transformer Circuits Thread, Circuits Updates – July 2024, July 2024. URL 
+
+https://transformer-circuits.pub/2024/july-update/index.html .Bruno A. Olshausen and David J. Field. Emergence of simple-cell receptive field properties by learning a sparse code for natural images. Nature , 381(6583):607–609, 1996. doi: 10.1038/ 381607a0. 13 Kiho Park, Yo Joong Choe, and Victor Veitch. The linear representation hypothesis and the geometry of large language models, 2024. URL https://arxiv.org/abs/2311.03658 .Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Köpf, Edward Yang, Zach DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. Pytorch: An imperative style, high-performance deep learning library, 2019. URL https://arxiv.org/abs/1912.01703 .Gonçalo Paulo and Nora Belrose. Sparse autoencoders trained on the same data learn different features, 2025. URL https://arxiv.org/abs/2501.16615 .Michael T. Pearce, Thomas Dooms, Alice Rigg, Jose M. Oramas, and Lee Sharkey. Bilinear mlps enable weight-based mechanistic interpretability, 2025. URL https://arxiv.org/abs/2410. 08417 .Guilherme Penedo, Hynek Kydlíˇ cek, Loubna Ben allal, Anton Lozhkov, Margaret Mitchell, Colin Raffel, Leandro Von Werra, and Thomas Wolf. The fineweb datasets: Decanting the web for the finest text data at scale. In The Thirty-eight Conference on Neural Information Processing Systems Datasets and Benchmarks Track , 2024. URL https://openreview.net/forum?id= n6SCkn2QaG .Senthooran Rajamanoharan, Tom Lieberum, Nicolas Sonnerat, Arthur Conmy, Vikrant Varma, János Kramár, and Neel Nanda. Jumping ahead: Improving reconstruction fidelity with jumprelu sparse autoencoders, 2024. URL https://arxiv.org/abs/2407.14435 .Jorma Rissanen. Modeling by shortest data description. Automatica , 14(5):465–471, 1978. doi: 10.1016/0005-1098(78)90005-5. Lee Sharkey, Bilal Chughtai, Joshua Batson, Jack Lindsey, Jeff Wu, Lucius Bushnaq, Nicholas Goldowsky-Dill, Stefan Heimersheim, Alejandro Ortega, Joseph Bloom, Stella Biderman, Adria Garriga-Alonso, Arthur Conmy, Neel Nanda, Jessica Rumbelow, Martin Wattenberg, Nandi Schoots, Joseph Miller, Eric J. Michaud, Stephen Casper, Max Tegmark, William Saunders, David Bau, Eric Todd, Atticus Geiger, Mor Geva, Jesse Hoogland, Daniel Murfet, and Tom McGrath. Open Problems in Mechanistic Interpretability, January 2025. Noam Shazeer. Glu variants improve transformer, 2020. URL https://arxiv.org/abs/2002. 05202 .Xiangchen Song, Aashiq Muhamed, Yujia Zheng, Lingjing Kong, Zeyu Tang, Mona T. Diab, Virginia Smith, and Kun Zhang. Position: Mechanistic interpretability should prioritize feature consistency in saes, 2025. URL https://arxiv.org/abs/2505.20254 .Denis Sutter, Julian Minder, Thomas Hofmann, and Tiago Pimentel. The non-linear representation dilemma: Is causal abstraction enough for mechanistic interpretability?, 2025. URL https: //arxiv.org/abs/2507.08802 .Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, Louis Rouillard, Thomas Mesnard, Geoffrey Cideron, Jean bastien Grill, Sabela Ramos, Edouard Yvinec, Michelle Casbon, Etienne Pot, Ivo Penchev, Gaël Liu, Francesco Visin, Kathleen Kenealy, Lucas Beyer, Xiaohai Zhai, Anton Tsitsulin, Robert Busa-Fekete, Alex Feng, Noveen Sachdeva, Benjamin Coleman, Yi Gao, Basil Mustafa, Iain Barr, Emilio Parisotto, David Tian, Matan Eyal, Colin Cherry, Jan-Thorsten Peter, Danila Sinopalnikov, Surya Bhupatiraju, Rishabh Agarwal, Mehran Kazemi, Dan Malkin, Ravin Kumar, David Vilar, Idan Brusilovsky, Jiaming Luo, Andreas Steiner, Abe Friesen, Abhanshu Sharma, Abheesht Sharma, Adi Mayrav Gilady, Adrian Goedeckemeyer, Alaa Saade, Alex Feng, Alexander Kolesnikov, Alexei Bendebury, Alvin Abdagic, Amit Vadi, András György, André Susano Pinto, Anil Das, Ankur Bapna, Antoine Miech, Antoine Yang, Antonia Paterson, Ashish Shenoy, Ayan Chakrabarti, Bilal Piot, Bo Wu, Bobak Shahriari, Bryce Petrini, Charlie Chen, Charline Le Lan, Christopher A. Choquette-Choo, CJ Carey, Cormac Brick, Daniel Deutsch, Danielle Eisenbud, Dee Cattle, Derek Cheng, Dimitris Paparas, Divyashree Shivakumar Sreepathihalli, Doug Reid, Dustin Tran, Dustin Zelle, Eric Noland, Erwin Huizenga, Eugene 14 Kharitonov, Frederick Liu, Gagik Amirkhanyan, Glenn Cameron, Hadi Hashemi, Hanna Klimczak-Pluci´ nska, Harman Singh, Harsh Mehta, Harshal Tushar Lehri, Hussein Hazimeh, Ian Ballantyne, Idan Szpektor, Ivan Nardini, Jean Pouget-Abadie, Jetha Chan, Joe Stanton, John Wieting, Jonathan Lai, Jordi Orbay, Joseph Fernandez, Josh Newlan, Ju yeong Ji, Jyotinder Singh, Kat Black, Kathy Yu, Kevin Hui, Kiran Vodrahalli, Klaus Greff, Linhai Qiu, Marcella Valentine, Marina Coelho, Marvin Ritter, Matt Hoffman, Matthew Watson, Mayank Chaturvedi, Michael Moynihan, Min Ma, Nabila Babar, Natasha Noy, Nathan Byrd, Nick Roy, Nikola Momchev, Nilay Chauhan, Noveen Sachdeva, Oskar Bunyan, Pankil Botarda, Paul Caron, Paul Kishan Rubenstein, Phil Culliton, Philipp Schmid, Pier Giuseppe Sessa, Pingmei Xu, Piotr Stanczyk, Pouya Tafti, Rakesh Shivanna, Renjie Wu, Renke Pan, Reza Rokni, Rob Willoughby, Rohith Vallu, Ryan Mullins, Sammy Jerome, Sara Smoot, Sertan Girgin, Shariq Iqbal, Shashir Reddy, Shruti Sheth, Siim Põder, Sijal Bhatnagar, Sindhu Raghuram Panyam, Sivan Eiger, Susan Zhang, Tianqi Liu, Trevor Yacovone, Tyler Liechty, Uday Kalra, Utku Evci, Vedant Misra, Vincent Roseberry, Vlad Feinberg, Vlad Kolesnikov, Woohyun Han, Woosuk Kwon, Xi Chen, Yinlam Chow, Yuvein Zhu, Zichuan Wei, Zoltan Egyed, Victor Cotruta, Minh Giang, Phoebe Kirk, Anand Rao, Kat Black, Nabila Babar, Jessica Lo, Erica Moreira, Luiz Gustavo Martins, Omar Sanseviero, Lucas Gonzalez, Zach Gleicher, Tris Warkentin, Vahab Mirrokni, Evan Senter, Eli Collins, Joelle Barral, Zoubin Ghahramani, Raia Hadsell, Yossi Matias, D. Sculley, Slav Petrov, Noah Fiedel, Noam Shazeer, Oriol Vinyals, Jeff Dean, Demis Hassabis, Koray Kavukcuoglu, Clement Farabet, Elena Buchatskaya, Jean-Baptiste Alayrac, Rohan Anil, Dmitry, Lepikhin, Sebastian Borgeaud, Olivier Bachem, Armand Joulin, Alek Andreev, Cassidy Hardin, Robert Dadashi, and Léonard Hussenot. Gemma 3 technical report, 2025. URL https://arxiv.org/abs/2503.19786 .Qwen Team. Qwen3.5: Accelerating productivity with native multimodal agents, February 2026. URL https://qwen.ai/blog?id=qwen3.5 .Sean Tull, Robin Lorenz, Stephen Clark, Ilyas Khan, and Bob Coecke. Towards Compositional Interpretability for XAI, June 2024. 
+
+## A Notation 
+
+We use colour to distinguish two roles that symbols play throughout this paper. Red denotes 
+
+weight-based quantities: parameters fixed after training, analysable without any input. Blue denotes 
+
+activation-based quantities: values that depend on an input x and change with each forward pass. 
+
+Dimensions. 
+
+• d — model (input) dimension. • h — hidden dimension inside the bilinear encoder, indexed by j.• k — number of latents (dictionary size), indexed by i.• n — effective batch size (samples × sequence length). 
+
+Activations. 
+
+• x ∈ Rd — input activation vector. • X = xx ⊤ ∈ Rd×d — lifted product-space representation; rank-1 positive-semidefinite. • ˆX ∈ Rd×d — reconstructed product-space representation. • z ∈ Rk — latent activation vector; the sparse code produced by the encoder. • zi = x⊤W ix = ⟨W i, X⟩F — scalar activation of the i-th latent. 
+
+Encoder/Decoder weights. 
+
+• L, R ∈ Rh×d — left and right encoder factor matrices; j-th rows lj , rj ∈ Rd.• C ∈ Rk×h — composition matrix; i-th row ci mixes hidden units into latent i; entry Cij is the static weight of hidden unit j in latent i.15 • W i = P 
+
+> j∈supp( ci)
+
+Cij lj r⊤ 
+
+> j
+
+∈ Rd×d 
+
+> sym
+
+— symmetric bilinear form of the i-th latent. Since 
+
+x⊤Ax = x⊤ A+A⊤ 
+
+> 2
+
+x, only the symmetric part of any bilinear form contributes, so W i is taken symmetric without loss of generality. • W ∈ Rk×(d×d) — full encoder tensor; slice Wi = W i.• K = WW ⊤ = C⊤(LL ⊤ ⊙RR ⊤)C ∈ Rk×k — kernel (Gram) matrix; allows evaluating the reconstruction loss without materialising the d2-dimensional product space. 
+
+Dictionary atoms (representation hypotheses). 
+
+• W i ∈ Rd×d 
+
+> sym
+
+— i-th dictionary atom (quadratic hypothesis); the same symbol as the encoder bilinear form. • wi ∈ Rd — i-th atomic dictionary direction; under the atomic hypothesis W i = wiw⊤ 
+
+> i
+
+.• Under the composite hypothesis, W i = P 
+
+> j∈supp( ci)
+
+Cij wj w⊤ 
+
+> j
+
+; no additional letter is needed beyond Cij .
+
+Spectral quantities (weight-based). 
+
+• W i = U iΛiU ⊤ 
+
+> i
+
+— eigendecomposition of the i-th latent’s bilinear form. • λ(i) 
+
+> j
+
+, v(i) 
+
+> j
+
+— j-th eigenvalue and eigenvector of W i; computable from weights alone, no forward pass required. 
+
+Similarity metrics. 
+
+• Sim F (W, W′) = 2 Tr( K⊤K′)/(∥K∥2 
+
+> F
+
++ ∥K′∥2 
+
+> F
+
+) — Frobenius (global) similarity be-tween two autoencoders. • Sim H (W, W′) — Hungarian (per-latent) similarity after optimal assignment. 
+
+## B Experimental setup 
+
+We use the same hyperparameters across all discussed autoencoders. Hyperparameters follow standard practice for sparse autoencoders; results are robust across the variations we tested (Appendix G). 
+
+Data. In section 4, we exclusively used Qwen3.5-0.8B-Base [Team, 2026]—a small but compe-tent model—with input samples from the FineWeb dataset [Penedo et al., 2024]. This lets us sweep over reasonably sized autoencoders and fully train on a tight compute budget. All autoencoders train in about 15 minutes on an RTX 4080. We replicate these results on other open source models, discussed in Appendix G. 
+
+Optimiser. We use the Muon optimiser [Jordan et al., 2024], which we have found to significantly outperform Adam, sometimes up to 5× faster convergence. We use a constant learning rate schedule. We use a linear warmup for α to prioritise reconstruction over sparsity near the start. We use topK annealing to sparsify C, leaving only 0.1% of entries active: we decay to the target sparsity over the first half of training and freeze the sparsity mask for the last 20% , which stabilises convergence. 
+
+Architecture. We have found orthogonal initialisation to perform better than Xavier initialisation. Orthogonal initialisation favours sparser solutions at a minute reconstruction cost. We use 8, 192 
+
+latents and 16 , 384 hidden dimensions across models, and α = 0 .3 by default. Weight-tying the encoder and decoder does not impact reconstruction and hence do so. 
+
+Batch size 32 
+
+Sequence length 256 
+
+Steps 211 
+
+Total tokens ≈ 8M 
+
+Shuffling No 
+
+Optimiser Muon 
+
+Momentum 0.95 
+
+Learning rate 0.03 
+
+Schedule constant 
+
+α warmup 256 steps 
+
+d (model) 1024 
+
+k (latents) 8 × 1024 
+
+h (hidden) 16 × 1024 
+
+Default K 0.1% 
+
+Default α 0.3
+
+Figure 7: Hyperparameters related to data, the optimiser, and the architecture, respectively. 16 Finally, our code is publicly available at https://github.com/tdooms/bae and extensively uses PyTorch [Paszke et al., 2019]. 
+
+## C Pseudocode 
+
+We provide distilled pseudo code for the initialisation and forward pass of the ‘atomic’ autoencoder. The intuition for why this works is provided in Appendix D.  
+
+> 1
+
+def __init__(self, config):  
+
+> 2
+
+self.left = nn.init.orthogonal(config.d_features, config.d_model)  
+
+> 3
+
+self.right = nn.init.orthogonal(config.d_features, config.d_model)  
+
+> 45
+
+def forward(self, acts: Tensor[ 'batch dims '], alpha: float):  
+
+> 6
+
+# Compute the latents  
+
+> 7
+
+latents = linear(acts, self.left) * linear(acts, self.right)  
+
+> 89
+
+# Compute the density and regularisation term  
+
+> 10
+
+density = hoyer(latents, dim=0).mean()  
+
+> 11 12
+
+# Compute constituent parts of the reconstruction error  
+
+> 13
+
+kernel = (self.left @ self.left.T) * (self.right @ self.right.T)  
+
+> 14
+
+recons = einsum(latents, latents, kernel, "... h1, ... h2, h1 h2 -> ...")  
+
+> 15
+
+cross = latents.square().sum(-1)  
+
+> 16 17
+
+# Compute the error and loss  
+
+> 18
+
+target = acts.square().sum(-1, keepdim=True)  
+
+> 19
+
+error = ((recons - 2 * cross + target) / target).mean()  
+
+> 20
+
+loss = error + alpha * density  
+
+> 21
+
+return loss, dict(error=error, density=density) 
+
+## D Kernel trick for efficient training 
+
+Bilinear autoencoders differ from ordinary ones because they reconstruct the product space. While the inputs are naturally factored as X = xx ⊤, the outputs are not: ˆX̸ = ˆxˆ x⊤. Hence, naively computing the reconstruction loss requires materialising the quadratic space, which is unmanageable at scale. However, this can be avoided by expanding the numerator (using z := WX): 
+
+NMSE( ˆX, X) = ∥ ˆX − X∥2
+
+> F
+
+∥X∥2
+
+> F
+
+= z⊤Kz − 2∥z∥2 + ∥X∥2
+
+> F
+
+∥X∥2
+
+> F
+
+(7) 
+
+Figure 8: Diagrammatic formulation of Equation 7. Lines indicate tensor contractions over that index, while unconnected lines represent unmodified open indices. Thick lines represent a quadratic space. The reconstruction ˆX never appears. All three terms are inner products of x and z, and the first is weighted by K, which is efficiently computable via Equation 8. This is reminiscent of the kernel trick to simulate an intractable polynomial feature space through inner products, except that here K is 17 learned by the autoencoder. Due to the factorisation of W, we can compute K without materialising any higher-order tensors: 
+
+K = WW ⊤ = C⊤(LL ⊤ ⊙ RR ⊤)C (8) 
+
+Figure 9: Diagrammatic equation for computing the kernel K = WW ⊤ efficiently using a sensible contraction order. The kernel matrix of a bilinear autoencoder can be evaluated by recasting it as an element-wise multiplication of two matrices. Consequently, bilinear autoencoders scale quadratically in compute with latent count k while their memory usage is identical to that of an ordinary autoencoder. While this trick reduces computational complexity, the kernel matrix K ∈ Rk×k can still be a memory bottleneck. However, it can be evaluated by splitting the k×k space into p blocks s1 ⊕s2 ⊕· · ·⊕ sp, which avoids full materialisation: 
+
+z⊤Kz = X
+
+> sa,s b
+
+zsa Ksasb zsb
+
+This can be further improved since only the symmetric part of K contributes; sampling only the lower or upper triangular part speeds up computation by a factor of 2.
+
+## E Proof of Theorem 1 
+
+Proof of Theorem 1. Since x ∼ Unif( Sd−1) and w ∈ Sd−1, the Poincaré–Maxwell–Borel lemma gives √d (w⊤x) D
+
+−→ Z ∼ N (0 , 1) as d → ∞ . Together with concentration of ∥g∥ around √d for 
+
+g ∼ N (0 , I d), this yields, for fixed τ ,
+
+P(w⊤x > τ ) ∼ P(Z > τ √d), P (w⊤x)2 > τ  ∼ 2 P(Z > √τ d ).
+
+Applying the standard Gaussian tail asymptotic via Mills’ ratio, P(Z > a ) = Θ( a−1e−a2/2) for 
+
+a > 0:
+
+P (w⊤x)2 > τ 
+
+P(w⊤x > τ ) = Θ (τ d )−1/2 e−τ d/ 2
+
+Θ (τ 2d)−1/2 e−τ 2d/ 2 = Θ 
+
+√τ e −dτ (1 −τ )/2
+
+= Θ 
+
+
+
+e−dτ (1 −τ )/2
+
+,
+
+where the last equality absorbs the fixed constant √τ into the Θ. Since τ ∈ (0 , 1) , the exponent is strictly negative, confirming exponential decay in d.
+
+## F Product space error correction 
+
+This section discusses the discrepancy between reconstructing x and xx ⊤. This product-space correction admits an exact closed form. Taking ∥x∥2 = 1 due to scale-invariance (Equation 7) and substituting x⊤ˆx = 12 (1 + ∥ˆx∥2 − s) with s = ∥x − ˆx∥2,
+
+S = ∥xx ⊤ − ˆxˆ x⊤∥2
+
+> F
+
+= 1 + ∥ˆx∥4 − 2 ( x⊤ˆx)2
+
+= 12 (1 − ∥ ˆx∥2)2 + s(1 + ∥ˆx∥2) − 12 s2. (9) 18 Under the mild assumption ∥ˆx∥2 ≈ 1, which any sensible reconstruction should satisfy, the first term vanishes and the third is negligible for small s, leaving S ≈ 2s. The product-space loss is therefore approximately twice the input-space loss. We use the exact correction in Figure 4, which consequently shows that bilinear autoencoders achieve better reconstruction than the baseline across most model layers and variants in the product space. This suggests that bilinear autoencoders can leverage decodable structure in interactions between input elements to improve reconstruction. 
+
+## G Results on additional models 
+
+We extend our empirical results from subsection 4.1 on two other well-known open-source models: Gemma-3-1B [Team et al., 2025] and Llama-3.2-1B [Grattafiori et al., 2024]. These are in line with expectations from Qwen3.5-0.8B. 0 6 12 18 24       
+
+> 0
+> 0.05
+> 0.1
+> 0.15
+> 0.2
+> 0.25
+> 0.3
+> 0.35
+> 0.4
+> quadratic composite atomic topk (raw) topk (corrected)
+> Layer
+> NMSE
+
+Figure 10: Sweep over selected layers on Gemma-3-1B using the hyperparameters discussed in Appendix B. To clarify, k = 16k (i.e. not scaled with the slightly increased model dimension of 
+
+d = 1152 ). The results are in line with subsection 4.1, likely because the model width and depth resemble Qwen3.5-0.8B. 0 4 8 12 15       
+
+> 0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> quadratic composite atomic topk (raw) topk (corrected)
+> Layer
+> NMSE
+
+Figure 11: Sweep over selected layers on Llama-3.2-1B using the hyperparameters discussed in Appendix B. Reconstruction is much worse for both the topK baseline and our models, which is expected since k and h are kept constant despite d = 2048 being twice as large; this means the quadratic space is 4× as large. 
+
+## H Interactive viewer 
+
+To make the extracted geometries easy to inspect, we publish an interactive viewer at https: //bae-9xf.pages.dev covering all 8,192 latents from a composite autoencoder trained on layer 18 of Qwen3.5-0.8B with ≈64 M tokens, 8× longer than for Figure 4. The landing page lays out the corpus as a scatter over four of the summary statistics defined below, with an alternative UMAP view. The 20 highest-importance latents are highlighted in a sidebar, each 19 carrying an unevaluated 2–4 word label produced by a single Claude pass over its top-activating contexts. 
+
+Figure 12: Screenshot of the interactive viewer user interface for a particular latent: https:// bae-9xf.pages.dev/composite/06724 .Each composite has a dedicated page anchored by a 3D scatter of token contexts, projected onto the top-3 eigenvectors of W i = U iΛiU ⊤ 
+
+> i
+
+(selected by |λ|). Eigendirections optionally overlay the scatter as bidirectional axes (purple for positive λ, pink for negative; bidirectional because the bilinear form depends only on (v(i)⊤ 
+
+> j
+
+x)2). Points are drawn from ∼8M tokens by weighted reservoir sampling w ∝ (∥z∥ + ε)4, over-representing samples far from the origin so the manifold isn’t drowned by the dense central cluster. Surrounding panels show the eigenvalue spectrum (with the three rendered axes labelled X, Y , Z), the 6 highest-activating ±4-token contexts per firing sign, and the 20 closest neighbours ranked by subspace overlap ∥U ⊤ 
+
+> i
+
+U j ∥2 
+
+> F
+
+/√rirj .The header reports five summary statistics. Density measures how concentrated the firing distribution is. Effective rank gauges how many eigenvalues carry meaningful weight. Support counts the encoder atoms feeding into W i. Importance reports the total spectral energy, normalised so the average composite reads 1×. Captured is the spectral share of the three rendered eigenvectors and signals how faithfully the 3D scatter represents the full manifold. density = Hoyer( zi), importance = P 
+
+> j
+
+(λ(i) 
+
+> j
+
+)2,
+
+effective rank = (P 
+
+> j
+
+|λ(i) 
+
+> j
+
+|)2
+
+P 
+
+> j
+
+(λ(i) 
+
+> j
+
+)2 , captured = |λ(i)1 | + |λ(i)2 | + |λ(i)3 |
+
+P 
+
+> j
+
+|λ(i) 
+
+> j
+
+| .
+
+## I Random viewer examples 
+
+To avoid selection bias, we show 6 random latents and their geometry. 20 Figure 13: The first few manifolds by index from our interactive viewer (indices 1 and 4 were excluded as they are dense and uninteresting, about 10% of latents are dense). This is a representative sample for how many features are primarily linear (top-left and top-right) versus more cluster-based (the others). 21
