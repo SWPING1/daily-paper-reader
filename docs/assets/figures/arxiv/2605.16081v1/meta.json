@@ -1,0 +1,78 @@
+{
+  "version": 2,
+  "extractor": "pdffigures2",
+  "figures": [
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-001.webp",
+      "caption": "Table 1. Semantic segmentation mIoU (%) on S3DIS (Area 5) and ScanNetV2 (Val) under Model-Induced Noise. MIND achieves the best performance across all settings. Underlined values denote the second-best results. Please refer to Figure 3 for the visualization of training dynamics.",
+      "page": 6,
+      "index": 1,
+      "width": 895,
+      "height": 298
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-002.webp",
+      "caption": "Figure 1. The Decoupling Paradigm of the MIND Framework. (Left) The entangled noise manifold renders point-wise estimation of T (x) ill-posed. (Center) The Latent Decoupling Estimator (LDE) disentangles this manifold by enforcing orthogonality in structural subspaces. (Right) We reduce the complex global noise into a linear combination of K tractable basis matrices {T (k)}, bridging the gap between global and instance-level modeling.",
+      "page": 2,
+      "index": 2,
+      "width": 1000,
+      "height": 479
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-003.webp",
+      "caption": "Figure 3. Test mIoU Convergence on High Structural Noise (PCAM). We visualize the training dynamics on S3DIS (Left) and ScanNet (Right). While standard robust losses like GCE (dotted grey) suffer from collapse or stagnation under heavy structural bias, MIND (solid red) demonstrates a consistent and stable learning trajectory, significantly outperforming baselines and verifying its resilience to noise.",
+      "page": 7,
+      "index": 3,
+      "width": 984,
+      "height": 523
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-004.webp",
+      "caption": "Figure 7. Cross-Category Subspace Activation Heatmap. We group semantic classes by geometric similarity to reveal shared latent patterns. (Red Box): Wall, Board, and Door strongly share the Planar Subspace (S5), proving the model captures the “Vertical Plane” primitive regardless of semantic tags. (Blue Box): Beam and Column share the Linear/Edge Subspace (S3). (Purple Dashed Box): Table and Chair exhibit a composite pattern, simultaneously activating both Planar (S5) and Edge (S3) subspaces, reflecting their “Surface + Legs” structure. This confirms that K acts as a dictionary of geometric error modes.",
+      "page": 14,
+      "index": 4,
+      "width": 842,
+      "height": 688
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-005.webp",
+      "caption": "Figure 6. Evolution of Noise Transition Estimation Error (ℓ1 distance). We compare MIND against the pure global anchor-free estimator (Baseline E) across S3DIS and ScanNet datasets. While the global estimator fluctuates or stagnates due to the inability to decouple geometry-dependent noise, MIND demonstrates a consistent monotonic decrease in estimation error. Notably, in the challenging ScanNet-PCAM setting (bottom right), MIND significantly suppresses the error after 100 epochs, validating its capability to learn accurate noise transitions even under severe structural bias.",
+      "page": 13,
+      "index": 5,
+      "width": 987,
+      "height": 426
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-006.webp",
+      "caption": "Figure 4. Geometric Interpretation and Quantitative Verification. (a)-(b) t-SNE visualizations of the feature space. MIND (b) shows significantly better clustering (SC=0.68) compared to the baseline (a, SC=0.12). (c)-(d) Visual comparison of ground truth curvature (c) and MIND’s semantic subspaces (d). The visual alignment confirms that the Edge subspace (k = 3, Red) captures high-curvature regions, while the Plane subspace (k = 5, Blue) corresponds to flat surfaces. (e) Statistical verification showing the mean curvature difference between the two subspaces, quantitatively validating the geometric disentanglement.",
+      "page": 8,
+      "index": 6,
+      "width": 434,
+      "height": 305
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-007.webp",
+      "caption": "Table 4. Unsupervised Adaptation of OpenSeg on S3DIS. We compare MIND against generic robust fine-tuning strategies. MIND significantly outperforms generic robust losses, proving its efficacy in correcting systematic VLM biases.",
+      "page": 8,
+      "index": 7,
+      "width": 492,
+      "height": 244
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-008.webp",
+      "caption": "Figure 2. The proposed Model-Induced Noise Decoupling (MIND) framework. (a) Generative Process: We formulate instancedependent label noise as a structured causal process where the input X determines a latent error mode Z (via assignment ω(x)), which in turn selects specific basis transition matrices to corrupt the true label Y . (b) LDE Implementation: To invert this process, the Latent Decoupling Estimator (LDE) partitions the feature space into orthogonal semantic subspaces (e.g., S1 for thin objects, SK for flat surfaces), supervised by a decoupling loss Ldec. The module dynamically computes assignment weights ω(x) to aggregate learnable Basis Matrices {T (k)} via a weighted summation, accurately reconstructing the instance-specific transition matrix T (x).",
+      "page": 4,
+      "index": 8,
+      "width": 1003,
+      "height": 325
+    },
+    {
+      "url": "assets/figures/arxiv/2605.16081v1/fig-009.webp",
+      "caption": "Figure 5. Sensitivity Analysis on K. Evaluated on S3DIS (PCAM noise). Performance peaks at K = 16 and remains stable, confirming robustness.",
+      "page": 12,
+      "index": 9,
+      "width": 478,
+      "height": 347
+    }
+  ]
+}
