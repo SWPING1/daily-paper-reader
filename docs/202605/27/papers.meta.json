@@ -1,0 +1,54 @@
+{
+  "label": "2026-05-27",
+  "date": "2026-05-27",
+  "generated_at": "2026-05-27T21:17:14",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202605/27/2605.19821v1-lacovl-fer-landmark-guided-contrastive-learning-network-with-vision-language-enhancement-for-facial-expression-recognition",
+      "section": "deep",
+      "title_en": "LaCoVL-FER: Landmark-Guided Contrastive Learning Network with Vision-Language Enhancement for Facial Expression Recognition",
+      "authors": "Jiaxin Wang, Muwei Jian, Hui Yu, Junyu Dong, Yifan Xia",
+      "date": "2026-05-19",
+      "pdf": "https://arxiv.org/pdf/2605.19821v1",
+      "score": "9.0",
+      "evidence": "视觉语言增强的面部表情识别",
+      "tldr": "野外面部表情识别面临姿态、遮挡和光照变化挑战，现有注意力方法仅依赖视觉外观，存在冗余和不稳定。本文提出LaCoVL-FER，利用面部关键点几何先验和视觉语言模型语义先验，通过LGAE和BGCA自适应融合特征，结合VLES和ECP对齐视觉-文本表示。在RAF-DB、FERPlus、AffectNet上达到最优，有效提升复杂场景下的识别鲁棒性与泛化性。",
+      "tags": "query:mm",
+      "abstract_en": "Facial Expression Recognition (FER) in the wild is still challenging due to uncontrolled variations in pose, occlusion, and illumination. Most existing attention-based methods primarily rely on visual appearance cues, suffering from attention redundancy and instability, which limits their performance in complex scenarios. To address these issues, we propose a novel landmark-guided contrastive learning network with vision-language enhancement for FER (LaCoVL-FER), which integrates geometric priors from facial landmarks and semantic priors from a vision-language model. Specifically, a Landmark-Guided Adaptive Encoder (LGAE) is designed to introduce geometric priors through a Bi-branch Gated Cross Attention (BGCA) mechanism, which achieves adaptive fusion of landmark-based geometric and visual appearance features to produce expression-relevant features, thereby focusing on key facial regions and suppressing noise interference. In parallel, a Vision-Language Enhancement Strategy (VLES) is presented to leverage the expression-relevant features to refine the generalizable visual features extracted by the frozen pretrained CLIP image encoder, yielding expression-specific visual representations. Based on these representations, an Expression-Conditioned Prompting (ECP) mechanism is utilized to further adapt the textual features of fixed class-level prompts from the frozen pretrained CLIP text encoder, generating more instance-aware textual representations. These visual-textual representations are aligned as semantic priors to enhance the robustness and generalization of FER. Quantitative and qualitative experiments demonstrate that our LaCoVL-FER outperforms state-of-the-art methods on three representative real-world FER datasets, including RAF-DB, FERPlus, and AffectNet. The code is available at https://github.com/ylin06804/LaCoVL-FER.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202605/27/2605.23328v1-emotion-recognition-in-sign-language-conversation",
+      "section": "quick",
+      "title_en": "Emotion Recognition in Sign Language Conversation",
+      "authors": "Yusong Wang, Keyu Mao, Takao Obi, Minghao Shao, Kotaro Funakoshi",
+      "date": "2026-05-22",
+      "pdf": "https://arxiv.org/pdf/2605.23328v1",
+      "score": "6.0",
+      "evidence": "手语对话中的情感识别（多模态）",
+      "tldr": "现有手语情感数据集多为孤立句子，缺乏对话上下文，导致模型在真实场景中性能下降。本文引入对话情感识别任务至手语视频分析，基于STUDIES语料库构建eJSL Dialog数据集，含1920个视频样本和480个独特对话。基准测试表明，通用多模态对话情感识别模型在手语上存在领域差距。结果强调需要手语特定的上下文感知视觉提取器，并需扩大对话数据集规模以支持大规模预训练。",
+      "tags": "query:mm",
+      "abstract_en": "Emotion Recognition in Conversation is a core component of affective computing, while current resources of sign language emotion datasets primarily focus on isolated sentences and lack conversational context. Models trained exclusively on these isolated utterances demonstrate degraded performance in real world scenarios because they cannot utilize historical dialogue flow. To address this structural limitation, we introduce the ERC task to sign language video analysis and propose the eJSL Dialog dataset. Constructed using the scripts from the STUDIES corpus, the dataset contains 1,920 video samples organized into 480 unique dialogues. We conduct systematic benchmarking on this dataset using models ranging from isolated visual networks to multimodal conversational architectures. The results reveal a domain gap when applying generic multimodal conversational emotion recognition models to sign language. These findings demonstrate the explicit need for context aware visual extractors specific to sign language and indicate that expanding the scale of conversational datasets to support large scale pre-training is a necessary next step for future research.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202605/27/2605.24618v1-fc-tts-style-and-timbre-control-in-zero-shot-text-to-speech-with-disentangled-speech-representations",
+      "section": "quick",
+      "title_en": "FC-TTS: Style and Timbre Control in Zero-Shot Text-to-Speech with Disentangled Speech Representations",
+      "authors": "Yoonhyung Lee, Hyunsin Park, Jinhwan Park, Jinkyu Lee",
+      "date": "2026-05-23",
+      "pdf": "https://arxiv.org/pdf/2605.24618v1",
+      "score": "6.0",
+      "evidence": "解耦语音表示用于语音合成",
+      "tldr": "现有零样本TTS虽能模仿参考语音的风格和音色，但难以从不同参考中独立控制这两个属性。本文提出的FC-TTS框架，基于解耦语音表示，利用两个不同参考话语分别控制风格和音色，并通过架构选择、训练框架和辅助目标等策略提升解耦可靠性。实验表明，FC-TTS在零样本场景下实现高保真合成和竞争性自然度，同时支持风格和音色的一致独立操作。该工作为解耦控制TTS提供了有效方案，推动了可控语音合成的发展。",
+      "tags": "query:mm",
+      "abstract_en": "Recent advances in zero-shot text-to-speech (TTS) have enabled accurate imitation of reference speech in terms of both speaking style and speaker timbre. However, achieving disentangled control over these aspects from separate references remains a challenging task. Several studies have proposed disentangled speech representations that decompose speech into interpretable attributes (e.g., timbre, prosody, and content), providing a promising foundation for TTS with attribute control from separate references. Yet, how to effectively integrate such representations into TTS systems to achieve independent and precise control remains underexplored. In this paper, we present FC-TTS, a zero-shot TTS framework that enables disentangled control of style and timbre by conditioning on two distinct reference utterances. Unlike existing systems that inherit limitations from those pre-trained disentangled representations, FC-TTS introduces key design strategies, including architectural choices, training framework, and auxiliary training objectives, which improve the reliability of attribute separation and dual-reference control. Experiments show that FC-TTS achieves high-fidelity synthesis and competitive zero-shot naturalness, while uniquely supporting consistent and independent manipulation of style and timbre. Audio samples are available at https://qualcomm-ai-research.github.io/fc-tts",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
