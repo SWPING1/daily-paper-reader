@@ -26,9 +26,11 @@ subscriptions:
     diff_threshold_pct: 15
   keyword_recall_mode: or
   intent_profiles:
-    - tag: Missing-Modality
+    - tag: mm
       description: 重点追踪：多模态情感识别中缺失模态的处理，特别是基于模态重建与解耦表示的前沿方法。
       enabled: true
+      paper_sources:
+        - arxiv
       keywords:
         - keyword: Multimodal Sentiment Analysis
           keyword_cn: 多模态情感分析
@@ -161,3 +163,18 @@ subscriptions:
             updated_at: '2026-03-20T06:54:05.818657+00:00'
       updated_at: '2026-03-20T06:50:17.666Z'
       paused: false
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq

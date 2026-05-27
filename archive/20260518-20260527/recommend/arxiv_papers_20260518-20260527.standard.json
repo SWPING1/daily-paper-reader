@@ -1,0 +1,842 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-27T01:59:10.348848+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 16,
+    "deep_cap": 6,
+    "deep_selected": 10,
+    "quick_candidates": 13,
+    "quick_skim_target": 11,
+    "quick_selected": 11
+  },
+  "deep_dive": [
+    {
+      "id": "2605.18257v1",
+      "source": "arxiv",
+      "title": "CodeBind: Decoupled Representation Learning for Multimodal Alignment with Unified Compositional Codebook",
+      "abstract": "Multimodal representation alignment is pivotal for large language models and robotics. Traditional methods are often hindered by cross-modal information discrepancies and data scarcity, leading to suboptimal alignment spaces that overlook modality-unique features. We propose CodeBind, a framework that optimizes multimodal representation spaces through a modality-shared-specific codebook design. By incrementally aligning target and bridging modalities, CodeBind bypasses the need for fully paired data. Unlike traditional hard alignment, CodeBind decomposes features into shared components for semantic consistency and specific components for modality-unique details. This design utilizes a compositional vector quantization scheme, where a shared codebook bridges modality gaps and modality-specific codebooks mitigate representation bias by preventing dominant modalities from overshadowing others. Validated across nine modalities (text, image, video, audio, depth, thermal, tactile, 3D point cloud, EEG), CodeBind achieves state-of-the-art performance in multimodal classification and retrieval tasks.",
+      "authors": [
+        "Zeyu Chen",
+        "Jie Li",
+        "Kai Han"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-05-18T11:56:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.18257v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Decoupled representation learning via shared-specific codebook for multimodal alignment",
+      "llm_evidence_cn": "通过共享-特有码本设计实现多模态对齐中的解耦表示学习",
+      "llm_evidence": "通过共享-特有码本设计实现多模态对齐中的解耦表示学习",
+      "canonical_evidence": "通过共享-特有码本设计实现多模态对齐中的解耦表示学习",
+      "llm_tldr_en": "CodeBind optimizes multimodal representation by decomposing features into shared and specific components via a compositional codebook, enabling alignment without full paired data.",
+      "llm_tldr_cn": "针对多模态对齐中模态特有信息丢失和数据稀缺问题，本文提出CodeBind框架，通过设计共享-特有组合码本将多模态特征分解为共享语义成分和模态特有细节成分。采用渐进式对齐策略，无需完全配对数据即可学习高质量的解耦表示。实验证明其在多个跨模态任务上优于传统对齐方法。",
+      "llm_tldr": "针对多模态对齐中模态特有信息丢失和数据稀缺问题，本文提出CodeBind框架，通过设计共享-特有组合码本将多模态特征分解为共享语义成分和模态特有细节成分。采用渐进式对齐策略，无需完全配对数据即可学习高质量的解耦表示。实验证明其在多个跨模态任务上优于传统对齐方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.19950v1",
+      "source": "arxiv",
+      "title": "AffectVerse: Emotional World Models for Multimodal Affective Computing",
+      "abstract": "Humans infer emotions by integrating observed multimodal cues with expectations about how affective states may unfold. Existing multimodal large language models (MLLMs), however, often treat emotion recognition as static fusion over complete audiovisual-text inputs, leaving affective dynamics implicit. We propose AffectVerse, a Qwen2.5-Omni-based model equipped with an Emotion World Module (EWM), an action-free representation-level module for short-horizon latent affective prediction. \\rev{EWM contains three modules: 1) Cross-Modal Temporal Imagination predicts future video/audio representations from past tokens with multi-step rollout. 2) MAMA(Modality-Aware Multi-step Attention) Belief Aggregation compresses imagined tokens into modality-aware belief tokens. 3) Belief Injection inserts these belief tokens into the LLM for affective reasoning.} AffectVerse uses future prediction as a past-conditioned self-supervised signal: it does not replace modeling observed history or require unseen signals at inference, but forces the current belief state to encode transition cues that are predictive of subsequent affective change. Across nine benchmarks, AffectVerse improves at least 2.57\\% over other models, while controlled ablations show additive gains from temporal imagination, cross-modal rollout, and belief aggregation. These results suggest predictive belief-state modeling is a practical alternative for affective computing.",
+      "authors": [
+        "Bo Zhao",
+        "Fanghua Ye",
+        "Yixin Ji",
+        "Sicheng Zhao",
+        "Xiaojiang Peng",
+        "Zitong YU"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-19T15:05:00+00:00",
+      "link": "https://arxiv.org/pdf/2605.19950v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "AffectVerse: multimodal emotion recognition with emotion world module and cross-modal temporal imagination",
+      "llm_evidence_cn": "AffectVerse：基于情感世界模型和跨模态时间想象的多模态情感识别",
+      "llm_evidence": "AffectVerse：基于情感世界模型和跨模态时间想象的多模态情感识别",
+      "canonical_evidence": "AffectVerse：基于情感世界模型和跨模态时间想象的多模态情感识别",
+      "llm_tldr_en": "Proposes AffectVerse, a multimodal large language model with an Emotion World Module for short-horizon affective prediction, improving over static fusion methods.",
+      "llm_tldr_cn": "现有多模态大语言模型将情感识别视为静态融合，忽略了情感动态。本文提出AffectVerse，基于Qwen2.5-Omni，配备情感世界模块（EWM），通过交叉模态时间想象和信念聚合进行短期情感预测。实验表明该方法在情感预测任务上优于静态融合基线，为动态多模态情感计算提供了新范式。",
+      "llm_tldr": "现有多模态大语言模型将情感识别视为静态融合，忽略了情感动态。本文提出AffectVerse，基于Qwen2.5-Omni，配备情感世界模块（EWM），通过交叉模态时间想象和信念聚合进行短期情感预测。实验表明该方法在情感预测任务上优于静态融合基线，为动态多模态情感计算提供了新范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.20674v1",
+      "source": "arxiv",
+      "title": "Modular Multimodal Classification Without Fine-Tuning: A Simple Compositional Approach",
+      "abstract": "We introduce CoMET, \\textit{\\textbf{C}omposing \\textbf{M}odality \\textbf{E}ncoders with \\textbf{T}abular foundation models}, a simple yet highly competitive method for multimodal classification: pass each modality through a frozen pre-trained backbone, compress the resulting embeddings with PCA, and concatenate as input into a Tabular Foundation Model (TFM) for prediction. We show that PCA alone suffices to act as an adaptor yielding strong, robust performance across modalities. When the \\texttt{CLS} tokens of the foundation model align poorly with downstream tasks, we propose \\textbf{PALPooling}, a lightweight adaptive token pooler that consistently improves representation quality. By composing strong frozen representation learning backbones with TFMs, our approach achieves state-of-the-art results across diverse multimodal benchmarks without any training. On hierarchical tasks with large fine-grained class spaces, our approach enables fast and scalable classification, handling datasets with over 500,000 samples and 2,000 classes without any fine-tuning. Overall, our results show that the composition of foundation models is a simple, yet powerful, out-of-the-box solution for multimodal learning, challenging the necessity of complex, end-to-end training pipelines for new problems.",
+      "authors": [
+        "Herman Bergström",
+        "Aditya Mehrotra",
+        "Rahul G. Krishnan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-20T03:43:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.20674v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Composing frozen modality encoders with tabular models for robust classification",
+      "llm_evidence_cn": "组合冻结的模态编码器与表格模型实现鲁棒分类",
+      "llm_evidence": "组合冻结的模态编码器与表格模型实现鲁棒分类",
+      "canonical_evidence": "组合冻结的模态编码器与表格模型实现鲁棒分类",
+      "llm_tldr_en": "CoMET combines frozen pre-trained backbones per modality with PCA compression and a tabular foundation model for robust multimodal classification without fine-tuning, achieving strong performance.",
+      "llm_tldr_cn": "针对多模态分类中微调成本高的问题，本文提出CoMET方法，通过将各模态输入冻结的预训练骨干网络，用PCA压缩并拼接后输入表格基础模型进行分类。无需微调即可取得鲁棒且高性能的结果，为多模态分类提供了一个简单有效的组合方案。",
+      "llm_tldr": "针对多模态分类中微调成本高的问题，本文提出CoMET方法，通过将各模态输入冻结的预训练骨干网络，用PCA压缩并拼接后输入表格基础模型进行分类。无需微调即可取得鲁棒且高性能的结果，为多模态分类提供了一个简单有效的组合方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21239v1",
+      "source": "arxiv",
+      "title": "Multimodal Emotion Recognition with Large Language Models",
+      "abstract": "Multimodal Emotion Recognition (MER) focuses on identifying and interpreting emotions from modality-compound inputs. Closely mirroring human cognitive processes in real-world environments, MER has drawn substantial attention from both academia and industry. Recently, a paradigm shift has been unveiled in MER, from leveraging small-scale, task-specific models to Large Language Models (LLMs). We refer to the latter as the MER-with-LLMs paradigm, which offers unprecedented generality, spurring numerous empirical attempts, even alongside speculation about LLMs' potential to achieve general emotional intelligence. However, with these new opportunities come new challenges, including the scarcity of emotionally annotated data, the affective gap both within and across modalities, and the opacity of affective interpretation. To systematically review existing research and guide future exploration, this paper categorizes prior works according to their focus on addressing these challenges into three directions: Affective Data Augmentation, Multimodal Affective Representation, and Multimodal Affective Reasoning. By thoroughly tracing the development, emerging trends, and remaining issues within each direction, this paper aims to provide a clear academic map of the MER-with-LLMs paradigm and foster its structured advancement.",
+      "authors": [
+        "Hongrui Zhang",
+        "Daiqing Wu",
+        "Yangyang Li",
+        "Kuien Liu",
+        "Yuhui Wang",
+        "Yu Zhou",
+        "Sicheng Zhao"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM"
+      ],
+      "published": "2026-05-20T14:29:07+00:00",
+      "link": "https://arxiv.org/pdf/2605.21239v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal emotion recognition with large language models",
+      "llm_evidence_cn": "基于大语言模型的多模态情感识别",
+      "llm_evidence": "基于大语言模型的多模态情感识别",
+      "canonical_evidence": "基于大语言模型的多模态情感识别",
+      "llm_tldr_en": "This paper surveys the paradigm shift in multimodal emotion recognition from small task-specific models to large language models, highlighting challenges such as scarce emotional data and affective gaps, and discussing the potential for achieving general emotional intelligence.",
+      "llm_tldr_cn": "本文综述了多模态情感识别领域从专用小模型到大语言模型的范式转变，分析了LLM带来的通用性提升及面临的情感标注稀缺、模态间情感鸿沟等挑战，探讨了实现通用情感智能的潜力，为该领域提供了全面视角。",
+      "llm_tldr": "本文综述了多模态情感识别领域从专用小模型到大语言模型的范式转变，分析了LLM带来的通用性提升及面临的情感标注稀缺、模态间情感鸿沟等挑战，探讨了实现通用情感智能的潜力，为该领域提供了全面视角。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21417v1",
+      "source": "arxiv",
+      "title": "Ordering Matters: Rank-Aware Selective Fusion for Blended Emotion Recognition",
+      "abstract": "Blended emotion recognition is challenging because emotions are often expressed as mixtures of subtle and overlapping multimodal cues rather than a single dominant signal. We propose a rank-aware multi-encoder framework that selectively combines complementary representations from diverse pre-extracted video and audio encoders. Our method projects heterogeneous encoder features into a shared latent space, estimates sample-wise encoder importance through an attention-based gating module, and fuses only the top-n most informative encoders. To better model blended emotions, we decouple prediction into presence and salience heads and align them through probability-level fusion. We further incorporate feature-level unsupervised domain adaptation without pseudo-labeling to improve robustness under distribution shift. Experiments on the BlEmoRE challenge show that the proposed framework outperforms strong individual encoders and naïve multi-encoder fusion baselines. Our final system ranked 2nd in the competition, supporting the effectiveness of rank-aware selective fusion for fine-grained blended emotion recognition.",
+      "authors": [
+        "Junghyun Lee",
+        "Hyunseo Kim",
+        "Hanna Jang",
+        "Junhyug Noh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-20T17:12:55+00:00",
+      "link": "https://arxiv.org/pdf/2605.21417v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal emotion recognition (blended) with selective fusion and decoupled prediction",
+      "llm_evidence_cn": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "llm_evidence": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "canonical_evidence": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "llm_tldr_en": "Proposes rank-aware multi-encoder framework for blended emotion recognition, selectively fusing top-n informative encoders with decoupled presence/salience heads.",
+      "llm_tldr_cn": "论文针对混合情感识别中多模态线索重叠且易混淆的挑战，提出排序感知选择性融合框架。该方法将不同视频和音频编码器的特征映射到共享空间，通过注意门控估计编码器重要性，仅融合最有效的top-n个编码器。同时解耦预测为存在性和显著头，通过概率融合对齐。在多个基准上取得了优异性能，并引入了无监督域自适应提升泛化能力。",
+      "llm_tldr": "论文针对混合情感识别中多模态线索重叠且易混淆的挑战，提出排序感知选择性融合框架。该方法将不同视频和音频编码器的特征映射到共享空间，通过注意门控估计编码器重要性，仅融合最有效的top-n个编码器。同时解耦预测为存在性和显著头，通过概率融合对齐。在多个基准上取得了优异性能，并引入了无监督域自适应提升泛化能力。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21417v2",
+      "source": "arxiv",
+      "title": "Ordering Matters: Rank-Aware Selective Fusion for Blended Emotion Recognition",
+      "abstract": "Blended emotion recognition is challenging because emotions are often expressed as mixtures of subtle and overlapping multimodal cues rather than a single dominant signal. We propose a rank-aware multi-encoder framework that selectively combines complementary representations from diverse pre-extracted video and audio encoders. Our method projects heterogeneous encoder features into a shared latent space, estimates sample-wise encoder importance through an attention-based gating module, and fuses only the top-n most informative encoders. To better model blended emotions, we decouple prediction into presence and salience heads and align them through probability-level fusion. We further incorporate feature-level unsupervised domain adaptation without pseudo-labeling to improve robustness under distribution shift. Experiments on the BlEmoRE challenge show that the proposed framework outperforms strong individual encoders and naïve multi-encoder fusion baselines. Our final system ranked 2nd in the competition, supporting the effectiveness of rank-aware selective fusion for fine-grained blended emotion recognition.",
+      "authors": [
+        "Junghyun Lee",
+        "Hyunseo Kim",
+        "Hanna Jang",
+        "Junhyug Noh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-20T17:12:55+00:00",
+      "link": "https://arxiv.org/pdf/2605.21417v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal emotion recognition (blended) with selective fusion and decoupled prediction",
+      "llm_evidence_cn": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "llm_evidence": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "canonical_evidence": "多模态混合情感识别，采用选择性融合和解耦预测",
+      "llm_tldr_en": "Proposes rank-aware multi-encoder framework for blended emotion recognition, selectively fusing top-n informative encoders with decoupled presence/salience heads.",
+      "llm_tldr_cn": "论文针对混合情感识别中多模态线索重叠且易混淆的挑战，提出排序感知选择性融合框架。该方法将不同视频和音频编码器的特征映射到共享空间，通过注意门控估计编码器重要性，仅融合最有效的top-n个编码器。同时解耦预测为存在性和显著头，通过概率融合对齐。在多个基准上取得了优异性能，并引入了无监督域自适应提升泛化能力。",
+      "llm_tldr": "论文针对混合情感识别中多模态线索重叠且易混淆的挑战，提出排序感知选择性融合框架。该方法将不同视频和音频编码器的特征映射到共享空间，通过注意门控估计编码器重要性，仅融合最有效的top-n个编码器。同时解耦预测为存在性和显著头，通过概率融合对齐。在多个基准上取得了优异性能，并引入了无监督域自适应提升泛化能力。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21565v1",
+      "source": "arxiv",
+      "title": "Leveraging Self-Paced Curriculum Learning for Enhanced Modality Balance in Multimodal Conversational Emotion Recognition",
+      "abstract": "Multimodal Emotion Recognition in Conversations (MERC) is a crucial task for understanding human interactions, where multimodal approaches integrating language, facial expressions, and vocal tone have achieved significant progress. However, modality misalignment and imbalanced learning remain major challenges, limiting the effective utilization of multimodal information. To address this issue, we propose a plug-and-play framework based on Self-Paced Curriculum Learning (SPCL) for MERC. We introduce a dual-level Difficulty Measurer that captures both utterance-level and conversation-level challenges. The utterance-level score models fine-grained modality-specific difficulty, while the conversation-level score captures broader dialogue structures, including emotional dependencies and modality coherence. Based on these scores, the Learning Scheduler dynamically guides training from easier to more difficult instances. By integrating SPCL into existing MERC architectures, our method alleviates modality imbalance and improves model robustness. Extensive experiments on the IEMOCAP and MELD datasets demonstrate consistent improvements across different architectures and modality settings. On IEMOCAP, SPCL improves weighted F1-score by approximately +1.2% to +6.6% over baseline models, while on MELD, gains reach up to +10.4%. These results highlight the effectiveness and generalizability of SPCL as a lightweight plug-and-play module for multimodal emotion recognition.",
+      "authors": [
+        "Phuong-Anh Nguyen",
+        "The-Son Le",
+        "Duc-Trong Le",
+        "Cam-Van Thi Nguyen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-20T17:07:16+00:00",
+      "link": "https://arxiv.org/pdf/2605.21565v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal conversational emotion recognition with self-paced curriculum learning for modality balance",
+      "llm_evidence_cn": "通过自步课程学习增强模态平衡的多模态对话情感识别",
+      "llm_evidence": "通过自步课程学习增强模态平衡的多模态对话情感识别",
+      "canonical_evidence": "通过自步课程学习增强模态平衡的多模态对话情感识别",
+      "llm_tldr_en": "This paper improves multimodal emotion recognition in conversations by proposing a plug-and-play self-paced curriculum learning framework with a dual-level difficulty measurer to address modality imbalance, enhancing performance on benchmark datasets.",
+      "llm_tldr_cn": "本文针对多模态对话情感识别中的模态不均衡问题，提出一种即插即用的自步课程学习框架，引入双级难度度量器在话语和对话层面建模模态特定难度，有效平衡多模态信息利用，在多个基准数据集上取得领先性能，验证了其有效性。",
+      "llm_tldr": "本文针对多模态对话情感识别中的模态不均衡问题，提出一种即插即用的自步课程学习框架，引入双级难度度量器在话语和对话层面建模模态特定难度，有效平衡多模态信息利用，在多个基准数据集上取得领先性能，验证了其有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21869v1",
+      "source": "arxiv",
+      "title": "Two-Stage Multimodal Framework for Emotion Mimicry Intensity Prediction",
+      "abstract": "We present our submission to the Hume-ABAW10 Emotional Mimicry Intensity (EMI) Challenge, which aims to predict six continuous emotion intensity dimensions: Admiration, Amusement, Determination, Empathic Pain, Excitement, and Joy, from in-the-wild multimodal video clips. We propose a staged multimodal framework that combines textual, acoustic, and visual representations, with an optional motion branch. Our approach first trains modality-specific encoders independently and then fuses their learned representations through a lightweight regressor with modality dropout and controlled encoder adaptation. Across our submitted systems, the best validation performance is obtained by the text--audio--vision--motion fusion model under the expanded 4:1 split, achieving an average Pearson correlation of 0.4722. Although the motion branch yields only very slight gains, its behavior can be interesting to study. Our team was placed third in the EMI challenge, achieving an average Pearson correlation of 0.57 for the test set. Overall, we provide a practical and reproducible baseline for EMI prediction.",
+      "authors": [
+        "Dinithi Dissanayake",
+        "Shaveen Silva",
+        "Ovindu Atukorala",
+        "Prasanth Sasikumar",
+        "Suranga Nanayakkara"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.HC"
+      ],
+      "published": "2026-05-21T01:29:26+00:00",
+      "link": "https://arxiv.org/pdf/2605.21869v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multimodal emotion recognition framework with modality dropout",
+      "llm_evidence_cn": "多模态情感识别框架，包含模态丢弃",
+      "llm_evidence": "多模态情感识别框架，包含模态丢弃",
+      "canonical_evidence": "多模态情感识别框架，包含模态丢弃",
+      "llm_tldr_en": "Proposes a two-stage multimodal framework for emotion mimicry intensity prediction using text, audio, vision, and motion, with modality dropout for robustness.",
+      "llm_tldr_cn": "当前多模态情感识别框架在真实场景中面临模态缺失的挑战。本文针对Hume-ABAW10情感模仿强度预测挑战，提出了一种两阶段多模态融合框架，分别训练各模态编码器后通过轻量回归器融合，并引入模态丢弃（modality dropout）以提升鲁棒性。实验表明，融合文本、音频、视觉和运动模态的最佳配置在验证集上取得良好性能，验证了多模态融合和模态丢弃策略的有效性。",
+      "llm_tldr": "当前多模态情感识别框架在真实场景中面临模态缺失的挑战。本文针对Hume-ABAW10情感模仿强度预测挑战，提出了一种两阶段多模态融合框架，分别训练各模态编码器后通过轻量回归器融合，并引入模态丢弃（modality dropout）以提升鲁棒性。实验表明，融合文本、音频、视觉和运动模态的最佳配置在验证集上取得良好性能，验证了多模态融合和模态丢弃策略的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21980v1",
+      "source": "arxiv",
+      "title": "Interpreting and Enhancing Emotional Circuits in Large Vision-Language Models via Cross-Modal Information Flow",
+      "abstract": "Large Vision-Language Models (LVLMs) represent a significant leap towards empathetic agents, demonstrating remarkable capabilities in emotion understanding. However, the internal mechanisms governing how LVLMs translate abstract visual stimuli into coherent emotional narratives remain largely unexplored, primarily due to the scarcity of visual counterfactuals and the diffuse nature of emotional expression. In this paper, we bridge this gap by introducing a steering-vector-based causal attribution framework tailored for descriptive emotional reasoning. To this end, we construct a specialized dataset to demystify the emotional circuits underlying the three-stage ``Adapt-Aggregate-Execute'' mechanism. Crucially, we discover a functional decoupling: visual emotional cues are aggregated in middle layers via sentiment-specific attention heads, but are subsequently translated into narrative generation in deep layers through emotion-general pathways. Guided by these insights, we regulate the emotional information routing to strengthen attention flow and amplify the semantic activation to consolidate expression. Extensive experiments on the comprehensive MER-UniBench demonstrate that our methods significantly improve performance via inference-time intervention, effectively mitigating emotional hallucinations and corroborating the causal fidelity of the discovered circuits.",
+      "authors": [
+        "Chengsheng Zhang",
+        "Chenghao Sun",
+        "Zhining Xie",
+        "Xinmei Tian"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-21T04:20:12+00:00",
+      "link": "https://arxiv.org/pdf/2605.21980v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Causal attribution framework for emotional circuits in LVLMs, enhancing multimodal emotion understanding",
+      "llm_evidence_cn": "提出情感回路因果归因框架，增强多模态情感理解",
+      "llm_evidence": "提出情感回路因果归因框架，增强多模态情感理解",
+      "canonical_evidence": "提出情感回路因果归因框架，增强多模态情感理解",
+      "llm_tldr_en": "This paper introduces a steering-vector-based causal attribution framework to interpret how LVLMs process emotional stimuli via a three-stage mechanism, and demonstrates enhanced emotion understanding.",
+      "llm_tldr_cn": "大型视觉语言模型可以理解情感，但其内部机制尚不清楚。本文提出基于转向向量的因果归因框架，揭示了LVLM处理情感刺激时的适应-聚合-执行三阶段回路。通过构建专用数据集和归因分析，可解释并增强模型的情感推理能力，为开发更有同理心的AI提供新视角。",
+      "llm_tldr": "大型视觉语言模型可以理解情感，但其内部机制尚不清楚。本文提出基于转向向量的因果归因框架，揭示了LVLM处理情感刺激时的适应-聚合-执行三阶段回路。通过构建专用数据集和归因分析，可解释并增强模型的情感推理能力，为开发更有同理心的AI提供新视角。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.22732v1",
+      "source": "arxiv",
+      "title": "Beyond Acoustic Emotion Recognition: Multimodal Pathos Analysis in Political Speech Using LLM-Based and Acoustic Emotion Models",
+      "abstract": "We investigate whether acoustic emotion recognition models can serve as proxies for the Pathos dimension in political speech analysis, as operationalised by the TRUST multi-agent large language model (LLM) pipeline. Using a Bundestag plenary speech by Felix Banaszak (51 segments, 245 s) as a case study, we compare three analysis modalities: (1) emotion2vec_plus_large, an acoustic speech emotion recognition (SER) model whose continuous Arousal and Valence values are derived via post-hoc Russell Circumplex projection; (2) Gemini 2.5 Flash, an LLM analysing the full speech audio together with its transcript in an open-ended, context-aware fashion; and (3) TRUST-Pathos scores from a three-advocate LLM supervisor ensemble. Spearman rank correlations reveal that Gemini Valence correlates strongly with TRUST-Pathos (rho = +0.664, p < 0.001), whereas emotion2vec Valence does not (rho = +0.097, p = 0.499). We further demonstrate, via a systematic quality evaluation of the Berlin Database of Emotional Speech (EMO-DB) using Gemini in an open-ended annotation paradigm, that standard SER benchmark corpora suffer from acted speech, cultural bias, and category incompatibility. Our results suggest that LLM-based multimodal analysis captures semantically defined political emotion substantially better than acoustic models alone, while acoustic features remain informative for low-level Arousal estimation. Future work will extend this approach to video-based analysis incorporating facial expression and gaze.",
+      "authors": [
+        "Juergen Dietrich"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.HC",
+        "cs.SD",
+        "eess.AS"
+      ],
+      "published": "2026-05-21T17:03:37+00:00",
+      "link": "https://arxiv.org/pdf/2605.22732v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Multimodal emotion analysis combining acoustic emotion models and LLMs for pathos analysis",
+      "llm_evidence_cn": "结合声学情感模型和LLM进行多模态情感分析（感染性分析）",
+      "llm_evidence": "结合声学情感模型和LLM进行多模态情感分析（感染性分析）",
+      "canonical_evidence": "结合声学情感模型和LLM进行多模态情感分析（感染性分析）",
+      "llm_tldr_en": "This work compares acoustic emotion recognition models with an LLM-based multimodal pipeline for analyzing pathos in political speech, showing that LLM context-aware fusion captures deeper emotional dimensions.",
+      "llm_tldr_cn": "针对政治演讲中情感分析，本文比较了声学情感识别模型与基于LLM的多模态分析管道（TRUST）在感染性维度的表现。通过案例研究发现，LLM结合音频和转录的上下文感知方式能捕捉更丰富的情感维度。这为多模态情感识别提供了新的分析视角，表明文本和音频融合优于单一声学模型。",
+      "llm_tldr": "针对政治演讲中情感分析，本文比较了声学情感识别模型与基于LLM的多模态分析管道（TRUST）在感染性维度的表现。通过案例研究发现，LLM结合音频和转录的上下文感知方式能捕捉更丰富的情感维度。这为多模态情感识别提供了新的分析视角，表明文本和音频融合优于单一声学模型。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.17827v1",
+      "source": "arxiv",
+      "title": "Content-Style Identification via Differential Independence",
+      "abstract": "Generative analysis often models multi-domain observations as nonlinear mixtures of domain-invariant content variables and domain-specific style variables. Identifying both factors from unpaired domains enables tasks such as domain transfer and counterfactual data generation. Prior work establishes identifiability under (block-wise) statistical independence between content and style, or via sparse Jacobian assumptions on the nonlinear mixing function, but such conditions can be restrictive in practice. In this work, we introduce content-style differential independence (CSDI), an alternative structural condition requiring that infinitesimal variations in content and style induce orthogonal directions on the data manifold, thereby enabling identifiability even when content and style are dependent and the Jacobian is dense. We operationalize this condition through a blockwise orthogonality constraint on the Jacobian subspaces associated with content and style. To support high-dimensional generative models, we design a stochastic regularizer based on numerical Jacobian approximation, enabling scalable training in settings such as high-resolution image generation. Experiments across multiple datasets corroborate the identifiability analysis and demonstrate practical benefits on counterfactual generation and domain translation.",
+      "authors": [
+        "Subash Timilsina",
+        "Hoang-Son Nguyen",
+        "Sagar Shrestha",
+        "Xiao Fu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T04:01:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.17827v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "content-style identification via differential independence",
+      "llm_evidence_cn": "基于微分独立性的内容-风格识别",
+      "llm_evidence": "基于微分独立性的内容-风格识别",
+      "canonical_evidence": "基于微分独立性的内容-风格识别",
+      "llm_tldr_en": "This work introduces content-style differential independence (CSDI), a structural condition enabling identifiability of content and style factors from unpaired multi-domain data even when statistical independence fails, demonstrated on domain transfer tasks.",
+      "llm_tldr_cn": "本文提出内容-风格微分独立性（CSDI）条件，在内容与风格统计独立不成立时仍能实现解耦表示的可识别性，通过要求内容与风格的无穷小变化在数据流形上诱导正交方向，理论证明了可识别性并在域迁移任务中验证，为解耦表示提供了更宽松的条件。",
+      "llm_tldr": "本文提出内容-风格微分独立性（CSDI）条件，在内容与风格统计独立不成立时仍能实现解耦表示的可识别性，通过要求内容与风格的无穷小变化在数据流形上诱导正交方向，理论证明了可识别性并在域迁移任务中验证，为解耦表示提供了更宽松的条件。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.18678v1",
+      "source": "arxiv",
+      "title": "Lance: Unified Multimodal Modeling by Multi-Task Synergy",
+      "abstract": "We present Lance, a lightweight native unified model supporting multimodal understanding, generation, and editing for both images and videos. Rather than relying on model capacity scaling or text-image-dominant designs, Lance explores a practical paradigm for unified multimodal modeling via collaborative multi-task training. It is grounded in two core principles: unified context modeling and decoupled capability pathways. Specifically, Lance is trained from scratch and employs a dual-stream mixture-of-experts architecture on shared interleaved multimodal sequences, enabling joint context learning while decoupling the pathways for understanding and generation. We further introduce modality-aware rotary positional encoding to mitigate interference among heterogeneous visual tokens and boost cross-task alignment. During training, Lance adopts a staged multi-task training paradigm with capability-oriented objectives and adaptive data scheduling to strengthen both semantic comprehension and visual generation performance. Experimental results demonstrate that Lance substantially outperforms existing open-source unified models in image and video generation, while retaining strong multimodal understanding capabilities. The homepage is available at https://lance-project.github.io.",
+      "authors": [
+        "Fengyi Fu",
+        "Mengqi Huang",
+        "Shaojin Wu",
+        "Yunsheng Jiang",
+        "Yufei Huo",
+        "Hao Li",
+        "Yinghang Song",
+        "Fei Ding",
+        "Jianzhu Guo",
+        "Qian He",
+        "Zheren Fu",
+        "Zhendong Mao",
+        "Yongdong Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T17:18:24+00:00",
+      "link": "https://arxiv.org/pdf/2605.18678v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "unified multimodal modeling with multi-task synergy",
+      "llm_evidence_cn": "统一多模态建模与多任务协同",
+      "llm_evidence": "统一多模态建模与多任务协同",
+      "canonical_evidence": "统一多模态建模与多任务协同",
+      "llm_tldr_en": "Lance presents a lightweight native unified multimodal model with dual-stream mixture-of-experts architecture and modality-aware rotary positional encoding, achieving joint context learning and decoupled capability pathways for understanding and generation via collaborative multi-task training, demonstrating strong performance while being lightweight.",
+      "llm_tldr_cn": "Lance提出了一种轻量级原生统一多模态模型，采用双流混合专家架构处理共享多模态序列，实现理解与生成能力的解耦路径，并通过多任务协同训练显著提升性能，为多模态统一建模提供了高效范式，在多个基准上表现出色。",
+      "llm_tldr": "Lance提出了一种轻量级原生统一多模态模型，采用双流混合专家架构处理共享多模态序列，实现理解与生成能力的解耦路径，并通过多任务协同训练显著提升性能，为多模态统一建模提供了高效范式，在多个基准上表现出色。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.18714v1",
+      "source": "arxiv",
+      "title": "Semantic Generative Tuning for Unified Multimodal Models",
+      "abstract": "Unified multimodal models (UMMs) strive to consolidate visual understanding and visual generation within a single architecture. However, prevailing training paradigms independently optimize understanding via sparse text signals and generation through dense pixel objectives. Such a decoupled strategy yields misaligned representation spaces, isolating visual understanding from generation and hindering their mutual reinforcement. This work presents the first systematic investigation into generative post-training, where we formulate hierarchical visual tasks as generative proxies to bridge the isolation in UMMs. Our empirical investigation reveals that high-level semantic tasks, particularly image segmentation, serve as optimal proxies. Unlike low-level tasks that distract models with texture details, segmentation provides structural semantics that significantly enhance both vision-centric perception and generative layout fidelity. Building upon these insights, we introduce Semantic Generative Tuning (SGT), a novel paradigm that leverages segmentation as a generative proxy to align and synergize multimodal capabilities. Mechanistic analyses further demonstrate that SGT fundamentally improves feature linear separability and optimizes visual-textual attention allocation pattern. Extensive evaluations show that SGT consistently improves both multimodal comprehension and generative fidelity across mainstream benchmarks. Our code is available on the https://song2yu.github.io/SGT/.",
+      "authors": [
+        "Songsong Yu",
+        "Yuxin Chen",
+        "Ying Shan",
+        "Yanwei Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-18T17:46:46+00:00",
+      "link": "https://arxiv.org/pdf/2605.18714v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "semantic generative tuning for unified multimodal models",
+      "llm_evidence_cn": "统一多模态模型的语义生成微调",
+      "llm_evidence": "统一多模态模型的语义生成微调",
+      "canonical_evidence": "统一多模态模型的语义生成微调",
+      "llm_tldr_en": "This work proposes semantic generative tuning for unified multimodal models, formulating hierarchical visual tasks as generative proxies to bridge the isolation between visual understanding and generation, showing image segmentation as an optimal proxy, improving representation alignment.",
+      "llm_tldr_cn": "本文首次系统研究统一多模态模型的生成后训练，将分层视觉任务（如图像分割）作为生成代理，有效桥接视觉理解与生成的表示空间隔离，实验证明高层次语义任务是最优代理，显著提升了模型性能，为多模态模型训练提供了新思路。",
+      "llm_tldr": "本文首次系统研究统一多模态模型的生成后训练，将分层视觉任务（如图像分割）作为生成代理，有效桥接视觉理解与生成的表示空间隔离，实验证明高层次语义任务是最优代理，显著提升了模型性能，为多模态模型训练提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.18547v1",
+      "source": "arxiv",
+      "title": "VISAFF: Speaker-Centered Visual Affective Feature Learning for Emotion Recognition in Conversation",
+      "abstract": "Emotion Recognition in Conversation (ERC) is essential for effective human-machine interaction, aiming to identify speakers' emotional states in multi-turn dialogues. Early text-based methods struggle with complex scenarios like sarcasm because they inherently neglect vital non-verbal information. While recent Vision-Language Models (VLMs) address this by analyzing video directly, they are not inherently tailored for ERC and often focus on emotionally irrelevant background regions or passive listeners rather than the active speaker. Furthermore, fine-tuning these large models incurs prohibitive computational costs. Additionally, isolated visual signals are frequently ambiguous or technically compromised without the context of linguistic content and vocal prosody. To address these challenges, we propose VISAFF, a speaker-centered VISual AFFective feature learning framework for ERC. VISAFF consists of two stages: Speaker-Centered Affective Grounding and Reliability-Guided Affective Complementation. VISAFF utilizes a tuning-free approach to unlock the reasoning capabilities of frozen VLMs, efficiently steering them to focus on the active speaker's emotional visual cues without heavy training overheads. In the second stage, we introduce a reliability-guided affective complementation mechanism that dynamically leverages textual and acoustic modalities to compensate for visual uncertainty. Experiments on two real-world datasets demonstrate that VISAFF achieves highly competitive performance compared to state-of-the-art methods in a tuning-free setting, significantly enhancing computational efficiency by eliminating the need for expensive fine-tuning of large VLMs. The source code is available at https://anonymous.4open.science/r/speaker-2365/.",
+      "authors": [
+        "Linan ZHU",
+        "Zihao Zhai",
+        "Xiao Han",
+        "Yuqian Fu",
+        "Xiangfan Chen",
+        "Xiangjie Kong",
+        "Guojiang Shen"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-18T15:27:10+00:00",
+      "link": "https://arxiv.org/pdf/2605.18547v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "visual affective feature learning for emotion recognition in conversation",
+      "llm_evidence_cn": "面向对话情感识别的视觉情感特征学习",
+      "llm_evidence": "面向对话情感识别的视觉情感特征学习",
+      "canonical_evidence": "面向对话情感识别的视觉情感特征学习",
+      "llm_tldr_en": "VISAFF focuses on speaker-centered visual affective features for ERC, using VLMs without fine-tuning, improving emotion recognition in multimodal conversations.",
+      "llm_tldr_cn": "现有视觉语言模型用于对话情感识别时往往关注无关背景或非说话人，且微调成本高。本文提出VISAFF，通过轻量级模块提取以说话人为中心的视觉情感特征，无需微调模型。实验在多个ERC数据集上取得优异成绩，表明聚焦说话人视觉线索对情感识别有效，但未涉及缺失模态。",
+      "llm_tldr": "现有视觉语言模型用于对话情感识别时往往关注无关背景或非说话人，且微调成本高。本文提出VISAFF，通过轻量级模块提取以说话人为中心的视觉情感特征，无需微调模型。实验在多个ERC数据集上取得优异成绩，表明聚焦说话人视觉线索对情感识别有效，但未涉及缺失模态。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.19135v1",
+      "source": "arxiv",
+      "title": "Identifiable Multimodal Causal Representation Learning under Partial Latent Sharing",
+      "abstract": "Causal representation learning (CRL) seeks to uncover meaningful latent variables and their corresponding causal structure from high-dimensional observational data. Although its significance, CRL identifiability remains a crucial property, as it ensures the recovery of the mechanisms behind the data generation process, and hence the interpretability and robustness of the representation. Proving identifiability in CRL is intrinsically difficult, and we address in this work an even more challenging setting: multimodality. We consider multimodal observed data with a latent partially shared structure. Each modality is generated, through non linear mixing functions, from a specific subset of causal latent variables. Under flexible assumptions and without imposing any parametric distribution on the latent variables, we establish component-wise identifiability guarantees for the causal latent representation. Our identifiability results, furthermore, apply to the undercomplete scenario where we have, for each modality, more observed than latent variables. To instantiate our theoretical analysis, we introduce a Wasserstein-based module to recover the partially shared latent structure. Due to its differentiability, the latter can be easily integrated into all types of architecture, only requiring minimal changes. Extensive experiments on synthetic and realistic datasets validate the superiority of our approach over SOTA methods.",
+      "authors": [
+        "Manal Benhamza",
+        "Marianne Clausel",
+        "Myriam Tami"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-18T21:34:29+00:00",
+      "link": "https://arxiv.org/pdf/2605.19135v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal causal disentangled representation",
+      "llm_evidence_cn": "多模态因果解耦表示",
+      "llm_evidence": "多模态因果解耦表示",
+      "canonical_evidence": "多模态因果解耦表示",
+      "llm_tldr_en": "This paper tackles identifiability in multimodal causal representation learning under partial latent sharing, proving theoretical guarantees for recovering causal variables; it offers a principled disentanglement method for multimodal data.",
+      "llm_tldr_cn": "本文针对多模态数据中潜在因果表示的可辨识性问题，提出了一种考虑部分潜在共享结构的可辨识多模态因果表示学习框架。通过结合非线性混合函数和因果结构假设，理论证明了潜在变量的可恢复性。实验验证了所提方法在合成和真实数据上的有效性，为多模态数据的解耦表示提供了理论保证和可行方案。",
+      "llm_tldr": "本文针对多模态数据中潜在因果表示的可辨识性问题，提出了一种考虑部分潜在共享结构的可辨识多模态因果表示学习框架。通过结合非线性混合函数和因果结构假设，理论证明了潜在变量的可恢复性。实验验证了所提方法在合成和真实数据上的有效性，为多模态数据的解耦表示提供了理论保证和可行方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.20372v1",
+      "source": "arxiv",
+      "title": "Latent Space Guided Scenario Sampling for Multimodal Segmentation Under Missing Modalities",
+      "abstract": "Multimodal semantic segmentation benefits remote sensing analysis by combining complementary information from different sensor modalities. In real-world remote sensing applications, one or more modalities may be unavailable due to sensor failures, adverse atmospheric conditions, or data acquisition problems. Even with pretrained multimodal representations and existing fine-tuning or adaptation strategies, performance may remain limited because all modality availability scenarios are typically treated as equally informative during training. In this paper, we propose a novel training strategy that learns a scenario sampling distribution directly from the pretrained latent space. Instead of relying on uniform random modality dropout, the proposed method guides fine-tuning toward more informative modality availability scenarios. More specifically, we quantify the effect of each scenario independently based on the distortion it induces in the shared latent representation. We then capture scenario relations using a radial basis function kernel and derive refined scenario scores through a regularized kernel smoothing. These scores are then converted into a probability distribution during scenario sampling for fine-tuning. We evaluate this strategy on three remote sensing image sets, namely DSTL, Potsdam, and Hunan, using CBC-SLP, CBC, and CMX backbones. The experimental results with different image sets and backbones show that our method outperforms standard fine-tuning and LoRA-based adaptation. These findings suggest that the pretrained latent representation can serve as an effective basis for sampling during missing modality fine-tuning. Code is available at https://github.com/iremulku/Latent-Space-Guided-Scenario-Sampling",
+      "authors": [
+        "Irem Ulku",
+        "Ö. Özgür Tanrıöver",
+        "Erdem Akagündüz"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-19T18:23:22+00:00",
+      "link": "https://arxiv.org/pdf/2605.20372v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal segmentation under missing modalities with latent space guided sampling",
+      "llm_evidence_cn": "基于潜在空间引导采样的缺失模态下多模态分割",
+      "llm_evidence": "基于潜在空间引导采样的缺失模态下多模态分割",
+      "canonical_evidence": "基于潜在空间引导采样的缺失模态下多模态分割",
+      "llm_tldr_en": "This paper proposes a latent space guided scenario sampling strategy for multimodal segmentation under missing modalities, learning a sampling distribution from pretrained latent space instead of uniform dropout, improving performance across various missing modality cases.",
+      "llm_tldr_cn": "本文针对遥感多模态分割中模态缺失问题，提出一种基于潜在空间的场景采样训练策略，从预训练潜在空间学习采样分布而非均匀随机丢弃，在多个缺失模态场景下显著提升分割精度，为缺失模态鲁棒学习提供了新思路，具有通用性。",
+      "llm_tldr": "本文针对遥感多模态分割中模态缺失问题，提出一种基于潜在空间的场景采样训练策略，从预训练潜在空间学习采样分布而非均匀随机丢弃，在多个缺失模态场景下显著提升分割精度，为缺失模态鲁棒学习提供了新思路，具有通用性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.22679v1",
+      "source": "arxiv",
+      "title": "Conceptualizing Embeddings: Sparse Disentanglement for Vision-Language Models",
+      "abstract": "Vision-language models learn powerful multimodal embeddings, yet their internal semantics remain opaque. While sparse autoencoders (SAEs) can extract interpretable features, they rely on expanding the representation dimension, which compromises the original geometry and introduces redundancy. We introduce CEDAR (Conceptual Embedding Disentanglement via Adaptive Rotation), a post-hoc method that reveals the compositional structure of pretrained embeddings without increasing dimensionality. By learning an invertible transformation with a top-$k$ sparsity bottleneck, CEDAR concentrates semantic information into axis-aligned disentangled coordinates. In CLIP-like architecture, individual coordinates can be interpreted with textual concepts, while for generative models such as BLIP, they can be decoded into natural language descriptions. Experiments demonstrate that CEDAR achieves a competitive reconstruction-sparsity trade-off while producing explanations that are more interpretable and better aligned with human perception. Our results suggest that the apparent entanglement in vision-language representations can be resolved through a suitable change of basis, eliminating the need for overcomplete expansions.",
+      "authors": [
+        "Piotr Kubaty",
+        "Patryk Marszałek",
+        "Łukasz Struski",
+        "Adam Wróbel",
+        "Jacek Tabor",
+        "Marek Śmieja"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-21T16:23:34+00:00",
+      "link": "https://arxiv.org/pdf/2605.22679v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "sparse disentanglement for vision-language models",
+      "llm_evidence_cn": "视觉语言模型的稀疏解耦表示",
+      "llm_evidence": "视觉语言模型的稀疏解耦表示",
+      "canonical_evidence": "视觉语言模型的稀疏解耦表示",
+      "llm_tldr_en": "CEDAR learns an invertible transform with top-k sparsity to achieve axis-aligned disentangled coordinates for pretrained vision-language embeddings without dimension increase, improving interpretability.",
+      "llm_tldr_cn": "本文提出CEDAR方法，通过自适应旋转学习可逆变换，在保持嵌入维度的同时实现轴对齐的稀疏解耦，将CLIP等视觉语言模型中的概念语义分离到独立坐标上，提高了可解释性且不牺牲性能。实验表明CEDAR能有效提取可解释概念，并保持了原模型的下游能力。",
+      "llm_tldr": "本文提出CEDAR方法，通过自适应旋转学习可逆变换，在保持嵌入维度的同时实现轴对齐的稀疏解耦，将CLIP等视觉语言模型中的概念语义分离到独立坐标上，提高了可解释性且不牺牲性能。实验表明CEDAR能有效提取可解释概念，并保持了原模型的下游能力。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.21059v1",
+      "source": "arxiv",
+      "title": "Multimodal LLMs under Pairwise Modalities",
+      "abstract": "Despite the impressive results achieved by multimodal large language models (MLLMs), their training typically relies on jointly curated multimodal data, requiring substantial human effort to construct multi-way aligned datasets and thereby limiting scalability across domains. In this work, we explore training MLLMs by only leveraging multiple paired modalities as a surrogate for the full joint multimodal distribution. Specifically, we first provide a theoretical analysis of the conditions under which the representations are identifiable with only observing pairwise modalities. Building on this analysis, we propose a representation learning framework for aligning latent representations across modalities using only pairwise data. The framework consists of two stages: latent representation alignment and cross-modal recomposition. Specifically, in the first stage, we learn the shared latent space across modalities by both self-modal reconstruction and pair-wise contrastive learning. We also incorporate an inductive bias in the contrastive learning process by partially aligning and minimal latent specification. In stage two, we integrate the encoder of newly introduced modalities with the decoders of the pre-trained modalities to facilitate cross-modal transfer and generation. We evaluate our method by newly adding 3D point clouds and tactile modalities into pre-trained MLLMs with three modality pairs and show that, by learning an aligned latent representation space, our model achieves strong cross-modal performance.",
+      "authors": [
+        "Yan Li",
+        "Yunlong Deng",
+        "Yuewen Sun",
+        "Gongxu Luo",
+        "Kun Zhang",
+        "Guangyi Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-05-20T11:44:01+00:00",
+      "link": "https://arxiv.org/pdf/2605.21059v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "learning from pairwise modalities for incomplete multimodal data",
+      "llm_evidence_cn": "利用成对模态学习处理不完整多模态数据",
+      "llm_evidence": "利用成对模态学习处理不完整多模态数据",
+      "canonical_evidence": "利用成对模态学习处理不完整多模态数据",
+      "llm_tldr_en": "Multimodal LLMs under Pairwise Modalities trains MLLMs using only paired data, with theoretical guarantees on identifiability, enabling robust learning under missing modalities.",
+      "llm_tldr_cn": "多模态大模型训练依赖完整多路对齐数据，成本高且扩展难。本文理论分析仅用成对模态可识别表示的条件，并提出两阶段潜在表示对齐框架。实验表明该方法在缺失模态场景下仍能有效对齐，为不完整多模态学习提供新思路，与情感识别和缺失模态鲁棒性相关。",
+      "llm_tldr": "多模态大模型训练依赖完整多路对齐数据，成本高且扩展难。本文理论分析仅用成对模态可识别表示的条件，并提出两阶段潜在表示对齐框架。实验表明该方法在缺失模态场景下仍能有效对齐，为不完整多模态学习提供新思路，与情感识别和缺失模态鲁棒性相关。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.25007v1",
+      "source": "arxiv",
+      "title": "Meta-Modal Agent: Sequential Evidence Routing for Missing-Modality Candidate Reranking",
+      "abstract": "Missing modalities cause severe failures in multimodal recommender systems. User histories, item text, and visual evidence are frequently absent during cold-start scenarios, exactly when recommendation quality matters most. Existing approaches recover absent signals through imputation, feature propagation, or generative reconstruction, but these strategies can inject unsupported evidence when the surviving signals are weak. We introduce the Meta-Modal Agent (MMA), a large language model based candidate-pool reranker that treats missingness as a sequential evidence-routing problem. MMA is trained with balanced missingness-task reinforcement learning over masked-modality episodes and is evaluated in two variants: MMA-Auto, which uses only automated text, image, and graph tools, and MMA-Interactive, which additionally permits clarification questions grounded in surviving modalities as an upper-bound diagnostic. MMA operates after a first-stage retriever has produced a candidate pool; it scores those candidates rather than retrieving items from the full catalog. Final reranking fuses MMA scores with first-stage retrieval scores selected on validation data. Our evaluation is organized around four evidence checks required for a robust missing-modality claim: oracle-free one-observed-modality availability (OOMA) robustness, per-modality OOMA breakdowns, fixed-pool full-catalog reranking, and a deterministic-router mechanism control. MMA-Auto improves target-positive OOMA NDCG@10 by 4.0% and fixed-pool full-catalog reranking NDCG@10 by 12.7% over the strongest non-interactive baseline. RuleRouter-Fuse, which uses the same tools and fusion rule without learned policy updates, underperforms MMA-Auto, supporting learned routing beyond deterministic tool fusion. MMA-Interactive adds a 4.1% upper-bound gain when clarification is available.",
+      "authors": [
+        "Jinze Wang",
+        "Yangchen Zeng",
+        "Tiehua Zhang",
+        "Lu Zhang",
+        "Yuze Liu",
+        "Zhishu Shen",
+        "Jiong Jin",
+        "Zhu Sun"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-05-24T11:22:03+00:00",
+      "link": "https://arxiv.org/pdf/2605.25007v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses missing modalities in multimodal systems via sequential evidence routing",
+      "llm_evidence_cn": "通过顺序证据路由处理多模态系统中的缺失模态",
+      "llm_evidence": "通过顺序证据路由处理多模态系统中的缺失模态",
+      "canonical_evidence": "通过顺序证据路由处理多模态系统中的缺失模态",
+      "llm_tldr_en": "Proposes Meta-Modal Agent, an LLM-based reranker for missing-modality candidate reranking in multimodal recommender systems, treating missingness as sequential evidence routing with balanced missingness-task RL.",
+      "llm_tldr_cn": "论文针对多模态推荐系统中模态缺失的问题，提出了元模态智能体（MMA），一种基于大语言模型的候选重排序方法。它将缺失视为一个顺序证据路由问题，通过平衡缺失任务强化学习在掩码模态片段上训练。MMA在冷启场景中有效避免了弱幸存信号下的伪证据注入，显著提升了缺失模态下的推荐质量，为缺失模态处理提供了一种新的基于推理的范式。",
+      "llm_tldr": "论文针对多模态推荐系统中模态缺失的问题，提出了元模态智能体（MMA），一种基于大语言模型的候选重排序方法。它将缺失视为一个顺序证据路由问题，通过平衡缺失任务强化学习在掩码模态片段上训练。MMA在冷启场景中有效避免了弱幸存信号下的伪证据注入，显著提升了缺失模态下的推荐质量，为缺失模态处理提供了一种新的基于推理的范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.24816v1",
+      "source": "arxiv",
+      "title": "AOEPT: Breaking the Implicit Modality-Reduction Bottleneck in Modality-Missing Prompt Tuning",
+      "abstract": "Deploying multimodal systems in real-world environments often entails handling modality-missing scenarios, where one or more modalities are unavailable. While recent studies address this challenge for the general Multimodal Transformer (MT) architecture via prompt tuning, we identify a fundamental limitation in these methods: the Implicit Modality-Reduction bottleneck. By conditioning prompts solely on the observed modalities, they inadvertently restrict the reasoning scope of MTs to the modality-reduced subspace, cutting off access to the latent information sources of the missing modalities. To overcome this limitation, we propose AOEPT, which pioneers a novel modal-contextualized prompting fashion. Specifically, we introduce lightweight Modal-Contextualized Prompts (MCPs) that distill global modality-wise priors from training data, serving as latent repositories of the information sources for missing modalities. Conditioned on the remaining modalities, these MCPs are instantiated into instance-aware prompts that selectively augment missing-modality information for each sample, thereby restoring the reasoning scope of MTs beyond the observed-modality-only subspace. Experiments across various multimodal benchmarks and backbones confirm the strong performance of AOEPT, with minimal computational overhead.",
+      "authors": [
+        "Jian Lang",
+        "Rongpei Hong",
+        "Ting Zhong",
+        "Fan Zhou"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-24T02:04:44+00:00",
+      "link": "https://arxiv.org/pdf/2605.24816v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "modality-missing prompt tuning addressing implicit reduction bottleneck",
+      "llm_evidence_cn": "缺失模态提示调优解决隐式缩减瓶颈",
+      "llm_evidence": "缺失模态提示调优解决隐式缩减瓶颈",
+      "canonical_evidence": "缺失模态提示调优解决隐式缩减瓶颈",
+      "llm_tldr_en": "Identifies Implicit Modality-Reduction bottleneck in modality-missing prompt tuning and proposes AOEPT with modal-contextualized prompting to retain access to missing modality latent information.",
+      "llm_tldr_cn": "本文揭示现有缺失模态提示调优中存在的隐式模态缩减瓶颈：仅基于观测模态的条件化限制推理范围。提出AOEPT，通过轻量级“模态上下文”提示保留缺失模态的潜在信息，在不增加额外推理开销的情况下提升多模态Transformer在缺失场景下的表现，实验证明其有效性。",
+      "llm_tldr": "本文揭示现有缺失模态提示调优中存在的隐式模态缩减瓶颈：仅基于观测模态的条件化限制推理范围。提出AOEPT，通过轻量级“模态上下文”提示保留缺失模态的潜在信息，在不增加额外推理开销的情况下提升多模态Transformer在缺失场景下的表现，实验证明其有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2605.25968v1",
+      "source": "arxiv",
+      "title": "Context-driven Missing-Modality Learning for Robust Medical Diagnosis with Image-Tabular Data",
+      "abstract": "While multimodal data integrating diverse imaging and clinical tabular records is crucial for accurate medical diagnosis, the arbitrary absence of specific modalities is prevalent in clinical practice, severely degrading the performance of multimodal models. Existing methods either discard missing modalities, leading to information loss, or struggle to synthesize them without capturing complex inter-modal dependencies. To address these limitations, we propose a novel Context-driven Missing-Modality Learning (CMML) framework, which sequentially performs modality synthesis and semantic alignment to achieve robust diagnosis under arbitrary missing conditions. Specifically, we design a Cascade Residual Transformer-based Autoencoder (CRTA) that leverages learnable context tokens acting as dataset-level semantic prior to capture inter-modal dependencies and synthesize key missing representations. These representations are further enriched by modality-specific memory banks. To resolve the discrepancy between original available and synthesized representations, we transform the learned context tokens into instance-adaptive semantic references by infusing multimodal representations from the CRTA's outputs. This reference guides the alignment of heterogeneous modality representations into a unified space, where class-aware contrastive refinement is finally applied to explore discriminative diagnostic cues. Extensive evaluations on skin lesion (Derm7pt), ocular disease (ODIR), and meningioma (MEN) datasets demonstrate that CMML significantly outperforms state-of-the-art (SOTA) methods, yielding AVG AUC improvements of 1.26%, 0.97%, and 1.32%, respectively.",
+      "authors": [
+        "Tianling Liu",
+        "Lequan Yu",
+        "Tong Han",
+        "Liang Wan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T15:44:26+00:00",
+      "link": "https://arxiv.org/pdf/2605.25968v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "generative missing-modality learning with context-driven synthesis for robust multimodal diagnosis",
+      "llm_evidence_cn": "上下文驱动的缺失模态生成式学习用于鲁棒多模态诊断",
+      "llm_evidence": "上下文驱动的缺失模态生成式学习用于鲁棒多模态诊断",
+      "canonical_evidence": "上下文驱动的缺失模态生成式学习用于鲁棒多模态诊断",
+      "llm_tldr_en": "Proposes Context-driven Missing-Modality Learning (CMML) for robust medical diagnosis under arbitrary missing modalities, using cascade residual transformer autoencoder for modality synthesis.",
+      "llm_tldr_cn": "医学诊断中模态缺失严重降低多模态模型性能。现有方法要么丢弃缺失模态，要么生成质量不佳。本文提出上下文驱动的缺失模态学习框架（CMML），通过级联残差Transformer自编码器依次进行模态合成和语义对齐，实现任意缺失条件下的鲁棒诊断。实验表明该方法有效恢复了缺失模态信息并提升了诊断精度，为缺失模态处理提供了通用生成式方法。",
+      "llm_tldr": "医学诊断中模态缺失严重降低多模态模型性能。现有方法要么丢弃缺失模态，要么生成质量不佳。本文提出上下文驱动的缺失模态学习框架（CMML），通过级联残差Transformer自编码器依次进行模态合成和语义对齐，实现任意缺失条件下的鲁棒诊断。实验表明该方法有效恢复了缺失模态信息并提升了诊断精度，为缺失模态处理提供了通用生成式方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    }
+  ]
+}
