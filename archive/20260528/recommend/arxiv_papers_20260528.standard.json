@@ -1,0 +1,450 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-28T21:59:53.243933+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 7,
+    "quick_skim_target": 11,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2605.22531v1",
+      "source": "arxiv",
+      "title": "Disentanglement Beyond Generative Models with Riemannian ICA",
+      "abstract": "There is a gap between the theoretical foundations of disentanglement and the practice of modern representation learning. Existing theoretical frameworks, particularly Independent Component Analysis (ICA) and its nonlinear variants, assume a generative model with statistically independent latent variables underlying the data so that disentanglement amounts to identifying the latents that could have generated the data. This generative framework is interpretable and theoretically justified, but its strong assumptions make it difficult to apply to modern representation learning. Modern pretrained encoders often learn features that exhibit disentangled properties without making generative assumptions, yet there is no general theory for interpreting these features as independent factors of variation. We take a step toward such a theory by introducing Riemannian ICA (RICA), which replaces ICA's global generative model with local geometric structure. RICA is founded on the observation that in ICA, the factors of variation underlying a data point can be understood through radial curves emanating from the point that map to axis-aligned lines in the latent space. We formalize this perspective using Riemannian geometry and introduce our theory in a way that is consistent with the existing generative approach. Our main contribution is the disentanglement tensor, which encodes a second-order notion of disentanglement that we call pointwise disentanglement. This tensor depends on the Hessian of the data log likelihood as well as the Ricci curvature induced by the model. In a controlled source recovery setting with known ground-truth sources, RICA recovers sources across several manifolds, while the success of ICA baselines depends on the coordinates used to represent the observations. Our work provides a theoretical basis for studying local disentanglement without assuming a global generative model.",
+      "authors": [
+        "Edmond Cunningham"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-21T14:22:25+00:00",
+      "link": "https://arxiv.org/pdf/2605.22531v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Disentangled representation learning via Riemannian ICA without generative model",
+      "llm_evidence_cn": "通过Riemannian ICA实现非生成模型下的解耦表示学习",
+      "llm_evidence": "通过Riemannian ICA实现非生成模型下的解耦表示学习",
+      "canonical_evidence": "通过Riemannian ICA实现非生成模型下的解耦表示学习",
+      "llm_tldr_en": "Proposes Riemannian ICA to achieve disentangled representation beyond generative assumptions, bridging theory and practice for pretrained encoders.",
+      "llm_tldr_cn": "本文弥合了解耦表示理论与现代表示学习实践之间的鸿沟。传统ICA假设生成模型，难以应用于预训练编码器。作者提出Riemannian ICA，在非生成假设下实现解耦，为解释预训练模型中的解耦特性提供了严格的理论框架。该方法无需生成模型即可识别独立潜在变量，为实际应用中的表示解耦开辟新途径。",
+      "llm_tldr": "本文弥合了解耦表示理论与现代表示学习实践之间的鸿沟。传统ICA假设生成模型，难以应用于预训练编码器。作者提出Riemannian ICA，在非生成假设下实现解耦，为解释预训练模型中的解耦特性提供了严格的理论框架。该方法无需生成模型即可识别独立潜在变量，为实际应用中的表示解耦开辟新途径。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.25439v1",
+      "source": "arxiv",
+      "title": "Missing Pattern Recognized Diffusion Imputation Model for Missing Not At Random",
+      "abstract": "Missing data frequently arises across diverse domains, including time-series and image domains. In the real world, missing occurrences often depend on the unobservable values themselves, which are referred to as Missing Not at Random (MNAR). In this work, we introduce the Missing Pattern Recognized Diffusion Imputation Model (PRDIM), a novel framework that explicitly captures the missing pattern and precisely imputes unobserved values. PRDIM iteratively maximizes the likelihood of the joint distribution for observed values and missing mask under an Expectation-Maximization (EM) algorithm. In this sense, we first employ a pattern recognizer, which approximates the underlying missing pattern and provides guidance during every inference toward more plausible imputations with respect to the missing information. Through extensive experiments, we demonstrate that PRDIM consistently achieves strong imputation performance under MNAR settings across multiple data modalities.",
+      "authors": [
+        "Gyuwon Sim",
+        "Sumin Lee",
+        "Heesun Bae",
+        "Byeonghu Na",
+        "Doyun Kwon",
+        "Ju-Hee Hwang",
+        "Jae-Young Lim",
+        "Il-Chul Moon"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-25T05:29:59+00:00",
+      "link": "https://arxiv.org/pdf/2605.25439v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Generative imputation model for missing data with diffusion",
+      "llm_evidence_cn": "基于扩散的生成式缺失数据插补模型",
+      "llm_evidence": "基于扩散的生成式缺失数据插补模型",
+      "canonical_evidence": "基于扩散的生成式缺失数据插补模型",
+      "llm_tldr_en": "Introduces PRDIM, a diffusion-based imputation model that explicitly captures missing patterns for Missing Not At Random data, using EM algorithm to maximize joint likelihood of observed values and mask.",
+      "llm_tldr_cn": "真实世界中的数据缺失常依赖于未观测值本身（MNAR），现有方法未充分建模缺失模式。本文提出缺失模式识别的扩散插补模型（PRDIM），通过模式识别器近似潜在缺失模式，并在每个推理步提供指导，结合EM算法迭代优化观测值与缺失掩码的联合似然。在时间序列和图像任务上，PRDIM优于现有插补方法。该工作为缺失数据生成式建模提供了新框架，可直接迁移到多模态缺失模态恢复。",
+      "llm_tldr": "真实世界中的数据缺失常依赖于未观测值本身（MNAR），现有方法未充分建模缺失模式。本文提出缺失模式识别的扩散插补模型（PRDIM），通过模式识别器近似潜在缺失模式，并在每个推理步提供指导，结合EM算法迭代优化观测值与缺失掩码的联合似然。在时间序列和图像任务上，PRDIM优于现有插补方法。该工作为缺失数据生成式建模提供了新框架，可直接迁移到多模态缺失模态恢复。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.27894v1",
+      "source": "arxiv",
+      "title": "Towards Unified Vision-Language Models with Incomplete Multi-Modal Inputs",
+      "abstract": "Video-Language Models (VLMs) have demonstrated impressive multi-modal reasoning capabilities across diverse computer vision applications. However, these VLMs are task-specific and assume that both video and language inputs are complete. However, real-world VLM applications might face challenges due to deactivated sensors (e.g., cameras are unavailable due to data privacy), yielding modality-incomplete data and leading to inconsistency between training and testing data. While straightforward incomplete input can boast training generalization-ability and lead to training failure, its potential risks to VLMs regarding safety and trustworthiness have been largely neglected. To this end, we make the first attempt to propose a unified incomplete video-language model to process the incomplete multi-modal inputs. Extensive experimental results show that our method can serve as a plug-and-play module for previous works to improve their performance in various multi-modal tasks.",
+      "authors": [
+        "Xiang Fang",
+        "Wanlong Fang",
+        "Changshuo Wang",
+        "Keke Tang",
+        "Daizong Liu",
+        "Siyi Wang",
+        "Wei Ji"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-27T03:18:10+00:00",
+      "link": "https://arxiv.org/pdf/2605.27894v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "unified incomplete multi-modal inputs",
+      "llm_evidence_cn": "统一处理不完整多模态输入",
+      "llm_evidence": "统一处理不完整多模态输入",
+      "canonical_evidence": "统一处理不完整多模态输入",
+      "llm_tldr_en": "Proposes a unified video-language model that handles incomplete multi-modal inputs, addressing real-world sensor failures and privacy constraints.",
+      "llm_tldr_cn": "针对实际应用中多模态输入不完整（如传感器失效或数据隐私）导致训练与测试不一致的问题，首次提出统一的视频-语言模型处理不完整输入，通过设计适应性机制，在缺失模态时仍能保持推理能力，实验验证了其有效性和鲁棒性。",
+      "llm_tldr": "针对实际应用中多模态输入不完整（如传感器失效或数据隐私）导致训练与测试不一致的问题，首次提出统一的视频-语言模型处理不完整输入，通过设计适应性机制，在缺失模态时仍能保持推理能力，实验验证了其有效性和鲁棒性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.28575v1",
+      "source": "arxiv",
+      "title": "A Conflict-Aware Penalty and Statistical Loss Framework for Balancing Modalities and Enhancing Stability in Multimodal Sentiment Analysis",
+      "abstract": "Multimodal Sentiment Analysis (MSA) fuses text, acoustic, and visual streams to infer sentiment. Because pre-trained text encoders are far more expressive than their acoustic and visual counterparts, the text modality tends to dominate optimization, suppressing weaker modalities and inducing gradient norm conflicts that destabilize training. To address this, we propose a Conflict-aware Penalty (CP) that detects and penalizes gradient norm conflicts at each training step, and a Statistical Loss (SL) that aligns predicted distribution statistics with empirical input statistics. Crucially, CP prevents dominant modality gradients from interfering with the SL objective, enabling synergistic training within a unified framework incorporating adaptive modality encoding, gated cross-modal fusion, and unimodal auxiliary heads. Experiments on CMU-MOSI demonstrate state-of-the-art performance, with ablation studies confirming the effectiveness of each component.",
+      "authors": [
+        "Jianheng Dai",
+        "Jiazhang Liang",
+        "Sijie Mai"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-27T14:59:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.28575v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal sentiment analysis with modality balancing",
+      "llm_evidence_cn": "多模态情感分析，平衡模态",
+      "llm_evidence": "多模态情感分析，平衡模态",
+      "canonical_evidence": "多模态情感分析，平衡模态",
+      "llm_tldr_en": "Proposes conflict-aware penalty and statistical loss to balance dominant text modality with weaker audio/visual ones in multimodal sentiment analysis, improving stability and performance.",
+      "llm_tldr_cn": "多模态情感分析中文本模态往往主导优化，抑制了音频和视觉模态，导致梯度冲突和训练不稳定。本文提出冲突感知惩罚（CP）和统计损失（SL），CP在每个训练步检测并惩罚梯度范数冲突，SL对齐预测分布与输入统计量。实验表明该方法有效平衡了模态贡献，提升了模型稳定性与准确性。该框架为多模态融合中的模态不平衡问题提供了一种通用解决方案。",
+      "llm_tldr": "多模态情感分析中文本模态往往主导优化，抑制了音频和视觉模态，导致梯度冲突和训练不稳定。本文提出冲突感知惩罚（CP）和统计损失（SL），CP在每个训练步检测并惩罚梯度范数冲突，SL对齐预测分布与输入统计量。实验表明该方法有效平衡了模态贡献，提升了模型稳定性与准确性。该框架为多模态融合中的模态不平衡问题提供了一种通用解决方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.25409v1",
+      "source": "arxiv",
+      "title": "MTLLFM: Multimodal-Temporal Laughter Localization: UR-FUNNY-Temporal and SMILE-Temporal Benchmarks with an Adaptive Multimodal Fusion Model",
+      "abstract": "Detecting laughter in video is essential for affective computing and narrative understanding, yet existing approaches treat it as coarse clip-level classification, failing to capture precise temporal boundaries of brief, transient laughter events. We address this gap with two complementary contributions.   First, we introduce UR-FUNNY-Temporal and SMILE-Temporal, fully annotated temporal laughter datasets extending two widely-used humor benchmarks. Our annotations cover over 11,053 videos (78.8 hours) and provide precise onset/offset boundaries for each laughter event, along with rich metadata distinguishing speaker vs. audience laughter, modality dominance (acoustic, visual, or both), and intensity levels.   Second, we propose a lightweight weakly-supervised framework for temporal laughter localization. Our architecture combines fixed HuBERT and MAE encoders with temporal softmax pooling and adaptive modality gating, learning fine-grained temporal grounding from clip-level labels without requiring frame-level annotations during training. Experiments across three datasets demonstrate that our approach substantially outperforms multimodal foundation models including Gemini 3 Flash, achieving 99% F1 and 68.1% localization precision on sports broadcast data. Ablations validate each architectural component. Furthermore, our precise temporal tags improve downstream laughter reasoning by 227% on CIDEr, enabling GPT-3.5 to outperform GPT-4o. The code, UR-FUNNY-Temporal and SMILE-Temporal datasets are publicly available at https://github.com/WSCSports/MTLLFM-temporal-laughter-localization.",
+      "authors": [
+        "Eyal Hanania",
+        "Nadav Kirsch",
+        "Daniel Arkushin",
+        "Jonathan Benvenisti",
+        "Amos Bercovich",
+        "Elie Zemmour",
+        "Sahar Froim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T04:21:37+00:00",
+      "link": "https://arxiv.org/pdf/2605.25409v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal emotion recognition via laughter localization",
+      "llm_evidence_cn": "通过笑声定位进行多模态情感识别",
+      "llm_evidence": "通过笑声定位进行多模态情感识别",
+      "canonical_evidence": "通过笑声定位进行多模态情感识别",
+      "llm_tldr_en": "Proposes UR-FUNNY-Temporal and SMILE-Temporal datasets with precise temporal laughter annotations and an adaptive multimodal fusion model for laughter localization, contributing to affective computing.",
+      "llm_tldr_cn": "现有笑声检测方法缺乏精确的时间定位，为此本文构建了UR-FUNNY-Temporal和SMILE-Temporal两个大规模时序数据集，包含超过11053个视频的精细笑声起止标注。同时提出自适应多模态融合模型MTLLFM，利用声学、视觉特征的模态主导性进行融合检测。实验表明该方法能有效定位短暂笑声事件，为情感计算和叙事理解提供了新基准和有效方案。",
+      "llm_tldr": "现有笑声检测方法缺乏精确的时间定位，为此本文构建了UR-FUNNY-Temporal和SMILE-Temporal两个大规模时序数据集，包含超过11053个视频的精细笑声起止标注。同时提出自适应多模态融合模型MTLLFM，利用声学、视觉特征的模态主导性进行融合检测。实验表明该方法能有效定位短暂笑声事件，为情感计算和叙事理解提供了新基准和有效方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.26232v1",
+      "source": "arxiv",
+      "title": "Not All Modalities Are Equal: Instruction-Aware Gating for Multimodal Videos",
+      "abstract": "Pre-trained video large language models excel at visual reasoning. However, they struggle when videos arrive with auxiliary streams, such as audio, depth map, or dense temporal evidence. In such a scenario, uniform fusion induces modality interference, allowing irrelevant channels to distract the model. To address this issue, we present a unified multimodal video understanding framework, named UniMVU, that performs instruction-aware fusion across video, audio, depth map, or any other modality inputs via two levels of dynamic gating: inner-modality gates emphasize salient regions within each modality, whereas modality-level gates re-weight whole streams; both are conditioned on the text instruction to adaptively balance modality importance. Our UniMVU combines cross-modal self-attention with instruction-driven inner-modality gating module and a modality-level gating module with control token; for time-aligned streams we further adopt a fast-to-slow fusion scheme that reduces redundancy. Across six benchmarks (AVQA, AVSD, Music-AVQA, ScanQA, SQA3D and MVBench), our UniMVU achieves consistent gains over static-fusion baselines achieving gains as high as 13.5 in terms of CIDEr metric. Further, our analysis shows that the gating mechanism aligns with the human-interpretable modality relevance, and ablations show the contributions of inner-modality and modality-level gating. Our UniMVU provides a simple, unified recipe for instruction-aware multimodal video understanding that scales to diverse modalities without hand-crafted fusion rules.",
+      "authors": [
+        "Bonan Ding",
+        "Umair Nawaz",
+        "Ufaq Khan",
+        "Abdelrahman M. Shaker",
+        "Muhammad Haris Khan",
+        "Jiale Cao",
+        "Jin Xie",
+        "Fahad Shahbaz Khan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-25T18:02:20+00:00",
+      "link": "https://arxiv.org/pdf/2605.26232v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Instruction-aware gating for robust multimodal video understanding",
+      "llm_evidence_cn": "指令感知门控实现鲁棒多模态视频理解",
+      "llm_evidence": "指令感知门控实现鲁棒多模态视频理解",
+      "canonical_evidence": "指令感知门控实现鲁棒多模态视频理解",
+      "llm_tldr_en": "The paper proposes UniMVU, a unified multimodal video understanding framework with inner-modality and modality-level gating conditioned on text instruction to adaptively balance modality importance and avoid interference.",
+      "llm_tldr_cn": "该论文针对多模态视频中存在模态干扰的问题，提出统一多模态视频理解框架UniMVU，通过内模态门控和模态级门控，根据文本指令动态调整各模态的重要性，实现自适应融合。实验表明，该方法在多个视频理解任务上有效提升了性能。其门控机制可推广至多模态情感识别中的缺失模态处理，通过动态调整可用模态权重来增强鲁棒性。",
+      "llm_tldr": "该论文针对多模态视频中存在模态干扰的问题，提出统一多模态视频理解框架UniMVU，通过内模态门控和模态级门控，根据文本指令动态调整各模态的重要性，实现自适应融合。实验表明，该方法在多个视频理解任务上有效提升了性能。其门控机制可推广至多模态情感识别中的缺失模态处理，通过动态调整可用模态权重来增强鲁棒性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.26501v1",
+      "source": "arxiv",
+      "title": "Unveiling the Fragility of Vision-Language Models: Multi-Modal Adversarial Synergy via Texture-Constrained Perturbations and Cross-Modal Optimization",
+      "abstract": "Large Vision-Language Models (LVLMs) have transformed multi-modal understanding, excelling in tasks like image captioning and visual question answering by integrating visual and textual inputs. However, their robustness against adversarial attacks, particularly those exploiting both modalities, remains underexplored, posing risks to critical applications like autonomous driving and content moderation. Existing attacks focus on single modalities or require impractical white-box access, limiting their real-world relevance. In this paper, we introduce Multi-Modal Adversarial Synergy, a groundbreaking framework that crafts universal, black-box multi-modal attacks against LVLMs. MMAS simultaneously generates a texture scale-constrained universal adversarial perturbation for images and a learnable prompt perturbation for text, optimized jointly using only model queries. The image perturbation leverages wavelet-based texture constraints to ensure imperceptibility and robustness across diverse visual inputs. The text perturbation, constrained by an L-norm in the embedding space, maintains semantic coherence while steering outputs toward a target. A novel cross-modal regularization term aligns the perturbations' gradient directions, enhancing their synergistic impact and transferability across tasks and models. Extensive experiments show the strong universal adversarial capabilities of our proposed attack with prevalent LVLMs.",
+      "authors": [
+        "Xiang Fang",
+        "Wanlong Fang",
+        "Changshuo Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-26T03:28:28+00:00",
+      "link": "https://arxiv.org/pdf/2605.26501v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multi-modal adversarial robustness",
+      "llm_evidence_cn": "多模态对抗鲁棒性",
+      "llm_evidence": "多模态对抗鲁棒性",
+      "canonical_evidence": "多模态对抗鲁棒性",
+      "llm_tldr_en": "Introduces a black-box multi-modal adversarial attack framework that crafts universal perturbations to expose vulnerabilities in vision-language models.",
+      "llm_tldr_cn": "针对大型视觉-语言模型在多模态对抗攻击下的鲁棒性不足问题，提出Multi-Modal Adversarial Synergy框架，通过纹理约束扰动和跨模态优化生成通用黑色盒攻击，揭示模型的安全风险，为鲁棒多模态学习提供了挑战和评估工具。",
+      "llm_tldr": "针对大型视觉-语言模型在多模态对抗攻击下的鲁棒性不足问题，提出Multi-Modal Adversarial Synergy框架，通过纹理约束扰动和跨模态优化生成通用黑色盒攻击，揭示模型的安全风险，为鲁棒多模态学习提供了挑战和评估工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.27080v1",
+      "source": "arxiv",
+      "title": "Semi-Supervised Gaze Estimation via Disentangled Subspace Contrastive Learning",
+      "abstract": "Appearance-based gaze estimation always suffers from poor generalization due to limited annotated samples and insufficient dataset diversity. Leading approaches adopt weakly supervised learning to generate large-scale pseudo-labeled data from unconstrained real-world scenarios, aiming to mitigate the domain shifts. In this work, we devise a simple yet effective semi-supervised learning architecture that leverages unlabeled data to enhance domain generalization, thereby reducing reliance on labor-intensive manual annotations. Our key insight is to impose Jacobian regularization to disentangle feature representations into discriminative subspaces dedicated to specific gaze components, such as pitch and yaw angles. We further exploit the intrinsic ordinal ranking within each subspace for contrastive learning, enabling the model to learn robust gaze representations from a small set of labeled samples and an abundance of unlabeled ones. This ultimately yields our Disentangled Subspace Contrastive Learning (DSCL) framework. Extensive experiments on multiple benchmarks verify that the proposed DSCL is plug-and-play, achieving competitive performance using only 20\\%, 10\\%, and even 5\\% of the annotated data under both in-domain and cross-domain evaluation settings. The public code is available at \\href{https://github.com/da60266/DSCL}{https://github.com/da60266/DSCL}.",
+      "authors": [
+        "Qida Tan",
+        "Hongyu Yang",
+        "Wenchao Du"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-26T14:31:10+00:00",
+      "link": "https://arxiv.org/pdf/2605.27080v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Disentangled subspace contrastive learning for gaze estimation",
+      "llm_evidence_cn": "用于视线估计的解耦子空间对比学习",
+      "llm_evidence": "用于视线估计的解耦子空间对比学习",
+      "canonical_evidence": "用于视线估计的解耦子空间对比学习",
+      "llm_tldr_en": "This paper proposes a semi-supervised gaze estimation method that uses Jacobian regularization to disentangle feature representations into discriminative subspaces for pitch and yaw. It leverages unlabeled data for domain generalization, reducing annotation cost.",
+      "llm_tldr_cn": "该论文针对视线估计中标注样本有限的问题，提出一种半监督学习架构，通过雅可比正则化将特征表示解耦为分别对应俯仰和偏航角的判别性子空间，并利用未标注数据增强域泛化能力，从而减少对人工标注的依赖。实验证明该方法能有效提升泛化性能。其解耦思想可迁移至多模态情感识别的缺失模态特征处理。",
+      "llm_tldr": "该论文针对视线估计中标注样本有限的问题，提出一种半监督学习架构，通过雅可比正则化将特征表示解耦为分别对应俯仰和偏航角的判别性子空间，并利用未标注数据增强域泛化能力，从而减少对人工标注的依赖。实验证明该方法能有效提升泛化性能。其解耦思想可迁移至多模态情感识别的缺失模态特征处理。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.28427v1",
+      "source": "arxiv",
+      "title": "Latent Diffusion for Missing Data",
+      "abstract": "Diffusion models have emerged as powerful generative approaches for missing-data imputation, yet most existing methods operate directly in data space and degrade when training data are heavily incomplete. We investigate whether shifting diffusion to a learned latent representation improves robustness under missing-completely-at-random (MCAR) corruption. To this end, we propose a two-stage framework: a robust VAE-based imputer first learns compact semantic features from incomplete observations, and a diffusion model is then trained in the resulting latent space. Across training missing rates, we perform a controlled comparison against pixel-space diffusion models under the same incomplete-data setting. The latent diffusion model maintains high sample quality and remains stable up to 50\\% missingness, while pixel-space diffusion degrades progressively as missingness increases. For downstream imputation, latent diffusion also achieves consistently better performance than pixel-space diffusion. These findings indicate that latent-space modeling mitigates artifact amplification from zero-imputed inputs and provides a more robust generative prior for incomplete-data learning. Overall, our results support latent diffusion as a strong and practically useful alternative to pixel-space diffusion for missing-data problems.",
+      "authors": [
+        "Alberte Heering Estad",
+        "Ignacio Peis",
+        "Jes Frellsen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-05-27T12:57:09+00:00",
+      "link": "https://arxiv.org/pdf/2605.28427v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Latent diffusion for missing data imputation, applicable to multimodal missing modality",
+      "llm_evidence_cn": "潜在扩散用于缺失数据插补，可应用于多模态缺失模态",
+      "llm_evidence": "潜在扩散用于缺失数据插补，可应用于多模态缺失模态",
+      "canonical_evidence": "潜在扩散用于缺失数据插补，可应用于多模态缺失模态",
+      "llm_tldr_en": "Proposes a two-stage latent diffusion framework for missing data imputation: a robust VAE imputer learns compact features, then a diffusion model operates in latent space, achieving stability up to 50% missing rates.",
+      "llm_tldr_cn": "本文针对缺失数据插补问题，提出两阶段框架：先使用鲁棒VAE插补器从不完全观测中学习紧凑语义特征，再在潜在空间训练扩散模型。在MCAR设置下与像素空间扩散模型对比，潜在扩散在高达50%缺失率时仍能保持高质量样本和稳定性。该方法可扩展到多模态缺失模态重建，为缺失数据生成提供新思路。",
+      "llm_tldr": "本文针对缺失数据插补问题，提出两阶段框架：先使用鲁棒VAE插补器从不完全观测中学习紧凑语义特征，再在潜在空间训练扩散模型。在MCAR设置下与像素空间扩散模型对比，潜在扩散在高达50%缺失率时仍能保持高质量样本和稳定性。该方法可扩展到多模态缺失模态重建，为缺失数据生成提供新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.27451v1",
+      "source": "arxiv",
+      "title": "From Affect to Complex Behavior: Advancing Multimodal Human-Centered AI at the 10th ABAW Workshop & Competition",
+      "abstract": "The 10th Affective & Behavior Analysis in-the-Wild (ABAW) Workshop and Competition, held at CVPR 2026, continues to advance research on modelling, analysis, understanding of human affect and behavior in real-world, unconstrained environments. The workshop maintains its dual structure, comprising both a competition and a paper track. The ABAW Competition introduces a diverse set of challenges targeting key aspects of affective and behavioral understanding, including continuous affect (valence-arousal) estimation, discrete affect (expression and action unit) recognition, as well as more complex behavior analysis tasks, such as emotional mimicry intensity estimation, ambivalence/hesitancy recognition and fine-grained violence detection. These challenges are built upon large-scale in-the-wild datasets, providing comprehensive benchmarks for state-of-the-art approaches. In parallel, the paper track presents a wide range of contributions spanning pose, motion & behavior estimation, affect modelling & multimodal learning, benchmarks, datasets & evaluation protocols, fairness, robustness & deployment. Overall, the 10th ABAW Workshop and Competition continues to serve as a key platform for benchmarking, collaboration and innovation, shaping the development of next-generation multimodal, human-centered AI systems.",
+      "authors": [
+        "Dimitrios Kollias",
+        "Panagiotis Tzirakis",
+        "Alan Cowen",
+        "Stefanos Zafeiriou",
+        "Irene Kotsia",
+        "Eric Granger",
+        "Marco Pedersoli",
+        "Simon Bacon",
+        "Jens Madsen",
+        "Soufiane Belharbi",
+        "Muhammad Haseeb Aslam",
+        "Chunchang Shao",
+        "Guanyu Hu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-05-24T17:44:37+00:00",
+      "link": "https://arxiv.org/pdf/2605.27451v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "ABAW workshop on multimodal affect and behavior analysis",
+      "llm_evidence_cn": "ABAW多模态情感行为分析研讨会",
+      "llm_evidence": "ABAW多模态情感行为分析研讨会",
+      "canonical_evidence": "ABAW多模态情感行为分析研讨会",
+      "llm_tldr_en": "Describes the 10th ABAW workshop and competition on multimodal affective and behavior analysis, including emotion recognition.",
+      "llm_tldr_cn": "本文介绍第10届ABAW研讨会与竞赛，涵盖持续情感估计、表情识别等多项多模态情感理解挑战。虽未专门讨论缺失模态，但为多模态情感识别领域提供最新基准和平台，间接支持相关研究。",
+      "llm_tldr": "本文介绍第10届ABAW研讨会与竞赛，涵盖持续情感估计、表情识别等多项多模态情感理解挑战。虽未专门讨论缺失模态，但为多模态情感识别领域提供最新基准和平台，间接支持相关研究。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.28441v1",
+      "source": "arxiv",
+      "title": "Bayesian Gated Non-Negative Contrastive Learning",
+      "abstract": "While Contrastive Learning (CL) has revolutionized self-supervised representation learning, its latent representations remain highly entangled and opaque, limiting their interpretability in safety-critical applications. We identify that a fundamental cause of this entanglement is the reliance on deterministic similarity measures, which treat all feature dimensions equally. In compositional scenes, this creates an Optimization Conflict: common background features, such as, \"blue sky\", are encouraged to align in positive pairs but simultaneously repelled in negative pairs, causing gradient oscillations that hinder precise semantic disentanglement. To address this, we propose BayesNCL (Bayesian Gated Non-Negative Contrastive Learning). Unlike standard approaches, BayesNCL introduces a probabilistic gating mechanism that dynamically filters out task-irrelevant, high-frequency common features while selectively retaining discriminative semantics. By formalizing feature selection as a variational inference problem with a sparse Bernoulli prior, our method effectively resolves the optimization conflict. Empirical experimental results on Imagenet-100 demonstrate that BayesNCL achieves a remarkable 142.1% improvement in semantic consistency compared to state-of-the-art baselines, yielding highly interpretable representations without compromising downstream task performance. Code is available at https://github.com/Cui-Peng-624/BayesNCL.",
+      "authors": [
+        "Peng Cui",
+        "Jiahao Zhang",
+        "Lijie Hu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-05-27T13:06:05+00:00",
+      "link": "https://arxiv.org/pdf/2605.28441v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Bayesian gated non-negative contrastive learning for feature disentanglement",
+      "llm_evidence_cn": "贝叶斯门控非负对比学习用于特征解耦",
+      "llm_evidence": "贝叶斯门控非负对比学习用于特征解耦",
+      "canonical_evidence": "贝叶斯门控非负对比学习用于特征解耦",
+      "llm_tldr_en": "BayesNCL introduces a Bayesian gating mechanism to contrastive learning, enabling non-negative representations that disentangle common background features from task-specific semantics. This addresses the optimization conflict in standard CL.",
+      "llm_tldr_cn": "该论文指出标准对比学习由于确定性相似度量导致特征纠缠，尤其在组合场景中背景特征产生梯度振荡。为此提出贝叶斯门控非负对比学习（BayesNCL），通过贝叶斯门控机制和稀疏非负性约束，将常见背景特征与任务特定语义解耦，从而提升表示的可解释性和下游任务性能。该方法为解耦表示学习提供了新思路，可应用于多模态情感识别中的模态特征解耦。",
+      "llm_tldr": "该论文指出标准对比学习由于确定性相似度量导致特征纠缠，尤其在组合场景中背景特征产生梯度振荡。为此提出贝叶斯门控非负对比学习（BayesNCL），通过贝叶斯门控机制和稀疏非负性约束，将常见背景特征与任务特定语义解耦，从而提升表示的可解释性和下游任务性能。该方法为解耦表示学习提供了新思路，可应用于多模态情感识别中的模态特征解耦。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
