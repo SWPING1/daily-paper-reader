@@ -1,0 +1,406 @@
+Title: Balancing Multimodal Learning through Label Space Reshaping
+
+URL Source: https://arxiv.org/pdf/2605.28869v1
+
+Published Time: Fri, 29 May 2026 00:02:00 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+> PREPRINT 2026.05 1
+
+# Balancing Multimodal Learning through Label Space Reshaping 
+
+Xiaoyu Ma, Weijie Zhang, Yuanhao Gao, Han Miao, Yongjian Deng, Hao Chen 
+
+Abstract —Multimodal learning often suffers from modality imbalance, where modalities that converge faster dominate opti-mization while others remain undertrained. Existing approaches typically mitigate this issue by strengthening the weak modality or adjusting optimization gradients. However, such strategies mainly compensate for optimization-rate discrepancies, often at the expense of the strong modality’s optimization capacity, without analyzing how these discrepancies arise at the modality level. Based on theoretical insights and empirical observations, we argue that the discrepancy of learning pace arises from differences in the mapping difficulty between modality-specific feature space and the shared label space. To address this issue, we propose Balanced Multimodal Label Reshaping (BMLR), the first method that promotes multimodal balance from the label-side design. BMLR reshapes the cross-modal label space to equalize mapping difficulty across modalities, thereby facilitating modality interaction and injecting richer inter-class information into each modality. Extensive experiments across multiple architectures demonstrate that BMLR consistently improves multimodal per-formance and exhibits strong compatibility with diverse model designs. The source code will be released soon. 
+
+Index Terms —Balanced Multimodal Learning, Mapping Diffi-culty, Label Space Reshaping, Targeted Parameter Optimization 
+
+I. I NTRODUCTION 
+
+# MULTIMODAL learning [1], [2] aims to integrate infor-mation from diverse modalities [3], to achieve com-prehensive perception and reasoning in complex scenarios. Despite the advantages of cross-modal complementarity [4], studies have identified the problem of Modality Laziness [5], [6], where some modalities fail to learn effectively due to 
+
+Modality Imbalance [7]. During joint training, models often exhibit a Greedy [8] tendency to optimize the strong modality while neglecting the weak modality, resulting in suboptimal multimodal learning. Existing studies in Balanced Multimodal Learning (BML) 
+
+[9] emphasize enhancing weak modalities to achieve balance and fully leverage multimodal inputs. One research direction focuses on the optimization objective, designing modality-specific learning goals [5], [10]–[13] to strengthen the weak modality. Representative techniques include refining task su-pervision [5], incorporating prototype-based constraints [10], and leveraging knowledge distillation [11] to mitigate modality laziness. Another direction targets optimization dynamics, adaptively modifying learning rates [7], [14], [15] or gradient updates [16], [17] based on unimodal performance, aligning the optimization pace across modalities and preventing training bias. In summary, while existing studies observe inconsisten-cies in modality optimization pace and attempt to compensate for them through supervision or optimization adjustments, they Feature Space Label Space        
+
+> Audio Feature
+> Video Feature
+> One-hot Label
+> Smooth Label
+> Hard Easy
+> Mapping Difficulty
+> Mapping Imbalanced Mapping Difficulty
+> Balanced Mapping Difficulty
+> Fig. 1. Mapping relationship between feature space and label space. The
+> feature space is derived from the CREMAD and visualized by t-SNE. The
+> label space is illustrated using three classes from CREMAD as examples.
+
+do not analyze the causes of these discrepancies at modality level or propose solutions that directly address them. We argue that the inconsistency of learning rates can be explained from the label side, as it stems from differences in the difficulty of mapping between the feature space and the label space. In multimodal classification, models are typically supervised with one-hot labels, whose discrete and discontinuous nature forms isolated orthogonal points in the label space [18]. This sharp label distribution creates a highly nonlinear optimization landscape, forcing the model to learn steep decision boundaries near class margins [19]. As shown in Figure 1, different modalities exhibit distinct feature characteristics; those with clearer and more discriminative features can fit the label space more easily, while modalities with noisy or ambiguous semantics face greater optimization difficulty. Prior work also supports this insight. LFM [20] noted the impact of one-hot labels on modality imbalance, and mitigated this issue by introducing contrastive learning to weaken label dependency, rather than tackling it in the label space. It has been theoretically shown in [21] that modalities better aligned with the target distribution are optimized earlier. We further extend this perspective by analyzing the mapping difficulty between the feature and label space across modalities in real-world settings. This motivates us to address modality  
+
+> 0000–0000/00$00.00 © 2021 IEEE
+> arXiv:2605.28869v1 [cs.LG] 22 May 2026 PREPRINT 2026.05 2
+
+imbalance directly from the label side, which we consider a more fundamental and effective approach, as one-hot labels cannot fully capture all the information of the data inputs [22]. By reshaping the label space, we can align learning rates across modalities , incorporate inter-class informa-tion , and foster cross-modal interactions , leading to further performance improvements. Building on this motivation, we propose Balanced Multi-modal Label Reshaping (BMLR) , which leverages unimodal outputs and confidence discrepancies to construct balanced and class-aware label spaces for each modality, thereby enabling more equitable multimodal learning, as illustrated in Figure 2. Concretely, we first perform cross-modal label-space reshaping based on the unimodal predictions of each modality. The Re-shaping Matrix is customized using predictions from another modality, which determines the structure of the label-space transformation, while the Reshaping Intensity is governed by the confidence discrepancy among modalities, controlling the extent of the transformation. This reshaped label space not only aligns learning rates across modalities but also enriches inter-class relationships through cross-modal interactions. To mitigate learning instability caused by dynamic label-space variations, we adopt a Targeted Parameter Optimization strat-egy, applying different optimization objectives to different parts of the model. This ensures simultaneous improvement of unimodal representation learning and multimodal decision-making. Our label-side balanced learning method aligns learn-ing pace across modalities and enhances model capability by constructing a balanced and class-relation-aware label space 
+
+at the sample level. To summarize, our contributions in this paper are as follows:  
+
+> •
+
+We empirically analyze the underlying cause of the differences in modality optimization rates, which arise from varying mapping difficulties between the feature space and the label space.  
+
+> •
+
+To the best of our knowledge, we propose the first label-side method to alleviate modality imbalance. BMLR constructs a balanced, class-relation-aware label space that aligns optimization rates across modalities while providing richer cross-modal inter-class information.  
+
+> •
+
+Experiments on multiple datasets, model architectures, and fusion methods demonstrate that BMLR consistently achieves significant performance gains, confirming its strong generalizability and effectiveness. II. R ELATED WORK 
+
+A. Balanced Multimodal Learning 
+
+When training multimodal models with a unified objective, modality imbalance causes the strong modality to dominate optimization, leading to insufficient learning of others [5]. To address the imbalance, some methods design modality-specific objectives to strengthen the weak modality [5], [10], [11], [20], [23]. Other works adjust training process to balance optimization paces [7], [14], [15], [24]–[27]. To resolve the conflicts in training, some methods decouple the multimodal learning [28], [29]or adjust the optimization directions [12]. While these methods help align learning rates, they overlook the cause of varying learning difficulty [21]. We argue that such differences stem from the complexity of mapping be-tween feature and label spaces, motivating our approach to align learning difficulty by reconstructing the label space. Since our method is designed from the label side, each modality is required to learn relatively independent and dy-namic supervision signals. Inspired by DGL [30], which decouples encoder gradients from decision-layer gradients to avoid optimization conflicts, we optimize each modality encoder with its own unimodal objective, while the multimodal prediction loss is used to update only the decision layer. 
+
+B. Label Smoothing and Knowledge Distillation Label Smoothing (LS) is a regularization technique that replaces hard labels with a mixture of hard labels and a uni-form distribution over all classes, preventing the model from becoming overconfident [31], [32]. Knowledge Distillation (KD) is a knowledge transfer paradigm in which a compact student model is trained to mimic a more accurate teacher model [33]–[35]. The core insight of KD is that the output probabilities of a trained model contain rich knowledge beyond hard labels. Extending this concept, KD can be viewed as a special form of LS, constructing soft labels that capture more realistic inter-class relationships [36]. In this work, we build on this idea by constructing a more balanced, class-relationship-aware label space for each modality, guided by the modality-specific learning dynamics. Importantly, our approach fun-damentally differs from distillation-based balancing methods such as UMT [11], which rely on intra-modal knowledge transfer, cannot facilitate cross-modal interaction, and require additional resources to pretrain unimodal models. III. M ETHOD 
+
+A. Model Formulation 
+
+We focus on the multimodal discrimination task, following related works [9]. For simplicity, we consider an input scenario with two modalities: ma and mv . The training dataset is 
+
+D = {xi, yi}i=1 ,2,...,N , where each xi consists of multimodal inputs, i.e., xi = (xai , xvi ), and yi ∈ {0, 1}C , with C
+
+denoting the number of classes. We employ a multimodal model comprising two dedicated unimodal encoders followed by a fusion network. Each unimodal encoder processes its respective input to generate a modality-specific representation. The encoders, denoted as ϕa and ϕv , extract features from the corresponding modality of x. The outputs are represented as 
+
+za = ϕa(θa, xa) and zv = ϕv (θv , xv ), where θa and θv are the encoder parameters. The unimodal outputs are fused [37], [38] to obtain the multimodal representation. Without loss of generality, we use concatenation as the fusion method and denote the linear classifier parameters producing the logits by 
+
+W ∈ RC×(dza +dzv ) and b ∈ RC . The Cross-entropy(CE) loss 
+
+L is employed to measure the discrepancy between the model predictions and the targeted label space. 
+
+B. Balanced Multimodal Label-space Reshaping 1) Overview of Method: The overall framework of our method is illustrated in Figure 2. We first obtain the unimodal PREPRINT 2026.05 3Data flow (Visual) Data flow (Audio) Backward 
+
+𝐀 𝐀 : Confidence Discrepancy Ratio 𝐀 𝐀 : Temperature 𝐀 𝐀 : Reshaping Intensity 𝐀 𝐀 : Reshaping Matrix 
+
+Reshaping Details Targeted Parameter Optimization       
+
+> Initial Audio L abel
+> Visual Audio
+> Confidence
+> Discrepancy
+> logits logits
+> Reshaping
+> Matrix
+> Reshaping
+> Intensity
+> 𝐀 𝐀 ↓
+> 𝐀 𝐀 ↑
+> 𝐀 𝐀 ↑
+> Reshaped
+> Audio L abel
+
+Label-space Reshaping  
+
+> Construct Reshaping Matrix
+
+𝐀 𝐀 
+
+𝐀 𝐀       
+
+> 𝐀 =𝐀 𝐀 𝐀
+> 𝐀 =𝐀 𝐀 𝐀
+> Visual
+> Label
+> (Reshaped)
+> Audio
+> Label
+> (Reshaped)
+> Unimodal
+> Predictions
+> Confidence
+> Discrepancy
+> 𝐀 𝐀
+> 𝐀 𝐀
+
+𝐀 𝐀   
+
+> Calculate Reshaping Intensity
+> Data
+> Inputs
+> Audio
+> Encoder
+> Visual
+> Encoder
+> Label-space
+> Reshaping
+> Label
+> (Reshaped)
+> Label
+> (Reshaped)
+> Label
+> (One-hot )
+> Fig. 2. Pipeline of the BMLR method. We construct a balanced and class-relation-aware label space by leveraging cross-modal prediction comparison and interaction, while optimizing different parts of the model with modality-specific objectives.
+
+prediction results for each sample and construct the Label-space Reshaping Function F based on these predictions. Through F, the original label space Y is reshaped to produce a balanced and class-relation-aware label space eYu, as defined in Equation 1. Subsequently, we design a Targeted Parame-ter Optimization strategy that applies different optimization objectives to distinct parts of the model, enabling simultaneous improvement of unimodal representation learning and multi-modal fusion capability. 
+
+eYu = F(Y), u ∈ { a, v } (1) 
+
+2) Label-space Reshaping Function: Considering the vari-ation in modality dependence across samples [39], we de-sign a sample-level label-space reshaping strategy based on unimodal predictions. Specifically, we construct a family of reshaping functions F = {Fi}Ni=1 , where Fi represents the label-space reshaping applied to the i-th sample. Each Fi
+
+is adaptively determined by the unimodal predictions of the sample and the label reshaping threshold β. The reshaping process is formulated as follows: 
+
+eyiu = Fi(yi, zai , zvi , β ), u ∈ { a, v }. (2) Each reshaping function Fi consists of two fundamental components: a Reshaping Matrix , which determines how the label space is reshaped, and a Reshaping Intensity , which controls the degree of reshaping. In this section, we elaborate on our design based on these two key aspects. 
+
+Reshaping Matrix As discussed in Section I, we argue that modality imbalance arises from differences in the difficulty of mapping between the feature space and the label space. Therefore, applying appropriate smoothing to the label space offers a potential solution. However, naive label smoothing weakens the original supervision signal and may introduce incorrect inter-class relationships Figure 3b, resulting in a noticeable performance drop, as shown in Table IV. To address this issue, we utilize the predictions from the complementary modality to guide the reshaping of the current label space. Specifically, we first obtain the unimodal prediction of each sample as OGM [7] does and convert them into probability distributions using the softmax function, as follows: 
+
+pui = softmax (W u · zu + b
+
+2 ), u ∈ { a, v }. (3) Due to modality imbalance during training, it is necessary to evaluate the degree of discrepancy between modalities and adjust the temperature accordingly to prevent the predictions from becoming overly sharp or overly smooth. Inspired by the imbalance factor defined in OGM [7], we measure the confidence discrepancy between modalities at the sample level, as shown in Equation 4: 
+
+λai = yTi · pai
+
+yTi · pvi
+
+. (4) 
+
+λvi is accordingly defined as the reciprocal of λai . Based on the confidence discrepancy, we reshape the unimodal predic-tion results using a strategy similar to knowledge distillation [33], thereby injecting cross-modal inter-class information, as PREPRINT 2026.05 4
+
+shown in Equation 5: 
+
+dai = softmax (W v · zv + b
+
+2 , T = α · λvi ),
+
+dvi = softmax (W a · za + b
+
+2 , T = α · λai ),
+
+(5) where α is a hyperparameter that regulates the sensitivity of the mapping between confidence λui and temperature T , and we decompose W to [W a; W v ]. Accordingly, the Reshaping Matrix for the label space of each modality can be obtained as follows: 
+
+Dui = dui · 1T ∈ RC×C , u ∈ { a, v }. (6) 
+
+Reshaping Intensity We reshape the label space to align the mapping difficulty between the feature space and the label space, thereby mitigating modality imbalance. To ensure suf-ficient modality alignment while avoiding excessive reshaping that could introduce bias or weaken the supervision signal, we further constrain both the conditions and the intensity of the reshaping process. Concretely, we define the Reshaping Intensity ξ as follows: 
+
+ξui =
+
+(1 − 1
+
+> λui
+
+1 < λ ui < 1/β 
+
+0 others , u ∈ { a, v }, (7) where β ∈ [0 , 1] is a hyperparameter 1, which controls when reshaping is activated. The label space of a modality is reshaped only when the confidence ratio is less than 1/β . The key insight is that if the confidence ratio exceeds 1/β , the complementary modality is poorly learned and should not be used for distillation. In this case, the original supervision signal is retained for the insufficiently learned modality to ensure adequate learning, as done in previous works [7], [29]. 
+
+Label Space After Reshaping. Based on the Reshaping Matrix and Reshaping Intensity described above, we perform sample-level label-space reshaping for each modality, as for-mulated in Equation 8: 
+
+eyiu · I = Fi(yi) = ( ξui · Dui + (1 − ξui ) · I)yi. (8) Here, I ∈ RC×C denotes the identity matrix, representing the one-hot component preserved during reshaping. Both the reshaping matrix Dui and the reshaping strength ξui are func-tions of the current modality prediction and predefined hy-perparameters. This cross-modal label reshaping strategy not only aligns the mapping difficulty between the feature space and the label space 2 across modalities but also captures inter-class relationships, thereby enhancing modality interaction (as demonstrated in Section IV-D3). 
+
+3) Targeted Parameter Optimization: During training, we dynamically reshape the label space for each modality at the sample level. Consequently, applying a standard joint optimization strategy under these conditions can lead to fluctu-ations in the optimization objectives, which may hinder model convergence and effective learning. Inspired by AMSS [27]          
+
+> 1Since βappears in the denominator, its value cannot be zero. To simulate the case where 1/β approaches infinity, we introduce an extremely small positive value as a substitute for β= 0 .
+> 2Duiand Iare valid probability distributions(non-negative, sum to one), which guarantee the reshaped label space to be valid.
+
+and DGL [30], we group the model parameters and assign different optimization objectives to specific parameter sets, ensuring more stable and effective training. In multimodal learning, modality imbalance often leads existing approaches to assign each modality an independent classification head and compute a separate unimodal loss [5]. These losses are then combined through weighted fusion into a joint loss L, which is used to optimize all model parameters simultaneously, as follows: 
+
+L = L0 
+
+> CE
+
++ X
+
+> u∈{ a,v }
+
+wuLuCE , (9) where L0 
+
+> CE
+
+denotes the multimodal loss, while wk and LkCE 
+
+represent the weight and the unimodal loss for the k-th modal-ity, respectively. In standard learning, the final optimization target always corresponds to the ground-truth one-hot labels, making global optimization straightforward. However, since our method operates from thon the label side, the target labels across modalities and samples can be inconsistent and dynamically change training, as visualized in Section IV-D2. Applying a unified global optimization under these conditions can lead to model instability or even prevent convergence. To address this, we group the model parameters and update each targeted group with a specific objective. Specifically, we define two types of learning objectives: Lu
+
+computes the loss between the reshaped label space and the output of each modality, while L0 measures the loss between the final multimodal output and the original one-hot labels, as formulated below: 
+
+Lu = −
+
+> N
+
+X
+
+> i
+
+eyiu log( pui ), L0 = −
+
+> N
+
+X
+
+> i
+
+yi log( pi), (10) where pi denotes the multimodal prediction. During training, the loss computed from the reshaped label space is used exclusively to optimize the corresponding modality encoder, while the multimodal loss is applied to update the parameters of the decision layer, as shown in Equation 11: 
+
+θu, ∗ = arg min  
+
+> θu
+
+Lu, Θ∗ = arg min  
+
+> Θ
+
+L0. (11) Here, Θ = {W , b} denotes the set of decision layer param-eters. This approach anchors the primary learning objectives for each part of the model, reducing potential biases that could arise from simply summing all losses. 
+
+4) Summary and Pseudo-code: In summary, the pseudo-code of BMLR is presented in Algorithm 1. Our method simul-taneously harmonizes the learning dynamics across modalities and enhances the unimodal performance by generating labels enriched with richer informational and relational cues. IV. E XPERIMENTS 
+
+A. Experimental Details 1) Datasets: The main experiments in this work are con-ducted on three multimodal video datasets, following the prior studies [7], [9]. CREMAD [40] is an audiovisual dataset for emotion recognition, consisting of 7,440 video clips. It includes six common emotions, and the dataset is randomly PREPRINT 2026.05 5                                                     
+
+> TABLE I
+> COMPARISON WITH BALANCED MULTIMODAL LEARNING METHODS . R ED REPRESENTS THE BEST ACCURACY IN EXISTING METHODS ,WHILE BLUE
+> REPRESENTS THE SECOND -BEST PERFORMANCE .
+> Method CREMAD Kinetic-Sounds AVE
+> Baseline 64.35% 63.59% 67.19% Uniform-Baseline 70.88% 68.00% 70.52% OGM-GE (CVPR 2022) 65.19% 66.52% 62.76% AGM (ICCV 2023) 72.44% 63.78% 66.41% CML (ICML 2023) 67.61% 68.13% 69.27% MBSD (WSDM 2023) 72.87% 65.16% 70.05% LFM (NuerIPS 2024) 63.78% 64.26% 65.89% Diag&Re (ECCV 2024) 66.62% 63.75% 63.28% ReconBoost (ICML 2024) 68.61% 67.89% 74.22%
+> MMPareto (ICML 2024) 74.57% 68.75% 71.09% OPM (TPAMI 2025) 65.48% 65.82% 66.41% Remix (ICML 2025) 72.16% 68.47% 68.23% DGL (ICCV 2025) 71.30% 68.86% 68.75%
+> BMLR (ours) 79.69% 71.76% 76.04%
+
+Algorithm 1 Method of BMLR 
+
+Input: data D = {(xai , xvi ), yi}i=1 ,2,...,N , modality set 
+
+U = {a, v }, training epoch E, initialized model parameters 
+
+θa, θv , Θ, learning rate η, hyperparameters α ,β
+
+for e = 0 , · · · , E − 1 do for each sample x in D do 
+
+Get predict results pui with Equation 3; Calculate confidence discrepancy λui with Equation 4; Build the Reshaping Matrix Dui with Equation 6; Calculate Reshaping Intensity ξui with Equation 7; Reshaping the label space with Dui and ξui ;
+
+end for for u in U do 
+
+Calculate the unimodal loss Lu;
+
+θu, ∗ ← θu − η∇θu Lu;
+
+end for 
+
+Calculate the multimodal loss L0;
+
+Θ∗ ← Θ − η∇ΘL0;
+
+end for 
+
+split into a training and validation set of 6,696 samples and a test set of 744 samples, with an approximate 9:1 ratio. Kinetic-Sounds (K-Sounds) [41] is derived from the Kinetics dataset [42], which contains 400 action classes based on YouTube videos. Kinetic-Sounds consists of 31 action categories se-lected for their potential to be represented both visually and aurally, such as playing various instruments. AVE [43] is a subset of the AudioSet dataset designed for audio-visual event localization. It contains 28 event categories, totaling 4,143 10-second videos. The training, validation, and test sets include 3,339, 402, and 402 samples, respectively. To further demonstrate the effectiveness of BMLR under settings with more than two modalities, we conduct exper-iments on two tri-modal sentiment analysis datasets. CMU-MOSI (MOSI) [44] is an early benchmark dataset for mul-timodal sentiment analysis, consisting of 2,199 clips from                                 
+
+> TABLE II
+> COMBINATION AND COMPARISON WITH CONVENTIONAL FUSION METHODS .†INDICATES THAT OUR BMLR METHOD IS APPLIED .BOLD
+> INDICATES THAT OUR METHOD BRINGS IMPROVEMENT .
+> Method CREMAD K-Sounds AVE
+> Concat 70.88% 68.00% 70.52% Concat †79.69% 71.76% 76.04%
+> Sum 70.88% 68.75% 66.67% Sum †79.26% 71.95% 75.52%
+> Film 63.34% 64.65% 68.23% Film †68.47% 67.97% 73.44%
+> Bi-Gated 63.92% 63.36% 66.93% Bi-Gated †65.63% 66.24% 73.70%
+
+93 YouTube opinion videos with aligned text, audio, and visual modalities. Each utterance is annotated with a sentiment intensity score from -3 to +3 for classification. CMU-MOSEI (MOSEI) [45] is a large-scale extension of MOSI, which contains 23,453 videos with synchronized text, audio, and visual modalities, annotated with the same labels (-3 to +3). 
+
+2) Experimental Settings: For bi-modal datasets (CRE-MAD, K-Sounds, AVE), we adopt ResNet-18 [46] trained from scratch to extract features for all modalities. For the video modality, frames are sampled at 1 fps and uniformly selected as inputs. For the audio modality, spectrograms are generated using Librosa [47] and serve as the input. For tri-modal datasets (MOSI, MOSEI), we adopt the Transformer-based [48] model for feature processing and fusion. During training, the Adam [49] optimizer is used for parameter optimization, with β = (0 .9, 0.999) and a learning rate set to 5 × 10 −5. All reported results are averages from three random seeds, with all models trained on one NVIDIA RTX 3090 GPUs using a batch size of 64 for 70 epochs. PREPRINT 2026.05 6                                             
+
+> TABLE III COMPARISON OF MULTIMODAL ACCURACY ,UNIMODAL ACCURACY ,AND A/V R ATIO BEFORE AND AFTER APPLYING BMLR. T HE BEST UNIMODAL PERFORMANCE IS UNDERLINED . F OR THE RATIO METRIC ,A DOWNWARD ARROW (↓)INDICATES THAT VALUES CLOSER TO 1. Baseline BMLR (Ours)
+> Dataset Multimodal Audio Visual A/V Ratio Multimodal Audio Visual A/V Ratio
+> CREMAD 70.88% 54.12% 31.25% 1.73 79.69% 62.22% 66.34% 0.94 ↓
+> K-Sounds 68.99% 49.41% 30.63% 1.61 71.76% 52.66% 54.49% 0.97 ↓
+> AVE 70.52% 58.33% 24.47% 2.38 76.04% 68.23% 38.80% 1.76 ↓
+
+B. Comparison with Existing BML Methods 
+
+Our BMLR method is designed to alleviate modality im-balance in multimodal learning from the label perspective. To validate its effectiveness and superiority, we compare it with existing balanced learning methods, as shown in Table I. Specifically, the methods include OGM-GE [7], AGM [14], 
+
+CML [50], MBSD [51], LFM [20], Diag&Re [52], Recon-Boost [25], MMPareto [12], OPM [26], Remix [29], and 
+
+DGL [30]. Baseline denotes training the model using only the multimodal loss, whereas Uniform-Baseline optimizes with a weighted combination of unimodal and multimodal losses [5]. The results demonstrate that BMLR achieves remarkable performance improvements across all datasets. 
+
+C. Combination with Different Fusion Methods 
+
+We compare our approach with several representative mul-timodal fusion strategies commonly used in deep learning frameworks, including Concatenation (Concat) [53], Sum-mation (Sum) , FiLM [54], and Bi-Gated [55]. The results are shown in Table II. Following prior works, we adopt the combi-nation of BMLR and concatenation as a representative method. The results clearly demonstrate that our approach achieves substantial performance improvements across datasets, with gains of 8.81% on CREMAD, 3.76% on Kinetic-Sounds, and 
+
+5.52% on AVE. Moreover, our method consistently yields sig-nificant performance gains when combined with various fusion strategies, further demonstrating its general applicability. 
+
+D. Analysis of the BMLR Method 1) Analysis of the Alleviation of Modality Imbalance and Promotion of Cross-modal Interaction: To verify the effec-tiveness of our method in mitigating modality imbalance and promoting cross-modal interaction, we further report the multimodal accuracy, unimodal accuracy (Audio / Visual), and modality performance ratio (A/V Ratio) before and after applying BMLR. Specifically, the A/V Ratio denotes the ratio between audio and visual accuracies, which is used to measure the performance gap between modalities. A value closer to 1 indicates a more balanced contribution of different modalities. As shown in Table III, after introducing BMLR, the mul-timodal performance is consistently improved on all three datasets. Meanwhile, the A/V Ratio is significantly reduced and becomes closer to 1, indicating that the model’s over-reliance on the dominant modality is effectively alleviated and 
+
+the modality learning becomes more balanced . In addition, the performance of both unimodal branches is improved, with larger gains observed in the weak modality. At the same time, the strong modality is not suppressed but further improved. This indicates that BMLR does not achieve balance by sacrificing the strong modality, but instead promotes cross-modal interaction and collaborative optimization .Overall, our method not only improves the overall multi-modal recognition performance but also effectively narrows the performance gap between modalities and strengthens cross-modal interaction, leading to a more balanced and ef-ficient multimodal learning process. 
+
+2) Analysis of the Balanced and Class-Relationship-Aware Label Space: Our BMLR explicitly reshapes the supervision signals for each modality, leading to a more balanced label distribution while preserving inter-class relationships. 
+
+Balanced Label Space. As shown in Figure 3a, we analyze the number of samples undergoing label-space reshaping dur-ing training and visualize the corresponding label distributions with t-SNE [56]. For clarity, three classes are selected, where each axis represents the target probability of one class. We observe that the audio modality, which typically learns faster and tends to memorize data, receives a broader and more diverse set of soft labels. This slows down its learning process and helps it capture richer inter-class relationships. In contrast, the visual modality learns from fewer and sharper labels, en-suring strong supervision while applying moderate smoothing. Compared with the original one-hot space, the reshaped label space is substantially more balanced. 
+
+Class-Relation-Aware Label Space. During label-space reshaping, our goal is to construct a label space that accurately reflects inter-class relationships. In Figure 3d, samples from the classes ANG (top) and FEA (bottom) exhibit higher simi-larity. When using the Uniform Reshaping (Uni-Reshaping) method mentioned in LFM [20], which distributes a small equal probability across all non-target classes. As shown in Figure 3b, the reshaped labels fail to capture these inter-class relationships and sample-specific differences. In contrast, our BMLR method generates labels that faithfully preserve the inter-class relationship as shown in Figure 3c. 
+
+3) Analysis of Inter-Class Relationships: We construct a reshaped label space inspired by cross-modal knowledge distillation to enable each modality to better capture inter-class relationships. To validate the effectiveness of this ap-proach, we conduct an in-depth analysis of the unimodal predictions of models trained with BMLR. Specifically, we record the top-3 predicted classes for all samples in each modality and summarize them according to their ground-truth classes. As shown in Figure 4a and Figure 4b, we present PREPRINT 2026.05 7
+
+(a) Count of Reshaped Samples and Visualization of Label Space. 
+
+(b) Uniform (c) BMLR (d) Sample  
+
+> Fig. 3. Visualization of the number of samples used for label reshaping and the reshaped label space results.
+
+(a) Disappointed (V)  (b) Happy (V) 
+
+(c) Playing Clarinet (A)  (d) Playing Saxophone (A)      
+
+> Fig. 4. Top-3 predicted class frequency distributions for a given class.
+> Top: visual modality on CREMAD. Bottom: audio modality on KS. Yellow bars indicate the ground-truth class.
+
+representative visual modality results for the Disappointed and 
+
+Happy categories from the CREMAD dataset. Since these two classes exhibit clear visual differences, their predictions are almost mutually exclusive. In contrast, on the Kinetic-Sounds dataset, we display the audio modality results for Playing Clarinet and Playing Saxophone in Figure 4c and Figure 4d, which show strong acoustic correlations and frequent co-occurrence during classification. This demonstrates that our BMLR method effectively encourages the model to capture inter-class relationships, thereby enhancing performance. 
+
+E. Ablation Study 1) Analysis of Hyperparameters in BMLR.: The BMLR method introduces two hyperparameters, α and β. The parame-                                       
+
+> TABLE IV
+> PERFORMANCE OF THE MODELS TRAINED WITH DIFFERENT RESHAPING METHODS .▲AND ▼INDICATE PERFORMANCE IMPROVEMENT AND DEGRADATION COMPARED TO THE BASELINE .
+> Method CREMAD K-Sounds
+> Baseline 70.88% 68.00% Uni-Reshaping 58.95% ▼11.93% 60.39% ▼7.61%
+> BMLR 79.69% ▲8.81% 71.76% ▲3.76%
+> TABLE V PERFORMANCE OF THE PROPOSED BMLR AND ITS VARIANTS .
+> Method CREMAD K-Sounds AVE
+> Baseline 70.88% 68.00% 70.52% Only-Reshape 71.31% 67.38% 70.31% Only-TPO 75.43% 70.94% 74.48% Uni-Distill 73.86% 64.57% 54.69% Vanilla-Reshape 69.89% 61.29% 53.13% BMLR 79.69% 71.76% 76.04%
+
+ter α controls the mapping between the confidence discrepancy factor and the temperature, while β serves as a threshold for deciding whether label-space reshaping is applied. To assess their influence, we conduct a two-parameter sensitivity analysis, as shown in Figure 5. For each α, we vary β and visualize the results as multi-layer surface plots. The overall trend shows that performance initially increases and then decreases. The parameter β governs the timing of label-space reshaping. When β is too small, excessive distillation occurs, leading to performance degradation. When β is too large, label-space reshaping is rarely triggered because 1/β is close to 1, making reshaping difficult or even impossible, which leads to a performance drop. In contrast, the effect of α is relatively minor when β is fixed, as it only adjusts the mapping between the distillation temperature and the balance factor. Therefore, once an appropriate β is chosen, only a small-scale search over α is required, demonstrating that BMLR does not introduce excessive hyperparameter tuning overhead. 
+
+2) Comparison with Uniform Reshaping Method.: To ver-ify the effectiveness and advantages of the label-space reshap-ing strategy in our BMLR method, we first implement the Uniform Reshaping method. As mentioned in Section IV-D2, this simple smoothing weakens the supervision signal and fails to account for sample-specific inter-class relationships, leading to a significant performance drop, as illustrated in Table IV. In contrast, our BMLR method employs a more refined label-space reshaping design that incorporates both sample-specific differences and inter-class relationships. As shown in Figure 6, comparing results before and after applying BMLR reveals that our approach not only aligns learning difficulty across modalities to mitigate modality laziness 
+
+but enhances unimodal performance by promoting inter-modal interaction and capturing inter-class relationships .
+
+3) Validation of Design Effectiveness: To systematically evaluate the contribution of each core module and key design to the overall performance, we further conduct comprehensive PREPRINT 2026.05 8
+
+(a) CREMAD (b) Kinetic-Sounds (c) AVE       
+
+> Fig. 5. Performance of the models with different αand βvalues in BMLR on different datasets.
+
+(a) Train w/o BMLR (b) Train w/ BMLR  
+
+> Fig. 6. Learning process before and after applying the BMLR method.
+
+ablation studies. The results are shown in Table V. Specifically, we first conduct ablation studies on the ef-fectiveness of the two key components. In the table, Only-Reshape and Only-TPO denote variants that retain only the Label Reshaping module or only Targeted Parameter Optimization (TPO) in BMLR, respectively. The results show that Only-Reshape may lead to degraded performance. This does not indicate that the reshaping mechanism is ineffective, but rather that the dynamic supervision signals introduce considerable instability during training. In contrast, Only-TPO yields stable performance gains, which is consistent with the findings of DGL [30]. However, it remains clearly inferior to the full BMLR model, suggesting that parameter optimization alone is insufficient to resolve modality imbalance, and that the reshaping mechanism is equally essential. Therefore, the two core components of BMLR are tightly coupled and mutually beneficial by design. 
+
+We further evaluate the specific design of the Reshap-ing module through two variants: Uni-Distill and Vanilla-Reshape . Uni-Distill removes all imbalance-aware designs and uses only cross-modal prediction logits as supervision signals, highlighting the difference and advantage of our method over conventional cross-modal distillation strategies. Vanilla-Reshape preserves the imbalance-aware design but removes the original supervision signal in Equation 8. Although this variant produces more balanced supervision signals, the labels become overly smooth and lack clear learning targets, resulting                          
+
+> TABLE VI
+> COMPARISON WITH BALANCED MULTIMODAL LEARNING METHODS .BOLD REPRESENTS THE BEST ACCURACY IN EXISTING METHODS ,WHILE UNDERLINE REPRESENTS THE SECOND -BEST PERFORMANCE .
+> Method MOSI MOSEI
+> Baseline 36.16% 41.68% AGM (ICCV 2023) 37.05% 41.75% ReconBoost (ICML 2024) 33.93% 43.69% MMPareto (ICML 2024) 36.17% 41.92% OPM (TPAMI 2025) 36.16% 41.14% LFM (NeurIPS 2024) 34.48% 41.94% DGL (ICCV 2025) 36.63% 42.78%
+> BMLR (ours) 37.05% 43.71%
+
+in a substantial performance drop. Overall, these ablation studies demonstrate that the complete BMLR framework effectively combines label fairness and training stability. It provides more appropriate supervision signals while alleviating the optimization difficulty caused by dynamically changing labels , thereby leading to superior multimodal learning performance. 
+
+F. Experiments on Advanced Architectures and Complex Mul-timodal Scenarios 
+
+To further evaluate the effectiveness of our method in more complex multimodal settings, we conduct additional experi-ments on the trimodal sentiment analysis datasets MOSI and MOSEI. (1) To assess compatibility with advanced architec-tures , we replace all CNN-based encoders with Transformer-based models. Since BMLR operates on the label space, no modification to the method itself is required when changing the encoder architecture. (2) To adapt BMLR to the trimodal setting , we focus on the strongest and weakest modalities during label space reshaping, while keeping the intermediate modality unchanged. This design aligns the mapping difficulty of the strong and weak modalities with that of the intermediate modality, enabling BMLR to function effectively in trimodal PREPRINT 2026.05 9
+
+scenarios. We further compare our method with several repre-sentative BML approaches that can be extended to trimodal settings. As shown in Table VI, our method consistently improves performance under both more complex multimodal settings and more advanced architectures, outperforming ex-isting BML methods. V. C ONCLUSION 
+
+In this work, we argue that differences in optimization pace across modalities arise from the varying difficulty of mapping between feature and label spaces. To address this issue, we propose BMLR, the first label-side regulation method for balanced multimodal learning. By reshaping the label space, BMLR not only aligns learning difficulty across modalities but also enhances inter-class relationship modeling and cross-modal interactions, leading to improved unimodal and multimodal performance. Extensive experiments on di-verse datasets, architectures, and fusion strategies provide consistent empirical evidence for the effectiveness of BMLR, which outperforms existing balanced learning approaches and demonstrates strong generalizability across settings. REFERENCES [1] J. Ngiam, A. Khosla, M. Kim, J. Nam, H. Lee, A. Y. Ng et al. ,“Multimodal deep learning.” in International Conference on Machine Learning , vol. 11, 2011, pp. 689–696. [2] X. Min, G. Zhai, J. Zhou, X.-P. Zhang, X. Yang, and X. Guan, “A multi-modal saliency model for videos with high audio-visual correspondence,” 
+
+IEEE Transactions on Image Processing , vol. 29, pp. 3805–3819, 2020. [3] Y. Zhu, Y. Wu, N. Sebe, and Y. Yan, “Vision+ x: A survey on multimodal learning in the light of data,” IEEE Transactions on Pattern Analysis and Machine Intelligence , 2024. [4] X. Qin, Y. Cui, S. Sun, R. Chen, W. Ren, A. Knoll, and X. Cao, “Disentangle to fuse: Towards content preservation and cross-modality consistency for multi-modality image fusion,” IEEE Transactions on Image Processing , 2026. [5] W. Wang, D. Tran, and M. Feiszli, “What makes training multi-modal classification networks hard?” in Proceedings of the IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition , 2020, pp. 12 695– 12 705. [6] Y. Huang, J. Lin, C. Zhou, H. Yang, and L. Huang, “Modality compe-tition: What makes joint training of multi-modal network fail in deep learning?(provably),” in International Conference on Machine Learning .PMLR, 2022, pp. 9226–9259. [7] X. Peng, Y. Wei, A. Deng, D. Wang, and D. Hu, “Balanced multimodal learning via on-the-fly gradient modulation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2022, pp. 8238–8247. [8] N. Wu, S. Jastrzebski, K. Cho, and K. J. Geras, “Characterizing and overcoming the greedy nature of learning in multi-modal deep neural networks,” in International Conference on Machine Learning . PMLR, 2022, pp. 24 043–24 055. [9] S. Xu, M. Cui, C. Huang, H. Wang, and D. Hu, “Balancebench-mark: A survey for multimodal imbalance learning,” arXiv preprint arXiv:2502.10816 , 2025. [10] Y. Fan, W. Xu, H. Wang, J. Wang, and S. Guo, “Pmr: Prototypical modal rebalance for multimodal learning,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023, pp. 20 029–20 038. [11] C. Du, T. Li, Y. Liu, Z. Wen, T. Hua, Y. Wang, and H. Zhao, “Im-proving multi-modal learning with uni-modal teachers,” arXiv preprint arXiv:2106.11059 , 2021. [12] Y. Wei and D. Hu, “Mmpareto: Boosting multimodal learning with innocent unimodal assistance,” in International Conference on Machine Learning . PMLR, 2024, pp. 52 559–52 572. [13] R. Xu, R. Feng, S.-X. Zhang, and D. Hu, “Mmcosine: Multi-modal cosine loss towards balanced audio-visual fine-grained learning,” in 
+
+ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 2023, pp. 1–5. [14] H. Li, X. Li, P. Hu, Y. Lei, C. Li, and Y. Zhou, “Boosting multi-modal model performance with adaptive gradient modulation,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , 2023, pp. 22 214–22 224. [15] Y. Sun, S. Mai, and H. Hu, “Learning to balance the learning rates between various modalities via adaptive tracking factor,” IEEE Signal Processing Letters , vol. 28, pp. 1650–1654, 2021. [16] K. Kontras, C. Chatzichristos, M. Blaschko, and M. De Vos, “Improving multimodal learning with multi-loss gradient modulation,” arXiv preprint arXiv:2405.07930 , 2024. [17] Z. Guo, T. Jin, J. Chen, and Z. Zhao, “Classifier-guided gradient modula-tion for enhanced multimodal learning,” arXiv preprint arXiv:2411.01409 ,2024. [18] B. Guo, S. Han, X. Han, H. Huang, and T. Lu, “Label confusion learning to enhance text classification models,” in Proceedings of the AAAI Conference on Artificial Intelligence , vol. 35, no. 14, 2021, pp. 12 929–12 936. [19] B. Liu, I. Ben Ayed, A. Galdran, and J. Dolz, “The devil is in the margin: Margin-based label smoothing for network calibration,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2022, pp. 80–88. [20] Y. Yang, F. Wan, Q.-Y. Jiang, and Y. Xu, “Facilitating multimodal classification via dynamically learning modality gap,” Advances in Neural Information Processing Systems , vol. 37, pp. 62 108–62 122, 2024. [21] Y. Zhang, P. E. Latham, and A. Saxe, “Understanding unimodal bias in multimodal deep linear networks,” arXiv preprint arXiv:2312.00935 ,2023. [22] X. Geng, “Label distribution learning,” IEEE Transactions on Knowl-edge and Data Engineering , vol. 28, no. 7, pp. 1734–1748, 2016. [23] Y. Yang, W. Xi, L. Zhou, and J. Tang, “Rebalanced vision-language retrieval considering structure-aware distillation,” IEEE Transactions on Image Processing , vol. 33, pp. 6881–6892, 2024. [24] Q. Shi, M. Ye, W. Huang, B. Du, and X. Zong, “Gradient and structure consistency in multimodal emotion recognition,” IEEE Transactions on Image Processing , 2025. [25] C. Hua, Q. Xu, S. Bao, Z. Yang, and Q. Huang, “Reconboost: Boosting can achieve modality reconcilement,” arXiv preprint arXiv:2405.09321 ,2024. [26] Y. Wei, D. Hu, H. Du, and J.-R. Wen, “On-the-fly modulation for balanced multimodal learning,” IEEE Transactions on Pattern Analysis and Machine Intelligence , 2024. [27] Y. Yang, H. Pan, Q.-Y. Jiang, Y. Xu, and J. Tang, “Learning to rebalance multi-modal optimization by adaptively masking subnetworks,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 47, no. 6, pp. 4553–4566, 2025. [28] X. Zhang, J. Yoon, M. Bansal, and H. Yao, “Multimodal representation learning by alternating unimodal adaptation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2024, pp. 27 456–27 466. [29] X. Ma, H. Chen, and Y. Deng, “Improving multimodal learning balance and sufficiency through data remixing,” in International Conference on Machine Learning . PMLR, 2025, pp. 41 827–41 836. [30] S. Wei, C. Luo, and Y. Luo, “Boosting multimodal learning via disen-tangled gradient learning,” arXiv preprint arXiv:2507.10213 , 2025. [31] C. Szegedy, V. Vanhoucke, S. Ioffe, J. Shlens, and Z. Wojna, “Rethinking the inception architecture for computer vision,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2016, pp. 2818–2826. [32] G. Pereyra, G. Tucker, J. Chorowski, Ł. Kaiser, and G. Hinton, “Reg-ularizing neural networks by penalizing confident output distributions,” 
+
+arXiv preprint arXiv:1701.06548 , 2017. [33] J. Gou, B. Yu, S. J. Maybank, and D. Tao, “Knowledge distillation: A survey,” International Journal of Computer Vision , vol. 129, no. 6, pp. 1789–1819, 2021. [34] G. Wang, Z. Yang, Z. Wang, S. Wang, Q. Xu, and Q. Huang, “Abkd: Pursuing a proper allocation of the probability mass in knowledge distillation via α-β-divergence,” arXiv preprint arXiv:2505.04560 , 2025. [35] Z. Tu, X. Liu, and X. Xiao, “A general dynamic knowledge distillation method for visual analytics,” IEEE Transactions on Image Processing ,vol. 31, pp. 6517–6531, 2022. [36] Z. Shen, Z. Liu, D. Xu, Z. Chen, K.-T. Cheng, and M. Savvides, “Is label smoothing truly incompatible with knowledge distillation: An empirical study,” arXiv preprint arXiv:2104.00676 , 2021. [37] A. Owens and A. A. Efros, “Audio-visual scene analysis with self-supervised multisensory features,” Springer, Cham , 2018. PREPRINT 2026.05 10 
+
+[38] H. Gunes and M. Piccardi, “Affect recognition from face and body: early fusion vs. late fusion,” in 2005 IEEE International Conference on Systems, Man and Cybernetics , vol. 4. IEEE, 2005, pp. 3437–3443. [39] Y. Wei, R. Feng, Z. Wang, and D. Hu, “Enhancing multimodal co-operation via sample-level modality valuation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2024, pp. 27 338–27 347. [40] H. Cao, D. G. Cooper, M. K. Keutmann, R. C. Gur, A. Nenkova, and R. Verma, “Crema-d: Crowd-sourced emotional multimodal actors dataset,” IEEE Transactions on Affective Computing , vol. 5, no. 4, pp. 377–390, 2014. [41] R. Arandjelovic and A. Zisserman, “Look, listen and learn,” in Proceed-ings of the IEEE/CVF Cnternational Conference on Computer Vision ,2017, pp. 609–617. [42] W. Kay, J. Carreira, K. Simonyan, B. Zhang, C. Hillier, S. Vijaya-narasimhan, F. Viola, T. Green, T. Back, P. Natsev et al. , “The kinetics human action video dataset,” arXiv preprint arXiv:1705.06950 , 2017. [43] Y. Tian, J. Shi, B. Li, Z. Duan, and C. Xu, “Audio-visual event localization in unconstrained videos,” in Proceedings of the European Conference on Computer Vision (ECCV) , 2018, pp. 247–263. [44] M. Chen, S. Wang, P. P. Liang, T. Baltruˇ saitis, A. Zadeh, and L.-P. Morency, “Multimodal sentiment analysis with word-level fusion and reinforcement learning,” in Proceedings of the 19th ACM International Conference on Multimodal Interaction , 2017, pp. 163–171. [45] A. B. Zadeh, P. P. Liang, S. Poria, E. Cambria, and L.-P. Morency, “Multimodal language analysis in the wild: Cmu-mosei dataset and interpretable dynamic fusion graph,” in Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , 2018, pp. 2236–2246. [46] K. He, X. Zhang, S. Ren, and J. Sun, “Deep residual learning for image recognition,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2016, pp. 770–778. [47] B. McFee, C. Raffel, D. Liang, D. P. Ellis, M. McVicar, E. Battenberg, and O. Nieto, “librosa: Audio and music signal analysis in python.” SciPy ,vol. 2015, pp. 18–24, 2015. [48] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” Advances in Neural Information Processing Systems , vol. 30, 2017. [49] D. P. Kingma, “Adam: A method for stochastic optimization,” arXiv preprint arXiv:1412.6980 , 2014. [50] H. Ma, Q. Zhang, C. Zhang, B. Wu, H. Fu, J. T. Zhou, and Q. Hu, “Cal-ibrating multimodal learning,” in International Conference on Machine Learning . PMLR, 2023, pp. 23 429–23 450. [51] S. Liu, L. Li, J. Song, Y. Yang, and X. Zeng, “Multimodal pre-training with self-distillation for product understanding in e-commerce,” in Proceedings of the Sixteenth ACM International Conference on Web Search and Data Mining , 2023, pp. 1039–1047. [52] Y. Wei, S. Li, R. Feng, and D. Hu, “Diagnosing and relearning for balanced multimodal learning,” in European Conference on Computer Vision , 2024. [53] A. Owens and A. A. Efros, “Audio-visual scene analysis with self-supervised multisensory features,” in Proceedings of the European Con-ference on Computer Vision (ECCV) , 2018, pp. 631–648. [54] E. Perez, F. Strub, H. De Vries, V. Dumoulin, and A. Courville, “Film: Visual reasoning with a general conditioning layer,” in Proceedings of the AAAI Conference on Artificial Intelligence , vol. 32, no. 1, 2018. [55] D. Kiela, E. Grave, A. Joulin, and T. Mikolov, “Efficient large-scale multi-modal classification,” in Proceedings of the AAAI Conference on Artificial Intelligence , vol. 32, no. 1, 2018. [56] L. Van der Maaten and G. Hinton, “Visualizing data using t-sne.” Journal of Machine Learning Research , vol. 9, no. 11, 2008.
