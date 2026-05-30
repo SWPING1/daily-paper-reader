@@ -6,37 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-29
-- 运行时间：2026-05-29 22:03:16 UTC
+- 最新运行日期：2026-05-30
+- 运行时间：2026-05-30 20:30:55 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：1
+- 本次总论文数：4
+- 精读区：0
 - 速读区：4
 
 ### 今日简报（AI）
-今日精选5篇多模态学习论文，其中1篇精读聚焦对话情感识别鲁棒性。  
-重点推荐《State-Anchored Complete-View Distillation》，提出状态锚定完整视图蒸馏实现鲁棒多模态对话情感识别。  
-对多模态融合感兴趣的读者可关注标签空间重塑与正则化微调的最新进展。
-- 详情：[/202605/29/README](/202605/29/README)
+1) 今日速读3篇多模态论文，涵盖动作识别、知识编辑与对齐方法，其中Cross-Modal Action Recognition via Mamba最值得关注。
+2) 最值得看的方向：自我中心视频中RGB与手部骨架的跨模态CLS Token融合策略，以及对抗子空间对齐的鲁棒多模态知识编辑。
+3) 下步建议：可深入对比Mamba与传统Transformer在视频跨模态任务上的实际效率与精度差异。
+- 详情：[/202605/30/README](/202605/30/README)
 
 ### 精读区论文标签
-1. [State-Anchored Complete-View Distillation for Robust Conversational Multimodal Emotion Recognition](/202605/29/2605.29590v1-state-anchored-complete-view-distillation-for-robust-conversational-multimodal-emotion-recognition)  
-   标签：评分：10.0/10、query:mm
-   evidence：缺失模态下对话情感识别的完整视图知识蒸馏方法
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Balancing Multimodal Learning through Label Space Reshaping](/202605/29/2605.28869v1-balancing-multimodal-learning-through-label-space-reshaping)  
+1. [Cross-Modal Action Recognition in Egocentric Video Using Mamba: Integrating RGB and Hand Skeleton Streams via CLS Token Fusion Strategies](/202605/30/2605.24302v2-cross-modal-action-recognition-in-egocentric-video-using-mamba-integrating-rgb-and-hand-skeleton-streams-via-cls-token-fusion-strategies)  
    标签：评分：7.0/10、query:mm
-   evidence：通过重塑标签空间平衡多模态学习，缓解模态不平衡
-2. [TRACER: Persistent Regularization for Robust Multimodal Finetuning](/202605/29/2605.29380v1-tracer-persistent-regularization-for-robust-multimodal-finetuning)  
-   标签：评分：7.0/10、query:mm
-   evidence：持续正则化实现鲁棒多模态微调
-3. [Beyond the Aggregation Dilemma: Prior-Retaining Decoupled Learning for Multimodal Graphs](/202605/29/2605.24684v1-beyond-the-aggregation-dilemma-prior-retaining-decoupled-learning-for-multimodal-graphs)  
+   evidence：融合RGB与骨架的跨模态方法用于鲁棒动作识别
+2. [Beyond Binary Edits Robust Multimodal Knowledge Editing with Adversarial Subspace Alignment](/202605/30/2605.23780v1-beyond-binary-edits-robust-multimodal-knowledge-editing-with-adversarial-subspace-alignment)  
    标签：评分：6.0/10、query:mm
-   evidence：多模态图的解耦学习
-4. [Give it Space! Explicit Disentangling of Positional and Semantic Representations in Encoders](/202605/29/2605.30022v1-give-it-space-explicit-disentangling-of-positional-and-semantic-representations-in-encoders)  
+   evidence：使用对抗子空间对齐的鲁棒多模态学习
+3. [OVA-IB: One vs All Information Bottleneck for Multi-Modal Alignment](/202605/30/2605.29900v1-ova-ib-one-vs-all-information-bottleneck-for-multi-modal-alignment)  
    标签：评分：6.0/10、query:mm
-   evidence：Transformer中位置和语义表示的显式解耦
+   evidence：信息瓶颈用于多模态对齐，与解耦表示相关
+4. [LoMo: Local Modality Substitution for Deeper Vision-Language Fusion](/202605/30/2605.30265v1-lomo-local-modality-substitution-for-deeper-vision-language-fusion)  
+   标签：评分：6.0/10、query:mm
+   evidence：研究视觉-语言模型中的模态替换敏感性问题，与鲁棒多模态学习相关
 
 
 <div class="dpr-home-promo-card">

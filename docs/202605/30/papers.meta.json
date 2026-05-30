@@ -1,0 +1,69 @@
+{
+  "label": "2026-05-30",
+  "date": "2026-05-30",
+  "generated_at": "2026-05-30T20:31:06",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202605/30/2605.24302v2-cross-modal-action-recognition-in-egocentric-video-using-mamba-integrating-rgb-and-hand-skeleton-streams-via-cls-token-fusion-strategies",
+      "section": "quick",
+      "title_en": "Cross-Modal Action Recognition in Egocentric Video Using Mamba: Integrating RGB and Hand Skeleton Streams via CLS Token Fusion Strategies",
+      "authors": "Juan Ignacio Bustos Gorostegui, Maria Elena Buemi",
+      "date": "2026-05-23",
+      "pdf": "https://arxiv.org/pdf/2605.24302v2",
+      "score": "7.0",
+      "evidence": "融合RGB与骨架的跨模态方法用于鲁棒动作识别",
+      "tldr": "第一人称视角动作识别因相机抖动和手部遮挡而困难。本文提出跨模态Mamba框架，融合RGB视频与手部骨架时序数据，利用状态空间模型的线性复杂度。设计四种CLS token混合策略（朴素、平均、加权、上下文），其中平均策略在H2O数据集上表现最佳，在Tiny和Small配置下分别提升10%和2%的Top-1准确率。",
+      "tags": "query:mm",
+      "abstract_en": "Egocentric action recognition is a challenging task due to erratic camera motion, frequent hand occlusion, and the difficulty of maintaining consistent visual representations over time. In this work, we propose a cross-modal architecture that combines RGB video and temporal hand skeleton data within a unified Mamba-based framework, exploiting the linear time complexity of State Space Models (SSMs). Our architecture consists of three components: a VideoMamba module for visual feature extraction, a skeleton encoder built on a stack of Mamba blocks, and a fusion module that integrates both modalities into a single representation. A central contribution of this work is the design and evaluation of four Class (CLS) token mixing strategies for multimodal fusion: Naive, Average, Weighted and Context-based. These strategies differ in how the pretrained unimodal CLS tokens, which role is to act as information sinks concentrating learned representations, are leveraged to initialize the mixed CLS token used for final classification. We evaluate all strategies on the H2O dataset. Experimental results show that the Average strategy achieves the best performance, yielding gains of over 10% Top-1 accuracy in the Tiny configuration and 2% in the Small configuration over the VideoMamba baseline.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202605/30/2605.23780v1-beyond-binary-edits-robust-multimodal-knowledge-editing-with-adversarial-subspace-alignment",
+      "section": "quick",
+      "title_en": "Beyond Binary Edits Robust Multimodal Knowledge Editing with Adversarial Subspace Alignment",
+      "authors": "Haoyuan Wang, Xiaohao Liu, Jiajie Su, Jianmao Xiao, Chaochao Chen",
+      "date": "2026-05-22",
+      "pdf": "https://arxiv.org/pdf/2605.23780v1",
+      "score": "6.0",
+      "evidence": "使用对抗子空间对齐的鲁棒多模态学习",
+      "tldr": "多模态大模型知识编辑泛化性不足，编辑难以传播到语义等效变体。本文引入知识单元形式化鲁棒性，提出潜在对抗鲁棒化生成语义一致对抗变体，结合秩约束子空间学习低秩对齐表征。实验表明该方法有效提升了编辑的泛化性与鲁棒性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal large language models (MLLMs) need efficient mechanisms to update knowledge without degrading existing capabilities. While intrinsic multimodal knowledge editing achieves strong reliability and locality, it often exhibits limited generality, failing to propagate edits across semantically equivalent visual and linguistic variations. This issue arises from the lack of explicit semantic supervision, rigid editing scopes, and biased anchoring to individual samples in high-dimensional multimodal spaces. We address robust intrinsic multimodal knowledge editing by explicitly targeting generalization. We formalize robustness through knowledge units that group semantically equivalent multimodal inputs and define generality as consistent predictions within each unit. To expose fragile semantic regions, we introduce Latent Adversarial Robustification (LAR), which generates adversarial yet semantically coherent variants in the joint latent space. We further propose Rank-Constrained Subspace Learning (RCSL), enforcing low-rank alignment of adversarial representations at the edit layer via a singular value-based objective. Extensive analysis demonstrates the effectiveness of ASAM empirically.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202605/30/2605.29900v1-ova-ib-one-vs-all-information-bottleneck-for-multi-modal-alignment",
+      "section": "quick",
+      "title_en": "OVA-IB: One vs All Information Bottleneck for Multi-Modal Alignment",
+      "authors": "Tianchao Li, Shujian Yu, Xinrui Zu, Zhaolong Wei, Jeremy Gummeson, Jack C. P. Cheng, Robert Jenssen",
+      "date": "2026-05-28",
+      "pdf": "https://arxiv.org/pdf/2605.29900v1",
+      "score": "6.0",
+      "evidence": "信息瓶颈用于多模态对齐，与解耦表示相关",
+      "tldr": "针对多模态对齐中现有方法仅成对建模、缺乏高阶依赖及原则性准则的问题，本文提出OVA-IB框架，基于信息瓶颈原理采用一对多视角，通过可计算的对比下界和无参数几何感知投影分数实现充分性，并利用上界正则化约束最小性。在分类、回归和跨模态检索等基准上，该框架取得了强大且鲁棒的性能，为任意模态对齐提供了有效方案。",
+      "tags": "query:mm",
+      "abstract_en": "Contrastive learning is effective for aligning paired views or modalities, but alignment beyond two modalities remains non-trivial and comparatively underexplored. Pairwise CLIP-style losses decompose multi-modal alignment into independent two-way comparisons and therefore do not explicitly model higher-order dependencies among multiple modalities. Recent beyond-pairwise objectives approach this problem from statistical or geometric perspectives, but arbitrary-modality alignment still lacks a principled criterion for defining what each modality should preserve and compress relative to the others. We revisit arbitrary-modality alignment through the Information Bottleneck principle. In multi-modal learning, sufficiency should preserve information predictable from the remaining modalities, while minimality should compress modality-specific information not supported by them. This naturally leads to a One-vs-All view, where each modality is characterized with respect to the remaining modalities. We propose OVA-IB, an Information Bottleneck framework for arbitrary-modality alignment. OVA-IB optimizes a tractable One-vs-All contrastive lower bound for sufficiency connected to a Dual Total Correlation-style objective, uses a parameter-free geometry-aware projection score, and derives a tractable upper-bound regularizer for minimality by bounding each representation's dependence on its own input with representation distributions induced by the remaining modalities. Experiments on classification, regression, modality-agnostic evaluation, and cross-modal retrieval benchmarks demonstrate strong and robust performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202605/30/2605.30265v1-lomo-local-modality-substitution-for-deeper-vision-language-fusion",
+      "section": "quick",
+      "title_en": "LoMo: Local Modality Substitution for Deeper Vision-Language Fusion",
+      "authors": "Feng Han, Zhixiong Zhang, Zheming Liang, Yibin Wang, Jiaqi Wang",
+      "date": "2026-05-28",
+      "pdf": "https://arxiv.org/pdf/2605.30265v1",
+      "score": "6.0",
+      "evidence": "研究视觉-语言模型中的模态替换敏感性问题，与鲁棒多模态学习相关",
+      "tldr": "当前视觉-语言模型面临“载体敏感性”问题，即语义等价的文本和图像替换会导致性能严重下降，源于训练数据中文本与图像角色不对称的偏差。为此，提出局部模态替换（LoMo）方法，通过将单模态提示中的文本片段动态替换为渲染图像，构建无缝交错的图文序列，从而提供跨模态表示一致性的监督信号。在13个多模态基准上，LoMo显著提升模型融合能力，LLaVA-OneVision-1.5-8B和Qwen3.5-9B分别提升2.67和2.82点。该工作轻量且架构无关，为增强视觉-语言融合提供了有效数据范式。",
+      "tags": "query:mm",
+      "abstract_en": "Vision-Language Models (VLMs) have achieved substantial progress across a wide range of understanding and reasoning tasks, driven by large-scale image-text training aimed at multimodal fusion. Ideally, replacing a textual question with its rendered-image counterpart should leave model performance essentially unaffected. In practice, however, such modality substitution induces dramatic performance degradation. We attribute this \"carrier sensitivity\" issue to an inherent bias in current training corpora. Across prevalent datasets such as image captioning, VQA, OCR, and web-sourced interleaved data, text and images are typically organized into distinct and asymmetric roles, with text serving as linguistic queries and images as visual references. Such data bias leads VLMs to exhibit distinct preferences for information acquisition across different modalities. Consequently, VLMs fail to align representations of semantically equivalent content across textual and visual carriers, making model reasoning fragile under modality substitution. To address this, we propose Local Modality Substitution (LoMo), a lightweight, architecture-agnostic data curation paradigm designed to provide supervision for cross-modal representational invariance between semantically equivalent text and image carriers. LoMo achieves this by reformulating single-modality prompts into seamlessly interleaved multimodal sequences. It dynamically selects target text spans and recasts them as rendered images, thereby preserving the same semantics across \"text, visual, text\" carriers. Extensive experiments across 13 diverse multimodal benchmarks demonstrate that LoMo significantly improves overall multimodal reasoning and yields deeper cross-modal fusion. Specifically, it delivers consistent gains across foundational models, improving over standard SFT by 2.67 points on LLaVA-OneVision-1.5-8B and 2.82 points on Qwen3.5-9B.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
