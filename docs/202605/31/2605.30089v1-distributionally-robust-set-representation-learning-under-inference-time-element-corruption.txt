@@ -1,0 +1,1327 @@
+Title: Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption
+
+URL Source: https://arxiv.org/pdf/2605.30089v1
+
+Published Time: Fri, 29 May 2026 01:33:27 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Yankai Chen 1 2 Hanrong Zhang 3 Bowei He 1 2 * Philip S. Yu 3 Xue (Steve) Liu 1 2 
+
+Abstract 
+
+Standard Set Representation Learning methods typically excel on curated data but often overlook the challenge of Inference-time Element Corrup-tion . This refers to scenarios where deployed mod-els encounter element-level degradations, such as outliers or missing components, that may distort set representation and degrade performance. We propose SW-DRSO, a distributionally robust op-timization framework tailored for sets. Rather than minimizing loss solely on observed training data, SW-DRSO optimizes a tractable surrogate of the worst-case expected loss over a family of plausible inference-time variations. We introduce a barycentric adversary that approximates the in-tractable search over corrupted sets by a differ-entiable training-time optimization over simplex weights. Extensive experiments across four tasks demonstrate that SW-DRSO effectively enhances robustness against corruption while maintaining high overall performance. 
+
+1. Introduction 
+
+Set Representation Learning (SRL) aims to encode a un-ordered collection of elements into a vector while preserving essential set-theoretic properties (Zaheer et al., 2017; Skia-nis et al., 2020). This capability is crucial across diverse domains, from processing point clouds (Qi et al., 2017) and modeling protein structures (NaderiAlizadeh & Singh, 2025), to enabling batch retrieval and recommendation (Li et al., 2021; Zhang et al., 2022; Qiu et al., 2024; Chen et al., 2023b; He & Ma, 2024). Recent methods employ attention mechanisms (Lee et al., 2019), optimal transport formulations (Skianis et al., 2020; Mialon et al., 2021), and 
+
+*Corresponding author. 1MBZUAI 2McGill Univer-sity 3University of Illinois Chicago. Correspondence to: Yankai Chen <yankaichen@acm.org >, Bowei He 
+
+<Bowei.He@mbzuai.ac.ae >.
+
+Proceedings of the 43 rd International Conference on Machine Learning , Seoul, South Korea. PMLR 306, 2026. Copyright 2026 by the author(s). 
+
+Figure 1. Illustration of inference-time element corruption. (a) The corruption leads to variations in the prediction space. (b) While ERM performance degrades on the corrupted set S′, our SW-DRSO enhances robustness by optimizing the decision boundary. 
+
+sophisticated aggregation strategies (Zhang et al., 2020) to capture complex set structures while adhering to preserve permutation invariance and handle variable cardinality. While standard SRL methods excel on curated data, they often overlook a robustness challenge in practical environ-ments: Inference-time element corruption . Specifically, it refers to scenarios where models trained on clean and com-plete sets, but are deployed on inputs with element-level degradation at inference time. Such corruption is typically sparse and localized: it affects only a small fraction of elements without altering the overall set theme, i.e., label-preserving . Common examples include outlier points that appear in point clouds due to sensor errors (Rusu et al., 2008). Despite their sparsity, as shown in Figure 1(a), even a few corrupted elements may impact the set encoder and task processing to produce unreliable predictions. For in-stance, attention-based pooling is vulnerable to outliers that attract disproportionate weights, thereby dominating the global representation (Zhou et al., 2022). To handle such inference-time uncertainty, Distribution-ally Robust Optimization (DRO) offers a principled frame-wor (Sagawa et al., 2019; Bertsimas et al., 2019). By minimizing the worst-case expected loss over a family of plausible distributions, DRO can hedge against unknown inference-tiem corruption patterns (Rahimian & Mehrotra, 1
+
+> arXiv:2605.30089v1 [cs.LG] 28 May 2026 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption
+
+2019). This approach offers a natural extension beyond stan-dard Empirical Risk Minimization (ERM), which optimizes performance only on nominal training distributions and may fail to generalize when inference-time inputs deviate from the training regime. However, applying DRO directly to SRL problems faces fundamental computational challenges. First, defining the ambiguity regions 1 is non-trivial for set-structured data. Un-like continuous inputs where ambiguity regions are naturally constructed via norm-bounded perturbations (Rahimian & Mehrotra, 2022), sets are discrete and combinatorial. Sec-ond, even with a well-defined ambiguity region, solving the inner maximization in conventional DRO formulation to identify the worst cases is computationally prohibitive. This typically requires solving discrete combinatorial optimiza-tion with factorial complexity (Gao et al., 2024; Kuhn et al., 2019), making the training process unscalable. To address these challenges, we propose SW-DRSO (Sliced-Wasserstein Distributionally Robust Set Optimization), a scalable DRO framework designed for SRL. As shown in Figure 1(b), it improves the robustness with better op-timized decision boundary compared with conventional ERM. Specifically, we first represent sets as empirical mea-sures (Muandet et al., 2012) and define the corruption re-gion via the Sliced-Wasserstein (SW) metric (Bonneel et al., 2015; Naderializadeh et al., 2021; Amir & Dym, 2025). This formulation enables flexible modeling of corrupted sets without requiring discrete enumeration, while the geometric properties of the SW metric facilitate set encoding and ambi-guity region construction. Second, we introduce a data syn-thesis strategy that approximates the worst-case optimiza-tion through Wasserstein barycentric adversaries (Agueh & Carlier, 2011). By synthesizing barycenters from local neighborhoods, we transform the intractable search over the combinatorial set space into efficient optimization over a 
+
+low-dimensional probability simplex (i.e., the convex hull of mixing weights). Our analysis shows that this differen-tiable parameterization approximates the inner supremum better than discrete optimization. To empirically validate SW-DRSO, we extensively evaluate SW-DRSO across four diverse downstream tasks spanning varied data modalities and distinct corruption patterns, comparing it against state-of-the-art set representation baselines. In summary, our main contributions are three-fold: • We propose SW-DRSO to enable effective distributionally robust optimization for Set Representation Learning. • We formulate and optimize a tractable ambiguity region through barycentric data synthesis, which converts the 
+
+> 1The family of plausible corrupted distributions. We use “re-gion” instead of the standard term “ambiguity set” to avoid confu-sion with the set-structured data itself.
+
+computationally prohibitive worst-case search into an ef-ficient, differentiable optimization task. • Our results show that SW-DRSO consistently outperforms baselines, enhancing robustness against severe corrup-tions without compromising accuracy on clean data. 
+
+2. Related Work 
+
+Set Representation Learning (SRL). Representation learn-ing aims to transform raw structured objects into compact embeddings that preserve task-relevant semantics for down-stream prediction, retrieval, clustering, and decision mak-ing (Zhang et al., 2022; Chen et al., 2023b; 2024; Li et al., 2026a;c;b). Early methods focus on mapping sets to a Hilbert space using permutation-invariant pooling opera-tions (Zaheer et al., 2017; Skianis et al., 2020; Murphy et al., 2018; Lee et al., 2019; Zhang et al., 2020; 2019). Some architectures learn optimal permutations directly (Zhang et al., 2019; Rezatofighi et al., 2018) or establish canonical ordering through sorting (Zhang et al., 2020). Attention-based mechanisms have also become prominent; Lee et al. (2019) adapted the Transformer architecture (Vaswani et al., 2017) for set data, while Jaegle et al. (2021) utilized cross-attention for permutation invariance. Alternative strate-gies include minimizing discrepancies between sets (Mi-alon et al., 2021), box embeddings (Lee et al., 2022), and fuzzy representations (Xu et al., 2025). For geometric align-ments, Skianis et al. (2020) pioneered Optimal Transport via Bipartite Matching, while Naderializadeh et al. (2021); Chen et al. (2026b) introduced Sliced-Wasserstein embed-ding to capture distributional topology. Recent advances include meta-learning (Guo et al., 2021; Lee et al., 2023), injective embeddings like FSW (Amir & Dym, 2025), quan-tum modeling (Vargas-Calder ´on, 2025), and protein lan-guage applications (NaderiAlizadeh & Singh, 2025). We adopt (Naderializadeh et al., 2021) as our set encoder to leverage Sliced-Wasserstein geometric properties. 
+
+Distributionally Robust Optimization (DRO). DRO im-proves decision making by optimizing the worst-case ex-pected objective over plausible distributions (Rahimian & Mehrotra, 2019; 2022; Bertsimas et al., 2019). A central theme of DRO is constructing ambiguity regions (Rahimian & Mehrotra, 2019; Wang et al., 2025; Nguyen et al., 2025; Ma et al., 2024; Yu et al., 2024; Inatsu et al., 2022). Classical formulations include moment-based and divergence-based approaches such as KL-divergence (Husain et al., 2023; Zhou et al., 2020; Namkoong & Duchi, 2016), while Staib & Jegelka (2019) utilizes kernel mean embeddings in Re-producing Kernel Hilbert Space and Sagawa et al. (2019) minimizes maximum expected loss over predefined groups. Ambiguity regions defined through Wasserstein distance have gained attention (Kuhn et al., 2019; Kwon et al., 2020). Wasserstein-DRO (WDRO) is appealing due to its geometric 2Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+interpretability, connections to regularization, and ability to capture distributional shifts (Gao et al., 2024; Micheli et al., 2025), with wide applications (Liu et al., 2025; Huang & Ding, 2025; Wu et al., 2025; Zhang et al., 2025). However, conventional WDRO requires modeling transport costs be-tween individual elements, making direct SRL application computationally expensive. To address this concern, this work specifically proposes the SW-DRSO formulation that is tailored for modeling sets. By approximating Wasser-stein distances through one-dimensional projections, SW-DRSO provides an efficient surrogate that preserves distri-butional robustness while reducing computational cost. 
+
+3. Preliminary and Motivation 
+
+3.1. Problem Description Set Representation Learning. Let X ⊆ Rd be the element space and Y the label space. Each input is an unordered set 
+
+S = {xi}ni=1 with variable cardinality n, where xi ∈ X . Set representation learning (SRL) learns a permutation-invariant and cardinality-agnostic encoder f : S(X ) → Rc that maps 
+
+S to a vector v = f(S). The learned set representation v is then used for downstream tasks, such as set classification (predicting label y ∈ Y ) or set matching via embedding-based ranking. We summarize all notations in Appendix A. A common SRL training objective optimizes the nominal 
+
+(source) risk via empirical risk minimization (ERM) (Zaheer et al., 2017; Lee et al., 2019). Let P0 be the nominal training distribution over clean sets. Conventional ERM solves: 
+
+min  
+
+> f,g
+
+E(S,y )∼P0
+
+ℓ g(f(S)) , y  , (1) where g denotes the task-specific function (e.g., a classifier or a ranking function), operating on the set representation 
+
+v = f(S), and ℓ the corresponding loss. 
+
+Set with Inference-Time Element Corruption. We study a realistic scenario where training data is carefully curated, but sets observed at inference time suffer from element-level corruption . Given S as the underlying clean set; at inference time, the model however may observe a corrupted version 
+
+S′ in stead of S. Such corruptions are typically sparse and 
+
+heterogeneous : only a subset of elements is affected, and corruption patterns vary across instances as well. Typical examples include missing elements and spurious outliers. We assume the corruption is label-preserving : it only affects the partial set elements but not the ground-truth label of the holistic set semantic. Importantly, the learner does not observe which elements are corrupted at inference time; it only receives the full set S′.
+
+3.2. Towards Learning Robust Set Representations 
+
+Minimizing Eq. (1) does not necessarily yield stable set representations under element-level corruption. In SRL, 
+
+f is typically implemented by aggregating element-wise features (e.g., pooling or attention) (Zaheer et al., 2017; Lee et al., 2019; Zhang et al., 2020), where a small frac-tion of corrupted elements may disproportionately affect the aggregated representation, even when the corruption is label-preserving. Consequently, the downstream predictor 
+
+g, trained on clean embeddings, may fail when evaluated on corrupted embeddings at inference time. 
+
+Robustness in SRL. To fix this gap, a natural robustness principle is to optimize performance under the worst plau-sible corruptions. Let Γ( S) denote the ambiguity region of plausible corruptions for each input S (e.g., capturing sparse and heterogeneous element corruption at inference time). With P0 denotes the nominal data distribution over training inputs, one feasible solution is to leverage Distributionally Robust Optimization (DRO) (Scarf et al., 1957) as: 
+
+min  
+
+> f,g
+
+E(S,y )∼P0
+
+h
+
+sup 
+
+> Q∈Γ( S)
+
+ES′∼Q
+
+ℓ g(f(S′)) , y  i
+
+. (2) It can hedge against unknown inference-time corruption mechanisms by optimizing the worst-case risk (Rahimian & Mehrotra, 2019). However, for set-structured inputs, specifying Γ( S) and solving the inner maximization can be prohibitive: for example, directly enumerating Γ( S) over discrete set variants often leads to combinatorial explosion. These challenges motivate the development of a scalable DRO framework specifically for set representation learning. 
+
+4. Our Method 
+
+4.1. Overview 
+
+Our approach to learning robust set representations is twofold. ① We formulate sets as empirical measures and view corruptions as distributional perturbations. By characterizing the ambiguity region Γ via the Sliced-Wasserstein (SW) distance, we derive the formulation of Sliced-Wasserstein Distributionally Robust Set Optimiza-tion (SW-DRSO). ② To mitigate the high computational cost, we further propose a synthesis-based approximation. This yields a barycentric adversary that is essentially a low-dimensional and differentiable parameterization to facilitate the efficient identification of target perturbations. 
+
+4.2. SW-DRSO Instantiation for Sets 
+
+4.2.1. MODELING SETS WITH SW M ETRIC 
+
+We model a set S = {xi}ni=1 ⊂ X as an empirical measure over the element space (Muandet et al., 2012; Zaheer et al., 3Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption (a) Euclidean barycenter (b) Wasserstein-based barycenter (c) Convex hull of S’ neighbors 
+
+Figure 2. Illustration of Wasserstein barycentric data synthesis. 
+
+2017; Edwards & Storkey, 2017): 
+
+μS = 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+δxi ∈ P (X ), (3) where δx is the Dirac measure at x and P(X ) denotes the set of probability measures on X . This representation is permutation-invariant and explicitly captures the within-set distribution, so element corruption can be naturally viewed as a perturbation from μS to μS′ .To quantify their discrepancy, we adopt the 2-Sliced-Wasserstein distance (Kolouri et al., 2019), which is de-rived from the Optimal Transport (OT) theory (Kantorovich, 2006). For μS and μS′ over Rd, it is defined as: 
+
+SW (μS , μ S′ ) = 
+
+Z 
+
+> Sd−1
+
+W (μωS , μ ωS′ )2 dω
+
+ 12
+
+, (4) where Sd−1 is the unit sphere, and μωS , μωS′ denote the 1D projections under ω(x) = ω⊤x. W denotes the standard 2-Wasserstein distance that can computed as: 
+
+W (μωS , μ ωS′ ) = 
+
+
+
+inf   
+
+> p∈plans (μωS,μ ωS′)
+
+Z
+
+∥x − p(x)∥2dμωS (x)
+
+ 12
+
+.
+
+(5) The infimum is taken over all transport plans between μωS
+
+and μωS′ . For 1D measures, a closed-form optimal solution 
+
+p+ exists as the minimizer in Eq. (5). 4.2.2. SW-DRSO I NSTANTIATION 
+
+Using SW to define feasible corruptions, we can try to instantiate Γ( S) as an SW-ball around μS :
+
+ΓSW (S) := {S′ : SW (μS , μ S′ ) ≤ ρ} , (6) where ρ > 0 controls the corruption radius. This yields SW-DRSO objective as follows: 
+
+min  
+
+> f,g
+
+E(S,y )∼P0
+
+h
+
+sup  
+
+> S′∈ΓSW (S)
+
+ℓ(g(f(S′)) , y )
+
+i
+
+. (7) A practical instantiation of Eq. (7) may expect a set encoder 
+
+f(·) whose representation respects the same SW geome-try. Since standard pooling ignores this property (Skianis et al., 2020), we introduce a Wasserstein-aware encoder specifically aligned with SW-DRSO. 
+
+Wasserstein-aware Set Encoder (Naderializadeh et al., 2021). Following Naderializadeh et al. (2021), f(·) can be implemented with the following two stages: • It first introduces a learnable reference set O = {oh}Hh=1 
+
+with empirical measure μO = 1
+
+> H
+
+PHh=1 δoh . For each projection ω, the optimal solution p+ is implemented as: 
+
+p+(t, μ ωS ) =  FμωS
+
+−1 FμωO (t) , t ∈ R, (8) where F and F−1 are the CDF and quantile function. Let 
+
+T ωO = sort ({ω⊤oh}Hh=1 ) and T ωS = sort ({ω⊤xi}ni=1 ).For empirical measures, p+ reduces to quantile matching between sorted scalars; Let tωh be the h-th entry of T ωO .When H̸ = n, a simple index-based quantile approxima-tion can be implemented: 
+
+p+(tωh , μ ωS ) := T ωS [qh], qh := 
+
+l nH h
+
+m
+
+. (9) • It then introduces R Monte Carlo projections Ω = 
+
+{ωr }Rr=1 to approximate the integral in Eq. (4). Therefore, we aggregate all OT coordinates by concatenation: 
+
+fSW (μS ) := 1
+
+√RH Concat R,H r=1 ,h =1 
+
+
+
+p+(tωr 
+
+> h
+
+, μ ωr 
+
+> S
+
+)
+
+
+
+∈ RRH .
+
+(10) 
+
+4.3. Data Synthesis for SW-DRSO Approximation 
+
+Directly optimizing the inner supremum in Eq. (7) over the SW-ball is still intractable, as it requires searching over corrupted sets S′ that both satisfy the Sliced-Wasserstein constraint and maximize the downstream task loss after passing through g. Our goal is therefore to approximately characterize the most adversarial directions within an SW neighborhood while remaining consistent with ① the SW geometry that defines the corruption region and ② the task loss that determines worst-case behavior. To this end, as shown in Figure 2, we introduce a barycentric synthesis 
+
+surrogate, which provides a low-dimensional and differ-entiable parameterization of SW-consistent perturbations, enabling efficient search for high-quality adversarial can-didates. In practice, data synthesis has been used broadly to improve representation learning and model adaptation in many fields (He et al., 2026a;c; 2025). 4.3.1. WASSERSTEIN BARYCENTER SYNTHESIS 
+
+Let vS denote the set embedding from fSW (μS ) ∈ RRH .For each S in a minibatch B, we build a local neighbor pool 
+
+G(S) = {Sk}Kk=1 ⊆ B by K-NN under ℓ2 set embedding distance 2. We denote the probability simplex by: 
+
+∆K := Λ ∈ RK :
+
+> K
+
+X
+
+> k=1
+
+λk = 1 and λk ≥ 0 . (11) 
+
+> 2
+
+In practice, we select either the K nearest neighbors or all samples within Eculidean distance ρ, whichever is smaller. For notational simplicity, we denote the resulting set size as K.
+
+4Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Given Λ = ( λ1, . . . , λ K ) ∈ ∆K , we synthesize a perturbed embedding by convex mixing as follows: 
+
+¯vS (Λ) := 
+
+> K
+
+X
+
+> k=1
+
+λk vSk . (12) Despite simplicity, Eq. (12) remains the set semantics within the SW-ball, as shown in Prop. 4.1 (all theoretical proofs are deferred to Appendix B). 
+
+Proposition 4.1. For any Λ ∈ ∆K , let SΛ denote the im-plicit (virtual) set that corresponds to the synthesized em-bedding ¯vS (Λ) . We have SΛ ∈ Γ( S).
+
+Moreover, this synthesis is not an arbitrary interpolation in representation space. Instead, it has a precise optimal-transport interpretation: under the 1D Wasserstein ge-ometry, ¯vS (Λ) corresponds to the encoding of Wasser-stein barycenters , i.e., the Fr ´echet mean that minimizes a weighted sum of squared W2 distances on each projection. 
+
+Proposition 4.2. Given reference measure μO , for any batch pool GS and weights Λ ∈ ∆K , the synthesized em-bedding ¯vS (Λ) corresponds to a (virtual) barycentric set, i.e., the SW Fr´ echet mean of all sets in GS :
+
+¯vS (Λ) = fSW (μΛ), μ Λ ∈ arg min  
+
+> μ∈P (X)
+> K
+
+X
+
+> k=1
+
+λk SW 2(μ, μ Sk ).
+
+(13) 
+
+¯vS (Λ) represents a most representative point within the local latent space, where the aggregate distance to all neighboring sets is minimized. This property enables us to restrict the adversary to barycentric perturbations without leaving the intended SW region, leading to a tractable surrogate of the original inner maximization as follows. 4.3.2. BARYCENTRIC ADVERSARY AS A SURROGATE 
+
+Based on the introduction of ∆K , we then reformulate the corruption region as the convex hull of embeddings: 
+
+ΓBar (S) := ¯vS (Λ) : Λ ∈ ∆K . (14) The resulting surrogate replaces the inner supremum with a low-dimensional maximization over ∆K :
+
+min   
+
+> fSW ,g
+
+E(S,y )∼P0
+
+h
+
+max 
+
+> Λ∈∆K
+
+ℓ g(¯ vS (Λ)) , y i
+
+. (15) With this construction, the barycentric inner maximization in Eq. (15) upper-bounds the discrete inner objective over individual sets. As a result, the adversary is strictly more ex-pressive, yielding a more conservative surrogate that better captures worst-case behavior. This relationship is formal-ized in the following proposition: 
+
+Proposition 4.3. Let LDisc (S) := max k∈[K] ℓ g(vSk ), y 
+
+and LBar (S) := max Λ∈∆K ℓ g(¯ vS (Λ)) , y . For any pre-dictor g and loss ℓ, we have: 
+
+LDisc (S) ≤ L Bar (S). (16) Intuitively, as shown in Figure 2(c), ΓBar (S) enlarges the feasible adversarial set from a finite vertex set {vSk } to its convex hull, hence the resulting inner maximization pro-vides an upper bound of the discrete counterpart. We defer to Appendix B.4 a quantitative analysis, which character-izes the tightness of the barycentric surrogate by bounding 
+
+LBar (S) − LDisc (S) under a local Lipschitz condition. So far, we show that our barycentric synthesis ① continuizes 
+
+the adversary beyond discrete samples while remaining ma-jor semantics within the local set neighborhood, and ②
+
+turns the intractable set-space search into an efficient low-dimensional maximization over ∆K .
+
+4.4. Overall Objective and Optimization 
+
+In practice, we optimize a weighted combination of the nominal ERM loss and the barycentric robust term. Given 
+
+α ≥ 0 as a trade-off hyperparameter, our overall training objective is formulated as: 
+
+min    
+
+> fSW ,g
+
+E(S,y )∼P0
+
+h
+
+ℓ g(vS ), y +α· max 
+
+> Λ∈∆K
+
+ℓ g(¯ vS (Λ)) , y i
+
+,
+
+(17) For each training set S, we approximately solve the in-ner maximization in Eq. (17) using projected gradient ascent (Levitin & Polyak, 1966) on ∆K . We initialize the mixing weights with the uniform distribution Λ(1) =  1 
+
+> K
+
+, . . . , 1
+
+> K
+
+ and iteratively perform the following updates: 
+
+˜Λ(t+1) = Λ (t) + η ∇Λℓ g(¯ vS (Λ (t))) , y , (18) 
+
+Λ(t+1) = Π ∆K
+
+˜Λ(t+1) 
+
+, (19) where η > 0 is the ascent step size and Π∆K denotes the Euclidean projection onto ∆K (enforcing λk ≥ 0 and PKk=1 λk = 1 ). After T ascent steps, we obtain Λ⋆ = Λ (T ).We then fix Λ⋆ (by stopping gradients through Λ⋆) and up-date fSW and g by standard gradient descent on Eq. (17) .We detail the pseudo-codes of our SW-DRSO in Appendix C and time complexity analysis in Appendix D. 
+
+5. Experiments 
+
+5.1. Experiment Setups Task Descriptions. We validate the robustness of our method across four downstream tasks subject to varied inference-time corruptions. By encompassing domains rang-ing from 3D geometry to visual understanding, we expect a systematic evaluation under diverse data modalities. • Similar Set Ranking (Task I) : At inference time, the 
+
+query set is corrupted by noise (e.g., injected irrelevant elements and/or missing true elements). The goal is to retrieve and rank candidate sets that remain most simi-lar to the underlying clean query, based on embedding distances. This task evaluates robustness of set-to-set 
+
+5Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+similarity modeling under noisy query composition. • Point Cloud Classification (Task II) : The task classi-fies 3D objects represented as unordered point sets by aggregating local geometric information into a global representation. At inference time, the point cloud is cor-rupted by inaccurate observations (e.g., perturbed coordi-nates), while the input remains an unordered set of points. The model evaluates whether geometric aggregation is resilient to corrupted data. • Topic Set Expansion (Task III) : The task expands a topic by selecting relevant keywords from a vocabulary given a seed keyword set, assessing semantic coherence modeling at the set level. At inference time, the seed keyword set is imperfect, containing missing topic-defining words and/or noisy, off-topic words. We assess robustness of semantic set modeling under such conditions. • Patch-set Visual Recognition (Task IV) : The task aims to perform visual classification by encoding sets of local patch elements. At inference time, element corruption is introduced at the patch level , where a subset of patches is masked out or perturbed by additive noise. The model is therefore required to perform robust visual recognition against localized corruptions. 
+
+Data Descriptions. We adopted a standardized data par-titioning protocol across all tasks: datasets were split into training and testing subsets with an 80:20 ratio. The training portion was subdivided (80:20) to create a validation set for hyperparameter tuning. To evaluate robustness under inference-time corruption, datasets are grouped with differ-ent corruption levels. Specifically, only the validation and test sets are partitioned into clean/mild/severe subsets. Mild and severe parts introduce corruption to approximately 10% and 40% of the input elements or regions. This protocol trains models on clean data but evaluates them under vary-ing degrees of corrupted inputs, reflecting real deployment conditions. Data statistics are reported in Appendix E.1. 
+
+Baselines. We compare against a diverse suite of set representation baselines, including classic pooling (MeanP/MaxP ) (Lin et al., 2013), universal set-function modeling ( DeepSet ) (Zaheer et al., 2017), prototype match-ing via OT theory ( RepSet ) (Skianis et al., 2020), attention-based set Transformers ( SetTRSM ) (Lee et al., 2019), information-theoretic learning ( DIEM ) (Kim, 2022), learn-able sorting-based pooling ( FSPool ) (Zhang et al., 2020), and recent strong OT-based methods such as PSWE (Nade-rializadeh et al., 2021) and frequency-domain multiset mod-eling ( FSW ) (Amir & Dym, 2025). Detailed descriptions of these baselines are provided in the Appendix E.2. 
+
+Configurations. Optimization for all other models is per-formed using the default Adam optimizer (Kingma & Ba, 1 5 10 20 50 100                      
+
+> k
+> 0
+> 20
+> 40
+> 60
+> 80
+> Recall
+> MaxP
+> MeanP
+> DeepSet
+> RepSet
+> SetTRSM
+> DIEM
+> FSPool
+> FSW
+> PSWE
+> Ours
+> (a) Friendster-Overall-Recall@k 1510 20 50 100
+> k
+> 40
+> 60
+> 80
+> NDCG (b) Friendster-Overall-NDCG@k 1510 20 50 100
+> k
+> 0
+> 20
+> 40
+> 60
+> 80
+> Recall
+> (c) LiveJ-Overall-Recall@k 1510 20 50 100
+> k
+> 40
+> 60
+> 80
+> NDCG (d) LiveJ-Overall-NDCG@k
+
+Figure 3. Task I Performance comparison in terms of Recall@k and NDCG@k. Solid curves correspond to the overall performance and the shaded region indicates the range bounded by the upper clean split and the lower severe split. 
+
+2015), with the learning rate tuned via grid search within the set {10 −4, 10 −3, 10 −2}. Regarding baseline configu-rations, we strictly followed the hyperparameter settings reported in their original literature; for models without spec-ified configurations, optimal settings were determined via grid search. The implementation was carried out in PyTorch 1.13.0 (Python 3.9) on a Linux server equipped with eight NVIDIA L40S GPUs. To account for statistical variance, all reported results represent the mean performance and stan-dard deviations over five independent runs. Comprehensive details for reproducibility are provided in Appendix F. 
+
+5.2. Experimental Results 
+
+5.2.1. TASK I E VALUATION 
+
+For the Similar Set Ranking task, we evaluate on two large-scale real-world social network datasets, Friendster (Yang & Leskovec, 2015) and LIVEJ (Mislove et al.). Figure 3 summarizes the results under different corruption conditions. Sets are ranked by measuring the Euclidean distance in the learned embedding space, with Recall@k and NDCG adopted as the evaluation metrics, which are widely used in retrieval and recommendation settings (He & Ma, 2024; Chen et al., 2023a; Luo et al., 2025b; 2026d; Chen et al., 2022a;b; Cui et al., 2024; 2026; Zhang et al., 2026b). We have two major observations: ① First, our method in purple consistently achieves strong performance across all datasets and metrics, demonstrating clear overall effective-ness. ② Second, our method exhibits the narrowest shaded band among all compared methods, meaning the perfor-mance gap between the severe and clean splits is the small-est. This indicates that our approach is more robust to the inference-time corruption, maintaining stable ranking qual-6Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 1. Task II performance comparison (%). Best and second-best results are shown in bold and underlined. Method Overall Clean Mild Severe MeanP 80.41 ±0.79 84.85 ±0.73 83.96 ±1.18 63.97 ±3.03 MaxP 77.29 ±0.73 85.49 ±0.70 79.10 ±0.98 54.08 ±2.82 DeePSet 78.67 ±0.74 85.80 ±0.67 80.83 ±0.99 57.60 ±2.92 RepSet 79.55 ±0.76 85.09 ±0.69 82.93 ±1.06 60.63 ±2.97 SetTRSM 75.28 ±0.65 86.17 ±0.48 75.43 ±0.85 47.81 ±2.76 DIEM 80.59 ±0.68 85.10 ±0.90 83.80 ±0.95 64.50 ±2.10 FSPool 80.16 ±0.83 85.24 ±1.41 83.51 ±0.78 62.43 ±1.83 FSW 81.14 ±0.74 83.84 ±0.59 84.62 ±1.12 69.19 ±2.93 PSWE 81.50 ±0.70 84.51 ±0.49 84.38 ±1.08 69.65 ±2.83        
+
+> Ours 82.86 ∗±0.71 86.32 ±0.78 85.68 ∗±0.73 69.99 ∗±2.78
+
+ity even under challenging conditions. Complete numerical results are provided in Appendix G. 5.2.2. TASK II E VALUATION 
+
+We evaluate point cloud classification on the standard Mod-elNet benchmark (Wu et al., 2015) with ISAB as the feature backbone (Lee et al., 2019), with accuracy results sum-marized in Table 1. ① Our method achieves the best per-formance across all evaluation settings over the strongest baseline in terms of overall accuracy. This demonstrates the effectiveness of our approach for learning robust set representations in point cloud data classification. ② When examining different corruption levels, we observe that ex-isting methods exhibit varying robustness performance. In particular, PSWE shows relatively strong resistance under severe corruption, achieving the best baseline performance in this regime, while FSW performs competitively under mild corruption, ranking as the second-best baseline. These results suggest that different aggregation mechanisms em-phasize different aspects of robustness. Nevertheless, our method consistently outperforms all baselines under clean, mild, and severe conditions, indicating improved stability across a wide range of inference-time corruptions. ③ To assess the statistical reliability of these improvements, we conduct the Wilcoxon signed-rank significance test across all experimental settings. The results show that the perfor-mance gains of our method are statistically significant at the 95% confidence level for the vast majority of comparisons. 5.2.3. TASK III E VALUATION 
+
+We conduct evaluations on three benchmark datasets, LDA-1k , LDA-3k , and LDA-5k (Zaheer et al., 2017), which differ in both scale and topical coverage. Tokens are embedded via word2vec (Mikolov, 2013) and scored by semantic simi-larity to the query, with ranking quality measured by AUC. As shown in Figure 4, ① our method consistently achieves the best overall AUC performance across all three datasets. Notably, this advantage is driven by strong performance under the clean data partitions, indicating that our approach effectively captures the core semantic structure required for 
+
+Figure 4. Task III performance comparison. For each method, the leftmost black-bordered bar represents the overall score, with exact values annotated on top. The symbol “ I” measures the difference between the clean and severe performances. 
+
+Table 2. Task IV performance comparison (%). Method Overall Clean Mild Severe MaxP 48.27 ±0.55 55.43 ±0.67 50.18 ±0.84 27.53 ±1.08 MeanP 49.99 ±0.58 56.83 ±0.42 52.28 ±0.64 29.46 ±0.83 DeepSet 48.49 ±0.85 56.12 ±0.65 51.29 ±0.91 25.21 ±1.18 RepSet 49.52 ±0.59 57.19 ±0.61 51.82 ±0.78 26.88 ±0.96 SetTRSM 50.26 ±0.71 59.48 ±0.54 53.04 ±0.73 23.06 ±1.24 DIEM 51.91 ±0.48 59.42 ±0.71 53.67 ±0.85 30.51 ±1.09 FSPool 53.13 ±0.49 61.88 ±0.69 54.15 ±0.92 29.74 ±1.31 FSW 52.15 ±0.65 59.85 ±0.55 53.45 ±0.78 30.95 ±0.95 PSWE 51.21 ±0.42 57.76 ±0.27 53.49 ±0.53 31.43 ±0.63       
+
+> Ours 53.03 ±0.89 60.33 ±1.05 54.95 ∗±1.19 31.89 ∗±0.79
+
+topic expansion. ② Beyond overall accuracy, our method also demonstrates superior robustness to corruption. Across all datasets, the performance gap between the clean and severe conditions is relatively small compared to compet-ing methods, as indicated by the I-bar markers. This effect is particularly pronounced on LDA-3k , where our method exhibits the smallest clean–severe discrepancy, suggesting strong resilience to inference-time corruption. On LDA-1k and LDA-5k , although the gap slightly increases, our approach remains highly competitive and consistent perfor-mance. Detailed results are reported in Appendix H. 5.2.4. TASK IV E VALUATION 
+
+For Task IV, we evaluate on the large-scale NWPU-RESISC45 dataset (Cheng et al., 2017). We use the same MLP-based patch encoder in (Naderializadeh et al., 2021) and report classification accuracy as the evaluation metric. 
+
+① In general, our model attains highly competitive overall accuracy and is effectively on par with the best-performing baseline. ② Although our method ranks second on the clean subset, it outperforms most competitors on the mild and severe subsets. This indicates improved robustness: the model maintains higher accuracy under more challeng-ing conditions, showing that the proposed method achieves 7Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 3. Ablation study on LiveJ dataset.                                          
+
+> W/o Recall@10 NDCG@10 Overall Clean Mild Severe Overall Clean Mild Severe
+> SW-DRSO 72.58 73.45 72.22 70.96 74.40 75.23 74.14 72.69
+> fsw 69.55 70.23 69.17 68.43 70.77 71.38 70.77 69.23
+> WBS 72.92 73.81 72.63 71.13 75.68 76.24 75.40 74.72
+> Ours 74.86 75.64 74.63 73.25 77.80 78.49 77.54 76.44
+
+Table 4. Empirical study of our approximation strategies. Time represents the training time per epoch.                     
+
+> Method Overall Clean Mild Severe Time (min)
+> Sinkhorn 74.81 75.52 74.71 73.20 21.5
+> Disc-Adversary 74.45 75.18 74.01 73.27 18.4
+> Ours 74.86 75.64 74.63 73.25 15.6
+
+state-of-the-art accuracy under varying test conditions. 
+
+5.3. Empirical Analysis 
+
+We evaluate our framework’s design choices using the LiveJ dataset (introduced in Task 1). 5.3.1. MODULE -WISE ABLATION STUDY 
+
+We construct three ablation variants against the full model. The comparison results are presented in Table 3. • w/o SW-DRSO : We eliminate our proposed SW-DRSO framework entirely. Instead, the model is directly optimized using standard Empirical Risk Minimization in Eq. (17) . We notice that, the performance drop, particu-larly in the severe corruption setting, indicates the critical role of our SW-DRSO frame in enhancing robustness. • w/o fsw : We replace the proposed Sliced-Wasserstein-based set encoding mechanism with a rudimentary mean pooling strategy to assess the efficacy of the encoding scheme. This variant exhibits the most substantial degra-dation across all metrics. This result empirically verifies that the Wasserstein-based geometric awareness can cap-ture complex set structures, which is more effective than simple aggregation strategy. • w/o WBS : We disable the Wasserstein Barycenter Syn-thesis module. Instead of synthesizing barycenters, we utilize set embeddings randomly sampled from the cur-rent batch as the optimization targets. The decline in performance suggests that our synthesized barycenters can effectively provide supervision signals compared to random in-batch samples. 5.3.2. STUDY OF OUR APPROXIMATION STRATEGIES 
+
+Our framework employs a twofold approximation strate-gies: We first adopt Sliced-Wasserstein metric for tractable Wasserstein geometry, and then we propose barycentric adversary as a differentiable surrogate for the inner max-imization in DRO. We thus conduct empirical studies to validate the effectiveness of these two designs. 
+
+Wasserstein Geometry Approximation. To evaluate the efficacy of our approximation, we substitute the SW met-ric with the standard Wasserstein metric. Given that the computational complexity of the original Wasserstein dis-tance scales at O(n3 log n) or higher (Pele & Werman, 2009), we adopt the Sinkhorn computation algorithm as a common practice (Cuturi, 2013). Consequently, we im-plement a Sinkhorn-based variant for both set encoding and the SW-DRSO formulation. As shown in Table 4, while the Sinkhorn baseline achieves competitive overall per-formance, our SW-based method still outperforms it with significantly improved computational efficiency, i.e., 21.5 min vs. 15.6 min per epoch (27% faster). This demonstrates that SW approximation provides a better trade-off between accuracy and efficiency for large-scale settings. 
+
+Barycentric Adversary for Optimization. The second approximation lies within the optimization process, where we employ a barycentric adversary as a surrogate. We com-pare our approach against the Discrete Adversary strategy (corresponding to LDisc in Proposition 4.3), which searches over all discrete sets in G to identify the worst-case instance for gradient estimation. As shown in Table 4, our method outperforms Disc-Adversary , empirically validating Proposition 4.3, while achieving better training efficiency. 
+
+Comparison with Random Combinatorial Search. To further examine whether an explicit search over corrupted set candidates can replace the barycentric adversary, we evaluate random combinatorial sampling (RCS) on the LiveJ dataset. RCS samples candidate corrupted sets in the discrete set space for m rounds and uses high-loss candidates for robust training. We also evaluate an SW-constrained variant that filters sampled candidates by the local Sliced-Wasserstein distance. As shown in Table 5, increasing the number of sampled candidates substantially increases training time, while the performance gain remains limited. In contrast, our barycentric adversary does not require a sampling-round parameter and achieves 74.86 Re-call@10 with 15.6 min per epoch, yielding a better accuracy-efficiency trade-off by optimizing continuously over simplex weights rather than sampling discrete corrupted sets. 
+
+Cardinality-wise Scalability. We further evaluate scal-ability by grouping LiveJ data instances according to the input set cardinality, i.e., the number of elements contained in each input set. Each cardinality group corresponds to a range of set sizes, such as sets with 1–10 elements or more than 30 elements. As shown in Table 7, SW-DRSO 8Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 5. Random combinatorial search analysis on LiveJ. R@10 denotes Recall@10, m denotes the number of sampling rounds, and time is measured per epoch.                        
+
+> Method m= 2 m= 5 m= 10
+> R@10 Time R@10 Time R@10 Time
+> RCS 69.45 21.7 70.56 23.5 71.13 27.4
+> RCS w/ SW 69.52 22.6 71.81 24.8 71.74 28.1
+
+Table 6. Comparison with other DRO variants.                          
+
+> Method Overall Clean Mild Severe Time (min)
+> WDRO 74.72 75.32 74.21 73.10 17.5
+> KL-DRO 74.45 74.92 74.14 73.87 14.2
+> MMD-DRO 74.09 74.86 73.60 73.07 18.7
+> Ours 74.86 75.64 74.63 73.25 15.6
+
+maintains consistent Recall@10 gains across all cardinal-ity groups, while its training time grows moderately with set size. This suggests that the barycentric inner optimiza-tion introduces manageable overhead beyond the base SW encoder. 5.3.3. COMPARISON WITH OTHER DRO V ARIANTS 
+
+We benchmark SW-DRSO against classical DRO variants, including WDRO (Gao et al., 2024), KL-DRO (Namkoong & Duchi, 2016), and MMD-DRO (Staib & Jegelka, 2019). Detailed descriptions are provided in Appendix I.1. We im-plement them on our encoder architecture by replacing the distance metric used in the local neighbor pool construction (Section 4.3.1) with their respective divergence measures. As shown in Table 6, our SW-DRSO performs the best while maintaining competitive training efficiency. WDRO and MMD-DRO suffer from significant computational over-head while delivering inferior accuracy. We attribute this to the geometric alignment between our Wasserstein-based DRO formulation and Sliced-Wasserstein encoder, which enables effective robust optimization, unlike the geometric mismatches in other variants. 
+
+6. Conclusion 
+
+In this work, we addressed the challenge of Inference-time Element Corruption in Set Representation Learning, an is-sue where deployed models face sparse degradations typi-cally absent from training data. We proposed SW-DRSO, a scalable distributionally robust optimization framework that leverages Sliced-Wasserstein geometry to define a tractable ambiguity region. By introducing a barycentric adversary, we transformed the computationally prohibitive search for worst-case perturbations into an efficient optimization pro-cess. Extensive experiments across diverse tasks and data modalities demonstrate that SW-DRSO effectively enhances robustness against severe corruption while maintaining com-petitive accuracy on clean inputs. A promising future direc-tion is to extend such robust set optimization to LLM- and agent-centric settings where robustness is increasingly re-
+
+Table 7. Cardinality-wise scalability on LiveJ. Cardinality groups are defined by the number of elements in each input set. R@10 denotes Recall@10, and time is measured per epoch.                                        
+
+> Method [1 ,10] [11 ,20] [20 ,30] >30
+> R@10 Time R@10 Time R@10 Time R@10 Time
+> FSW 64.24 11.7 64.18 11.9 64.32 12.2 64.30 12.7
+> PSWE 71.44 12.1 71.81 12.6 71.76 13.2 71.92 13.9
+> Ours 74.65 14.6 74.91 15.9 74.77 16.7 74.81 17.1
+
+quired under distributional changes (He et al., 2026b; Zhang et al., 2026a; Wu et al., 2026; Huang et al., 2025; Chen et al., 2026a; Luo et al., 2026b;c). 
+
+Acknowledgements 
+
+This work is supported in part by NSF under grants III-2106758, and POSE-2346158. 
+
+Impact Statement 
+
+This work addresses a practical reliability gap in Set Repre-sentation Learning: element corruptions at inference time may disproportionately distort pooled set embeddings and cause downstream failures. To mitigate this, we propose a scalable distributionally robust optimization framework that represents sets as empirical measures and defines tractable corruption regions, enabling robustness without discrete enumeration of corrupted set variants. We further introduce a barycentric data synthesis strategy that turns the otherwise difficult inner worst-case search into efficient parameteriza-tion optimization. Based on our proposed method, we aim to improve the operational robustness of set-based models, reducing failure rates when inputs are incomplete, noisy, or adversarially perturbed. 
+
+References 
+
+Agueh, M. and Carlier, G. Barycenters in the wasserstein space. SIAM Journal on Mathematical Analysis , 43(2): 904–924, 2011. Amir, T. and Dym, N. Fourier sliced-wasserstein embedding for multisets and measures. In The Thirteenth Interna-tional Conference on Learning Representations , 2025. Bartlett, P. L., Foster, D. J., and Telgarsky, M. Spectrally-normalized margin bounds for neural networks. Advances in Neural Information Processing Systems , 30, 2017. Bertsimas, D., Sim, M., and Zhang, M. Adaptive distribu-tionally robust optimization. Management Science , 65(2): 604–618, 2019. Bonneel, N., Rabin, J., Peyr ´e, G., and Pfister, H. Sliced and radon wasserstein barycenters of measures. JMIV , 51(1): 22–45, 2015. 9Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Chen, X.-H., He, B., Yu, Y., Li, Q., Qin, Z., Shang, W., Ye, J., and Ma, C. Sim2rec: A simulator-based decision-making approach to optimize real-world long-term user engagement in sequential recommender systems. In 2023 IEEE 39th International Conference on Data Engineering (ICDE) , pp. 3389–3402. IEEE, 2023a. Chen, Y., Yang, M., Zhang, Y., Zhao, M., Meng, Z., Hao, J., and King, I. Modeling scale-free graphs with hyperbolic geometry for knowledge-aware recommendation. In Pro-ceedings of the fifteenth ACM international conference on web search and data mining , pp. 94–102, 2022a. Chen, Y., Yang, Y., Wang, Y., Bai, J., Song, X., and King, I. Attentive knowledge-aware graph convolutional networks with collaborative guidance for personalized recommen-dation. In 2022 IEEE 38th international conference on data engineering (ICDE) , pp. 299–311. IEEE, 2022b. Chen, Y., Truong, Q.-T., Shen, X., Wang, M., Li, J., Chan, J., and King, I. Topological representation learning for e-commerce shopping behaviors. 2023b. Chen, Y., Fang, Y., Wang, Q., Cao, X., and King, I. Deep structural knowledge exploitation and synergy for estimat-ing node importance value on heterogeneous information networks. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 38, pp. 8302–8310, 2024. Chen, Y., Zhang, X., Zhang, Y., Li, Y., Zou, H., Miao, C., Zhang, W., Liu, S. X., and Yu, P. S. Embracing trust-worthy brain-agent collaboration as paradigm extension for intelligent assistive technologies. Advances in Neural Information Processing Systems , 38, 2026a. Chen, Y., Zhang, X., Zou, H. P., He, B., Li, Y., Yu, P. S., King, I., and Liu, X. Adversarial encoding perturbation and synthesis for set representation auxiliary learning. In The Fourteenth International Conference on Learning Representations , 2026b. Cheng, G., Han, J., and Lu, X. Remote sensing image scene classification: Benchmark and state of the art. Proceed-ings of the IEEE , 105(10):1865–1883, 2017. Cui, Z., Wu, H., He, B., Cheng, J., and Ma, C. Context mat-ters: Enhancing sequential recommendation with context-aware diffusion-based contrastive learning. In Proceed-ings of the 33rd ACM International Conference on In-formation and Knowledge Management , pp. 404–414, 2024. Cui, Z., Weng, Y., Tang, X., Zhang, X., Li, S., Liu, P., He, B., Liu, D., Luo, W., He, X., et al. Semantic retrieval aug-mented contrastive learning for sequential recommenda-tion. Advances in Neural Information Processing Systems ,38:162621–162645, 2026. Cuturi, M. Sinkhorn distances: Lightspeed computation of optimal transport. Advances in neural information processing systems , 26, 2013. Edwards, H. and Storkey, A. Towards a neural statistician. In 5th International Conference on Learning Representa-tions , pp. 1–13, 2017. Gao, R., Chen, X., and Kleywegt, A. J. Wasserstein distribu-tionally robust optimization and variation regularization. 
+
+Operations Research , 72(3):1177–1191, 2024. Guo, D., Tian, L., Zhang, M., Zhou, M., and Zha, H. Learning prototype-oriented set representations for meta-learning. arXiv preprint arXiv:2110.09140 , 2021. He, B. and Ma, C. Interpretable triplet importance for personalized ranking. In Proceedings of the 33rd ACM International Conference on Information and Knowledge Management , pp. 809–818, 2024. He, B., He, X., Zhang, R., Zhang, Y., Tang, R., and Ma, C. Dynamic embedding size search with minimum regret for streaming recommender system. In Proceedings of the 32nd ACM International Conference on Information and Knowledge Management , pp. 741–750, 2023a. He, B., He, X., Zhang, Y., Tang, R., and Ma, C. Dynamically expandable graph convolution for streaming recommen-dation. In Proceedings of the ACM web conference 2023 ,pp. 1457–1467, 2023b. He, B., Yin, L., Zhen, H.-L., Zhang, X., Yuan, M., and Ma, C. Paser: Post-training data selection for efficient pruned large language model recovery. arXiv preprint arXiv:2502.12594 , 2025. He, B., Chen, Y., Zhang, X., Kong, L., Yu, P. S., Liu, X., and Ma, C. Pedagogically-inspired data synthesis for language model knowledge distillation. arXiv preprint arXiv:2602.12172 , 2026a. He, B., Hu, M., Xu, Z., Wang, H., Zong, L., Chen, Y., Ma, C., Liu, X., Zhou, P., and King, I. Search-r2: Enhancing search-integrated reasoning via actor-refiner collabora-tion. arXiv preprint arXiv:2602.03647 , 2026b. He, B., Yin, L., Zhen, H.-L., Liu, S., Wu, H., Zhang, X., Yuan, M., and Ma, C. Preserving llm capabilities through calibration data curation: From analysis to optimization. 
+
+Advances in Neural Information Processing Systems , 38: 58531–58572, 2026c. Huang, J. and Ding, H. An effective manifold-based opti-mization method for distributionally robust classification. In The Thirteenth International Conference on Learning Representations , 2025. 10 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Huang, W.-C., Zou, H. P., Wu, Y., Li, D., Chen, Y., Zhang, W., Li, Y., Zangari, A., Guo, J., Miao, C., et al. Deep-researchguard: Deep research with open-domain evalua-tion and multi-stage guardrails for safety. arXiv preprint arXiv:2510.10994 , 2025. Husain, H., Nguyen, V., and van den Hengel, A. Distribu-tionally robust bayesian optimization with ϕ-divergences. 
+
+Advances in Neural Information Processing Systems , 36: 20133–20145, 2023. Inatsu, Y., Takeno, S., Karasuyama, M., and Takeuchi, I. Bayesian optimization for distributionally robust chance-constrained problem. In International Conference on Machine Learning , pp. 9602–9621. PMLR, 2022. Jaegle, A., Gimeno, F., Brock, A., Vinyals, O., Zisserman, A., and Carreira, J. Perceiver: General perception with iterative attention. In ICML , pp. 4651–4664. PMLR, 2021. Kantorovich, L. V. On the translocation of masses. Journal of mathematical sciences , 133(4), 2006. Kim, M. Differentiable expectation-maximization for set representation learning. In International Conference on Learning Representations , 2022. Kingma, D. P. and Ba, J. Adam: A method for stochastic optimization. In ICLR , 2015. Kolouri, S., Nadjahi, K., Simsekli, U., Badeau, R., and Rohde, G. Generalized sliced wasserstein distances. 
+
+NeurIPS , 32, 2019. Kuhn, D., Esfahani, P. M., Nguyen, V. A., and Shafieezadeh-Abadeh, S. Wasserstein distributionally robust optimiza-tion: Theory and applications in machine learning. In 
+
+Operations research & management science in the age of analytics , pp. 130–166. Informs, 2019. Kwon, Y., Kim, W., Won, J.-H., and Paik, M. C. Prin-cipled learning method for wasserstein distributionally robust optimization with local perturbations. In Interna-tional Conference on Machine Learning , pp. 5567–5576. PMLR, 2020. Lee, D. B., Lee, S., Kawaguchi, K., Kim, Y., Bang, J., Ha, J.-W., and Hwang, S. J. Self-supervised set representation learning for unsupervised meta-learning. In ICLR , 2023. Lee, G., Park, C., and Shin, K. Set2box: Similarity pre-serving representation learning for sets. In ICDM , pp. 1023–1028. IEEE, 2022. Lee, J., Lee, Y., Kim, J., Kosiorek, A., Choi, S., and Teh, Y. W. Set transformer: A framework for attention-based permutation-invariant neural networks. In ICML , pp. 3744–3753. PMLR, 2019. Levitin, E. S. and Polyak, B. T. Constrained minimiza-tion methods. USSR Computational mathematics and mathematical physics , 6(5):1–50, 1966. Li, D., Tan, S., Zhang, Y., Jin, M., Pan, S., Okumura, M., and Jiang, R. Dyg-mamba: Continuous state space model-ing on dynamic graphs. Advances in Neural Information Processing Systems , 38:129101–129130, 2026a. Li, D., Zhang, Y., Wu, Y., and Jiang, R. Node role-guided llms for dynamic graph clustering. In Proceedings of the ACM Web Conference 2026 , pp. 4418–4428, 2026b. Li, D., Zheng, S., Xu, C., Bian, J., and Jiang, R. Routing channel-patch dependencies in time series forecasting with graph spectral decomposition. In The Fourteenth International Conference on Learning Representations ,2026c. Li, J., Chen, Z., Luo, H., and Salam, H. Prefix: Understand and adapt to user preference in human-agent interaction. 
+
+arXiv preprint arXiv:2602.06714 , 2026d. Li, Y., Yu, X., and Koudas, N. Les3: learning-based exact set similarity search. Proceedings of VLDB , 14(11):2073– 2086, 2021. Lin, M., Chen, Q., and Yan, S. Network in network. arXiv preprint arXiv:1312.4400 , 2013. Liu, S., Wang, Y., Zhu, Y., Miao, Y., and Gao, X.-S. Prov-able robust overfitting mitigation in wasserstein distribu-tionally robust optimization. In The Thirteenth Interna-tional Conference on Learning Representations , 2025. Luo, H., Deng, Z., Huang, H., Liu, X., Chen, R., and Liu, Z. Versusdebias: Universal zero-shot debiasing for text-to-image models via slm-based prompt engineering and generative adversary. arXiv preprint arXiv:2407.19524 ,2024. Luo, H., Jin, Y., Wang, Y., Li, X., Shang, T., Liu, X., Chen, R., Wang, K., Salam, H., Wen, Q., and Liu, Z. Dynam-icner: A dynamic, multilingual, and fine-grained dataset for llm-based named entity recognition. In Proceedings of the 2025 Conference on Empirical Methods in Natural Language Processing , 2025a. Luo, H., Dai, S., Ni, C., Li, X., Zhang, G., Wang, K., Liu, T., and Salam, H. Agentauditor: Human-level safety and security evaluation for llm agents. Advances in Neural In-formation Processing Systems , 38:43241–43298, 2026a. Luo, H., Huang, Z., Chung, S., Wang, Y., Jin, Y., Li, J., Li, J., Li, X., and Salam, H. Ateliereval: Agentic evaluation of humans & llms as text-to-image prompters, 2026b. URL https://arxiv.org/abs/2605.22645 .11 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Luo, H., Ni, C., Wen, J., Huang, Z., Wang, Y., Liao, B., Chung, S., Jin, Y., Li, X., Xu, W., Wang, X., and Salam, H. Centaureval: Benchmarking human-in-the-loop value in agentic coding, 2026c. URL https://arxiv.org/ abs/2512.04111 .Luo, S., He, B., Zhao, H., Shao, W., Qi, Y., Huang, Y., Zhou, A., Yao, Y., Li, Z., Xiao, Y., et al. Recranker: Instruction tuning large language model as ranker for top-k recommendation. ACM Transactions on Information Systems , 43(5):1–31, 2025b. Luo, S., Yao, Y., He, B., Shao, W., Xu, J., Huang, Y., Zhou, A., Zhang, X., Xiao, Y., Hou, H., et al. Integrating large language models into recommendation via mutual aug-mentation and adaptive aggregation. IEEE Journal of Selected Topics in Signal Processing , 2026d. Ma, X., Ning, C., and Du, W. Differentiable distributionally robust optimization layers. In International Conference on Machine Learning , pp. 33880–33901. PMLR, 2024. Mialon, G., Chen, D., d’Aspremont, A., and Mairal, J. A trainable optimal transport embedding for feature aggre-gation and its relationship to attention. In ICLR , 2021. Micheli, F., Balta, E. C., Tsiamis, A., and Lygeros, J. Wasserstein distributionally robust bayesian optimization with continuous context. In International Conference on Artificial Intelligence and Statistics , pp. 4978–4986. PMLR, 2025. Mikolov, T. Efficient estimation of word representations in vector space. ICLR , 3781, 2013. Mislove, A., Marcon, M., Gummadi, P. K., Druschel, P., and Bhattacharjee, B. Measurement and analysis of online social networks. In Dovrolis, C. and Roughan, M. (eds.), 
+
+Proceedings of SIGCOMM , pp. 29–42. Muandet, K., Fukumizu, K., Dinuzzo, F., and Sch ¨olkopf, B. Learning from distributions via support measure ma-chines. Advances in neural information processing sys-tems , 25, 2012. Murphy, R. L., Srinivasan, B., Rao, V., and Ribeiro, B. Janossy pooling: Learning deep permutation-invariant functions for variable-size inputs. In ICLR , 2018. NaderiAlizadeh, N. and Singh, R. Aggregating residue-level protein language model embeddings with optimal transport. Bioinformatics Advances , 5(1):vbaf060, 2025. Naderializadeh, N., Comer, J. F., Andrews, R., Hoffmann, H., and Kolouri, S. Pooling by sliced-wasserstein embed-ding. NeurIPS , 34:3389–3400, 2021. Namkoong, H. and Duchi, J. C. Stochastic gradient methods for distributionally robust optimization with f-divergences. Advances in neural information processing systems , 29, 2016. Nguyen, Q. M., Mehta, N. A., and Guzm ´an, C. A. Be-yond minimax rates in group distributionally robust opti-mization via a novel notion of sparsity. In Forty-second International Conference on Machine Learning , 2025. Pele, O. and Werman, M. Fast and robust earth mover distances. In 2009 IEEE 12th International Conference on Computer Vision , pp. 460–467. IEEE, 2009. Peyr ´e, G. and Cuturi, M. Computational optimal transport: With applications to data science . Now Foundations and Trends, 2019. Qi, C. R., Su, H., Mo, K., and Guibas, L. J. Pointnet: Deep learning on point sets for 3d classification and segmen-tation. In Proceedings of the IEEE CVPR , pp. 652–660, 2017. Qiu, Z., Liu, J., Chen, Y., and King, I. Hihpq: Hierarchical hyperbolic product quantization for unsupervised image retrieval. Proceedings of the 38th AAAI Conference on Artificial Intelligence (AAAI) , 2024. Rahimian, H. and Mehrotra, S. Distributionally robust op-timization: A review. arXiv preprint arXiv:1908.05659 ,2019. Rahimian, H. and Mehrotra, S. Frameworks and results in distributionally robust optimization. Open Journal of Mathematical Optimization , 3:1–85, 2022. Rezatofighi, S. H., Kaskman, R., Motlagh, F. T., Shi, Q., Cremers, D., Leal-Taix ´e, L., and Reid, I. Deep perm-set net: Learn to predict sets with unknown permutation and cardinality using deep neural networks. arXiv preprint arXiv:1805.00613 , 2018. Rusu, R. B., Marton, Z. C., Blodow, N., Dolha, M., and Beetz, M. Towards 3d point cloud based object maps for household environments. Robotics and Autonomous Systems , 56(11):927–941, 2008. Sagawa, S., Koh, P. W., Hashimoto, T. B., and Liang, P. Distributionally robust neural networks for group shifts: On the importance of regularization for worst-case gener-alization. arXiv preprint arXiv:1911.08731 , 2019. Scarf, H. E., Arrow, K., and Karlin, S. A min-max solu-tion of an inventory problem. Technical report, Rand Corporation Santa Monica, 1957. Shalev-Shwartz, S. and Ben-David, S. Understanding Ma-chine Learning: From Theory to Algorithms . Cambridge University Press, 2014. 12 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Skianis, K., Nikolentzos, G., Limnios, S., and Vazirgiannis, M. Rep the set: Neural networks for learning set repre-sentations. In AISTATS , pp. 1410–1420. PMLR, 2020. Staib, M. and Jegelka, S. Distributionally robust optimiza-tion and generalization in kernel methods. Advances in Neural Information Processing Systems , 32, 2019. Vargas-Calder ´on, V. Quantum deep sets and sequences. 
+
+Quantum Machine Intelligence , 7(2):65, 2025. Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. Attention is all you need. NeurIPS , 30, 2017. Wang, Z., Wang, Z., Liu, M., and Si, N. Knowledge-guided wasserstein distributionally robust optimization. 2025. Wu, J., Xie, Y., Yang, Z., Wu, J., Chen, J., Gao, J., Ding, B., Wang, X., and He, X. Towards robust alignment of language models: Distributionally robustifying direct preference optimization. In The Thirteenth International Conference on Learning Representations , 2025. Wu, Z., Song, S., Khosla, A., Yu, F., Zhang, L., Tang, X., and Xiao, J. 3d shapenets: A deep representation for volumetric shapes. In Proceedings of the IEEE CVPR , pp. 1912–1920, 2015. Wu, Z., Zhang, H., Lin, F., Xu, W., Xu, X., Chen, Y., Zou, H. P., Chen, S., Zhang, W., Liu, X., et al. Gam: Hier-archical graph-based agentic memory for llm agents. In 
+
+Proceedings of the 64th Annual Meeting of the Associa-tion for Computational Linguistics (ACL) , 2026. Xu, F., Jiang, S., Huang, Z., Luo, X., Zhang, S., Chen, A., and Sun, Y. Fuse: Measure-theoretic compact fuzzy set representation for taxonomy expansion. arXiv preprint arXiv:2506.08409 , 2025. Yang, J. and Leskovec, J. Defining and evaluating network communities based on ground-truth. Knowl. Inf. Syst. , 42 (1):181–213, 2015. Yu, D., Cai, Y., Jiang, W., and Zhang, L. Efficient algorithms for empirical group distributionally robust optimization and beyond. In International Conference on Machine Learning , pp. 57384–57414. PMLR, 2024. Zaheer, M., Kottur, S., Ravanbakhsh, S., Poczos, B., Salakhutdinov, R. R., and Smola, A. J. Deep sets. Ad-vances in neural information processing systems , 30, 2017. Zhang, H., Fan, S., Zou, H. P., Chen, Y., Wang, Z., Zhou, J., Li, C., Huang, W.-C., Yao, Y., Zheng, K., et al. Co-evoskills: Self-evolving agent skills via co-evolutionary verification. arXiv preprint arXiv:2604.01687 , 2026a. Zhang, Q., Zhou, Y., Khan, S., Prater-Bennette, A., Shen, L., and Zou, S. Revisiting large-scale non-convex distri-butionally robust optimization. In The Thirteenth Inter-national Conference on Learning Representations , 2025. Zhang, X., Chen, Y., Gao, C., Liao, Q., Zhao, S., and King, I. Knowledge-aware neural networks with personalized feature referencing for cold-start recommendation. arXiv preprint arXiv:2209.13973 , 2022. Zhang, X., He, B., Chen, J., Cui, Z., and Ma, C. From token to item: Enhancing large language models for rec-ommendation via item-aware attention mechanism. In 
+
+Proceedings of the ACM Web Conference 2026 , pp. 6700– 6708, 2026b. Zhang, Y., Hare, J., and Pr ¨ugel-Bennett, A. Learning rep-resentations of sets through optimized permutations. In 
+
+ICLR , 2019. Zhang, Y., Hare, J., and Pr ¨ugel-Bennett, A. Fspool: Learn-ing set representations with featurewise sort pooling. 
+
+ICLR , 2020. Zhou, B., Chen, G., Huang, T., Song, Q., and Yuan, Y. Planning pev fast-charging stations using data-driven dis-tributionally robust optimization approach based on ϕ-divergence. IEEE Transactions on Transportation Elec-trification , 6(1):170–180, 2020. Zhou, D., Yu, Z., Xie, E., Xiao, C., Anandkumar, A., Feng, J., and Alvarez, J. M. Understanding the robustness in vision transformers. In International conference on machine learning , pp. 27378–27394. PMLR, 2022. 13 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+A. Notation Explanations 
+
+All notations are summarized and explained in Table 8. 
+
+Table 8. Summary of notation used throughout the paper. 
+
+Symbol Description 
+
+X ⊆ Rd, Y Element space of individual set elements and label space 
+
+xi ∈ X The i-th element in a set 
+
+S = {xi}ni=1 , S′ Unordered input set with cardinality n and corrupted version of set S at inference time 
+
+S(X ) Space of all finite subsets of X
+
+f : S(X ) → Rc Permutation-invariant set encoder 
+
+vS = f (S) Learned representation (embedding) of set Sg(·) Task-specific predictor (e.g., classifier or ranking function) 
+
+ℓ(·, ·) Task loss function 
+
+P0 Nominal training distribution over clean sets 
+
+Γ( S) Ambiguity (corruption) region associated with set S
+
+ΓSW (S) Sliced-Wasserstein ambiguity region centered at S
+
+ΓBar (S) Barycentric surrogate ambiguity region 
+
+ρ Radius of the ambiguity region 
+
+μS Empirical measure associated with set Sδx Dirac measure at location x
+
+P(X ) Space of probability measures over X
+
+μS′ Empirical measure of corrupted set S′
+
+Sd−1 Unit sphere in Rd
+
+ω ∈ Sd−1 Projection direction 
+
+ω(x) = ω⊤x One-dimensional projection of element xμωS Projected 1D measure of μS along ωW (·, ·) 2-Wasserstein distance 
+
+SW( μS , μ S′ ) Sliced-Wasserstein distance between measures 
+
+O = {oh}Hh=1 Learnable reference set 
+
+H, R Cardinality of the reference set and number of Monte Carlo projection directions 
+
+μO Empirical measure of the reference set 
+
+Fμ, F −1 
+
+> μ
+
+Cumulative distribution function (CDF) of measure μ and quantile function of measure μp+(·) Optimal 1D Wasserstein transport map 
+
+Ω = {ωr }Rr=1 Set of projection directions 
+
+fSW (S) Sliced-Wasserstein-based set embedding 
+
+B Mini-batch of training sets 
+
+G(S) Local neighbor pool of set SK Number of neighbors in G(S)
+
+Sk The k-th neighboring set of SvSk Embedding of neighbor set Sk
+
+∆K Probability simplex in RK
+
+Λ = ( λ1, . . . , λ K ) Barycentric mixing weights 
+
+¯vS (Λ) Synthesized barycentric embedding of set SSΛ Implicit (virtual) barycentric set induced by Λ
+
+η, α Step size for projected gradient ascent, and trade-off coefficient between ERM and robust loss 
+
+T Number of inner maximization steps 
+
+Π∆K (·) Euclidean projection onto simplex ∆K
+
+Λ(t), Λ∗ Mixing weights at iteration t and final adversarial barycentric weights 
+
+14 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+B. Theoretical Analysis 
+
+B.1. Proof of Proposition 4.1 
+
+Proof. Let δk := vSk − vS . Since ¯vS (Λ) − vS = PKk=1 λkδk and the function ϕ(x) = ∥x∥22 is convex, Jensen’s inequality directly gives: 
+
+¯vS (Λ) − vS 
+
+> 22
+
+=
+
+> K
+
+X
+
+> k=1
+
+λkδk
+
+> 22
+
+≤
+
+> K
+
+X
+
+> k=1
+
+λk∥δk∥22. (1) Since ∥δk∥22 = ∥vSk − vS ∥22 ≤ ρ2 for all k (the selection principle of G) and P 
+
+> k
+
+λk = 1 , we obtain 
+
+> K
+
+X
+
+> k=1
+
+λk∥δk∥22 ≤
+
+> K
+
+X
+
+> k=1
+
+λkρ2 = ρ2. (2) Furthermore, according to (Naderializadeh et al., 2021), we have: 
+
+∥¯vS (Λ) − vS ∥2 = SW (μS(Λ) , μ S ). (3) We provide the derivation of Eq. (3) for completeness in Appendix B.5. This implies that: 
+
+SW (μS(Λ) , μ S ) ≤ ρ, (4) which completes the proof. 
+
+B.2. Proof of Proposition 4.2 
+
+Proof. For each direction ω, the 1D Wasserstein barycenter is formulated as: 
+
+μω 
+
+> Λ
+
+∈ arg min 
+
+> μ∈P (R)
+> K
+
+X
+
+> k=1
+
+λk W 22 (μ, μ ωSk ). (5) Then by optimality of μω
+
+> Λ
+
+, for any candidate μ and every ω, we have: 
+
+> K
+
+X
+
+> k=1
+
+λk W 22 (μω , μ ωSk ) ≥
+
+> K
+
+X
+
+> k=1
+
+λk W 22 (μω
+
+> Λ
+
+, μ ωSk ). (6) Considering that, (as shown in Eq. (4)), 
+
+SW 2(μ, ν ) = 
+
+Z
+
+> Sd−1
+
+W 22 (μω , ν ω ) dω = E[W 22 (μω , ν ω )] , (7) by integrating over ω, we then have: 
+
+> K
+
+X
+
+> k=1
+
+λk SW 2(μ, μ Sk ) ≥
+
+> K
+
+X
+
+> k=1
+
+λk SW 2(μΛ, μ Sk ). (8) This implies that μΛ is an SW Fr´ echet mean: 
+
+μΛ ∈ arg min  
+
+> μ∈P (X)
+> K
+
+X
+
+> k=1
+
+λk SW 2(μ, μ Sk ). (9) Finally, we relate μΛ to the synthesized embedding. We slightly abuse notation by letting fSW act on a measure through its slice-wise reference-to-input OT coordinates. Then given any slice ω and reference coordinate t, let u := FμωO (t) ∈ (0 , 1) .In 1D, the W2 barycenter has the quantile characterization (Agueh & Carlier, 2011; Peyr´ e & Cuturi, 2019): 
+
+F −1
+
+> μω
+> Λ
+
+(u) = 
+
+> K
+
+X
+
+> k=1
+
+λk F −1
+
+> μωSk
+
+(u). (10) 15 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Hence, the reference-to-input OT coordinate p+(t, ν ) = F −1 
+
+> ν
+
+(FμωO (t)) = F −1 
+
+> ν
+
+(u) is linear in Λ:
+
+p+(t, μ ω
+
+> Λ
+
+) = 
+
+> K
+
+X
+
+> k=1
+
+λk p+(t, μ ωSk ). (11) Concatenating Eq. (11) over the sampled slices as in fSW finally yields: 
+
+fSW (μΛ) = 
+
+> K
+
+X
+
+> k=1
+
+λk fSW (μSk ) = 
+
+> K
+
+X
+
+> k=1
+
+λk vSk = ¯ vS (Λ) , (12) which completes the proof. 
+
+B.3. Proof of Proposition 4.3 
+
+Proof. Recall that the barycentric region is defined as the convex hull of the neighbor embeddings: 
+
+ΓBar (S) := 
+
+(
+
+¯vS (Λ) = 
+
+> K
+
+X
+
+> k=1
+
+λkvSk : Λ ∈ ∆K
+
+)
+
+, (13) where ∆K = {λ ∈ RK : PKk=1 λk = 1 , λ k ≥ 0} is the probability simplex. The discrete and barycentric inner objectives are defined as LDisc (S) := max k∈[K] ℓ g(vSk ), y , and LBar (S) := max v∈ΓBar (S) ℓ g(v), y . Since ΓBar (S) is the convex hull of {vSk }Kk=1 , each vertex vSk itself is contained in ΓBar (S) by choosing Λ such that λk = 1 and λj = 0 for all j̸ = k,we recover ¯vS (Λ) = vSk . Therefore, we have: {vSk }Kk=1 ⊆ ΓBar (S).Then maximizing the same function ϕ(v) := ℓ(g(v), y ) over a superset cannot decrease the optimum, hence we have: 
+
+max  
+
+> k∈[K]
+
+ϕ(vSk ) ≤ max  
+
+> v∈ΓBar (S)
+
+ϕ(v). (14) That is, LDisc (S) ≤ LBar (S), which proves the claim. 
+
+B.4. Quantitative Gap Between LBar (S) and LDisc (S)
+
+Proposition B.1. Let ϕ(z) = ℓ(g(z), y ). We define the discrete and barycentric inner objectives as: 
+
+LDisc (S) := max  
+
+> k∈[K]
+
+ϕ(vSk ), L Bar (S) := max  
+
+> z∈ΓBar (S)
+
+ϕ(z). (15) 
+
+Assume ϕ is L-Lipschitz on ΓBar (S). Then the following quantitative bound holds: 
+
+0 ≤ LBar (S) − LDisc (S) ≤ 2L · ρ. (16) 
+
+Proof. We have prove the first inequality in Appendix B.3. For many standard loss functions and predictors, ϕ is locally Lipschitz on bounded (hence compact) domains (Shalev-Shwartz & Ben-David, 2014; Bartlett et al., 2017). If ϕ is 
+
+L-Lipschitz on ΓBar (S) (L is a constant), then for all z, z ′ ∈ ΓBar (S), we have: 
+
+|ϕ(z) − ϕ(z′)| ≤ L · ∥ z − z′∥2. (17) Let z⋆ ∈ arg max z∈ΓBar (S) ϕ(z) so that LBar (S) = ϕ(z⋆). Choose k⋆ ∈ arg min k∈[K] ∥z⋆ − vSk ∥2. Then we have 
+
+|ϕ(z⋆) − ϕ(vSk⋆ )| ≤ L · ∥ z⋆ − vSk⋆ ∥2, (18) which implies that 
+
+ϕ(z⋆) − ϕ(vSk⋆ ) ≤ | ϕ(z⋆) − ϕ(vSk⋆ )| ≤ L · ∥ z⋆ − vSk⋆ ∥2. (19) Moreover, ϕ(vSk⋆ ) ≤ max k∈[K] ϕ(vSk ) = LDisc (S). Therefore, we have: 
+
+LBar (S) − LDisc (S) = ϕ(z⋆) − LDisc (S)
+
+≤ ϕ(z⋆) − ϕ(vSk⋆ )
+
+≤ L min  
+
+> k∈[K]
+
+∥z⋆ − vSk ∥2
+
+≤ L sup 
+
+> z∈ΓBar (S)
+
+min  
+
+> k∈[K]
+
+∥z − vSk ∥2.
+
+(20) 16 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Then based on the definition of G(S), we have 
+
+∥vSk − vS ∥2 ≤ ρ, ∀Sk ∈ G(S). (21) In addition, for any z ∈ ΓBar (S), there exists Λ ∈ ∆K such that z = PKk=1 λkvSk . Using convexity of ∥ · ∥ 22 (or Jensen’s inequality) together with (21), we obtain 
+
+∥z − vS ∥22 =
+
+> K
+
+X
+
+> k=1
+
+λk(vSk − vS )
+
+> 22
+
+≤
+
+> K
+
+X
+
+> k=1
+
+λk∥vSk − vS ∥22
+
+≤
+
+> K
+
+X
+
+> k=1
+
+λkρ2 = ρ2,
+
+(22) hence ∥z − vS ∥2 ≤ ρ for all z ∈ ΓBar (S). Finally, by the triangle inequality, for any z ∈ ΓBar (S) and any k ∈ [K],
+
+∥z − vSk ∥2 ≤ ∥ z − vS ∥2 + ∥vS − vSk ∥2 ≤ ρ + ρ = 2 ρ. (23) Therefore, min k∈[K] ∥z − vSk ∥2 ≤ 2ρ that leads to: 
+
+sup 
+
+> z∈ΓBar (S)
+
+min  
+
+> k∈[K]
+
+∥z − vSk ∥2 ≤ 2ρ. (24) Plugging this into Eq. (20) finally completes the proof. 
+
+Proposition B.2. Let VS := {vSk }Kk=1 denote the embeddings of G(S). Let ϕ(z) = ℓ(g(z), y ). We consider the discrete and barycentric inner objectives: 
+
+LDisc (S) := max  
+
+> k∈[K]
+
+ϕ(vSk ), L Bar (S) := max  
+
+> z∈ΓBar (S)
+
+ϕ(z). (25) 
+
+The right-hand side measures the largest distance from a barycentric mixture to its nearest vertex embedding in VS (i.e., the “covering radius” of the mixture region by the vertices). 
+
+B.5. Proof of Eq. (3) (Naderializadeh et al., 2021) 
+
+Proof of Eq. (3). For any two measures μ, ν on Rd, expanding the squared ℓ2 distance yields 
+
+fSW (μ) − fSW (ν) 22 (26) 
+
+= 1
+
+RH 
+
+> R
+
+X
+
+> r=1
+> H
+
+X
+
+> h=1
+
+
+
+p+(tωr 
+
+> h
+
+, μ ωr ) − p+(tωr 
+
+> h
+
+, ν ωr )
+
+2
+
+. (27) Let uωr 
+
+> h
+
+:= Fμωr O (tωr 
+
+> h
+
+) ∈ (0 , 1) . By definition of p+, p+(tωr 
+
+> h
+
+, μ ωr ) =  Fμωr 
+
+−1(uωr 
+
+> h
+
+). Then in 1D, the squared 2-Wasserstein distance admits the quantile form: 
+
+W 2(μωr , ν ωr ) = 
+
+Z 10
+
+ Fμωr 
+
+−1(u) −  Fνωr 
+
+−1(u) 2
+
+du. (28) Using the same H reference quantile locations {uωr 
+
+> h
+
+}Hh=1 , we then define the corresponding empirical approximation: 
+
+cW 2 
+
+> H
+
+(μωr , ν ωr ) = 1
+
+H
+
+> H
+
+X
+
+> h=1
+
+ Fμωr 
+
+−1(uωr 
+
+> h
+
+) −  Fνωr 
+
+−1(uωr 
+
+> h
+
+)
+
+2
+
+= 1
+
+H
+
+> H
+
+X
+
+> h=1
+
+
+
+p+(tωr 
+
+> h
+
+, μ ωr ) − p+(tωr 
+
+> h
+
+, ν ωr )
+
+2
+
+.
+
+(29) 17 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+For sliced-Wasserstein distance, we have: 
+
+SW 2(μ, ν ) = 
+
+Z
+
+> Sd−1
+
+W 2(μω , ν ω ) dω. (30) Using the same Monte-Carlo directions Ω = {ωr }Rr=1 , we define the consistent empirical approximation: 
+
+dSW 2 
+
+> R,H
+
+(μ, ν ) = 1
+
+R
+
+> R
+
+X
+
+> r=1
+
+cW 22,H (μωr , ν ωr )= 1
+
+RH 
+
+> R
+
+X
+
+> r=1
+> H
+
+X
+
+> h=1
+
+
+
+p+(tωr 
+
+> h
+
+, μ ωr ) − p+(tωr 
+
+> h
+
+, ν ωr )
+
+2
+
+.
+
+(31) Comparing this with (27), we obtain the exact identity 
+
+∥vμ − vν ∥2 = fSW (μ) − fSW (ν) 2 = dSW R,H (μ, ν ). (32) In general, it is commonly assumed that the empirical sliced-Wasserstein distance dSW R,H (μ, ν ) coincides with the population sliced-Wasserstein distance SW (μ, ν ) when the number of Monte-Carlo projections R and the number of reference quantile points H are sufficiently large. 
+
+C. Pseudo-codes of our SW-DRSO 
+
+Algorithm 1 SW-DRSO Training with Barycentric Adversary 
+
+1: Input: encoder fSW (·), predictor g(·), K, α, T , η
+
+2: while not converged do 
+
+3: Sample minibatch B
+
+4: Compute vS ← fSW (S)
+
+5: for i = 1 , . . . , B do 
+
+6: Construct local neighbor pool G(S) = {Sk }Kk=1 ⊆ B (K-NN in embedding space) 7: Initialize Λ(1) ← (1 /K, . . . , 1/K )
+
+8: for t = 1 , . . . , T do 
+
+9: ¯vS (Λ (t)) ← PKk=1 λ(t) 
+
+> k
+
+vSk
+
+10: ˜Λ(t+1) ← Λ(t) + η∇Λℓ g(¯ vS (Λ (t))) , y 
+
+11: Λ(t+1) ← Π∆K
+
+ ˜Λ(t+1) 
+
+12: end for 
+
+13: Set Λ⋆ ← Λ(T ) and stop gradients through Λ⋆
+
+14: (In the robust term below, use the Λ⋆ obtained for this S.) 15: end for 
+
+16: Compute the minibatch objective (empirical form of Eq. (17)): 17: 1
+
+> |B|
+
+P  ℓ g(vS ), y  + αℓ  g(¯ vS (Λ ⋆)) , y  
+
+18: Update fSW and g by standard gradient descent on the above objective 19: end while 
+
+20: return fSW , g
+
+D. Computational Complexity Analysis 
+
+Consider a minibatch B of size B. For each set S ∈ B , we compute its embedding vS = fSW (S) ∈ Rm with m = RH , and denote the per-set encoding cost by Cenc . We construct a local neighbor pool G(S) of size K via K-NN in the embedding space. Using a naive batchwise implementation, forming all pairwise ℓ2 distances costs O(B2m), and neighbor selection adds at most O(B2 log B), yielding O(B2m) overall. The inner maximization in Eq. (17) is approximated by T steps of projected gradient ascent on the simplex ∆K (Eqs. (18)– (19)). Each ascent step requires (i) computing the barycentric embedding ¯vS (Λ) = PKk=1 λkvSk in O(Km ), (ii) evaluating the task function g(·) and backpropagating to ∇Λ in O(Cg (m) + Km ), and (iii) projecting onto ∆K in O(K log K) via the standard Euclidean simplex projection. We denote by Cg (m) the computational cost of evaluating the task-specific predictor 
+
+g(·) on an m-dimensional set embedding. Hence, the inner loop costs: 
+
+O  T  Cg (m) + Km + K log K per set , (33) 18 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 9. Dataset statistics used in our experiments. #S denotes the number of sets/samples. #E denotes the number of unique elements in the universe (when applicable). #V denotes the vocabulary size (for topic expansion). #C denotes the number of classes (for classification tasks). Avg. |Si| denotes the average set cardinality.                                                     
+
+> Task Dataset #S#E#V#CAvg. |Si|
+> Task I (Similar Set Ranking) Friendster 889,839 5,501,401 ––11.29 Task I (Similar Set Ranking) LIVEJ 1,205,816 1,975,812 ––9.90 Task II (Point Cloud Classification) ModelNet40 12,311 ––40 1,024 Task III (Topic Expansion) LDA-1k 2,000 –17,016 –≈25
+> Task III (Topic Expansion) LDA-3k 6,000 –37,718 –≈25
+> Task III (Topic Expansion) LDA-5k 10,000 –61,127 –≈25
+> Task IV (Patch-set Visual Recognition) NWPU-RESISC45 31,500 ––45 256
+
+and 
+
+O  BT  Cg (m) + Km + K log K , (34) per minibatch. Combining the above, the total per-minibatch time complexity is 
+
+O  BC enc + B2m + BT  Cg (m) + Km + K log K , m = RH. (35) At inference time, the method reduces to a single forward pass through fSW and g, i.e., O(Cenc + Cg (m)) .
+
+E. Experimental Settings 
+
+E.1. Dataset Descriptions 
+
+Dataset corruption is constructed by using a unified pipeline to systematically evaluate robustness under inference-time corruption. It is introduced only to the validation and test sets. We partition samples into three conditions: clean , mild ,and severe , following a fixed ratio of 50:30:20. Clean samples correspond to the original sets. Mild and severe samples are generated by corrupting approximately 10% and 40% of the input elements or regions, respectively. The corruption intensity is controlled by a ratio parameter p, with p=0 .1 for mild corruption and p=0 .4 for severe corruption. • For Task I, corruption is introduced at inference time on the query set . Given a query set with n elements, we apply element-level corruption by randomly performing delete , add , or replace element operations for k = p × n steps. The candidate sets remain clean. This setting simulates realistic retrieval scenarios (He et al., 2023a;b; Chen et al., 2024), where the query set may be incomplete or contaminated by noise at inference time, requiring robust set-to-set similarity estimation. • Task II represents a geometric perception setting where unordered point sets must remain informative under noisy observations. We apply a replace operation to simulate inaccurate geometric observations at inference time. Given a point cloud with n points, we randomly sample new points uniformly within the axis-aligned bounding box of the original point cloud, and randomly replace k = p × n points, where p controls the corruption level. This procedure preserves the overall spatial extent while introducing local geometric noise. • Task III is a practical text mining setting (Luo et al., 2025a; Li et al., 2026d; Luo et al., 2026a; 2024). Element-level corruption is appiled by randomly applying delete , add , or replace operations. Given a set with n elements, we perform 
+
+k = p × n random operations, similar to Task II. This process emulates missing elements, noisy insertions, and incorrect replacements in the seed set at inference time. • For Task IV, we apply region-level corruptions at inference time. For corrupted patches, we randomly select one of the following three operations: (i) Add : additive Gaussian noise with standard deviation σ = p × 255 ; (ii) Delete : random rectangular occlusions covering a total fraction p of image pixels, where each occlusion block occupies approximately 5%–20% of the image area. These operations simulate common visual degradations such as sensor noise and local image quality degradation. 19 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption                                                 
+
+> Table 10. Hyperparameter settings for different tasks. Task I Task II Task III Task IV
+> d128 128 128 128
+> H128 128 128 128
+> R32 256 32 32
+> ρ0.1 0.5 0.1 0.5
+> K44816
+> T2424
+> η0.1 0.1 0.1 0.1
+> α0.5 10.1 0.1 Learning rate 1·10 −31·10 −31·10 −31·10 −3
+
+E.2. Baselines 
+
+To comprehensively evaluate the effectiveness of our proposed method, we compare it against a diverse set of baselines, ranging from foundational pooling strategies to state-of-the-art set representation learning frameworks. The specific methods are detailed as follows: • MeanP and MaxP represent the classic instance aggregation approaches (Lin et al., 2013). They generate set represen-tations by applying global average pooling and max pooling operations, respectively, over the element-wise features, serving as fundamental baselines for permutation-invariant processing. • DeepSet provides a representative framework for learning permutation-invariant functions (Zaheer et al., 2017). It operates by transforming individual elements via a deep neural network, aggregating them (we implement global mean pooling), and processing with a subsequent network to approximate any continuous set function. • RepSet approaches set embedding through the lens of optimal transport and bipartite matching (Skianis et al., 2020). Instead of simple aggregation, it learns a collection of “hidden sets” (reference prototypes) and extracts representations by computing the matching costs between the input set and these learnable references. • SetTRSM adapts the self-attention mechanism to set-structured data (Lee et al., 2019). It utilizes Multi-head Attention Blocks (MAB) and Induced Set Attention Blocks (ISAB) to capture complex pairwise interactions among elements while reducing computational complexity compared to standard Transformers. • DIEM proposes a differentiable information-theoretic framework designed to enhance representation distinctiveness (Kim, 2022). It focuses on capturing informative set interactions by maximizing the mutual information between the input set and its embedding, effectively identifying discriminative subsets. • FSPool (Feature-wise Sort Pooling) introduces a learnable pooling mechanism based on sorting (Zhang et al., 2020). By sorting features across the set dimension and applying a differentiable weight matrix, it captures cardinality-sensitive information and continuous structural variations. • PSWE is a robust deep learning baseline for set representation learning (Naderializadeh et al., 2021). It employs a specialized architecture to capture high-order dependencies and structural information within sets, representing one of the current state-of-the-art approaches in the field. • FSW addresses the specific challenge of modeling “multisets” (sets with repeated elements) by shifting the perspective to the frequency domain (Amir & Dym, 2025). It utilizes the Fourier transform of characteristic functions to construct representations, offering theoretical guarantees for injectivity regarding multiset structures. 
+
+F. Hyper-parameter Configurations 
+
+We report the major hyper-parameter configurations in Table 10 for reproduction. 
+
+G. Task I Detailed Experiment Results 
+
+The complete results of Task I are reported in Table 11-14. 
+
+H. Task III Experiment Detailed Results 
+
+The complete results of Task III are reported in Table 15-17. 20 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 11. Friendster Recall (%). Bold and underline denote the best and second-best methods for each specific split within each column. 
+
+Method k = 1 k = 5 k = 10 k = 20 k = 50 k = 100 
+
+Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe MaxP 5.22/5.61/5.09/4.42 18.43/19.08/18.11/17.26 31.40/32.43/31.19/29.12 42.07/43.28/42.07/39.06 54.97/56.31/54.61/52.14 62.44/63.61/62.04/60.12 MeanP 3.90/4.47/3.79/2.63 15.70/16.74/15.66/13.18 27.79/29.16/27.32/25.06 38.77/40.14/38.26/36.09 50.85/52.23/50.33/48.17 58.90/60.31/58.41/56.09 DeepSet 14.96/15.73/14.76/13.31 38.19/39.41/37.46/35.18 49.06/50.32/48.41/46.16 57.95/59.34/57.11/55.02 65.05/66.42/64.29/62.21 70.91/72.21/70.31/68.18 RepSet 18.55/19.14/18.08/17.02 42.01/43.26/41.34/39.11 52.89/54.38/52.09/50.12 61.03/62.37/60.28/58.09 68.20/69.44/67.32/65.18 73.00/74.33/72.18/70.11 SetTRSM 24.50/25.20/24.20/23.20 49.90/51.50/48.50/46.50 58.90/60.50/57.50/55.50 63.90/65.50/62.50/60.50 69.60/70.50/68.50/66.50 75.00/76.50/74.50/72.50 DIEM 27.66/28.44/27.18/26.09 53.11/54.62/52.51/50.27 60.78/62.71/60.49/57.64 65.02/66.78/64.71/62.08 70.74/72.46/70.53/68.02 76.08/77.68/76.04/73.66 FSPool 29.39/30.18/29.06/28.03 64.13/68.42/57.34/55.12 66.09/68.07/65.22/63.08 71.11/73.09/70.28/68.12 76.04/77.22/75.11/73.04 80.05/81.27/79.34/77.16 FSW 32.36/32.28/31.09/34.45 61.91/63.41/61.27/59.12 73.78/73.18/77.88/69.11 75.85/77.32/75.27/73.06 79.94/81.41/79.36/77.14 82.82/84.22/82.31/80.07 PSWE 34.37/34.58/34.20/34.08 67.80/68.09/67.75/67.15 77.52/77.82/77.43/76.90 80.41/80.69/80.31/79.86 83.31/83.61/83.14/82.82 85.68/85.96/85.54/85.20 Ours 35.13 ∗/35.32 ∗/35.04 ∗/34.77 ∗ 68.39 ∗/68.71 ∗/68.32 ∗/67.68 ∗ 78.16 ∗/78.44 ∗/78.11 ∗/77.53 ∗ 81.23 ∗/81.52 ∗/81.11 ∗/80.70 ∗ 84.18 ∗/84.49 ∗/84.03 ∗/83.64 ∗ 86.58 ∗/86.86 ∗/86.40 ∗/86.14 ∗
+
+Gain (%) 2.21%/2.14%/2.46%/0.93% 0.87%/0.42%/0.84%/0.79% 0.83%/0.80%/0.30%/0.82% 1.02%/1.03%/1.00%/1.05% 1.04%/1.05%/1.07%/0.99% 1.05%/1.05%/1.01%/1.10% 
+
+Table 12. Friendster NDCG (%). Bold and underline denote the best and second-best methods for each specific split within each column. 
+
+Method k = 1 k = 5 k = 10 k = 20 k = 50 k = 100 
+
+Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe MaxP 48.19/49.22/47.41/45.08 42.20/43.16/41.23/39.07 41.02/42.07/40.12/38.06 43.10/44.18/42.16/40.02 46.25/47.31/45.28/43.14 48.40/49.36/47.42/45.18 MeanP 44.98/46.11/44.12/42.03 39.26/40.23/38.18/36.04 37.96/39.02/37.01/35.06 40.23/41.24/39.16/37.08 43.37/44.31/42.29/40.16 45.44/46.24/44.32/42.21 DeepSet 61.29/62.18/60.14/58.11 56.24/57.18/55.12/53.06 54.86/55.91/54.01/52.02 58.21/59.26/57.14/55.09 61.31/62.34/60.18/58.12 63.25/64.21/62.12/60.08 RepSet 64.20/65.18/63.11/61.04 59.13/60.22/58.14/56.03 58.03/59.12/57.06/55.01 61.10/62.24/60.13/58.09 64.23/65.26/63.18/61.12 66.20/67.18/65.13/63.05 SetTRSM 68.20/69.50/67.50/65.50 64.20/65.50/63.50/61.50 63.90/65.20/63.20/61.20 66.20/67.50/65.50/63.50 69.20/70.50/68.50/66.50 71.20/72.50/70.50/68.50 DIEM 71.39/73.02/71.11/69.05 66.79/68.51/66.49/64.21 66.86/68.62/66.57/64.38 68.79/70.48/68.52/66.41 70.74/72.44/70.58/68.49 72.41/73.86/72.07/70.18 FSPool 74.97/76.24/74.61/72.34 70.77/72.06/70.42/68.08 69.71/71.01/69.35/67.02 71.85/73.14/71.46/69.19 77.09/76.18/74.55/83.15 76.88/78.27/76.41/74.12 FSW 79.05/80.18/78.12/76.03 75.99/77.21/75.16/73.04 74.91/76.12/74.11/72.05 79.50/82.75/76.12/74.06 79.06/80.22/78.18/76.09 81.10/82.27/80.19/78.08 PSWE 82.79/82.86/82.45/82.55 80.99/81.14/80.83/80.70 80.86/81.08/80.70/80.51 82.17/82.37/82.00/81.86 83.06/83.24/82.87/82.76 83.62/83.80/83.44/83.33 Ours 83.30 ∗/83.34 ∗/83.08 ∗/83.00 ∗ 81.47 ∗/81.63 ∗/81.28 ∗/81.14 ∗ 81.42 ∗/81.59 ∗/81.27 ∗/81.01 ∗ 82.82 ∗/82.99 ∗/82.65 ∗/82.46 ∗ 83.72 ∗/83.89 ∗/83.54 ∗/83.37 ∗ 84.29 ∗/84.45 ∗/84.11 ∗/83.96 ∗
+
+Gain (%) 0.63%/0.58%/0.76%/0.55% 0.58%/0.60%/0.56%/0.55% 0.66%/0.63%/0.71%/0.62% 0.75%/0.29%/0.79%/0.73% 0.78%/0.78%/0.81%/0.26% 0.78%/0.78%/0.80%/0.76% 
+
+I. Supplementary Details of Empirical Analyses 
+
+I.1. DRO Variants Implementation 
+
+We detail the implementation of three Distributionally Robust Optimization (DRO) variants: Wasserstein DRO (WDRO) (Gao et al., 2024), Kullback-Leibler DRO (KL-DRO) (Namkoong & Duchi, 2016), and Maximum Mean Discrepancy DRO (MMD-DRO) (Staib & Jegelka, 2019), While they build upon our barycentric synthesis approach by adding distribution constraints. • Wasserstein DRO : This variant defines the uncertainty set using the L1-Wasserstein distance, i.e., Earth Mover’s Distance, which measures the geometric cost of transporting probability mass. Theoretically, it seeks to minimize the worst-case loss over all distributions that are geometrically close to the empirical data distribution. This formulation is particularly effective for handling perturbations in the feature space, as it accounts for the underlying metric structure of the data rather than just statistical overlap. • KL-DRO : Also known as f -divergence DRO, this method defines the uncertainty set Γ( ·) using the Kullback-Leibler divergence. It focuses on statistical discrepancies by re-weighting the training samples based on their difficulty. The optimization objective allows for a worst-case re-weighting of the data but constrains these weights to ensure the adversarial distribution remains statistically close to the original distribution, preventing the model from overfitting to outliers. • Maximum Mean Discrepancy DRO : This method employs Maximum Mean Discrepancy to define Γ( ·) based on kernel methods. By mapping distributions into a Reproducing Kernel Hilbert Space (RKHS), it measures the distance between their mean embeddings. This approach is particularly effective at capturing discrepancies in higher-order statistical moments and offers a computationally tractable alternative to optimal transport-based methods. 
+
+I.2. Compatibility with Alternative Set Encoders 
+
+We examine whether the proposed robust optimization objective can be directly combined with alternative set encoders. As shown in Table 18, replacing the SW-aware encoder with FSW or FSPool leads to lower performance than the full SW-DRSO model. This result suggests that the barycentric adversary benefits from the geometric alignment between the Sliced-Wasserstein encoder and the SW-based adversarial search. Therefore, SW-DRSO should be viewed as a geometry-aligned robust optimization framework rather than an encoder-agnostic plug-in module. 21 Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption 
+
+Table 13. LIVEJ Recall (%). Bold and underline denote the best and second-best methods for each specific split within each column. 
+
+Method k = 1 k = 5 k = 10 k = 20 k = 50 k = 100 
+
+Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe MaxP 4.94/5.21/4.82/4.19 17.32/18.42/17.13/15.52 29.91/31.05/29.53/27.18 43.67/45.22/43.04/39.48 59.09/61.05/58.49/54.53 70.04/72.01/69.48/65.52 MeanP 4.14/4.88/4.12/2.53 15.44/17.55/15.23/10.48 26.49/29.80/26.48/19.82 38.75/42.10/38.54/30.53 55.06/58.90/54.18/45.52 65.99/69.50/65.12/58.23 DeepSet 11.65/12.05/11.48/10.82 33.91/35.40/33.23/31.48 49.08/51.20/48.52/45.53 62.09/64.50/61.53/58.49 76.05/78.20/75.48/72.52 82.03/84.10/81.53/78.48 RepSet 13.93/14.50/13.82/12.53 37.91/39.80/37.52/35.18 53.77/56.50/53.23/50.48 66.50/69.20/66.48/62.53 78.74/81.05/78.48/75.52 84.45/86.50/84.18/81.53 SetTRSM 18.42/19.98/17.67/15.76 42.45/44.97/40.94/37.37 56.61/60.03/54.86/50.29 64.72/67.98/63.35/58.87 74.09/76.76/73.28/69.22 80.94/83.08/80.35/77.00 DIEM 17.78/18.50/17.23/16.48 43.95/46.20/43.53/40.49 60.55/63.50/60.52/56.48 68.56/71.50/68.48/64.52 77.94/80.50/77.83/74.48 83.52/85.80/83.52/80.48 FSPool 23.28 /24.42 /22.54 /21.29 51.52/53.50/50.56/47.72 67.75/70.52/66.58/62.70 74.43/76.82/73.69/69.66 81.13/83.10/80.56/77.08 85.86/87.47/85.58/82.52 FSW 20.90/22.10/20.53/19.23 47.77/50.10/47.53/44.48 64.19/68.50/63.53/59.48 71.60/75.20/71.03/67.48 79.88/82.00/79.48/76.52 84.65/86.50/84.82/81.48 PSWE 21.31/21.49/21.03/20.95 52.10/52.53/51.84/51.27 71.69/72.26/71.50/70.55 78.46/79.05/78.34/77.21 83.72/84.27/83.71/82.43 87.10/87.60/87.09/85.88 Ours 22.51 ∗/22.99 ∗/22.16 ∗/21.81 ∗ 54.61 ∗/55.37 ∗/54.31 ∗/53.17 ∗ 74.86 ∗/75.64 ∗/74.63 ∗/73.25 ∗ 81.19 ∗/81.96 ∗/80.97 ∗/79.59 ∗ 86.27 ∗/86.94 ∗/86.11 ∗/84.82 ∗ 89.60 ∗/90.18 ∗/89.54 ∗/88.26 ∗
+
+Gain (%) -/-/-/2.44% 4.88%/3.50%/4.76%/3.71% 4.42%/4.68%/4.38%/3.83% 3.47%/3.68%/3.36%/3.08% 3.03%/3.17%/2.87%/2.90% 2.87%/2.95%/2.81%/2.77% 
+
+Table 14. LIVEJ NDCG (%). Bold and underline denote the best and second-best methods for each specific split within each column. 
+
+Method k = 1 k = 5 k = 10 k = 20 k = 50 k = 100 
+
+Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe Overall/Clean/Mild/Severe MaxP 53.89/55.19/53.52/51.18 47.10/48.48/46.53/44.52 43.86/45.20/43.22/41.48 48.04/49.48/47.53/45.22 51.94/53.18/51.52/49.48 55.25/56.80/54.52/52.48 MeanP 50.03/52.08/49.52/45.52 43.84/46.48/42.53/38.52 41.23/43.50/39.52/34.52 45.02/47.18/43.52/39.23 49.56/51.50/48.52/44.52 52.95/54.80/52.52/48.52 DeepSet 67.00/68.48/66.53/64.22 60.98/62.50/60.52/58.53 58.78/60.50/58.23/56.22 61.99/63.50/61.52/59.52 65.99/67.50/65.53/63.52 68.99/70.50/68.22/66.52 RepSet 69.00/70.50/68.23/66.48 62.99/64.50/62.52/60.23 60.78/62.50/60.23/58.18 64.37/66.20/63.83/61.82 68.64/70.10/68.23/66.23 71.43/72.80/71.03/69.23 SetTRSM 69.47/72.88/68.66/63.37 63.31/67.00/62.33/57.26 61.56/65.17/60.48/55.84 65.94/69.40/65.00/60.45 69.87/73.09/69.18/64.90 72.24/75.30/71.68/67.73 DIEM 71.78/74.18/71.53/68.52 66.96/69.50/66.83/63.52 65.04/68.10/64.52/61.53 68.60/71.50/68.23/65.23 73.05/75.20/72.53/70.53 75.82/77.80/75.52/73.23 FSPool 82.10 /83.98 /81.51 /78.20 76.03/78.47/75.40/71.78 73.60/76.16/72.79/69.42 77.13/79.50/76.53/73.15 79.91/82.10/79.40/76.32 81.55/83.59/81.11/78.22 FSW 75.96/78.50/75.52/72.53 70.95/73.50/70.53/67.48 68.96/71.50/68.52/65.53 72.65/74.80/72.23/69.23 76.25/78.20/75.83/73.53 78.84/80.50/78.23/76.23 PSWE 78.15/78.40/77.76/77.36 76.19/76.50/75.92/75.27 74.88/75.24/74.59/73.92 78.35/78.72/78.12/77.38 80.32/80.69/80.15/79.36 81.36/81.72/81.20/80.42 Ours 81.33 ∗/81.93 ∗/81.09 ∗/80.17 ∗ 79.21 ∗/79.90 ∗/78.99 ∗/77.80 ∗ 77.80 ∗/78.49 ∗/77.54 ∗/76.44 ∗ 80.99 ∗/81.67 ∗/80.76 ∗/79.65 ∗ 82.88 ∗/83.53 ∗/82.67 ∗/81.58 ∗ 83.91 ∗/84.54 ∗/83.72 ∗/82.63 ∗
+
+Gain (%) -/-/-/2.52% 3.94%/1.82%/4.04%/3.36% 4.04%/3.06%/3.95%/3.41% 3.48%/2.73%/3.38%/2.93% 3.26%/1.74%/3.14%/2.80% 2.62%/1.14%/3.10%/2.75% 
+
+Table 15. Task III performance comparison on LDA-1K . Best and second-best results are shown in bold and underlined. Method Overall Clean Mild Severe MeanP 48.91 ±2.28 50.15 ±2.85 49.32 ±4.05 45.18 ±6.52 MaxP 68.82 ±2.12 73.62 ±1.06 64.69 ±6.75 63.01 ±1.81 DeepSet 51.20 ±2.26 52.18 ±2.41 51.87 ±4.19 47.74 ±7.17 RepSet 53.35 ±2.51 55.42 ±2.95 53.18 ±4.55 48.45 ±7.50 SetTRSM 69.02 ±3.56 72.78 ±5.40 65.79 ±6.78 64.48 ±5.53 DIEM 66.22 ±3.02 69.15 ±4.22 63.55 ±5.95 62.88 ±6.12 FSPool 54.18 ±3.29 61.33 ±3.22 47.76 ±5.40 45.94 ±11.81 FSW 68.12 ±2.76 71.55 ±3.85 65.12 ±5.25 64.05 ±5.95 PSWE 70.03 ±3.33 74.04 ±2.71 66.24 ±8.79 65.71 ±7.59 SW-DRSO 73.31 ∗±3.67 76.05 ∗±5.71 70.66 ∗±6.06 70.45 ∗±7.03 Gain +4.68% +2.71% +6.67% +7.21% 
+
+Table 16. Task III performance comparison on LDA-3K .Method Overall Clean Mild Severe MeanP 52.38 ±2.32 51.57 ±4.03 54.63 ±3.36 51.05 ±2.79 MaxP 53.14 ±2.22 52.45 ±3.85 55.15 ±3.15 51.85 ±2.95 DeepSet 86.55 ±1.40 86.82 ±1.83 87.31 ±2.62 84.73 ±3.54 RepSet 86.87 ±1.34 87.15 ±1.75 87.55 ±2.45 85.15 ±3.25 SetTRSM 80.75 ±2.16 80.21 ±2.21 82.14 ±3.32 78.64 ±4.48 DIEM 84.53 ±1.44 84.55 ±1.95 85.45 ±2.85 82.55 ±3.65 FSPool 87.39 ±1.11 87.66 ±1.47 88.00 ±2.88 85.78 ±2.94 FSW 87.41 ±1.28 87.15 ±1.55 87.35 ±3.15 88.15 ±2.85 PSWE 87.84 ±1.71 87.48 ±1.75 87.44 ±4.57 89.33 ±2.59 SW-DRSO 90.90 ∗±0.99 90.71 ∗±0.86 91.24 ∗±2.94 90.88 ∗±0.82 Gain +3.49% +3.48% +3.68% +1.74% 
+
+Table 17. Task III performance comparison on LDA-5K .Method Overall Clean Mild Severe MeanP 54.49 ±1.57 55.36 ±1.84 54.99 ±3.47 51.72 ±5.17 MaxP 55.37 ±1.73 56.25 ±2.05 55.45 ±3.25 52.15 ±4.85 DeepSet 83.36 ±1.39 83.70 ±1.76 85.62 ±3.29 79.13 ±3.13 RepSet 83.64 ±1.37 84.15 ±1.95 85.05 ±3.05 80.25 ±2.95 SetTRSM 82.73 ±2.50 82.97 ±3.43 83.64 ±3.41 79.99 ±1.91 DIEM 83.28 ±1.54 83.45 ±2.25 84.55 ±2.85 80.15 ±2.65 FSPool 84.02 ±1.49 84.63 ±2.12 85.25 ±2.72 80.64 ±3.00 FSW 84.28 ±1.70 85.15 ±2.35 84.65 ±2.45 81.55 ±2.95 PSWE 84.68 ±1.51 85.56 ±2.49 84.89 ±2.15 82.15 ±2.86 SW-DRSO 88.46 ∗±1.38 88.45 ∗±1.87 89.70 ∗±2.29 86.62 ∗±3.70 Gain +4.47% +3.38% +4.77% +5.44% 
+
+Table 18. Compatibility with alternative set encoders on Task I. We report the overall R@10 score. Robust objective + encoder Overall R@10 (%) Ours w/ FSPool encoder 67.81 Ours w/ FSW encoder 68.45 Full SW-DRSO 74.86 
+
+22

@@ -6,35 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-30
-- 运行时间：2026-05-30 20:30:55 UTC
+- 最新运行日期：2026-05-31
+- 运行时间：2026-05-31 20:35:27 UTC
 - 运行状态：成功
-- 本次总论文数：4
+- 本次总论文数：3
 - 精读区：0
-- 速读区：4
+- 速读区：3
 
 ### 今日简报（AI）
-1) 今日速读3篇多模态论文，涵盖动作识别、知识编辑与对齐方法，其中Cross-Modal Action Recognition via Mamba最值得关注。
-2) 最值得看的方向：自我中心视频中RGB与手部骨架的跨模态CLS Token融合策略，以及对抗子空间对齐的鲁棒多模态知识编辑。
-3) 下步建议：可深入对比Mamba与传统Transformer在视频跨模态任务上的实际效率与精度差异。
-- 详情：[/202605/30/README](/202605/30/README)
+今日推荐3篇论文，涵盖语音情感识别、分布鲁棒表示学习及多模态大模型知识编辑。  
+最值得关注的是两篇7.0分工作：硬件感知联邦学习提升语音情感识别效率，以及抗推理时元素污染的分布鲁棒集表示学习。  
+建议优先深入理解联邦学习在资源受限设备上的部署优化，以及鲁棒表示学习对实际噪声场景的适应性。
+- 详情：[/202605/31/README](/202605/31/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Cross-Modal Action Recognition in Egocentric Video Using Mamba: Integrating RGB and Hand Skeleton Streams via CLS Token Fusion Strategies](/202605/30/2605.24302v2-cross-modal-action-recognition-in-egocentric-video-using-mamba-integrating-rgb-and-hand-skeleton-streams-via-cls-token-fusion-strategies)  
+1. [Hardware-Aware Federated Learning for Speech Emotion Recognition](/202605/31/2605.24712v1-hardware-aware-federated-learning-for-speech-emotion-recognition)  
    标签：评分：7.0/10、query:mm
-   evidence：融合RGB与骨架的跨模态方法用于鲁棒动作识别
-2. [Beyond Binary Edits Robust Multimodal Knowledge Editing with Adversarial Subspace Alignment](/202605/30/2605.23780v1-beyond-binary-edits-robust-multimodal-knowledge-editing-with-adversarial-subspace-alignment)  
+   evidence：提出用于语音情感识别的硬件感知联邦学习
+2. [Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption](/202605/31/2605.30089v1-distributionally-robust-set-representation-learning-under-inference-time-element-corruption)  
+   标签：评分：7.0/10、query:mm
+   evidence：针对元素缺失的鲁棒优化方法
+3. [Towards Localized and Disentangled Knowledge Editing for Multimodal Large Language Models](/202605/31/2605.29826v1-towards-localized-and-disentangled-knowledge-editing-for-multimodal-large-language-models)  
    标签：评分：6.0/10、query:mm
-   evidence：使用对抗子空间对齐的鲁棒多模态学习
-3. [OVA-IB: One vs All Information Bottleneck for Multi-Modal Alignment](/202605/30/2605.29900v1-ova-ib-one-vs-all-information-bottleneck-for-multi-modal-alignment)  
-   标签：评分：6.0/10、query:mm
-   evidence：信息瓶颈用于多模态对齐，与解耦表示相关
-4. [LoMo: Local Modality Substitution for Deeper Vision-Language Fusion](/202605/30/2605.30265v1-lomo-local-modality-substitution-for-deeper-vision-language-fusion)  
-   标签：评分：6.0/10、query:mm
-   evidence：研究视觉-语言模型中的模态替换敏感性问题，与鲁棒多模态学习相关
+   evidence：提出解耦知识编辑以避免特征纠缠
 
 
 <div class="dpr-home-promo-card">
