@@ -6,32 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-31
-- 运行时间：2026-05-31 20:35:27 UTC
+- 最新运行日期：2026-06-01
+- 运行时间：2026-06-01 22:47:46 UTC
 - 运行状态：成功
 - 本次总论文数：3
-- 精读区：0
-- 速读区：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日推荐3篇论文，涵盖语音情感识别、分布鲁棒表示学习及多模态大模型知识编辑。  
-最值得关注的是两篇7.0分工作：硬件感知联邦学习提升语音情感识别效率，以及抗推理时元素污染的分布鲁棒集表示学习。  
-建议优先深入理解联邦学习在资源受限设备上的部署优化，以及鲁棒表示学习对实际噪声场景的适应性。
-- 详情：[/202605/31/README](/202605/31/README)
+今日精读两篇高分论文，分别探讨传感器故障下BEV感知的优雅降级与多模态情感分析的因果解耦；速读一篇研究音频推理中缓解模态坍塌的方法。最值得关注的是感知系统容错机制和因果解耦对多模态融合的优化。建议普通读者重点关注传感器故障场景下的鲁棒性设计，以及如何通过因果解耦提升模型的可解释性。
+- 详情：[/202606/01/README](/202606/01/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Can BEV Perception Gracefully Degrade under Sensor Failures?](/202606/01/2605.30983v1-can-bev-perception-gracefully-degrade-under-sensor-failures)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于主动可靠性评估实现缺失传感器模态下的优雅降级
+2. [Dynamic Interaction-Aware and Causality-Disentangled Framework for Multimodal Sentiment Analysis](/202606/01/2605.30994v1-dynamic-interaction-aware-and-causality-disentangled-framework-for-multimodal-sentiment-analysis)  
+   标签：评分：8.0/10、query:mm
+   evidence：多模态情感分析中的因果关系解耦框架
 
 ### 速读区论文标签
-1. [Hardware-Aware Federated Learning for Speech Emotion Recognition](/202605/31/2605.24712v1-hardware-aware-federated-learning-for-speech-emotion-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：提出用于语音情感识别的硬件感知联邦学习
-2. [Distributionally Robust Set Representation Learning Under Inference-Time Element Corruption](/202605/31/2605.30089v1-distributionally-robust-set-representation-learning-under-inference-time-element-corruption)  
-   标签：评分：7.0/10、query:mm
-   evidence：针对元素缺失的鲁棒优化方法
-3. [Towards Localized and Disentangled Knowledge Editing for Multimodal Large Language Models](/202605/31/2605.29826v1-towards-localized-and-disentangled-knowledge-editing-for-multimodal-large-language-models)  
+1. [Escape the Language Prior: Mitigating Late-Stage Modality Collapse in Audio Reasoning via Modality-Aware Policy Optimization](/202606/01/2605.27741v1-escape-the-language-prior-mitigating-late-stage-modality-collapse-in-audio-reasoning-via-modality-aware-policy-optimization)  
    标签：评分：6.0/10、query:mm
-   evidence：提出解耦知识编辑以避免特征纠缠
+   evidence：缓解音频推理中的模态坍塌，提升多模态学习鲁棒性
 
 
 <div class="dpr-home-promo-card">

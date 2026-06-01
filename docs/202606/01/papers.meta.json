@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-01",
+  "date": "2026-06-01",
+  "generated_at": "2026-06-01T22:47:51",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/01/2605.30983v1-can-bev-perception-gracefully-degrade-under-sensor-failures",
+      "section": "deep",
+      "title_en": "Can BEV Perception Gracefully Degrade under Sensor Failures?",
+      "authors": "Haifa Zhang, Yijing Wang, Haoyu Wang, Zheng Li, Zhiqiang Zuo",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.30983v1",
+      "score": "8.0",
+      "evidence": "基于主动可靠性评估实现缺失传感器模态下的优雅降级",
+      "tldr": "多模态BEV感知在传感器故障时性能急剧下降，现有静态融合机制导致灾难性退化。本文提出Grace-BEV，通过对齐BEV空间中的信任门路由器评估模态可靠性，并利用失败安全融合块动态调整特征。在nuScenes-R/C上，LiDAR完全失效时恢复34.7% mAP，干净精度提升1.4%。实现了优雅降级，兼顾鲁棒性与效率。",
+      "tags": "query:mm",
+      "abstract_en": "Despite the remarkable success of multi-modal bird's-eye view (BEV) perception in autonomous driving, current systems exhibit a critical vulnerability: existing fusion mechanisms are highly brittle to sensor corruptions, often causing catastrophic performance degradation. This vulnerability largely stems from the fact that standard fusion frameworks typically integrate multi-modal representations in a static manner, leading to a precipitous performance collapse under missing or corrupted modalities. In contrast, we show that graceful degradation is achievable through active modality reliability assessment. To this end, we present Grace-BEV, a lightweight and plug-and-play framework that enforces active reliability awareness during multi-modal fusion. Instead of relying on computationally expensive cross-modal interactions, Grace-BEV leverages the aligned BEV space to explicitly assess modality trustworthiness via a TrustGate Router and dynamically recalibrate feature integration using the FailSafe Fusion Block. Furthermore, we devise a Three-Phase Training strategy with Modality Dropout to prevent modality dominance and encourage balanced cross-modal learning under unreliable inputs. Extensive experiments on nuScenes-R and nuScenes-C show that Grace-BEV maintains robust performance across diverse corruption settings. Notably, under catastrophic LiDAR failures where standard baselines collapse to 0.0% mean Average Precision (mAP), Grace-BEV restores performance to as high as 34.7% mAP. Moreover, it improves clean accuracy by up to 1.4%, achieving a strong trade-off between robustness and efficiency.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/01/2605.30994v1-dynamic-interaction-aware-and-causality-disentangled-framework-for-multimodal-sentiment-analysis",
+      "section": "deep",
+      "title_en": "Dynamic Interaction-Aware and Causality-Disentangled Framework for Multimodal Sentiment Analysis",
+      "authors": "Guangyuan Dong, Ziwei Hong, Shenghao Liu, Chenyu Wu, Yuanyuan Fang, Zihao Li, Xudong Zhang, Bingchen Liu, Yuchen Zhang, Haitao Ding, Zhenzhou Zhou, Ziyu Song",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.30994v1",
+      "score": "8.0",
+      "evidence": "多模态情感分析中的因果关系解耦框架",
+      "tldr": "多模态情感分析面临静态冲突抑制和语言模态情感偏见两大挑战。本文提出动态多模态因果解耦与自适应融合框架(MCAF)，通过基于信息瓶颈的因果干预解耦语言偏见，动态路由实时评估模态交互状态并自适应调节权重，条件扩散去噪模块滤除残留噪声。在CMU-MOSI和CMU-MOSEI上达到分类新最优，验证了动态感知与因果解耦的有效性。",
+      "tags": "query:mm",
+      "abstract_en": "Although Multimodal Sentiment Analysis (MSA) effectively leverages rich information from language, visual, and acoustic modalities, existing methods still face two core challenges: 1) static conflict suppression mechanisms fail to adapt to dynamic variations across samples, and 2) the inherent sentimental bias within the language modality, which can misguide learning from other modalities, remains entangled. To this end, we propose a Dynamic Multimodal Causal Disentanglement and Adaptive Fusion Framework (MCAF). Its cornerstone is the Multi-Granularity Causal Dynamic Router and a Conditional Diffusion Denoising Module. First, we introduce a causal intervention module based on the information bottleneck principle, which builds a Structural Causal Model to disentangle sentimental bias from language features, yielding a \"de-confounded\" language representation as a pure guiding signal. Second, we devise a Dynamic Multimodal Router that evaluates the interaction states (complementary, conflicting, or redundant) among visual, acoustic, and de-confounded language signals in real-time across three levels: feature, temporal, and modality, then adaptively allocates weights and routes information flow for fine-grained regulation. Finally, a lightweight Conditional Diffusion Denoising Module performs iterative denoising on the fused joint representation to explicitly filter out residual irrelevant information, generating a robust hyper-modality representation. Extensive experiments on the CMU-MOSI and CMU-MOSEI benchmarks show that MCAF sets new state-of-the-art on key classification metrics, achieving an Acc-2/F1 of 86.52%/86.51% on MOSI and 86.72%/86.65% on MOSEI, while remaining highly competitive on others. Comprehensive analyses and visualizations further validate its efficacy in dynamically perceiving interactions, disentangling bias, and enhancing interpretability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/01/2605.27741v1-escape-the-language-prior-mitigating-late-stage-modality-collapse-in-audio-reasoning-via-modality-aware-policy-optimization",
+      "section": "quick",
+      "title_en": "Escape the Language Prior: Mitigating Late-Stage Modality Collapse in Audio Reasoning via Modality-Aware Policy Optimization",
+      "authors": "Cihan Xiao, Yiwen Shao, Chenxing Li, Xiang He, Zhenwen Liang, Steve Yves, Sanjeev Khudanpur, Liefeng Bo",
+      "date": "2026-05-26",
+      "pdf": "https://arxiv.org/pdf/2605.27741v1",
+      "score": "6.0",
+      "evidence": "缓解音频推理中的模态坍塌，提升多模态学习鲁棒性",
+      "tldr": "音频多模态大模型在强化学习后训练中易发生晚期模态崩溃，模型逐渐依赖文本先验而忽略音频信号。提出模态感知策略优化（MAPO），通过模态相关性掩码动态调整梯度并添加注意力损失项，维持推理中的跨模态接地。在复杂音频推理任务上显著提升长程推理忠实度，达到开源模型新SOTA。",
+      "tags": "query:mm",
+      "abstract_en": "Audio and omni-modal large language models exhibit impressive cross-modal reasoning capabilities. However, applying standard reinforcement learning post-training algorithms to these models exposes a critical structural vulnerability: methods like GRPO apply uniform policy gradients across all tokens, ignoring their unequal dependence on the non-text source modality. This exacerbates late-stage modality collapse during extended chain-of-thought generation, where models progressively abandon the primary source signal in favor of compressed textual priors, leading to confident but ungrounded hallucinations. To address this, we introduce Modality-Aware Policy Optimization (MAPO), a novel dual-branch reinforcement learning framework. First, MAPO dynamically concentrates the policy gradient on modality-critical tokens using a modality relevance mask, which is derived from the cross-modal differential entropy between an audio-ablated reference and the multimodal policy. Second, it integrates an auxiliary attention loss branch that applies a targeted, temporally scaled penalty to the model's internal attention distributions. This ensures the model actively sustains cross-modal grounding deep into the reasoning trace. Evaluations on complex audio reasoning benchmarks demonstrate that MAPO substantially improves long-horizon reasoning fidelity and multimodal instruction following, achieving highly competitive performance and setting new state-of-the-art results on several key benchmarks among open-weight models. By relying strictly on native statistical signals rather than domain-specific inductive biases, MAPO offers a promising foundation for mitigating epistemic collapse across diverse multimodal systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
