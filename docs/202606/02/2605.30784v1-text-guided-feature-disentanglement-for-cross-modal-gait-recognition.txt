@@ -1,0 +1,647 @@
+Title: Text-guided Feature Disentanglement for Cross-modal Gait Recognition
+
+URL Source: https://arxiv.org/pdf/2605.30784v1
+
+Published Time: Mon, 01 Jun 2026 00:46:43 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Text-guided Feature Disentanglement for Cross-modal Gait Recognition 
+
+## Zhiyang Lu Ming Cheng *
+
+## Fujian Key Laboratory of Urban Intelligent Sensing and Computing, Xiamen University. Key Laboratory of Multimedia Trusted Perception and Efficient Computing, Ministry of Education of China, Xiamen University, 361005, P.R. China. 
+
+## Abstract 
+
+Gait recognition is a biometric technique that identifies individuals based on their walking patterns, offering ad-vantages in long-range, non-intrusive scenarios. However, real-world scenarios often involve heterogeneous sensing modalities such as LiDAR and RGB cameras, making LiDAR-Camera Cross-modal Gait recognition (LCCGR) a critical yet challenging task due to the substantial modality gap between 2D videos and 3D point cloud sequences. To ad-dress this challenge, we propose TCFDNet, a Text-guided Cross-modal Feature Disentanglement Network, which lever-ages modality-aware textual priors as semantic anchors to guide the learning of disentangled modality-shared repre-sentations. Specifically, we construct a Gait Modality Text Dictionary (GMTD) using large language models to gener-ate rich semantic descriptions of gait across modalities and viewpoints. A CLIP-based Multi-grained Feature Encoder then aligns visual and textual features within a unified vision-language space. Furthermore, the Text-guided Feature Dis-entanglement (TFD) module selects the top -k matched tex-tual descriptions to reconstruct modality-specific represen-tations and derive modality-shared features via residual de-composition and orthogonality constraints. To mitigate the fragility of the disentangled shared features, we propose a Feature Stability Enhancement (FSE) module, which models spatial and channel-wise correlations to improve feature ro-bustness. In addition, a cross-modal patch exchange strategy is introduced to further improve generalization. Extensive experiments on SUSTech1K and FreeGait datasets demon-strate that TCFDNet achieves new state-of-the-art results and validate the effectiveness of the proposed modules. 
+
+## 1. Introduction 
+
+Gait recognition aims to identify individuals based on their walking patterns. Compared with facial and iris recog-nition, gait offers significant advantages such as being      
+
+> *Corresponding author. Multi -Turn
+> Gait Modality
+> Text Dictionary
+> 2D Camera
+> "A photo of a binary
+> silhouette of a person
+> walking from the front ."
+> 3D LiDAR
+> " A LiDAR -based image
+> of a human walking
+> from the left view. "
+> Modality Prompts
+> Viewpoint
+> 0°
+> 45 °
+> 90 °
+> 135 °180 °
+> 225 °
+> 270 °
+> 315 °
+> Modality Prompts
+
+Figure 1. Details of the GMTD construction. 
+
+non-contact, long-range, and being difficult to disguise, which endow it with broad application prospects in intel-ligent surveillance, suspect tracking, and health diagnostics [ 5, 10 , 21 , 29 , 30 ]. Although 2D and 3D single-modality gait recognition methods have achieved remarkable per-formance [ 8, 17 , 22 , 28 , 29 , 31 , 41 ], the proliferation of diverse sensors has increasingly highlighted the need for cross-modality collaboration [ 19 , 20 , 39 , 43 ]. Consequently, LiDAR-Camera Cross-modality Gait Recognition (LCCGR) has emerged as a critical component for multi-device col-laborative retrieval. Owing to the significant heterogeneity between 2D camera videos and 3D LiDAR point clouds se-quences, LCCGR faces two principal challenges: (1) bridg-ing the modality gap between 2D and 3D inputs, and (2) ex-tracting discriminative gait features in the modality-shared space. Guo et al. constructed a synthetic 2D-3D dataset using RGB images and employed contrastive learning loss for model pretraining, followed by fine-tuning on specific datasets [ 15 ]. Although this approach achieved promising re-sults, the domain gap between synthetic and real-world data introduced biases into the model. Wang et al. attempted to learn modality-shared prototype features and applied atten-tion mechanisms for adaptive weighting [ 38 ]. However, the prototype lacked effective generalization capability. Fur-thermore, existing feature disentanglement networks are essentially unreliable and interpretable, acting as a black 1
+
+> arXiv:2605.30784v1 [cs.CV] 29 May 2026
+
+box [4, 46]. The advent of vision-language models, such as CLIP [ 26 ], offers a novel perspective for extracting modality-shared features: by describing modality-specific information through text and projecting it into the visual space, so as to guide feature disentanglement reliably. Motivated by this insight, we propose a Text-guided Cross-modal Feature Disentanglement Network (TCFDNet) ,which leverages modality-specific textual priors to decou-ple modality-specific and modality-shared gait representa-tion. We pre-construct the Gait Modality Text Dictionary (GMTD) to encode modality-specific textual priors as se-mantic anchors for cross-modal alignment. Specifically, by leveraging large language models (LLMs), GMTD generates modality-aware text descriptions enriched with multi-view information from eight predefined viewpoints. To enhance semantic diversity, we adopt an l-round multi-turn interac-tion strategy with the LLMs (Fig. 1) to scale it up to a larger magnitude. To this end, upon obtaining the textual modality descriptions, we project both the textual and visual informa-tion into a shared vision-language space. Specifically, we design a multi-grained feature encoder built upon CLIP. The textual descriptions and gait visual data are first processed by the CLIP text encoder and the visual encoder, respec-tively, to obtain modality-specific textual embeddings and global gait representations within a vision-language shared space. Furthermore, to enhance fine-grained feature extrac-tion, we freeze the CLIP weights and introduce a lightweight ResNet-based bypass adapter that captures fine-grained gait features. Finally, a Multi-grained Fusion (MF) module inte-grates these visual features across multiple granularities and aligns them with the textual representations. To achieve text-driven cross-modal representation disen-tanglement, we introduce a Text-guided Feature Disentan-glement (TFD) module that explicitly decouples modality-shared and modality-specific information. Concretely, we first leverage the image–text similarity matrix produced by the CLIP encoder to retrieve the top -kt textual descriptions from the GMTD that are most semantically aligned with the current visual representation. The semantic embeddings of these highly relevant texts are subsequently utilized to guide the reconstruction of the modality-specific component. Furthermore, a residual decomposition strategy combined with an orthogonality constraint is employed to enforce sta-tistical independence between the shared and specific repre-sentations, thereby yielding a well-structured and explicitly disentangled feature space. Nevertheless, the modality-shared representations used for retrieval—derived solely from residual decomposition—tend to suffer from limited robustness, as they are highly sensi-tive to feature perturbations [ 7]. To alleviate this limita-tion, we introduce a Feature Stability Enhancement (FSE) module that explicitly regulates shared representations from two complementary perspectives: spatial dependency and channel-wise correlation. We further introduce a cross-modal Patch Exchange augmentation strategy that swaps localized regions between heterogeneous modalities while preserving semantic consistency. This simple yet effective technique significantly enhances the adaptability to cross-modal discrepancies during training. In summary, our con-tributions are as follows: • We propose a cross-modal gait recognition framework that leverages modality-specific text descriptions to disentan-gle visual representations, thereby capturing shared cues. To achieve this, we design a CLIP-based multi-grained encoder and a Multi-grained Fusion (MF) module to inte-grate both local and global information effectively. • A Text-guided Feature Disentanglement (TFD) module is developed to reconstruct modality-specific semantics from text and disentangle modality-shared representations via residual decomposition and orthogonality constraints. • A Feature Stability Enhancement (FSE) module is pro-posed to improve the robustness of modality-shared fea-tures by modeling spatial dependencies and inter-channel relationships. • Our method achieves state-of-the-art performance on mul-tiple cross-modal gait benchmarks, with extensive abla-tions confirming the contribution of each component. 
+
+## 2. Related Work 
+
+2.1. Gait Recognition 
+
+Gait recognition has long been studied under two ma-jor paradigms: 2D camera-based and 3D LiDAR-based approaches. 2D methods are commonly divided into appearance-based and model-based branches. Appearance-based methods directly exploit silhouettes or RGB sequences to capture motion patterns without relying on explicit body models. Early works introduced handcrafted descriptors such as Gait Energy Images [ 16 ] or temporal templates [ 36 ], while recent deep learning approaches extract fine-grained spatiotemporal features using CNN- or Transformer-based backbones [ 5, 9, 21 , 22 , 24 , 41 ]. These methods often aggre-gate per-frame motion cues to construct global gait embed-dings. Model-based methods rely on human pose estimation to represent gait as a sequence of joint locations [ 11 , 23 , 37 ]. Graph convolutional networks [ 34 ] and temporal attention mechanisms have been proposed to better model structured motion dynamics. However, camera-based methods are vul-nerable to variations in viewpoint, clothing, and illumination. To overcome these limitations, LiDAR-based gait recog-nition has recently emerged as a robust alternative. Un-like RGB cameras, LiDAR sensors provide geometry-rich, illumination-invariant data. LidarGait [ 28 ] demonstrated the superiority of LiDAR over camera in challenging sce-narios. FreeGait [ 17 ] further extended this line of research by collecting large-scale gait data in outdoor, in-the-wild 2GMTD Construction Instruction                       
+
+> Act as an Assistant to generate detailed, view -aware,
+> and modality -aware descriptions of pedestrian gait
+> without behaviors info .You will receive two inputs:
+> one is a silhouette image (from camera/RGB ),
+> and the other is a depth image (from LiDAR/point
+> cloud ).The goal is to fuse these modality -specific
+> cues into a semantically …… Avoid repeating
+> previously information.
+> 1. Modality -Aware Description Generation:
+> 1.1 Identify the modality… 1.2 Describe the modality pattern...
+> 1.5 Viewpoint information will be added in the next …
+
+Formulation  Protocol     
+
+> 2D (Front): A photo of a binary silhouette of a person
+> walking from the front.
+> 3D (Front): A frontal depth map of a walking pedestrian.
+> 2D (Back): The rgb binary image of a human figure
+> walking with occlusion in back view.
+> 3D (Back): A LiDAR projection of a pedestrian viewed
+> from the back.
+
+Examples         
+
+> 2. Viewpoint Integration :[front, front -left …
+> 3. Multi -Turn Augmentation: ……
+> 4. CLIP -Style Text Alignment: ……
+> 5. Dictionary Structuring: ……
+> 6. Manual Inspection and Filtering: ……
+
+Figure 2. The instruction for GMTD, which consists of three parts: formulation, protocol, and examples. This design encourages LLMs[ 1– 3]to perform instruction-following [25], chain-of-thought[40], and in-context generation [8]. 
+
+environments, leveraging both point cloud and range-view representations. 
+
+2.2. Cross-Modal Gait Recognition 
+
+While unimodal and multimodal gait recognition have achieved remarkable progress [ 5, 9, 11 , 12 , 14 , 16 , 17 ,21 , 22 , 24 , 34 , 36 , 41 , 45 , 47 ], cross-modal gait recog-nition—especially between LiDAR and camera modali-ties—remains underexplored. The primary challenge lies in the large modality gap, often exceeding intra-class variation, making feature alignment across modalities difficult. Sev-eral efforts have attempted to bridge this gap. CL-Gait [ 15 ]pre-trains encoders with contrastive learning on synthetic 2D/3D data to unify modality-specific spaces. However, this approach heavily relies on synthetic datasets and struggles to generalize to real-world distributions. CrossGait [ 38 ] pro-poses learnable shared prototypes to align heterogeneous fea-tures. Yet, directly pulling features from different modalities together often leads to class collapse and reduced discrim-inability. Inspired by the success of vision-language models such as CLIP [ 26 ], recent works have explored the potential of textual semantics in bridging heterogeneous modalities. However, existing gait recognition frameworks rarely ex-ploit language as a supervisory or regularizing signal. In this work, we propose a novel framework that leverages LLMs to generate modality-specific textual descriptions, which are embedded into a shared visual-language space via CLIP. These textual features are then used to decouple modality-specific visual information, serving as anchors to guide the disentanglement and alignment of features. 
+
+## 3. Methodology 
+
+3.1. Overview 
+
+Inspired by the cross-modal alignment capabilities of vision-language models between text and visual spaces, we propose TCFDNet, which leverages modality-specific descriptions of the gait dictionary to disentangle modality-shared features for the LCCGait task. The overall framework is illustrated in Figure 3. We propose a patch exchange data augmentation strategy that switches localized areas between modalities at the input level to improve the cross-modal perception, which is analyzed in the Supplementary Material. Meanwhile, we construct a diverse dictionary of gait modality-specific texts using large language models (LLMs), and then design a CLIP-based multi-grained feature encoder to extract both modality-specific textual embeddings and multi-grained gait visual features. Subsequently, the Text-guided Feature Dis-entanglement (TFD) module leverages the aligned modality-specific textual priors to reconstruct and disentangle the original visual features, producing shared cross-modal repre-sentations. Finally, the Feature Stability Enhancement (FSE) module strengthens the robustness of the disentangled but fragile representations by modeling both spatial dependen-cies and inter-channel correlations, thereby enabling reliable gait recognition across views and modalities. 
+
+3.2. Multi-grained Feature Encoder 
+
+3.2.1. Visual Encoder 
+
+In line with prior methodologies [ 10 , 12 , 15 , 38 ], we prepro-cess RGB and point clouds data into silhouettes and depth images, respectively. The input data is denoted as 
+
+X = x2di , x 3di , y i|i = 1 , 2, . . . , n , (1) where n represents the number of sequences in the training set and yi denotes the identity label. Each sample xmi ∈
+
+Rs×h×w×c represents a sequence composed of s frames, 
+
+h × w denotes the spatial resolution of each frame, and c
+
+is the number of input channels. For global coarse-grained feature extraction, we freeze the CLIP visual encoder and add an adapter for task-specific fine-tuning: 
+
+gmi = CLIP v (xmi ) . (2) Here, gmi ∈ Rs×(1+ o)×d consists of two parts: the [CLS] token and the remaining o tokens, where d is the feature dimension. Then, gmi is passed into the adapter for task-specific fine-tuning: 
+
+ˆgmi = Adapter (LN ( gmi )) , (3) 3Patch 
+
+> Exchange
+> "an image of human silhouette
+> from 0 -degree frontal angle"
+> GMTD -2D
+> "a 225 -degree range image of
+> backward -side walking"
+> GMTD -3D
+> LiDAR
+
+CLI P𝑡 
+
+> Camera
+
+CLI P𝑣 
+
+> LayerNorm
+> ResNet
+> Adapter
+> MaxPool
+
+…               
+
+> 𝑠 ×ℎ′×𝑤 ′×𝑑
+> (1+𝑜 )×𝑑
+> [CLS]
+> …
+> ℎ′×𝑤 ′×𝑑
+> MaxPool
+> ResNet
+
+…      
+
+> 𝑠 ×ℎ′×𝑤 ′×𝑑
+> Adapter
+
+…  
+
+> 8𝑙 ×𝑑
+
+…  
+
+> 8𝑙 ×𝑑
+
+𝑡𝑜𝑝𝑘         
+
+> M
+> F
+> S
+> W
+> ℎ′×𝑤 ′×𝑑
+> (1+𝑜 )×𝑑
+> …
+
+…      
+
+> 𝑘 𝑡 ×𝑑
+> TFD
+> ℎ′×𝑤 ′×𝑑
+> ℒ𝑎𝑙𝑖𝑔𝑛
+> 3𝑑
+> ℒ𝑡𝑟𝑖
+> +
+> ℒ𝑐𝑒
+> HPP
+> Separated
+> FCs
+> 𝑠𝑝𝑒𝑐𝑖𝑓𝑖𝑐
+> 𝑠ℎ𝑎𝑟𝑒𝑑
+> ℒ𝑜𝑟𝑡ℎ𝑜
+> 3𝑑
+> +
+> ℒHSIC
+> 3𝑑
+> FSE
+
+𝑡𝑜𝑝𝑘  …                      
+
+> 𝑘 𝑡 ×𝑑
+> M
+> F
+> (1+𝑜 )×𝑑
+> [CLS]
+> …
+> ℎ′×𝑤 ′×𝑑
+> (1+𝑜 )×𝑑
+> …
+> ℎ′×𝑤 ′×𝑑
+> S
+> W
+> ℎ′×𝑤 ′×𝑑
+> TFD
+> 𝑠𝑝𝑒𝑐𝑖𝑓𝑖𝑐
+> 𝑠ℎ𝑎𝑟𝑒𝑑
+> ℒ𝑜𝑟𝑡ℎ𝑜
+> 2𝑑
+> +
+> ℒHSIC
+> 2𝑑
+
+CLI P𝑣 
+
+> LayerNorm
+> Adapter
+> ℒ𝑎𝑙𝑖𝑔𝑛
+> 2𝑑
+> ℒ𝑡𝑟𝑖
+> +
+> ℒ𝑐𝑒
+> HPP
+> Separated
+> FCs
+> FSE
+
+Visual Encoder 
+
+Visual Encoder 
+
+Text Encoder 
+
+Selector Figure 3. Illustration of the proposed framework. 
+
+where LN refers to the Layer Normalization, and the adapter consists of two MLP layers. Subsequently, temporal aggre-gation is performed using the Maxpool operation: 
+
+˜gmi = Maxpool 
+
+> j=1 ,2,...,s
+
+ ˆgmi,j 
+
+ , (4) where ˜gmi ∈ R(1+ o)×d. Meanwhile, to compensate for CLIP’s limitations in fine-grained feature extraction, an aux-iliary ResNet branch is employed to capture detailed gait information. And the same temporal aggregation is applied. The resulting local spatiotemporal representation is denoted as ˜f mi ∈ Rh′×w′×d, where h′ and w′ indicate the height and width of the feature map. 
+
+3.2.2. Multi-grained Fusion Module 
+
+The Multi-grained Fusion (MF) module is employed to inte-grate global and local representations. The features extracted from the ResNet branch are flattened into ¯f mi ∈ Rh′w′×d.Subsequently, a Multi-head Cross-Attention (MCA) mecha-nism is applied at the l-th layer of the MF module to perform feature fusion as follows: MCA (˜ gmi(l−1) , ¯f mi(l−1) ) = Concat (head 1, . . . , head H )W O ,
+
+(5) head j = φ (˜ gmi(l−1) W Qj )( ¯f mi(l−1) W Kj )⊤
+
+√dh
+
+!
+
+( ¯f mi(l−1) W Vj )
+
+(6) Here, φ represents Softmax; W Qj , W Kj , and W Vj ∈ Rd×dh
+
+denote the linear projection matrices for the j-th atten-tion head; dh = d/H denotes the dimensionality of each attention head, where H is the total number of heads; 
+
+W O ∈ RHd h×d represents the linear projection matrix used to aggregate outputs from all heads. ˜gmi(l−1) and ¯f mi(l−1) de-note the global and local features from the (l−1) -th layer. Meanwhile, we adopt a bidirectional fusion strategy to up-date the global and local features at the l-th layer: 
+
+˜gmi(l) = MCA (˜ gmi(l−1) , ¯f mi(l−1) ), (7) 
+
+¯f mi(l) = MCA ( ¯f mi(l−1) , ˜gmi(l−1) ). (8) Ultimately, we aggregate multi-level fine-grained representa-tions to construct the comprehensive feature embedding: 
+
+umi = Reshape 
+
+
+
+Linear 
+
+
+
+LN 
+
+Pnl
+
+> l=1
+
+ ¯f mi(l)
+
+ 
+
+, (9) where Linear denotes the projection layer, nl is the number of layers in the MF module, and umi ∈ Rh′×w′×d is the final fused feature. The details are illustrated in Figure 4. 
+
+3.2.3. Spatial Weighting Module 
+
+In addition, the Spatial Weighting (SW) module is de-signed to emphasize identity-discriminative regions adap-tively while suppressing irrelevant areas. The spatial atten-tion weights are computed as follows: 
+
+wmi = C 1×1 (σ (BN (C 1×1 (umi )))) , (10) Here, C1×1 denotes a 2D convolution with a kernel size of 1 × 1, σ refers to the LeakyReLU activation function, 
+
+BN stands for Batch Normalization, and wmi ∈ Rh′×w′×1.Next, the spatial weight map wmi is broadcasted to match the dimensionality of umi , and used to recalibrate the feature representation: 
+
+˜umi = wmi ⊙ umi , (11) where ⊙ denotes the Hadamard product. 4… 
+
+> MCA
+> MCA
+> 𝑊 𝑉
+> 𝑊 𝐾
+> 𝑊 𝑄
+> 𝑊 𝑄
+> 𝑊 𝐾
+> 𝑊 𝑉
+> update
+> vupdate
+
+Σ Layer Norm 
+
+> &Linear
+
+𝑢 𝑖 Figure 4. Details of the MF module. 
+
+3.3. Gait Modality Text Dictionary 
+
+Initially, we design prompts to guide LLMs in generating raw textual descriptions of gait across both camera and LiDAR modalities. To mitigate the impact of viewpoint variation, we follow conventional practice by dividing viewpoints into eight distinct directions [ 28 , 29 ]. Subsequently, we employ ChatGPT [ 1] to augment the raw textual descriptions with explicit viewpoint information, thereby producing a set of modality- and view-aware semantic descriptions. To enrich diversity and ensure better compatibility with the CLIP pre-training format, we employ the multi-turn strategy to expand the original set into l distinct groups of gait descriptions, which are subsequently incorporated into the Gait Modality Text Dictionary (GMTD), as illustrated in Figure 2. The GMTD contains m × 8 × l entries, formally defined as: GMTD = tmj |m ∈ { 2d, 3d} , j = 1 , 2, . . . , 8l , (12) where m denotes different modalities. Subsequently, for the extraction of textual features tmi in the GMTD, we employ a frozen, pretrained CLIP text en-coder followed by a two-layer MLP adapter, which yields the modality-specific textual embeddings: GMTF = vmj |m ∈ { 2d, 3d} , j = 1 , 2, . . . , 8l , (13) where vmj ∈ R1×d. This process is described in detail in the Supplementary Material. 
+
+3.4. Text-guided Feature Disentanglement 
+
+Upon obtaining modality-specific textual embeddings and multi-grained gait visual features, a Text-guided Fea-ture Disentanglement (TFD) module is designed to re-construct modality-specific gait features within the visual space, while modality-shared representations are obtained through residual decomposition. Specifically, we first se-lect the top -kt modality-specific semantic prototypes V mi =vmj |j = 1 , 2, . . . , k t from the GMTF based on their co-sine similarity scores with the CLIP-derived [CLS] feature 
+
+˜g∗mi . The similarity score is formally defined as: cos ( ˜ g∗mi , v mj ) = ˜g∗mi · vmj
+
+∥ ˜g∗mi ∥2 · ∥ vmj ∥2
+
+. (14) Subsequently, the modality text group V mi is employed to re-construct modality-specific information. In particular, each Softmax  ℎ′𝑤 ′ × 𝑘 𝑡     
+
+> ℎ′×𝑤 ′×𝑑
+
+## …  
+
+> ℎ′𝑤 ′×𝑑
+
+## …   
+
+> 𝑘 𝑡 ×𝑑
+
+## …        
+
+> ℎ′𝑤 ′×𝑑
+> Avgpool MLP&
+> Sigmoid
+> Linear
+> cos
+> reshape
+> ×𝛼 ෨𝐹 (𝑚𝑜𝑑 )𝑖
+> residual decomposition 𝐹 𝑠ℎ𝑎𝑟𝑒𝑑 𝑖
+
+Figure 5. The flowchart of the TFD module. 
+
+prototype in V mi is first projected into a shared latent space, followed by L2 normalization, yielding bV mi ∈ Rkt×d. Mean-while, ˜umi is flattened into ¯umi ∈ Rh′w′×d, and normalized along the feature dimension to obtain ˆumi . Next, we compute the affinity weights based on cosine similarity, followed by a Softmax operation to normalize the map: 
+
+Ω = φ
+
+
+
+cos 
+
+
+
+ˆumi , bV mi
+
+ 
+
+, (15) where Ω ∈ Rh′w′×kt . We further perform a weighted fu-sion of the modality-specific semantic features according to the attention map, thereby reconstructing modality-specific features in the visual space: 
+
+F(mod )mi = Reshape 
+
+
+
+Linear 
+
+
+
+Ω bV mi
+
+ 
+
+, (16) where F(mod )mi ∈ Rh′×w′×d. To control the influence of 
+
+F(mod )mi during the early stages of training and prevent model divergence, we introduce a gating mechanism that adaptively modulates its contribution. Formally, 
+
+α = η
+
+
+
+MLP 
+
+
+
+Avgpool 
+
+> h′×w′
+
+(˜ umi )
+
+ 
+
+, (17) 
+
+eF(mod )mi = α ⊙ F(mod )mi . (18) Here, MLP denotes a multilayer perceptron, η represents the Sigmoid function, α ∈ R1×d is the channel-wise modulation factor. Furthermore, to obtain modality-shared representa-tions, we adopt a residual decomposition strategy as follows: 
+
+F(shared )mi = ˜ umi − eF(mod )mi , (19) where F(shared )mi ∈ Rh′×w′×d denotes the modality-shared gait representation. The flowchart is shown in Figure 5 
+
+3.5. Feature Stability Enhancement 
+
+Although the modality-shared features have been semanti-cally disentangled from modality-specific components via the TFD module, the remaining modality-specific noise and local perturbations in the original features still limit their stability and discriminative power. To mitigate this issue, we introduce a Feature Stability Enhancement (FSE) module, 5Conv2d             
+
+> Conv1d
+> Sigmoid ℎ′×𝑤 ′×𝑑 ℎ′′×𝑤 ′′×𝑑 ℎ′′𝑤 ′′𝑑 𝑑 𝑑 ′
+> Bottleneck Layer
+> 𝛽
+> ×
+
+Figure 6. Illustration of the FSE module. 
+
+which is designed to capture local spatial receptive fields and global channel-wise dependencies, thereby enhancing the robustness and discriminability of modality-shared rep-resentations, as illustrated in Figure 6. Specifically, we first model the local spatial correlations: 
+
+ˆF(shared )mi = C 3×3
+
+ F(shared )mi
+
+ , (20) where ˆF(shared )mi ∈ Rh′′ ×w′′ ×d.
+
+Subsequently, a bottleneck layer is utilized to transform the channel-wise features, wherein the downsampled fea-ture map is first flattened and projected into a compact d′-dimensional latent space( d′ ≪ d), followed by an inverse projection to recover the original channel dimensionality: 
+
+¯F(shared )mi = W2
+
+
+
+σ
+
+
+
+W1
+
+
+
+Flatten 
+
+ ˆF(shared )mi
+
+ 
+
+,
+
+(21) where W1 ∈ Rh′′ w′′ d×d′
+
+, W 2 ∈ Rd′×d, and ¯F(shared )mi ∈
+
+R1×d. In modality-shared features, different channel dimen-sions often encode distinct cross-modal semantic patterns; thus, modeling the inter-channel dependencies and perform-ing adaptive weighting is essential for improving feature robustness. Specifically, a 1D convolution is employed to capture dependencies, followed by a Softmax operation to compute the weight of each channel dimension: 
+
+β = η  C3
+
+  ¯F(shared )mi
+
+ , (22) where β ∈ R1×d and C3 denotes a 1D convolution with a kernel size of 3. Subsequently, we adjust the channel weights to obtain features based on global dependency correlations: 
+
+eF(shared )mi = β ⊙ F(shared )mi . (23) Finally, a combination of HPP[ 6] and Separated FCs[ 10 ] is utilized to extract part-based discriminative features, denoted as F(∗)mi ∈ Rnp×d, where np denotes the number of parts. 
+
+3.6. Loss Functions 
+
+To explicitly enforce structural disentanglement between modality-specific and modality-shared features, and to fur-ther strengthen cross-modal representation learning guided by textual semantics, we propose three collaboratively opti-mized loss functions: Modality Alignment Loss (MA Loss), Modality Orthogonality Loss (MO Loss), and HSIC-based Independence Loss (HSIC Loss). Collectively, these losses impose complementary constraints on the network from the perspectives of semantic alignment, feature disentanglement, and statistical decorrelation, establishing a unified frame-work of alignment, orthogonality, and independence. MA Loss is introduced to ensure that the reconstructed feature accurately reflects the modality-specific semantic priors en-coded in the GMTF. The specific formulation is as follows: 
+
+Lmalign = 1 − 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+ cos   ¯F(mod )mi , ¯V mi
+
+ . (24) Here, N denotes the number of batch size, ¯F(mod )mi ∈ R1×d
+
+refers to the global average pooled vector of the modality-specific eF(mod )mi , and ¯V mi ∈ R1×d denotes the mean of the corresponding text embeddings bV mi for each sample. 
+
+MO Loss is designed to achieve effective disentanglement between the modality-specific feature eF(mod )mi and the modality-shared feature eF(shared )mi , which encourages the two representations to be mutually independent in the em-bedding space and is defined as follows: 
+
+Lmortho = 1
+
+N
+
+> N
+
+X
+
+> i=1
+
+D eF(shared )mi , eF(mod )mi
+
+E
+
+∥ eF(shared )mi ∥∥ eF(mod )mi ∥
+
+ . (25) 
+
+HSIC Loss is employed to decorrelate the distributions of the two feature representations from a statistical dependence perspective: 
+
+Lm 
+
+> HSIC
+
+= HSIC 
+
+ eF(mod )mi , eF(shared )mi
+
+
+
+= tr ( KcLc)(N − 1) 2 .
+
+(26) Here, Kc, L c ∈ RN ×N denote the centered linear kernel Gram matrices of eF(mod )mi and eF(shared )mi , respectively. In addition, we adopt the conventional triplet loss Ltri and cross-entropy loss Lce to optimize the model [ 10 , 38 ]. De-tailed analysis of these loss functions is provided in the Sup-plementary Material. In summary, the overall loss function is defined as: 
+
+Lall = γ1 (Ltri + Lce ) + γ2
+
+ Lmalign 
+
+
+
++ γ3 (Lmortho + Lm
+
+> HSIC
+
+) . (27) By default, γ1 = 1 .0, γ2 = 0 .5, and γ3 = 0 .1.
+
+## 4. Experiments 
+
+4.1. Dataset 
+
+SUSTech1K [28 ] comprises 25,239 gait sequences from 1,050 subjects, captured using synchronized RGB cameras and LiDAR sensors across 12 viewpoints and 8 walking conditions (e.g., clothing changes, carrying). Following stan-dard protocol, we use 6,011 sequences from 250 identities 6Table 1. Rank-1 accuracy of cross-modal gait recognition from 2D camera to 3D LiDAR on the SUSTech1K dataset. ♠ indicates that a significant quantity of extra data is required for pre-training in this approach. The best results are indicated in bold , second in underline.                                                                                                                             
+
+> Methods Camera(2D) →LiDAR(3D) Overall
+> Normal Bag Clothing Carrying Umbrella Uniform Occlusion Night Rank-1Rank-5
+> CAJ [42] ICCV’21 16.4 -7.5 -7.4 --2.4 11.3 30.1 SAAI [13] ICCV’23 22.4 -14.3 -14.0 --5.3 23.1 49.5 LidarGait [28] CVPR’23 18.2 -3.4 -3.4 --4.7 9.6 28.1 CL-Gait ♠[15] ECCV’24 --------55.1 77.3 CrossGait [38] IJCB’24 63.2 -30.6 -38.5 --11.8 53.6 77.0 IDKL [27] CVPR’24 60.3 49.8 29.2 48.5 36.9 50.7 64.2 9.4 52.2 75.2 TVI-LFM [18] NeurIPS’24 61.0 50.3 30.1 50.2 37.5 51.0 66.5 10.0 53.0 76.1 TSKD [33] PR’25 52.1 43.6 27.9 48.0 32.7 41.1 55.6 6.3 42.6 65.8 SCR [44] IF’25 61.3 52.9 29.6 53.0 39.1 53.7 69.4 10.3 54.9 78.1
+> TCFDNet Ours 67.6 60.8 36.1 55.4 39.1 52.8 71.2 11.2 55.9 78.1
+
+Table 2. Rank-1 accuracy of cross-modal gait recognition from 3D LiDAR to 2D camera on the SUSTech1K dataset. ♠ denotes methods pre-trained on synthetic data. 
+
+Methods LiDAR(3D) → Camera(2D) Overall 
+
+Normal Bag Clothing Carrying Umbrella Uniform Occlusion Night Rank-1 Rank-5
+
+CAJ [42] ICCV’21 15.3 - 6.4 - 13.0 - - 2.3 12.3 32.3 SAAI [13] ICCV’23 26.5 - 21.9 - 23.2 - - 3.2 26.1 54.1 LidarGait [28] CVPR’23 23.2 - 14.2 - 24.7 - - 2.4 18.3 39.6 CL-Gait ♠ [15] ECCV’24 - - - - - - - - 53.3 75.6 CrossGait [38] IJCB’24 62.2 - 35.4 - 57.8 - - 10.3 56.4 79.8 IDKL [27] CVPR’24 59.6 52.3 31.0 49.5 55.2 56.1 65.3 7.9 54.8 77.1 TVI-LFM [18] NeurIPS’24 60.4 53.0 32.7 51.6 56.4 55.8 69.2 9.1 55.7 78.5 TSKD [33] PR’25 50.1 41.3 27.7 42.8 45.9 46.2 52.5 7.8 47.2 68.1 SCR [44] IF’25 61.6 54.1 35.8 52.0 58.1 55.9 72.6 10.2 57.7 79.5 
+
+TCFDNet Ours 70.9 64.8 36.7 59.1 63.3 64.3 78.7 11.1 61.7 82.5 
+
+Table 3. Accuracy of cross-modal gait recognition on the FreeGait. 
+
+Methods 2D → 3D 3D → 2D R-1 R-5 R-1 R-5
+
+HMRNet[17] MM’24 23.5 55.7 25.1 57.0 CrossGait[38] IJCB’24 29.6 60.8 32.3 65.9 IDKL [27] CVPR’24 36.7 67.4 39.5 70.3 TVI-LFM [18] NeurIPS24 38.9 69.1 41.0 71.8 TSKD [33] PR’25 25.1 57.9 26.7 60.8 SCR [44] IF’25 40.1 72.0 43.3 75.9 
+
+TCFDNet Ours 52.1 85.3 57.9 87.2 
+
+for training and 19,228 sequences from 800 unseen identities for testing. For cross-modal evaluation, sequences under var-ied conditions in one modality serve as probes, while their normal-condition counterparts in the other modality form the gallery. Recognition performance is further reported across multiple covariate subsets for detailed analysis. 
+
+FreeGait [17 ] includes 11,921 sequences from 1,195 indi-viduals, collected under unconstrained outdoor environments using high-resolution 128-line OUSTR LiDAR and RGB cameras from three viewpoints within a 25-meter radius. The dataset features diverse conditions, including 51 subjects recorded under low-light scenarios. We follow the original evaluation split, using 5,000 sequences from 500 identities for training and 6,921 sequences from the remaining 695 identities for testing. 
+
+4.2. Implementation Details 
+
+To ensure fair comparisons with prior methods [ 15 , 31 , 38 ], we follow their input settings by using camera silhouettes and LiDAR depth maps, both resized to 64 × 64 . Regarding the network architecture, we employ a trainable ResNet-9 as the MFE adapter, with the embedding dimension d set to 512 and the number of part tokens o fixed at 16. During training, we randomly sample 10 frames per sequence, with a batch size of 8 (identities) × 8 (sequences). The proposed TCFDNet is optimized using the Adam optimizer with an initial learning rate of 3 × 10 −4, and trained for a total of 25,000 epochs. A MultiStepLR scheduler is employed to decay the learning rate by a factor of 0.1 at the 10,000th and 20,000th epochs. Our implementation is based on the OpenGait [ 10 , 12 ] framework, and we adopt the Patch Ex-change data augmentation strategy, which is detailed in the supplementary material. All experiments are conducted on two NVIDIA RTX 3090 GPUs. 7Table 4. Ablation study on SUSTech1K dataset for cross-modal gait recognition (LiDAR → Camera). At each step, only one functional group is modified while others remain fully integrated.                                                  
+
+> Text Visual Backbone Decoupling Overall
+> GMTD ViT ResNet MF SW TFD FSE R-1R-5
+> ×full integration full integration 56.2 77.3
+> ✓✓×××
+> full integration
+> 54.9 74.6
+> ✓×✓×✓58.4 78.9
+> ✓×✓××56.7 76.5
+> ✓full integration ✓×59.8 80.6
+> ✓××58.9 79.3
+> ✓✓✓✓✓✓✓61.7 82.5
+
+4.3. Comparative Results 
+
+We conduct comprehensive comparisons against state-of-the-art (SOTA) methods on the LCCGait benchmark and further adapt leading approaches from the Visible-Infrared Re-Identification task to establish a more rigorous experi-mental baseline. On the SUSTech1K dataset, the proposed TCFDNet consistently outperforms previous state-of-the-art (SOTA) methods under both 2D →3D and 3D →2D retrieval settings. The results are presented in Table 1 and Table 2. Notably, our approach maintains robust and effective cross-modal retrieval performance even in challenging scenarios such as Clothing and Occlusion. However, the performance of TCFDNet degrades under Night conditions, which is a common limitation among most existing methods. We at-tribute this to the newly introduced day–night cross-domain and cross-modal discrepancy, which represents a promising direction for future research. In addition, we visualize the re-sults of different comparison methods using t-SNE [ 35 ] and cross-modal similarity distributions [ 32 ], as shown in Fig-ure 7 and Figure 8. These visualization results further high-light that TCFDNet effectively captures modality-invariant semantics while preserving strong discriminative capabil-ity, leading to more compact intra-class distances and larger inter-class separations. On the FreeGait dataset, we repro-duced prior methods and conducted detailed comparative experiments, as shown in Table 3. The results show that our method achieves SOTA performance, validating its strong generalization in real-world in-the-wild scenarios. 
+
+4.4. Ablation Study 
+
+We conducted detailed ablation studies to verify the effec-tiveness of each proposed module, as shown in Table 4. Notably, removing the GMTD module leads to a substan-tial performance degradation, underscoring the critical role of modality-specific textual priors in facilitating effective cross-modal feature disentanglement. Furthermore, we in-vestigate the impact of the top -kt text prototype selection in GMTD. As reported in Figure 9, the best performance is observed when kt = 16 , which balances the semantic (a)  CrossGait  (b) Ours 
+
+> 2D
+> 3D
+> 2D
+> 3D
+
+Figure 7. t-SNE visualization of cross-modal 2D and 3D features. Zooming in for details. Probability Density    
+
+> Cosine Similarity Cosine Similarity
+> Int ra -Class
+> Int er-Class
+> 0.67 0.45
+
+(a)  CrossGait  (b) Ours             
+
+> -1.00 -0.75 -0.50 -0.25 0.00 1.00 0.75 0.50 0.25 -1.00 -0.75 -0.50 -0.25 0.00 1.00 0.75 0.50 0.25 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12 Int ra -Class
+> Int er -Class
+> Probability Density
+
+Figure 8. Visualization of cross-modal intra/inter-class cosine simi-larity distribution. 𝑡𝑜𝑝 − 𝑘 𝑡 
+
+> Rank -1 Accuracy  (%)
+
+Figure 9. Illustration of Rank-1 accuracy on the number of top -kt
+
+within the GMTD module. 
+
+diversity and alignment specificity. The detailed ablation studies on the patch exchange data augmentation and the loss function design are provided in the Supplementary. 
+
+## 5. Conclusion 
+
+We introduce TCFDNet, a Text-guided Cross-modal Feature Disentanglement Network for cross-modal gait recognition. By leveraging LLMs, TCFDNet constructs modality-aware textual embeddings and aligns them with visual repre-sentations through a CLIP-based multi-grained encoder. A text-guided disentanglement module further isolates modality-shared and specific semantics, while a feature stability enhancement module improves robustness via spa-tial–channel dependency modeling. Three disentanglement losses jointly ensure fine-grained supervision and effective feature separation. The patch exchange augmentation is further designed to bridge the input gaps during training. Comprehensive experiments demonstrate that TCFDNet achieves superior accuracy and generalization, establishing a new paradigm for text-guided cross-modal gait recognition. 8References 
+
+[1] Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 , 2023. 3, 5 [2] Jinze Bai, Shuai Bai, Yunfei Chu, Zeyu Cui, Kai Dang, Xi-aodong Deng, Yang Fan, Wenbin Ge, Yu Han, Fei Huang, et al. Qwen technical report. arXiv preprint arXiv:2309.16609 ,2023. [3] Jinze Bai, Shuai Bai, Shusheng Yang, Shijie Wang, Sinan Tan, Peng Wang, Junyang Lin, Chang Zhou, and Jingren Zhou. Qwen-vl: A frontier large vision-language model with versatile abilities. arXiv preprint arXiv:2308.12966 , 1(2):3, 2023. 3 [4] Cher Bass, Mariana da Silva, Carole Sudre, Petru-Daniel Tudosiu, Stephen Smith, and Emma Robinson. Icam: Inter-pretable classification via disentangled representations and feature attribution mapping. Advances in Neural Information Processing Systems , 33:7697–7709, 2020. 2 [5] Hanqing Chao, Yiwei He, Junping Zhang, and Jianfeng Feng. Gaitset: Regarding gait as a set for cross-view gait recogni-tion. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 8126–8133, 2019. 1, 2, 3 [6] Hanqing Chao, Kun Wang, Yiwei He, Junping Zhang, and Jianfeng Feng. Gaitset: Cross-view gait recognition through utilizing gait as a deep set. IEEE Transactions on Pattern Analysis and Machine Intelligence , 44(7):3467–3478, 2021. 6[7] Yufan Chen, Jiaming Zhang, Kunyu Peng, Junwei Zheng, Ruiping Liu, Philip Torr, and Rainer Stiefelhagen. Rodla: Benchmarking the robustness of document layout analysis models. In Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 15556–15566, 2024. 2 [8] Qingxiu Dong, Lei Li, Damai Dai, Ce Zheng, Jingyuan Ma, Rui Li, Heming Xia, Jingjing Xu, Zhiyong Wu, Tianyu Liu, et al. A survey on in-context learning. arXiv preprint arXiv:2301.00234 , 2022. 1, 3 [9] Chao Fan, Yunjie Peng, Chunshui Cao, Xu Liu, Saihui Hou, Jiannan Chi, Yongzhen Huang, Qing Li, and Zhiqiang He. Gaitpart: Temporal part-based model for gait recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 14225–14233, 2020. 2, 3 [10] Chao Fan, Junhao Liang, Chuanfu Shen, Saihui Hou, Yongzhen Huang, and Shiqi Yu. Opengait: Revisiting gait recognition towards better practicality. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 9707–9716, 2023. 1, 3, 6, 7 [11] Chao Fan, Jingzhe Ma, Dongyang Jin, Chuanfu Shen, and Shiqi Yu. Skeletongait: Gait recognition using skeleton maps. In Proceedings of the AAAI Conference on Artificial Intelli-gence , pages 1662–1669, 2024. 2, 3 [12] Chao Fan, Saihui Hou, Junhao Liang, Chuanfu Shen, Jingzhe Ma, Dongyang Jin, Yongzhen Huang, and Shiqi Yu. Open-gait: A comprehensive benchmark study for gait recognition towards better practicality. IEEE Transactions on Pattern Analysis and Machine Intelligence , 2025. 3, 7 [13] Xingye Fang, Yang Yang, and Ying Fu. Visible-infrared person re-identification via semantic alignment and affinity inference. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 11270–11279, 2023. 7[14] Yang Fu, Shibei Meng, Saihui Hou, Xuecai Hu, and Yongzhen Huang. Gpgait: Generalized pose-based gait recognition. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 19595–19604, 2023. 3 [15] Wenxuan Guo, Yingping Liang, Zhiyu Pan, Ziheng Xi, Jian-jiang Feng, and Jie Zhou. Camera-lidar cross-modality gait recognition. In European Conference on Computer Vision ,pages 439–455. Springer, 2025. 1, 3, 7 [16] Jinguang Han and Bir Bhanu. Individual recognition using gait energy image. IEEE Transactions on Pattern Analysis and Machine Intelligence , 28(2):316–322, 2005. 2, 3 [17] Xiao Han, Yiming Ren, Peishan Cong, Yujing Sun, Jingya Wang, Lan Xu, and Yuexin Ma. Gait recognition in large-scale free environment via single lidar. In Proceedings of the ACM International Conference on Multimedia , pages 380– 389, 2024. 1, 2, 3, 7 [18] Zhangyi Hu, Bin Yang, and Mang Ye. Empowering visible-infrared person re-identification with large foundation mod-els. Advances in Neural Information Processing Systems , 37: 117363–117387, 2024. 7 [19] Xun Huang, Jinlong Wang, Qiming Xia, Siheng Chen, Bisheng Yang, Xin Li, Cheng Wang, and Chenglu Wen. V2x-r: Cooperative lidar-4d radar fusion with denoising diffusion for 3d object detection. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pages 27390–27400, 2025. 1 [20] Xun Huang, Ziyu Xu, Hai Wu, Jinlong Wang, Qiming Xia, Yan Xia, Jonathan Li, Kyle Gao, Chenglu Wen, and Cheng Wang. L4dr: Lidar-4dradar fusion for weather-robust 3d object detection. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 3806–3814, 2025. 1 [21] Dongyang Jin, Chao Fan, Weihua Chen, and Shiqi Yu. Ex-ploring more from multiple gait modalities for human identi-fication. In Proceedings of the AAAI Conference on Artificial Intelligence , pages 4120–4128, 2025. 1, 2, 3 [22] Dongyang Jin, Chao Fan, Jingzhe Ma, Jingkai Zhou, Weihua Chen, and Shiqi Yu. On denoising walking videos for gait recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 12347– 12357, 2025. 1, 2, 3 [23] Na Li and Xinbo Zhao. A strong and robust skeleton-based gait recognition method with gait periodicity priors. IEEE Transactions on Multimedia , 25:3046–3058, 2022. 2 [24] Beibei Lin, Shunli Zhang, and Xin Yu. Gait recognition via ef-fective global-local feature representation and local temporal aggregation. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 14648–14656, 2021. 2, 3 [25] Renze Lou, Kai Zhang, and Wenpeng Yin. A compre-hensive survey on instruction following. arXiv preprint arXiv:2303.10475 , 1, 2023. 3 
+
+9[26] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International Conference on Machine Learning , pages 8748–8763. PmLR, 2021. 2, 3 [27] Kaijie Ren and Lei Zhang. Implicit discriminative knowledge learning for visible-infrared person re-identification. In Pro-ceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 393–402, 2024. 7 [28] Chuanfu Shen, Chao Fan, Wei Wu, Rui Wang, George Q Huang, and Shiqi Yu. Lidargait: Benchmarking 3d gait recog-nition with point clouds. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 1054–1063, 2023. 1, 2, 5, 6, 7 [29] Chuanfu Shen, Shiqi Yu, Jilong Wang, George Q Huang, and Liang Wang. A comprehensive survey on deep gait recognition: Algorithms, datasets, and challenges. IEEE Transactions on Biometrics, Behavior, and Identity Science ,2024. 1, 5 [30] Chuanfu Shen, Shiqi Yu, Jilong Wang, George Q Huang, and Liang Wang. A comprehensive survey on deep gait recognition: Algorithms, datasets, and challenges. IEEE Transactions on Biometrics, Behavior, and Identity Science ,2024. 1 [31] Chuanfu Shen, Rui Wang, Lixin Duan, and Shiqi Yu. Li-dargait++: Learning local features and size awareness from lidar point clouds for 3d gait recognition. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 6627–6636, 2025. 1, 7 [32] Jiangming Shi, Xiangbo Yin, Yeyun Chen, Yachao Zhang, Zhizhong Zhang, Yuan Xie, and Yanyun Qu. Multi-memory matching for unsupervised visible-infrared person re-identification. In European Conference on Computer Vi-sion , pages 456–474. Springer, 2024. 8 [33] Jiangming Shi, Xiangbo Yin, Demao Zhang, Zhizhong Zhang, Yuan Xie, and Yanyun Qu. Two-stage knowledge distillation for visible-infrared person re-identification. Pattern Recogni-tion , 169:111850, 2026. 7 [34] Torben Teepe, Ali Khan, Johannes Gilg, Fabian Herzog, Ste-fan H ¨ormann, and Gerhard Rigoll. Gaitgraph: Graph con-volutional network for skeleton-based gait recognition. In 
+
+IEEE International Conference on Image Processing , pages 2314–2318. IEEE, 2021. 2, 3 [35] Laurens Van der Maaten and Geoffrey Hinton. Visualizing data using t-sne. Journal of Machine Learning Research , 9 (11), 2008. 8 [36] Chen Wang, Junping Zhang, Jian Pu, Xiaoru Yuan, and Liang Wang. Chrono-gait image: A novel temporal template for gait recognition. In European Conference on Computer Vision ,pages 257–270. Springer, 2010. 2, 3 [37] Runsheng Wang, Yuxuan Shi, Hefei Ling, Zongyi Li, Chengxin Zhao, Bohao Wei, He Li, and Ping Li. Gait recog-nition with multi-level skeleton-guided refinement. IEEE Transactions on Multimedia , 2023. 2 [38] Rui Wang, Chuanfu Shen, Manuel J Marin-Jimenez, George Q Huang, and Shiqi Yu. Cross-modality gait recogni-tion: Bridging lidar and camera modalities for human identifi-cation. In IEEE International Joint Conference on Biometrics ,pages 1–11. IEEE, 2024. 1, 3, 6, 7 [39] Xiao Wang, Lekai Liu, Bin Yang, Mang Ye, Zheng Wang, and Xin Xu. Tokenmatcher: Diverse tokens matching for unsupervised visible-infrared person re-identification. In Pro-ceedings of the AAAI Conference on Artificial Intelligence ,pages 7934–7942, 2025. 1 [40] Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al. Chain-of-thought prompting elicits reasoning in large language mod-els. Advances in Neural Information Processing Systems , 35: 24824–24837, 2022. 3 [41] Shaopeng Yang, Jilong Wang, Saihui Hou, Xu Liu, Chun-shui Cao, Liang Wang, and Yongzhen Huang. Bridging gait recognition and large language models sequence modeling. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 3460–3469, 2025. 1, 2, 3 [42] Mang Ye, Weijian Ruan, Bo Du, and Mike Zheng Shou. Chan-nel augmented joint learning for visible-infrared recognition. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 13567–13576, 2021. 7 [43] Hao Yu, Xu Cheng, Wei Peng, Weihao Liu, and Guoying Zhao. Modality unifying network for visible-infrared person re-identification. In Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision , pages 11185–11195, 2023. 1 [44] Mingxin Yu, Yiyuan Ge, Zhihao Chen, Rui You, Lian-qing Zhu, Mingwei Lin, and Zeshui Xu. No escape: To-wards suggestive clues guidance for cross-modality person re-identification. Information Fusion , page 103185, 2025. 7 [45] Haidong Zhu, Wanrong Zheng, Zhaoheng Zheng, and Ram Nevatia. Gaitref: Gait recognition with refined sequential skeletons. In IEEE International Joint Conference on Biomet-rics , pages 1–10. IEEE, 2023. 3 [46] Xinqi Zhu, Chang Xu, and Dacheng Tao. Where and what? examining interpretable disentangled representations. In Pro-ceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 5861–5870, 2021. 2 [47] Shinan Zou, Jianbo Xiong, Chao Fan, Chuanfu Shen, Shiqi Yu, and Jin Tang. A multi-stage adaptive feature fusion neural network for multimodal gait recognition. IEEE Transactions on Biometrics, Behavior, and Identity Science , 6(4):539–549, 2024. 3 
+
+10

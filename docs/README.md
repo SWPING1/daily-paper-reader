@@ -6,29 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-01
-- 运行时间：2026-06-01 22:47:46 UTC
+- 最新运行日期：2026-06-02
+- 运行时间：2026-06-02 22:47:42 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：5
+- 精读区：1
+- 速读区：4
 
 ### 今日简报（AI）
-今日精读两篇高分论文，分别探讨传感器故障下BEV感知的优雅降级与多模态情感分析的因果解耦；速读一篇研究音频推理中缓解模态坍塌的方法。最值得关注的是感知系统容错机制和因果解耦对多模态融合的优化。建议普通读者重点关注传感器故障场景下的鲁棒性设计，以及如何通过因果解耦提升模型的可解释性。
-- 详情：[/202606/01/README](/202606/01/README)
+今日精读5篇论文，聚焦跨模态对齐与多模态鲁棒性前沿。重点推荐《UF-AMA》在多模态情感识别的统一框架设计，以及《Closed-Loop Bidirectional Prompting》对视觉语言模型对抗鲁棒性的提升。建议关注情绪识别与多模态融合的实用落地，尝试将对齐技术用于实际场景。
+- 详情：[/202606/02/README](/202606/02/README)
 
 ### 精读区论文标签
-1. [Can BEV Perception Gracefully Degrade under Sensor Failures?](/202606/01/2605.30983v1-can-bev-perception-gracefully-degrade-under-sensor-failures)  
+1. [UF-AMA: A unified framework for cross-domain emotion recognition via adaptive multimodal alignment](/202606/02/2606.00170v1-uf-ama-a-unified-framework-for-cross-domain-emotion-recognition-via-adaptive-multimodal-alignment)  
    标签：评分：8.0/10、query:mm
-   evidence：基于主动可靠性评估实现缺失传感器模态下的优雅降级
-2. [Dynamic Interaction-Aware and Causality-Disentangled Framework for Multimodal Sentiment Analysis](/202606/01/2605.30994v1-dynamic-interaction-aware-and-causality-disentangled-framework-for-multimodal-sentiment-analysis)  
-   标签：评分：8.0/10、query:mm
-   evidence：多模态情感分析中的因果关系解耦框架
+   evidence：跨域多模态情感识别，自适应对齐
 
 ### 速读区论文标签
-1. [Escape the Language Prior: Mitigating Late-Stage Modality Collapse in Audio Reasoning via Modality-Aware Policy Optimization](/202606/01/2605.27741v1-escape-the-language-prior-mitigating-late-stage-modality-collapse-in-audio-reasoning-via-modality-aware-policy-optimization)  
+1. [Closed-Loop Bidirectional Prompting for Adversarial Robustness of Vision Language Models](/202606/02/2605.25922v1-closed-loop-bidirectional-prompting-for-adversarial-robustness-of-vision-language-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：视觉语言模型的闭环双向提示增强对抗鲁棒性
+2. [MMDG-Bench: A Benchmark for Multimodal Domain Generalization](/202606/02/2606.00891v1-mmdg-bench-a-benchmark-for-multimodal-domain-generalization)  
+   标签：评分：7.0/10、query:mm
+   evidence：多模态域泛化基准，支持鲁棒多模态学习
+3. [Multi-modal Video Representation Alignment for Robust Self-supervised Driver Distraction Detection](/202606/02/2606.02352v1-multi-modal-video-representation-alignment-for-robust-self-supervised-driver-distraction-detection)  
+   标签：评分：7.0/10、query:mm
+   evidence：鲁棒多模态对齐框架，处理噪声传感器数据
+4. [Text-guided Feature Disentanglement for Cross-modal Gait Recognition](/202606/02/2605.30784v1-text-guided-feature-disentanglement-for-cross-modal-gait-recognition)  
    标签：评分：6.0/10、query:mm
-   evidence：缓解音频推理中的模态坍塌，提升多模态学习鲁棒性
+   evidence：文本引导的特征解耦用于跨模态步态识别
 
 
 <div class="dpr-home-promo-card">
