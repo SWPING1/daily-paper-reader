@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-04",
+  "date": "2026-06-04",
+  "generated_at": "2026-06-04T22:01:40",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/04/2606.00670v1-beyond-the-mouth-upper-face-affective-cues-in-audiovisual-sentence-recognition-under-acoustic-uncertainty",
+      "section": "deep",
+      "title_en": "Beyond the Mouth: Upper-Face Affective Cues in Audiovisual Sentence Recognition under Acoustic Uncertainty",
+      "authors": "Zhou Yang, Yueyi Yang",
+      "date": "2026-05-30",
+      "pdf": "https://arxiv.org/pdf/2606.00670v1",
+      "score": "8.0",
+      "evidence": "视听情感语音，上脸情感线索在情感识别中的应用",
+      "tldr": "面对面语音理解通常依赖嘴部视觉信息，而情感线索常被单独处理。本研究探究上脸情感线索在噪声环境下对视听句子识别的贡献。使用CREMA-D语料库，训练基于特征的分类器，对比音频、嘴部、上脸及全脸条件。结果显示，嘴部特征在低信噪比下显著提升准确率，上脸情感直接增益虽小，但全脸模型校准性更优。这表明情感面部信息不直接编码词汇，却有助于鲁棒性和置信度估计，对多模态交互系统有重要启示。",
+      "tags": "query:mm",
+      "abstract_en": "Face-to-face speech comprehension is inherently multimodal, integrating acoustic signals with visible articulation, facial expression, head motion, and other socially relevant cues. While audiovisual speech systems typically focus on the mouth region as the primary visual source of linguistic information, affective facial expressions are often treated separately as emotion-recognition targets. This paper investigates whether upper-face affective information contributes to audiovisual sentence recognition beyond audio and mouth-region cues, particularly under acoustic degradation.   Using the CREMA-D audiovisual emotional speech corpus, we train feature-based sentence classifiers under four cue conditions: audio only (A), audio plus mouth/lower-face features (A+M), audio plus upper-face features (A+U), and audio plus both mouth and upper-face features (A+M+U). Models are evaluated on clean audio and pink-noise conditions at +10 dB, +5 dB, and 0 dB SNR using actor-independent splits.   Results show that mouth/lower-face features provide substantial robustness benefits under degraded audio. At 0 dB SNR, A+M improves accuracy over A by 0.0794, with an actor-bootstrap 95% confidence interval of [0.0296, 0.1298]. Upper-face affective cues exhibit a more nuanced effect. Although the direct accuracy gain of A+M+U over A+M is small, full-face models consistently improve calibration across SNR levels and outperform shuffled upper-face controls under noisy conditions. These findings suggest that affective facial information may support multimodal robustness and confidence estimation under acoustic uncertainty without directly encoding lexical content. More broadly, the study highlights the potential role of socially expressive facial cues in human-centered audiovisual interaction systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/04/2606.02659v1-cl-dmdfdynamic-multimodal-data-fusion-model-based-on-contrastive-learning",
+      "section": "deep",
+      "title_en": "CL-DMDF:Dynamic Multimodal Data Fusion Model Based on Contrastive Learning",
+      "authors": "Dong Li, Lingling Zhang, Binghao Han, Linlin Ding, Yue Kou",
+      "date": "2026-06-01",
+      "pdf": "https://arxiv.org/pdf/2606.02659v1",
+      "score": "8.0",
+      "evidence": "明确处理多模态融合中的模态缺失问题",
+      "tldr": "针对实际应用中多模态数据存在模态不确定或缺失的问题，提出基于对比学习的动态多模态数据融合模型CL-DMDF。该模型设计跨特征和模态维度的注意力机制以计算可靠注意力分数，引入实体质心对比学习模块构建基于质心的正样本增强判别学习，并采用自适应融合模块提升动态融合效率。在三个数据集上的实验表明，CL-DMDF在多模态融合任务中表现优异。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal data fusion involves integrating and analyzing information from multiple modalities to uncover latent correlations and complementary patterns, thereby enhancing data processing and decision-making. While existing methods for structured multimodal inputs are typically designed around specific tasks and assume fully observed modalities, real-world applications often suffer from uncertain or missing modality inputs due to various factors. Some traditional models overly emphasize local interactions within missing modalities, neglecting the global complementary cues embedded in multimodal representations. To overcome these limitations, we propose a Dynamic Multimodal Data Fusion model based on Contrastive Learning (CL-DMDF). CL-DMDF introduces a novel attention mechanism that operates across both feature and modality dimensions to compute reliable attention scores, effectively reflecting importance at each level. The CL-DMDF further incorporates an entity-centroid contrastive learning module that constructs centroid-based positive samples from entity features to enhance discriminative learning. Additionally, an adaptive fusion module is employed to improve the efficiency and accuracy of dynamic fusion strategies. Extensive experiments conducted on three datasets demonstrate the effectiveness of the CL-DMDF across diverse multimodal fusion tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/04/2606.05109v1-repercent-scaling-disentangled-representation-learning-beyond-two-modalities",
+      "section": "deep",
+      "title_en": "RePercENT: Scaling Disentangled Representation Learning Beyond Two Modalities",
+      "authors": "Vasiliki Rizou, Pascal Frossard, Dorina Thanou",
+      "date": "2026-06-03",
+      "pdf": "https://arxiv.org/pdf/2606.05109v1",
+      "score": "8.0",
+      "evidence": "将解耦表示学习扩展到两个以上模态",
+      "tldr": "多模态解耦表示学习现有方法受限于两模态扩展性瓶颈。RePercENT提出即插即用架构，直接操作不同预训练模型提取的嵌入，无需联合预训练，并通过联合优化同时分离共享与唯一因子，配备理论最优性保证。在多种模态和任务上，该方法成功恢复解耦表征，保持竞争性能的同时显著降低计算开销。该工作为超越两模态的可扩展解耦学习奠定了新范式。",
+      "tags": "query:mm",
+      "abstract_en": "To leverage the full potential of multimodal data, we need representations that go beyond the state-of-the-art alignment and fusion approaches and exploit all cross-modal interactions without sacrificing modality-specific information. Learning disentangled representations is a principled way to identify these underlying shared and unique factors that are hidden in observational data. However, while multimodal disentanglement is a compelling paradigm, existing methods are largely confined to the two-modality regime due to its inherent scalability bottleneck. To address this, we propose RePercENT, a self-supervised framework designed to surpass these limitations and unlocks scalable pairwise disentanglement beyond two modalities. Through a multimodal `plug-and-play' architecture, our approach operates directly on pre-extracted embeddings, eliminating the need for extensive joint pre-training while making no assumptions regarding the underlying modalities or foundation model backbones. Moreover, we introduce a joint optimization objective for simultaneously deriving the shared and unique components, and provide formal theoretical guarantees that characterize the optimality of our solution. Across diverse modalities and tasks, RePercENT successfully recovers disentangled components while maintaining competitive performance and significantly reducing computational complexity.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/04/2606.04844v1-drift-augmented-scoring-text-derived-noise-robustness-for-zero-shot-audio-language-classification",
+      "section": "quick",
+      "title_en": "Drift-Augmented Scoring: Text-Derived Noise Robustness for Zero-Shot Audio-Language Classification",
+      "authors": "Tu Vo, Sheir Zaheer, Chan Y. Park",
+      "date": "2026-06-03",
+      "pdf": "https://arxiv.org/pdf/2606.04844v1",
+      "score": "6.0",
+      "evidence": "文本驱动的噪声鲁棒性方法，直接提升多模态鲁棒性",
+      "tldr": "零样本音频分类依赖文本-音频嵌入匹配，但噪声下性能急剧下降。本文提出DAS方法，通过文本生成噪声条件下的类漂移方向，为每类添加补偿分数，无需额外训练。在UrbanSound8K和FSD50K上，DAS在0dB SNR等条件下提升准确率2.60-5.75点，mAP提升1.50-1.74点。该方法计算开销小，仅需单次内积，显著增强了CLAP等模型的噪声鲁棒性。",
+      "tags": "query:mm",
+      "abstract_en": "Contrastive audio-language models such as CLAP enable zero-shot audio classification: a sound is labelled by matching its embedding to text prompt embeddings, with no labelled audio. This matching breaks down under acoustic noise, where accuracy and mAP fall by 12-30 percentage points at 0 dB SNR on standard benchmarks. We propose Drift Augmented Scoring (DAS), a small per-class bonus added to the cosine score. The bonus rewards a class when the noisy audio embedding drifts in the direction that the class's noise-conditioned text prompts predict. It is derived from text alone, computed once and cached, and adds a single inner product per class at inference, with no gradients and no test-time batch. On a LAION CLAP backbone, we compare DAS against the four variants of Acevedo et al.'s concurrent method on UrbanSound8K and the full FSD50K eval set, mixing each clip with urban acoustic scene noise across a range of SNRs. DAS improves the metric on every test condition: by +2.60 to +5.75 accuracy points on UrbanSound8K and +1.50 to +1.74 mAP points on FSD50K.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
