@@ -6,34 +6,41 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-04
-- 运行时间：2026-06-04 22:01:32 UTC
+- 最新运行日期：2026-06-05
+- 运行时间：2026-06-05 21:58:36 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：3
-- 速读区：1
+- 本次总论文数：7
+- 精读区：2
+- 速读区：5
 
 ### 今日简报（AI）
-今日精读聚焦上脸情感线索在听觉感知中的影响与对比学习驱动的多模态融合，速读探讨噪声鲁棒的零样本分类新方法。  
-最值得关注的是《Beyond the Mouth》揭示上脸表情在嘈杂环境下辅助语音识别的机制，以及CL-DMDF提出动态融合策略。  
-建议关注多模态情感识别与噪声鲁棒性结合的研究方向，可尝试将上脸线索融入实际语音交互系统。
-- 详情：[/202606/04/README](/202606/04/README)
+今天我们精读了两篇高分论文，分别探索了原生全模态大模型的判别式情感分析与先验引导的不完整时间序列融合。最值得关注的是多模态情感分析的新范式与残缺数据融合的PAMF方法，均展现了扎实的工程价值。对普通读者而言，建议优先从这两篇精读论文入手，理解如何用先验知识或原生多模态模型突破数据缺失瓶颈。
+- 详情：[/202606/05/README](/202606/05/README)
 
 ### 精读区论文标签
-1. [Beyond the Mouth: Upper-Face Affective Cues in Audiovisual Sentence Recognition under Acoustic Uncertainty](/202606/04/2606.00670v1-beyond-the-mouth-upper-face-affective-cues-in-audiovisual-sentence-recognition-under-acoustic-uncertainty)  
+1. [Beyond Generative Decoding: Discriminative Hidden-State Readout from a Native Omni-Modal LLM for Multimodal Sentiment Analysis](/202606/05/2606.05713v1-beyond-generative-decoding-discriminative-hidden-state-readout-from-a-native-omni-modal-llm-for-multimodal-sentiment-analysis)  
    标签：评分：8.0/10、query:mm
-   evidence：视听情感语音，上脸情感线索在情感识别中的应用
-2. [CL-DMDF:Dynamic Multimodal Data Fusion Model Based on Contrastive Learning](/202606/04/2606.02659v1-cl-dmdfdynamic-multimodal-data-fusion-model-based-on-contrastive-learning)  
+   evidence：多模态情感分析中的隐藏状态判别式读取
+2. [PAMF: Prior-Aware Multimodal Fusion for Incomplete Time Series Data](/202606/05/2606.06328v1-pamf-prior-aware-multimodal-fusion-for-incomplete-time-series-data)  
    标签：评分：8.0/10、query:mm
-   evidence：明确处理多模态融合中的模态缺失问题
-3. [RePercENT: Scaling Disentangled Representation Learning Beyond Two Modalities](/202606/04/2606.05109v1-repercent-scaling-disentangled-representation-learning-beyond-two-modalities)  
-   标签：评分：8.0/10、query:mm
-   evidence：将解耦表示学习扩展到两个以上模态
+   evidence：针对多模态时间序列缺失模态的生成式插补方法
 
 ### 速读区论文标签
-1. [Drift-Augmented Scoring: Text-Derived Noise Robustness for Zero-Shot Audio-Language Classification](/202606/04/2606.04844v1-drift-augmented-scoring-text-derived-noise-robustness-for-zero-shot-audio-language-classification)  
+1. [Disentangled Fine-Grained Prototype Learning for Incomplete Image-Tabular Classification](/202606/05/2606.05455v1-disentangled-fine-grained-prototype-learning-for-incomplete-image-tabular-classification)  
+   标签：评分：7.0/10、query:mm
+   evidence：针对不完整多模态分类的解耦表示方法，可迁移至缺失模态情感识别
+2. [TRACE: A Temporal Conditional Estimation for Multimodal Time Series Foundation Models](/202606/05/2606.06285v1-trace-a-temporal-conditional-estimation-for-multimodal-time-series-foundation-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：针对缺失模态的多模态时间序列条件估计方法
+3. [Mixed-Modality Dual Face-Hair Retrieval](/202606/05/2606.03470v1-mixed-modality-dual-face-hair-retrieval)  
    标签：评分：6.0/10、query:mm
-   evidence：文本驱动的噪声鲁棒性方法，直接提升多模态鲁棒性
+   evidence：局部特征解耦与跨模态对齐
+4. [M2S-AVSR: Modality-aware Multi-view Self-supervised Representation for Robust Audio-Visual Speech Recognition](/202606/05/2606.05763v1-m2s-avsr-modality-aware-multi-view-self-supervised-representation-for-robust-audio-visual-speech-recognition)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过模态感知融合和多视图表示实现鲁棒多模态学习
+5. [GRAMformer: Any-Order Modality Interactions via Volumetric Multimodal Cross-Attention](/202606/05/2606.06249v1-gramformer-any-order-modality-interactions-via-volumetric-multimodal-cross-attention)  
+   标签：评分：6.0/10、query:mm
+   evidence：体积多模态交叉注意力实现任意顺序交互
 
 
 <div class="dpr-home-promo-card">
