@@ -6,26 +6,53 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-06
-- 运行时间：2026-06-06 20:30:34 UTC
+- 最新运行日期：2026-06-07
+- 运行时间：2026-06-07 20:25:44 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：10
+- 精读区：0
+- 速读区：10
 
 ### 今日简报（AI）
-今日精读一篇高分论文，速读一篇多模态检索研究，重点关注不完整图文表格分类的细粒度原型学习。最值得关注的是《Disentangled Fine-Grained Prototype Learning》提出解耦原型以处理缺失模态，在图像-表格分类任务上表现突出。建议读者深入理解其解耦机制，后续可尝试应用于多模态数据不完整场景。
-- 详情：[/202606/06/README](/202606/06/README)
+今日速读10篇论文，聚焦多概念个性化、多模态联邦学习与表格数据生成三大方向。  
+最值得看的是UniVerse（统一调制框架实现无分割多概念生成）和AugMask（随机增强掩码训练扩散模型补全表格数据）。  
+建议进一步关注这两篇论文的具体方法对比，尤其是解耦生成与数据增强策略的实际效果。
+- 详情：[/202606/07/README](/202606/07/README)
 
 ### 精读区论文标签
-1. [Disentangled Fine-Grained Prototype Learning for Incomplete Image-Tabular Classification](/202606/06/2606.05455v1-disentangled-fine-grained-prototype-learning-for-incomplete-image-tabular-classification)  
-   标签：评分：9.0/10、query:mm
-   evidence：不完整多模态分类的解耦表示
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [To Be Multimodal or Not to Be: Query-Adaptive Audio-Visual Person Retrieval via Active Modality Detection](/202606/06/2606.05931v1-to-be-multimodal-or-not-to-be-query-adaptive-audio-visual-person-retrieval-via-active-modality-detection)  
+1. [UniVerse: A Unified Modulation Framework for Segmentation-Free,Disentangled Multi-Concept Personalization](/202606/07/2606.00351v2-universe-a-unified-modulation-framework-for-segmentation-freedisentangled-multi-concept-personalization)  
    标签：评分：7.0/10、query:mm
-   evidence：主动模态检测处理音视频检索中的缺失模态
+   evidence：解耦的多概念个性化
+2. [Boosting Multimodal Federated Learning via Chained Modality Optimization](/202606/07/2606.01856v1-boosting-multimodal-federated-learning-via-chained-modality-optimization)  
+   标签：评分：7.0/10、query:mm
+   evidence：通过链式模态优化处理多模态联邦学习中的模态不完整问题
+3. [AugMask: Training Diffusion Models on Incomplete Tabular Data via Stochastic Augmentation and Masking](/202606/07/2606.03347v1-augmask-training-diffusion-models-on-incomplete-tabular-data-via-stochastic-augmentation-and-masking)  
+   标签：评分：7.0/10、query:mm
+   evidence：处理不完整数据的生成框架，可迁移至缺失模态
+4. [UniVerse: A Unified Modulation Framework for Segmentation-Free,Disentangled Multi-Concept Personalization](/202606/07/2606.00351v1-universe-a-unified-modulation-framework-for-segmentation-freedisentangled-multi-concept-personalization)  
+   标签：评分：6.0/10、query:mm
+   evidence：无分割的解耦多概念个性化调制框架
+5. [Privacy-preserving Prosody Representation Learning](/202606/07/2606.00407v1-privacy-preserving-prosody-representation-learning)  
+   标签：评分：6.0/10、query:mm
+   evidence：韵律与说话人身份的解耦表示学习
+6. [PathAR: Structure-First Autoregressive Synthesis of Multimodal Pathology Images](/202606/07/2606.01543v1-pathar-structure-first-autoregressive-synthesis-of-multimodal-pathology-images)  
+   标签：评分：6.0/10、query:mm
+   evidence：解耦结构和外观用于生成
+7. [KODA: Contrastive Representation Comparison and Alignment for Vision-Language Foundation Models](/202606/07/2606.04180v1-koda-contrastive-representation-comparison-and-alignment-for-vision-language-foundation-models)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态表示对齐与差异分析
+8. [Learning What Not to Impute: An Uncertainty-Aware Diffusion Framework for Meaningful Missingness](/202606/07/2606.05073v1-learning-what-not-to-impute-an-uncertainty-aware-diffusion-framework-for-meaningful-missingness)  
+   标签：评分：6.0/10、query:mm
+   evidence：提出基于扩散的选择性插补框架，可应用于缺失模态生成
+9. [CoFi-UCGen: Coarse-to-Fine Unsupervised Conditional Generation without Label Priors](/202606/07/2606.05652v1-cofi-ucgen-coarse-to-fine-unsupervised-conditional-generation-without-label-priors)  
+   标签：评分：6.0/10、query:mm
+   evidence：解耦全局语义与细粒度变化
+10. [Diff-CA: Separating Common and Salient Factors with Diffusion Models](/202606/07/2606.06120v1-diff-ca-separating-common-and-salient-factors-with-diffusion-models)  
+   标签：评分：6.0/10、query:mm
+   evidence：利用扩散模型进行公共与显著因子分离的解耦表示方法
 
 
 <div class="dpr-home-promo-card">
