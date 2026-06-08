@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-08",
+  "date": "2026-06-08",
+  "generated_at": "2026-06-08T21:33:00",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/08/2606.06867v1-multi-frugal-multimodal-flexible-redundancy-aware-decomposed-gated-learning-for-cancer-diagnosis-and-prognosis",
+      "section": "deep",
+      "title_en": "Multi-FRuGaL: Multimodal Flexible Redundancy-aware Decomposed Gated Learning for Cancer Diagnosis and Prognosis",
+      "authors": "Sanket Kachole, Siddhesh Thakur, Shubham Innani, Sanyukta Adap, Suhang You, Carla Pitarch-Abaigar, Spyridon Bakas",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06867v1",
+      "score": "8.0",
+      "evidence": "通过分解和门控机制处理缺失模态的多模态学习",
+      "tldr": "针对临床多模态数据频繁缺失的问题，提出了Multi-FRuGaL框架，通过信号分解层区分冗余与互补信息，并结合输入条件门控网络动态加权有效模态。在HANCOCK（763例，5模态）和HECKTOR（588例，3模态）数据集上，生存预测AUC从0.601提升至0.8496，复发预测AUC从0.672提升至0.8102，HPV分类AUC达0.975。该框架在严重缺失模态下仍能学习鲁棒表示，为癌症诊断与预后提供可靠的多模态融合方案。",
+      "tags": "query:mm",
+      "abstract_en": "Modern medicine relies on heterogeneous data sources spanning radiology, pathology, text reports, and structured clinical information. However, real-world patient data are frequently incomplete, with missing or sparsely acquired modalities, limiting the effectiveness of standard multimodal fusion approaches. To this end, we propose the Multimodal Flexible Redundancy-aware decomposed GAted Learning (Multi-FRuGaL) framework, a decomposition-aware, adaptive gated intermediate-fusion framework that performs modality-level representation learning under missing data. Multi-FRuGaL integrates per-modality encoders with a signal decomposition layer, an input-conditioned gating network, and an information-aware fusion objective to separate redundant from modality-specific complementary signals, selectively upweighting informative modalities and suppressing redundant or noisy inputs, and remaining well-defined even when multiple modalities are absent. We evaluate Multi-FRuGaL on two multimodal head and neck cancer cohorts: the HANCOCK challenge dataset (N = 763) comprising five modalities and two prognostic endpoints (5-year survival and 2-year recurrence), and the HECKTOR challenge dataset (N = 588) comprising three modalities for human papillomavirus (HPV) status classification. Multi-FRuGaL consistently achieves higher mean performance than the evaluated baselines across multiple tasks, improving AUC from 0.601 to 0.8496 for survival, from 0.672 to 0.8102 for recurrence, and achieving 0.975 AUC for HPV prediction on HECKTOR. For survival analysis, it further achieves a concordance index of 0.6814 for overall survival, 0.7421 for recurrence-free survival, and 0.7143 for progression-free survival on HANCOCK, and 0.7203 for recurrence-free survival on HECKTOR. Qualitative analyses further show that Multi-FRuGaL learns discriminative and robust multimodal representations, even under severe missing-modality conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/08/2606.06940v1-beyond-semantic-dominance-cognitive-affective-reasoning-and-empathetic-response-alignment-in-audio-language-models",
+      "section": "quick",
+      "title_en": "Beyond Semantic Dominance: Cognitive Affective Reasoning and Empathetic Response Alignment in Audio Language Models",
+      "authors": "Zhixian Zhao, Shuiyuan Wang, Wenjie Tian, Jingbin Hu, Ziyu Zhang, Lei Xie",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06940v1",
+      "score": "7.0",
+      "evidence": "音频语言模型中的声学-语义解耦用于情感识别",
+      "tldr": "音频语言模型常因文本语义主导而忽略声学情感线索，且缺乏认知推理导致响应泛化。本文提出CogAudio-LLM框架，通过构建LIME-440K数据集促进声学-语义解耦，引入4步思维链EIPS进行心理推理，并采用多阶段训练将逻辑蒸馏为隐式生成。进一步设计DR-SAPO算法平衡CoT逻辑严谨性与响应共情质量。该方法在情感对齐任务上显著优于基线。",
+      "tags": "query:mm",
+      "abstract_en": "While Audio Language Models (ALMs) demonstrate strong semantic understanding, they struggle with complex affective interactions. Specifically, textual semantic dominance often overshadows acoustic nuances, and a lack of cognitive depth leads to generic, emotion-agnostic responses. We propose CogAudio-LLM\\footnote{ \\urlstyle{same} https://github.com/zxzhao0/CogAudio-LLM, a novel cognitive affective reasoning framework. To mitigate semantic dominance, we build LIME-440K, a ``lexically-identical, multi-emotion'' dataset designed to facilitate acoustic-semantic decoupling. We introduce EIPS, a 4-step Chain-of-Thought (CoT) mechanism incorporating psychological reasoning. For inference efficiency, multi-stage training explicitly establishes EIPS via supervised fine-tuning, then distills this logic into an implicit generation process. Finally, we design DR-SAPO (Dual-Route Soft Adaptive Policy Optimization) to dynamically balance the logical rigor of the CoT with the empathetic quality of the direct response.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/08/2606.05763v2-m2s-avsr-modality-aware-multi-view-self-supervised-representation-for-robust-audio-visual-speech-recognition",
+      "section": "quick",
+      "title_en": "M2S-AVSR: Modality-aware Multi-view Self-supervised Representation for Robust Audio-Visual Speech Recognition",
+      "authors": "Fei Su, Cancan Li, Ming Li, Juan Liu",
+      "date": "2026-06-04",
+      "pdf": "https://arxiv.org/pdf/2606.05763v2",
+      "score": "6.0",
+      "evidence": "面向AVSR的模态感知鲁棒多模态学习框架",
+      "tldr": "现实场景中视角变化、音频失真和视觉遮挡会降低音视频质量与同步性，影响语音识别鲁棒性。本文提出M2S-AVSR框架，通过多视图表示学习编码器提取视角不变特征，并设计模态感知模块显式建模模态质量与跨模态同步性，实现细粒度融合。在LRS3上，该方法在视角扰动和视觉退化设置下取得29.4%的相对提升；在MISP2021-AVSR测试集上达到新SOTA；在AISHELL8-RealScene室外场景中表现最佳。该工作还发布了真实环境多场景多视角数据集，为鲁棒语音和多模态任务提供框架与基准。",
+      "tags": "query:mm",
+      "abstract_en": "Audio-Visual Speech Recognition (AVSR) enhances speech recognition robustness by leveraging visual cues, while real-world scenarios remain challenging due to viewpoint variation, audio distortion, and visual occlusion, which degrade modality quality and increase audio-visual asynchrony. In this paper, we propose a novel Modality-aware Multi-view Self-supervised representation framework for robust Audio-Visual Speech Recognition (M2S-AVSR). First, we introduce a multi-view representation learning encoder to learn view-invariant visual speech representations. Next, we employ a modality-aware module that explicitly models modality quality and cross-modal synchrony to perform fine-grained modality-aware fusion, enabling fine-grained visual information injection during decoding. In addition, we release AISHELL8-RealScene, a public multi-scenario, multi-view conversational audio-visual dataset recorded in real-world environments, and establish a speech recognition benchmark on it. Experiments on English and Mandarin benchmarks demonstrate the effectiveness of the proposed method under challenging conditions. On LRS3, M2S-AVSR achieves up to 29.4% relative improvement under viewpoint perturbation and visual degradation settings. Our method also achieves new state-of-the-art performance on the MISP2021-AVSR test set. On AISHELL8-RealScene, it achieves the best result in outdoor scenes. The proposed method and dataset provide useful support for future research on robust speech and multimodal tasks under realistic conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
