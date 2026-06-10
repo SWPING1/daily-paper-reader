@@ -6,50 +6,36 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-09
-- 运行时间：2026-06-09 20:54:29 UTC
+- 最新运行日期：2026-06-10
+- 运行时间：2026-06-10 22:26:42 UTC
 - 运行状态：成功
-- 本次总论文数：10
-- 精读区：2
-- 速读区：8
+- 本次总论文数：4
+- 精读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-今日推荐10篇论文，精读2篇聚焦情感视频字幕与多模态情感分析。最值得关注情感理解中的因果提取和显式表示对齐方向。建议优先阅读精读论文，了解情感-原因对提取与多模态对齐的改进方法。
-- 详情：[/202606/09/README](/202606/09/README)
+今日推荐四篇论文，涵盖多模态轨迹学习、跨文化表情识别、低光视频增强及自回归统一离散表示，精读重点在LongMoE的纵向多模态建模。
+
+最值得关注的是精读论文《LongMoE》提出的轨迹感知混合专家模型，以及速读中《Beyond Universality》对文化适应性动态表情识别的探讨（7.0分）。
+
+若想快速跟进前沿，建议优先了解多模态时序融合与跨文化适应性两大方向，两者均在现实场景中具高应用潜力。
+- 详情：[/202606/10/README](/202606/10/README)
 
 ### 精读区论文标签
-1. [Towards Accurate Emotion-Attributed Video Captioning via Fine-grained Emotion-Cause Pair Extraction](/202606/09/2606.08566v1-towards-accurate-emotion-attributed-video-captioning-via-fine-grained-emotion-cause-pair-extraction)  
+1. [LongMoE: Longitudinal Multimodal Learning via Trajectory-Aware Mixture-of-Experts](/202606/10/2606.09907v1-longmoe-longitudinal-multimodal-learning-via-trajectory-aware-mixture-of-experts)  
    标签：评分：8.0/10、query:mm
-   evidence：通过细粒度情感-原因对提取实现准确情感视频描述
-2. [Explicit Representation Alignment for Multimodal Sentiment Analysis](/202606/09/2606.09148v1-explicit-representation-alignment-for-multimodal-sentiment-analysis)  
-   标签：评分：8.0/10、query:mm
-   evidence：多模态情感分析中的表示对齐
+   evidence：直接处理多模态学习中的模态缺失问题
 
 ### 速读区论文标签
-1. [Robust-U1: Can MLLMs Self-Recover Corrupted Visual Content for Robust Understanding?](/202606/09/2606.08063v1-robust-u1-can-mllms-self-recover-corrupted-visual-content-for-robust-understanding)  
+1. [Beyond Universality: The GCC-FER Dataset and Culture-Aware Adaptation for Dynamic Facial Expression Recognition](/202606/10/2606.07063v1-beyond-universality-the-gcc-fer-dataset-and-culture-aware-adaptation-for-dynamic-facial-expression-recognition)  
    标签：评分：7.0/10、query:mm
-   evidence：通过自恢复损坏视觉内容增强多模态鲁棒理解
-2. [Beyond Raw Signals: Undecoded Generative Latents as Privileged Synthetic Data](/202606/09/2606.08336v1-beyond-raw-signals-undecoded-generative-latents-as-privileged-synthetic-data)  
+   evidence：考虑文化适应的动态面部表情识别（情绪）
+2. [AnyMod-LLVE: Low-Light Video Enhancement with Modality-Agnostic Inference](/202606/10/2606.11186v1-anymod-llve-low-light-video-enhancement-with-modality-agnostic-inference)  
    标签：评分：7.0/10、query:mm
-   evidence：利用生成潜变量合成缺失模态，避免编解码循环
-3. [DifferSeg: Towards Diverse Multimodal Binary Segmentation via Differential Perception and Frequency Guidance](/202606/09/2606.08906v1-differseg-towards-diverse-multimodal-binary-segmentation-via-differential-perception-and-frequency-guidance)  
-   标签：评分：7.0/10、query:mm
-   evidence：自适应处理模态差异的多模态融合
-4. [PRISM: Topology-Aware Cross-Modal Imputation for Modality-Deficient Federated Graph Learning](/202606/09/2606.09301v1-prism-topology-aware-cross-modal-imputation-for-modality-deficient-federated-graph-learning)  
-   标签：评分：7.0/10、query:mm
-   evidence：面向模态缺失联邦图学习的拓扑感知跨模态插补
-5. [Conan-embedding-v3: Fusing Modality-Specific Models for Omni-Modal Embedding](/202606/09/2606.09331v1-conan-embedding-v3-fusing-modality-specific-models-for-omni-modal-embedding)  
-   标签：评分：7.0/10、query:mm
-   evidence：通过解耦专家融合实现多模态融合
-6. [Equilibrated Diffusion: Frequency-aware Textual Embedding for Equilibrated Image Customization](/202606/09/2606.02129v1-equilibrated-diffusion-frequency-aware-textual-embedding-for-equilibrated-image-customization)  
+   evidence：针对缺失辅助模态的模态无关推理，使用翻译网络
+3. [ARM: An AutoRegressive Large Multimodal Model with Unified Discrete Representations](/202606/10/2606.11188v1-arm-an-autoregressive-large-multimodal-model-with-unified-discrete-representations)  
    标签：评分：6.0/10、query:mm
-   evidence：频率驱动的概念特征解耦
-7. [TEVI: Text-Conditioned Editing of Visual Representations via Sparse Autoencoders for Improved Vision-Language Alignment](/202606/09/2606.07451v1-tevi-text-conditioned-editing-of-visual-representations-via-sparse-autoencoders-for-improved-vision-language-alignment)  
-   标签：评分：6.0/10、query:mm
-   evidence：使用稀疏自编码器解耦图像嵌入
-8. [Self-supervised Learning Matters: A Simple Ensemble Solution for Micro-Gesture Recognition](/202606/09/2606.09261v1-self-supervised-learning-matters-a-simple-ensemble-solution-for-micro-gesture-recognition)  
-   标签：评分：6.0/10、query:mm
-   evidence：多模态集成用于鲁棒手势识别
+   evidence：统一离散表示支持解耦视觉语义
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-10",
+  "date": "2026-06-10",
+  "generated_at": "2026-06-10T22:26:49",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/10/2606.09907v1-longmoe-longitudinal-multimodal-learning-via-trajectory-aware-mixture-of-experts",
+      "section": "deep",
+      "title_en": "LongMoE: Longitudinal Multimodal Learning via Trajectory-Aware Mixture-of-Experts",
+      "authors": "Maxx Richard Rahman, Prakhar Kumar, Wolfgang Maass",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.09907v1",
+      "score": "8.0",
+      "evidence": "直接处理多模态学习中的模态缺失问题",
+      "tldr": "多模态临床学习面临两大基础挑战：任意子集模态缺失和诊断意义的纵向轨迹依赖。现有方法孤立处理，无法兼顾。LongMoE提出统一框架，集成上下文感知插补模块恢复缺失模态，注意力标记化层捕捉不规则访问序列的频率域模式，轨迹感知编码器建模疾病进展，以及上下文条件稀疏MoE路由实现患者特异专家选择。在ADNI、OASIS-3、MIMIC-IV三个数据集上的实验表明，LongMoE在缺失或弱模态场景下鲁棒性显著增强，全模态设置下仍保持竞争力。该工作为一套统一的纵向感知多模态学习方案奠定基础，具有重要临床价值。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal clinical learning is increasingly important for integrating diverse patient data, including imaging, text, and personalised health records. However, it faces two fundamental challenges: i) modality missingness, where arbitrary subsets of modalities are unavailable at a given patient visit, ii) longitudinal dynamics, where the diagnostic significance of an observation depends on the patient's evolving disease trajectory over time. Existing methods address these challenges in isolation: missing-modality frameworks treat each visit as an independent static snapshot and discard temporal context, while longitudinal models often assume complete modality availability and degrade under systematic modality incompleteness. We propose LongMoE (Longitudinal Mixture-of-Experts), the unified framework to jointly address both challenges. LongMoE combines a context-aware imputation module with an attentional tokenization module that captures frequency-domain temporal patterns across irregular visit sequences, a trajectory-aware encoder for modeling disease progression, and context-conditioned Sparse MoE routing for patient-specific expert selection. Experiments on ADNI, OASIS-3, and MIMIC-IV show that LongMoE improves robustness under missing or weak contemporaneous modalities and remains competitive in full-modality settings, establishing a strong foundation for longitudinally-aware multimodal clinical learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.07063v1-beyond-universality-the-gcc-fer-dataset-and-culture-aware-adaptation-for-dynamic-facial-expression-recognition",
+      "section": "quick",
+      "title_en": "Beyond Universality: The GCC-FER Dataset and Culture-Aware Adaptation for Dynamic Facial Expression Recognition",
+      "authors": "Sonalika Singh, Jyotirindra Dandapat, Avishi Razdan, Kshipra V. Moghe, Puneet Gupta, Lalan Kumar",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.07063v1",
+      "score": "7.0",
+      "evidence": "考虑文化适应的动态面部表情识别（情绪）",
+      "tldr": "现有动态面部表情识别(DFER)系统普遍假设情感表达跨文化一致，忽视文化差异导致的面部肌肉激活模式差异，且缺乏多元文化数据集。为此构建了全球跨文化面部表情识别(GCC-FER)数据集，包含四个文化群体2.4万视频。进而提出文化感知FER(CA-FER)系统，利用从数据集导出的文化先验自适应调整面部表征。实验证明该方法有效减轻文化偏见，提升多元文化场景下的FER性能。",
+      "tags": "query:mm",
+      "abstract_en": "Dynamic Facial Expression Recognition (DFER) is a key enabling technology in affective computing, human-computer interaction, and intelligent multimedia systems. Despite the significant influence of cultural nuances on FER performance, most existing FER systems assume that emotional expressions are universally consistent across populations. This variation can be attributed to systematic differences in facial muscle activation patterns across cultures. A major challenge in advancing cross-cultural FER lies in the scarcity of culturally diverse benchmark datasets. To address this, a new hybrid multicultural video dataset termed Global Cross-Cultural Facial Expression Recognition (GCC-FER) is introduced. GCC-FER comprises 23,934 video samples spanning four cultural groups (African, Caucasian, East Asian, and South Asian) across seven basic expressions, combining psychologically supervised in-house data collection for underrepresented populations with rigorous ethnicity filtering of existing sources. To the best of our knowledge, GCC-FER is the first large-scale global cross-cultural DFER dataset designed to address these demographic gaps. Leveraging this dataset, behaviorally grounded cultural priors are derived for each cultural group and a global prior for practical deployment. A Culture-Aware FER (CA-FER) system is proposed to mitigate cultural bias by adaptively recalibrating latent facial representations. Extensive experiments on GCC-FER and DFEW demonstrate that the proposed system consistently improves FER performance across multicultural settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.11186v1-anymod-llve-low-light-video-enhancement-with-modality-agnostic-inference",
+      "section": "quick",
+      "title_en": "AnyMod-LLVE: Low-Light Video Enhancement with Modality-Agnostic Inference",
+      "authors": "Hangfeng Liang, Yutao Hu, Yanhan Hu, Xiaohan Wu, Wenqi Shao, Ying Fu",
+      "date": "2026-06-09",
+      "pdf": "https://arxiv.org/pdf/2606.11186v1",
+      "score": "7.0",
+      "evidence": "针对缺失辅助模态的模态无关推理，使用翻译网络",
+      "tldr": "低光视频增强受限于信息退化，现有多模态方法依赖推理时辅助模态可用，然而实际场景中常缺失。为此提出AMNet，支持模态无关推理，通过空间-频谱双门控翻译器学习RGB与辅助模态的对应，生成隐式表征，并基于RGB数据和合成模态进行大规模预训练。实验表明，AMNet在任意模态组合下均表现优越，尤其在模态缺失时鲁棒性强。",
+      "tags": "query:mm",
+      "abstract_en": "Low-light video enhancement (LLVE) remains a challenging task due to severe information degradation under low-illumination conditions. Recent multimodal approaches have significantly improved enhancement performance by incorporating auxiliary modalities, such as event streams and infrared images. However, these methods typically assume the availability of these modalities at inference, which is often not feasible in real-world scenarios. To solve this problem, in this work, we propose AMNet, a unified multimodal framework for LLVE, to support flexible modality-agnostic inference, where auxiliary modalities may be unavailable. To address the issue of modality absence, we introduce a Spatial-Spectral Dual-Gated Translator that learns the correspondence between auxiliary modalities and RGB inputs, producing implicit auxiliary representations to support the robust enhancement. Additionally, to fully facilitate the learning of cross-modal correspondence, we conduct large-scale multimodal pretraining based on the RGB-only dataset with synthetic auxiliary modalities. Extensive experiments demonstrate that AMNet could handle arbitrary inference-time modality combinations and exhibits superior performance for LLVE under modality absence conditions. Code and models are available on the project page.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/10/2606.11188v1-arm-an-autoregressive-large-multimodal-model-with-unified-discrete-representations",
+      "section": "quick",
+      "title_en": "ARM: An AutoRegressive Large Multimodal Model with Unified Discrete Representations",
+      "authors": "Junke Wang, Xiao Wang, Jiacheng Pan, Xuefeng Hu, Feng Li, Jingxiang Sun, Chaorui Deng, Zilong Chen, Yunpeng Chen, Kaibin Tian, Matthew Gwilliam, Hao Chen, Danhui Guan, Kun Xu, Weilin Huang, Zuxuan Wu, Haoqi Fan, Yu-Gang Jiang, Zhenheng Yang",
+      "date": "2026-06-09",
+      "pdf": "https://arxiv.org/pdf/2606.11188v1",
+      "score": "6.0",
+      "evidence": "统一离散表示支持解耦视觉语义",
+      "tldr": "现有大型多模态模型在统一图像理解、生成和编辑方面存在挑战。本文提出ARM，通过训练离散语义视觉分词器将图像映射为紧凑词元序列，并基于此训练7B自回归模型，再应用强化学习优化文本到图像生成和编辑的偏好对齐。RL不仅显著提升了目标任务性能（如WISE从0.50到0.56，GEdit-Bench G_O从5.75到6.68），还促进了跨任务协同。表明自回归建模结合强表示和偏好优化可成为多模态智能的可扩展基础。",
+      "tags": "query:mm",
+      "abstract_en": "This paper introduces ARM, a discrete representation-based AutoRegressive Model that unifies image understanding, generation, and editing within a next-token prediction framework. ARM is built on three efforts: first, we train a discrete semantic visual tokenizer that maps images into compact token sequences. Our tokenizer is supervised with multiple objectives that jointly promote semantic discriminability, language alignment and faithful reconstruction, thereby supporting diverse tasks in a shared latent space. With this, we train a 7B autoregressive model over large-scale text and image token sequences, seamlessly developing vision-language perception and generation capabilities. Finally, to further improve preference-aligned behavior for text-to-image generation and instruction-guided editing, ARM applies reinforcement learning (RL) to optimize task-level objectives such as visual quality, instruction adherence, and edit consistency. Surprisingly, the results show that RL not only substantially improves performance on the target tasks (e.g., raising WISE overall from 0.50 to 0.56, GEdit-Bench-EN G_O from 5.75 to 6.68), but also induces cross-task synergy between text-to-image generation and editing. Collectively, these findings highlight autoregressive modeling, when paired with strong representations and preference optimization, as a scalable foundation for multimodal intelligence. Code: https://github.com/wdrink/ARM.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
