@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-11",
+  "date": "2026-06-11",
+  "generated_at": "2026-06-11T22:09:20",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/11/2606.12362v1-latent-world-recovery-for-multimodal-learning-with-missing-modalities",
+      "section": "deep",
+      "title_en": "Latent World Recovery for Multimodal Learning with Missing Modalities",
+      "authors": "Hui Wang, Tianyu Ren, Joseph Butler, Christopher Baker, Karen Rafferty, Simon McDade",
+      "date": "2026-06-10",
+      "pdf": "https://arxiv.org/pdf/2606.12362v1",
+      "score": "9.0",
+      "evidence": "通过潜在世界恢复进行缺失模态学习，无需插补",
+      "tldr": "针对多模态学习中模态缺失问题，提出潜世界恢复（LWR）框架。通过将各模态嵌入对齐到共享潜空间，并仅融合实际可用模态的嵌入，实现感知可用性的表征学习。避免了显式重构缺失模态带来的误差传播。在真实多组学数据上，有效提升了癌症表型分类和生存预测性能。",
+      "tags": "query:mm",
+      "abstract_en": "We study multimodal learning under missing modalities, with particular motivation from bioscience applications in which heterogeneous modalities are often only partially available when decisions need to be made. We propose Latent World Recovery (LWR), a framework built on two key ideas: (i) modality-specific embeddings from different modalities are aligned in a shared latent space, and (ii) a unified representation is constructed by fusing only the embeddings of the modalities that are actually available at both training and inference time. Rather than imputing missing modalities or requiring a fixed modality set, LWR treats each modality as a partial perception of an underlying latent state and performs availability-aware representation learning directly from the observed modalities. This combination of neighbor-based latent alignment and availability-aware modality fusion enables robust multimodal prediction under partial observation, while avoiding error propagation from explicit reconstruction of missing modalities. We evaluate the proposed framework on real-world incomplete multi-omics benchmarks and demonstrate that it provides an effective approach to downstream tasks such as cancer phenotype classification and survival prediction.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/11/2606.08394v1-when-correct-decisions-hide-internal-stress-decision-state-probing-in-multimodal-language-models",
+      "section": "quick",
+      "title_en": "When Correct Decisions Hide Internal Stress: Decision-State Probing in Multimodal Language Models",
+      "authors": "Haoran Zhao, Soyeon Caren Han, Eduard Hovy",
+      "date": "2026-06-07",
+      "pdf": "https://arxiv.org/pdf/2606.08394v1",
+      "score": "6.0",
+      "evidence": "多模态语言模型在语义压力下的鲁棒性",
+      "tldr": "多模态语言模型在强制选择任务中常表现出正确行为，但内部决策状态在语义压力下可能不稳定。本文提出S³E框架，通过正锚定A/B对比和选项顺序交换，提取决策前的隐藏状态并测量语义冲突候选引起的位移。在Qwen3VL等模型上，语义压力持续产生过量位移，而随机负例则模型依赖。结果表明，仅靠外显正确性无法保证内部决策几何的稳定性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal language models are typically evaluated through external behavior: selecting the correct image--text match, rejecting unsupported captions, or answering visual queries correctly. However, correct behavior alone does not show that the model's internal decision state remains stable under controlled semantic stress. We study this gap through S$^3$E (Structured Semantic Stress Evaluation), a framework for analyzing behavior-internal decoupling in multimodal language models. S$^3$E uses a positive-anchored A/B forced-choice setup in which an image-supported caption is contrasted against semantic stress candidates under both original and swapped option orders, while hidden states are extracted at the pre-answer decision state. We focus on strict-correct trials, where the model consistently selects the correct caption across both orders. Rather than treating arbitrary hidden-state variation as evidence of instability, we measure whether semantic-conflict candidates induce excess decision-state displacement relative to meaning-preserving controls. Across Qwen3VL, Gemma3, and InternVL3, semantic stress consistently produces positive selected-layer excess displacement over lexical controls despite correct forced-choice behavior, while comparisons against random negatives are model-dependent. We interpret this as a scoped decision-state stress-sensitivity signal rather than evidence of downstream failure or hallucination. Our results suggest that forced-choice correctness alone is not a sufficient certificate of invariant internal decision geometry.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/11/2606.11645v1-motion-reinforces-appearance-rgb-skeleton-gated-residual-fusion-for-micro-gesture-online-recognition",
+      "section": "quick",
+      "title_en": "Motion Reinforces Appearance: RGB-Skeleton Gated Residual Fusion for Micro-Gesture Online Recognition",
+      "authors": "Jialin Liu, Xinwen He, Pengyu Liu, Jiale Shi, Huaijuan Zang, Yanbin Hao",
+      "date": "2026-06-10",
+      "pdf": "https://arxiv.org/pdf/2606.11645v1",
+      "score": "6.0",
+      "evidence": "基于RGB-骨骼融合进行微表情情感识别",
+      "tldr": "微手势在线识别任务需同时定位和分类未修剪视频中的手势实例，传统单模态难以捕捉完整线索。提出双流RGB-骨架框架DyFADet+，通过门控残差模块自适应融合骨架运动与RGB外观，将两者投影至共享多尺度时间嵌入。在SMG数据集上取得40.88的F1分数，位列EI-MiGA挑战赛第二。该方法有效提升了微手势识别的多模态融合效果与在线识别精度。",
+      "tags": "query:mm",
+      "abstract_en": "Micro-gesture analysis attracts increasing attention for inferring spontaneous emotion from subtle body movements. Micro-gesture online recognition, which localizes and classifies each gesture instance in untrimmed videos, is a core task in the 4th EI-MiGA-IJCAI Challenge. Compared with typical temporal action detection, MGR emphasizes the localization and classification of actions, requiring the model to output the start time, end time, and category of each micro-gesture. Moreover, since micro-gestures are highly spontaneous, relying solely on a single modality makes it difficult to capture the complete and accurate multi-modal cues. In this work, we propose DyFADet+, which extends DyFADet into a dual-stream RGB-skeleton framework. In our model, both modalities are projected into shared multi-scale temporal embeddings and fused through a gated residual module, which adaptively injects skeleton motion into the RGB representation rather than using naive concatenation. Finally, these fused features are decoded by a Dynamic TAD head for online classification and boundary regression. On the SMG dataset, our method achieves an F1 score of 40.88, ranking 2nd in the Micro-gesture Online Recognition track.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

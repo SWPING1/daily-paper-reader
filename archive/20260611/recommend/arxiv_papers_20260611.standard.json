@@ -1,0 +1,135 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-11T22:06:19.375611+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.12362v1",
+      "source": "arxiv",
+      "title": "Latent World Recovery for Multimodal Learning with Missing Modalities",
+      "abstract": "We study multimodal learning under missing modalities, with particular motivation from bioscience applications in which heterogeneous modalities are often only partially available when decisions need to be made. We propose Latent World Recovery (LWR), a framework built on two key ideas: (i) modality-specific embeddings from different modalities are aligned in a shared latent space, and (ii) a unified representation is constructed by fusing only the embeddings of the modalities that are actually available at both training and inference time. Rather than imputing missing modalities or requiring a fixed modality set, LWR treats each modality as a partial perception of an underlying latent state and performs availability-aware representation learning directly from the observed modalities. This combination of neighbor-based latent alignment and availability-aware modality fusion enables robust multimodal prediction under partial observation, while avoiding error propagation from explicit reconstruction of missing modalities. We evaluate the proposed framework on real-world incomplete multi-omics benchmarks and demonstrate that it provides an effective approach to downstream tasks such as cancer phenotype classification and survival prediction.",
+      "authors": [
+        "Hui Wang",
+        "Tianyu Ren",
+        "Joseph Butler",
+        "Christopher Baker",
+        "Karen Rafferty",
+        "Simon McDade"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-10T17:31:34+00:00",
+      "link": "https://arxiv.org/pdf/2606.12362v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "learning with missing modalities via latent world recovery without imputation",
+      "llm_evidence_cn": "通过潜在世界恢复进行缺失模态学习，无需插补",
+      "llm_evidence": "通过潜在世界恢复进行缺失模态学习，无需插补",
+      "canonical_evidence": "通过潜在世界恢复进行缺失模态学习，无需插补",
+      "llm_tldr_en": "Proposes Latent World Recovery (LWR) for multimodal learning with missing modalities, aligning embeddings in a shared latent space and fusing only available modalities, avoiding imputation.",
+      "llm_tldr_cn": "针对多模态学习中部分模态缺失的问题，提出潜在世界恢复（LWR）框架。该方法将各模态嵌入对齐到共享潜在空间，在训练和推理时仅融合实际可用的模态嵌入，而非插补缺失模态或要求固定模态集。LWR将每个模态视为对底层潜在状态的部分感知，直接进行可用性感知表示学习。实验证明其优于传统插补方法，为缺失模态场景提供了高效灵活的解决方案。",
+      "llm_tldr": "针对多模态学习中部分模态缺失的问题，提出潜在世界恢复（LWR）框架。该方法将各模态嵌入对齐到共享潜在空间，在训练和推理时仅融合实际可用的模态嵌入，而非插补缺失模态或要求固定模态集。LWR将每个模态视为对底层潜在状态的部分感知，直接进行可用性感知表示学习。实验证明其优于传统插补方法，为缺失模态场景提供了高效灵活的解决方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.08394v1",
+      "source": "arxiv",
+      "title": "When Correct Decisions Hide Internal Stress: Decision-State Probing in Multimodal Language Models",
+      "abstract": "Multimodal language models are typically evaluated through external behavior: selecting the correct image--text match, rejecting unsupported captions, or answering visual queries correctly. However, correct behavior alone does not show that the model's internal decision state remains stable under controlled semantic stress. We study this gap through S$^3$E (Structured Semantic Stress Evaluation), a framework for analyzing behavior-internal decoupling in multimodal language models. S$^3$E uses a positive-anchored A/B forced-choice setup in which an image-supported caption is contrasted against semantic stress candidates under both original and swapped option orders, while hidden states are extracted at the pre-answer decision state. We focus on strict-correct trials, where the model consistently selects the correct caption across both orders. Rather than treating arbitrary hidden-state variation as evidence of instability, we measure whether semantic-conflict candidates induce excess decision-state displacement relative to meaning-preserving controls. Across Qwen3VL, Gemma3, and InternVL3, semantic stress consistently produces positive selected-layer excess displacement over lexical controls despite correct forced-choice behavior, while comparisons against random negatives are model-dependent. We interpret this as a scoped decision-state stress-sensitivity signal rather than evidence of downstream failure or hallucination. Our results suggest that forced-choice correctness alone is not a sufficient certificate of invariant internal decision geometry.",
+      "authors": [
+        "Haoran Zhao",
+        "Soyeon Caren Han",
+        "Eduard Hovy"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-07T01:11:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.08394v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal language model robustness under semantic stress",
+      "llm_evidence_cn": "多模态语言模型在语义压力下的鲁棒性",
+      "llm_evidence": "多模态语言模型在语义压力下的鲁棒性",
+      "canonical_evidence": "多模态语言模型在语义压力下的鲁棒性",
+      "llm_tldr_en": "Proposes S3E to evaluate internal decision stability of multimodal LMs under semantic stress, aiding robust multimodal learning.",
+      "llm_tldr_cn": "该论文针对多模态语言模型仅凭正确行为无法反映内部决策稳定性的问题，提出了结构化语义压力评估（S3E）框架。S3E通过对比语义压力候选与正向锚定选项，提取预答案决策状态，揭示模型内部解耦程度。实验表明，即使行为正确，模型内部可能处于不稳定状态。该工作为评估多模态模型的鲁棒性提供了新途径，可应用于鲁棒多模态学习中的压力测试。",
+      "llm_tldr": "该论文针对多模态语言模型仅凭正确行为无法反映内部决策稳定性的问题，提出了结构化语义压力评估（S3E）框架。S3E通过对比语义压力候选与正向锚定选项，提取预答案决策状态，揭示模型内部解耦程度。实验表明，即使行为正确，模型内部可能处于不稳定状态。该工作为评估多模态模型的鲁棒性提供了新途径，可应用于鲁棒多模态学习中的压力测试。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.11645v1",
+      "source": "arxiv",
+      "title": "Motion Reinforces Appearance: RGB-Skeleton Gated Residual Fusion for Micro-Gesture Online Recognition",
+      "abstract": "Micro-gesture analysis attracts increasing attention for inferring spontaneous emotion from subtle body movements. Micro-gesture online recognition, which localizes and classifies each gesture instance in untrimmed videos, is a core task in the 4th EI-MiGA-IJCAI Challenge. Compared with typical temporal action detection, MGR emphasizes the localization and classification of actions, requiring the model to output the start time, end time, and category of each micro-gesture. Moreover, since micro-gestures are highly spontaneous, relying solely on a single modality makes it difficult to capture the complete and accurate multi-modal cues. In this work, we propose DyFADet+, which extends DyFADet into a dual-stream RGB-skeleton framework. In our model, both modalities are projected into shared multi-scale temporal embeddings and fused through a gated residual module, which adaptively injects skeleton motion into the RGB representation rather than using naive concatenation. Finally, these fused features are decoded by a Dynamic TAD head for online classification and boundary regression. On the SMG dataset, our method achieves an F1 score of 40.88, ranking 2nd in the Micro-gesture Online Recognition track.",
+      "authors": [
+        "Jialin Liu",
+        "Xinwen He",
+        "Pengyu Liu",
+        "Jiale Shi",
+        "Huaijuan Zang",
+        "Yanbin Hao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-10T04:12:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.11645v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "micro-gesture emotion recognition using RGB-skeleton fusion",
+      "llm_evidence_cn": "基于RGB-骨骼融合进行微表情情感识别",
+      "llm_evidence": "基于RGB-骨骼融合进行微表情情感识别",
+      "canonical_evidence": "基于RGB-骨骼融合进行微表情情感识别",
+      "llm_tldr_en": "Proposes DyFADet+, a dual-stream RGB-skeleton gated residual fusion method for online micro-gesture recognition, inferring spontaneous emotion from body movements.",
+      "llm_tldr_cn": "该论文针对微手势在线识别任务，提出了一种RGB-骨骼双流门控残差融合方法DyFADet+，通过融合外观和运动信息来推断自发性情感。实验在4th EI-MiGA-IJCAI挑战赛上进行，验证了多模态融合对提升细粒度动作识别与情感推断的有效性。",
+      "llm_tldr": "该论文针对微手势在线识别任务，提出了一种RGB-骨骼双流门控残差融合方法DyFADet+，通过融合外观和运动信息来推断自发性情感。实验在4th EI-MiGA-IJCAI挑战赛上进行，验证了多模态融合对提升细粒度动作识别与情感推断的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
