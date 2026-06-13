@@ -6,29 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-11
-- 运行时间：2026-06-11 22:09:13 UTC
+- 最新运行日期：2026-06-13
+- 运行时间：2026-06-13 20:47:00 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：1
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读1篇、速读2篇，重点关注多模态学习与RGB-Skeleton融合动作识别。最值得看的是9分精读《Latent World Recovery》，提出缺失模态下的隐空间恢复方法。建议优先深入理解该文，再速读另外两篇作为补充。
-- 详情：[/202606/11/README](/202606/11/README)
+今日精读一篇高分论文《Disentanglement with Holographic Reduced Representations》（8.0/10），速读一篇音频语言模型共情对齐研究（7.0/10）。  
+最值得关注的方向：利用全息简化表示实现表征解耦，以及音频语言模型在认知情感推理与共情响应对齐上的突破。  
+建议普通读者优先精读第一篇，其方法对理解表征学习中的解耦问题具有启发意义。
+- 详情：[/202606/13/README](/202606/13/README)
 
 ### 精读区论文标签
-1. [Latent World Recovery for Multimodal Learning with Missing Modalities](/202606/11/2606.12362v1-latent-world-recovery-for-multimodal-learning-with-missing-modalities)  
-   标签：评分：9.0/10、query:mm
-   evidence：通过潜在世界恢复进行缺失模态学习，无需插补
+1. [Disentanglement with Holographic Reduced Representations](/202606/13/2606.09725v1-disentanglement-with-holographic-reduced-representations)  
+   标签：评分：8.0/10、query:mm
+   evidence：提出使用全息降维表示进行解耦表示学习
 
 ### 速读区论文标签
-1. [When Correct Decisions Hide Internal Stress: Decision-State Probing in Multimodal Language Models](/202606/11/2606.08394v1-when-correct-decisions-hide-internal-stress-decision-state-probing-in-multimodal-language-models)  
-   标签：评分：6.0/10、query:mm
-   evidence：多模态语言模型在语义压力下的鲁棒性
-2. [Motion Reinforces Appearance: RGB-Skeleton Gated Residual Fusion for Micro-Gesture Online Recognition](/202606/11/2606.11645v1-motion-reinforces-appearance-rgb-skeleton-gated-residual-fusion-for-micro-gesture-online-recognition)  
-   标签：评分：6.0/10、query:mm
-   evidence：基于RGB-骨骼融合进行微表情情感识别
+1. [Beyond Semantic Dominance: Cognitive Affective Reasoning and Empathetic Response Alignment in Audio Language Models](/202606/13/2606.06940v2-beyond-semantic-dominance-cognitive-affective-reasoning-and-empathetic-response-alignment-in-audio-language-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：声学-语义解耦用于情感推理
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-13",
+  "date": "2026-06-13",
+  "generated_at": "2026-06-13T20:47:07",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/13/2606.09725v1-disentanglement-with-holographic-reduced-representations",
+      "section": "deep",
+      "title_en": "Disentanglement with Holographic Reduced Representations",
+      "authors": "Jhonny J. Velasquez Olivera, Christo K. Thomas, Walid Saad",
+      "date": "2026-06-08",
+      "pdf": "https://arxiv.org/pdf/2606.09725v1",
+      "score": "8.0",
+      "evidence": "提出使用全息降维表示进行解耦表示学习",
+      "tldr": "解耦学习旨在分离数据中的因子，但现有方法依赖连续表示，难以处理符号结构。本文提出基于全息简化表示（HRR）的无监督解耦算法，利用HRR解绑操作作为归纳偏置，实现离散符号结构的可微学习。实验表明，该方法在解耦指标上与基线竞争，且表示对噪声更鲁棒。信息论分析证明了解绑诱导近似独立的符号-值对，并推导了容量界，揭示了HRR的解耦机理。",
+      "tags": "query:mm",
+      "abstract_en": "Disentanglement, the separation of factors of variation in data using neural networks, remains a long-standing challenge in machine learning. Prior work has addressed this problem with variational autoencoders and generative adversarial networks that incorporate ideas from variational inference and information-theoretic constraints. In contrast to methods that rely on continuous representations, we propose a design that treats disentangled representations as symbolic structures, motivated by the compositional relationships among the concepts that make up samples from a distribution. However, learning discrete symbolic structures with neural networks while maintaining differentiability is difficult and often requires complex architectures. To address this, we introduce an unsupervised learning algorithm that uses holographic reduced representations (HRR) for neural disentanglement. We show that the HRR unbinding operation provides an inductive bias for separating factors and yields competitive results against baselines, as measured by latent traversals and disentanglement metrics. We complement these empirical findings with an information-theoretic analysis of the HRR unbinding channel. We prove that unbinding induces approximately independent symbol-value pairs and derive a per-slot capacity bound that quantifies how many distinct symbolic concepts can be reliably encoded, giving a quantitative account of the inductive bias toward disentanglement. The resulting representations differ from standard autoencoder-based models, in that their latent units are vectors that are summed together, rather than scalar dimensions of a low-dimensional latent vector. We show that this HRR representation is more robust to noise than other disentangled representations and maintains reconstruction quality across a range of SNRs.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/13/2606.06940v2-beyond-semantic-dominance-cognitive-affective-reasoning-and-empathetic-response-alignment-in-audio-language-models",
+      "section": "quick",
+      "title_en": "Beyond Semantic Dominance: Cognitive Affective Reasoning and Empathetic Response Alignment in Audio Language Models",
+      "authors": "Zhixian Zhao, Shuiyuan Wang, Wenjie Tian, Jingbin Hu, Ziyu Zhang, Lei Xie",
+      "date": "2026-06-05",
+      "pdf": "https://arxiv.org/pdf/2606.06940v2",
+      "score": "7.0",
+      "evidence": "声学-语义解耦用于情感推理",
+      "tldr": "音频语言模型在复杂情感交互中受文本语义主导而忽略声学细节，且缺乏认知推理导致响应缺乏共情。为此提出CogAudio-LLM框架，构建LIME-440K数据集实现声学-语义解耦，引入EIPS四步链式心理推理机制，并通过多阶段训练和DR-SAPO优化平衡逻辑与共情。实验表明模型能更准确捕捉情感细微差别并生成共情响应。该工作为音频情感理解与生成提供了认知-情感推理新范式。",
+      "tags": "query:mm",
+      "abstract_en": "While Audio Language Models (ALMs) demonstrate strong semantic understanding, they struggle with complex affective interactions. Specifically, textual semantic dominance often overshadows acoustic nuances, and a lack of cognitive depth leads to generic, emotion-agnostic responses. We propose CogAudio-LLM\\footnote{ \\urlstyle{same} https://github.com/zxzhao0/CogAudio-LLM, a novel cognitive affective reasoning framework. To mitigate semantic dominance, we build LIME-440K, a ``lexically-identical, multi-emotion'' dataset designed to facilitate acoustic-semantic decoupling. We introduce EIPS, a 4-step Chain-of-Thought (CoT) mechanism incorporating psychological reasoning. For inference efficiency, multi-stage training explicitly establishes EIPS via supervised fine-tuning, then distills this logic into an implicit generation process. Finally, we design DR-SAPO (Dual-Route Soft Adaptive Policy Optimization) to dynamically balance the logical rigor of the CoT with the empathetic quality of the direct response.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
