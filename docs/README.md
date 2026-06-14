@@ -6,28 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-13
-- 运行时间：2026-06-13 20:47:00 UTC
+- 最新运行日期：2026-06-14
+- 运行时间：2026-06-14 20:43:33 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：4
+- 精读区：0
+- 速读区：4
 
 ### 今日简报（AI）
-今日精读一篇高分论文《Disentanglement with Holographic Reduced Representations》（8.0/10），速读一篇音频语言模型共情对齐研究（7.0/10）。  
-最值得关注的方向：利用全息简化表示实现表征解耦，以及音频语言模型在认知情感推理与共情响应对齐上的突破。  
-建议普通读者优先精读第一篇，其方法对理解表征学习中的解耦问题具有启发意义。
-- 详情：[/202606/13/README](/202606/13/README)
+今日速读4篇论文，涉及多语言说话人识别、跨模态知识蒸馏及多模态交互学习。重点关注缺失令牌提示的鲁棒融合方法用于多语言说话人识别，以及无配对数据的跨模态知识蒸馏理论。建议优先阅读第一篇，提升多语言场景下的模型鲁棒性。
+- 详情：[/202606/14/README](/202606/14/README)
 
 ### 精读区论文标签
-1. [Disentanglement with Holographic Reduced Representations](/202606/13/2606.09725v1-disentanglement-with-holographic-reduced-representations)  
-   标签：评分：8.0/10、query:mm
-   evidence：提出使用全息降维表示进行解耦表示学习
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Beyond Semantic Dominance: Cognitive Affective Reasoning and Empathetic Response Alignment in Audio Language Models](/202606/13/2606.06940v2-beyond-semantic-dominance-cognitive-affective-reasoning-and-empathetic-response-alignment-in-audio-language-models)  
+1. [Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification](/202606/14/2606.12495v1-missing-token-prompted-reliability-aware-fusion-for-robust-polyglot-speaker-identification)  
    标签：评分：7.0/10、query:mm
-   evidence：声学-语义解耦用于情感推理
+   evidence：使用可学习缺失令牌处理缺失面部模态的鲁棒融合
+2. [Cross-Modal Knowledge Distillation without Paired Data: Theoretical Foundation and Algorithm](/202606/14/2606.10504v1-cross-modal-knowledge-distillation-without-paired-data-theoretical-foundation-and-algorithm)  
+   标签：评分：6.0/10、query:mm
+   evidence：跨模态知识蒸馏无需配对数据，通过对齐特征空间增强了多模态学习的鲁棒性
+3. [Information-Theoretic Decomposition for Multimodal Interaction Learning](/202606/14/2606.11614v1-information-theoretic-decomposition-for-multimodal-interaction-learning)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态交互的信息论分解
+4. [A Multi-Modal Framework with Cross-Subject Pseudo-Labeling and Semantic Alignment for Micro-Gesture Recognition](/202606/14/2606.13030v1-a-multi-modal-framework-with-cross-subject-pseudo-labeling-and-semantic-alignment-for-micro-gesture-recognition)  
+   标签：评分：6.0/10、query:mm
+   evidence：用于微手势识别的多模态框架，手势传达隐藏情绪
 
 
 <div class="dpr-home-promo-card">

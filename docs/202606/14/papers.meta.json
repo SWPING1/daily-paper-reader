@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-14",
+  "date": "2026-06-14",
+  "generated_at": "2026-06-14T20:43:39",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/14/2606.12495v1-missing-token-prompted-reliability-aware-fusion-for-robust-polyglot-speaker-identification",
+      "section": "quick",
+      "title_en": "Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification",
+      "authors": "Peng Jia, Li Dai, Jia Li, Zhenzhen Hu, Ye Zhao, Richang Hong",
+      "date": "2026-06-10",
+      "pdf": "https://arxiv.org/pdf/2606.12495v1",
+      "score": "7.0",
+      "evidence": "使用可学习缺失令牌处理缺失面部模态的鲁棒融合",
+      "tldr": "多语言说话人识别面临跨语言泛化与人脸缺失挑战。提出MRAF框架，用可学习缺失令牌表示不可用视觉输入，减少分布差异；并引入可靠性感知交叉注意力融合，自适应强调可靠模态、抑制不可靠模态。在POLY-SIM 2026测试集上，P3和P5达100%准确率，缺失人脸设置P4和P6也获有竞争力结果。为复杂场景下多模态说话人识别提供鲁棒方案。",
+      "tags": "query:mm",
+      "abstract_en": "Accurate and robust multimodal speaker identification is essential for multimedia understanding and biometric authentication. However, real-world polyglot scenarios pose two key challenges: speaker-discriminative representations should generalize across languages, and the model should remain reliable when face information is unavailable. To address these challenges, we propose MRAF, a Missing-Token Prompted Reliability-Aware Fusion framework for polyglot speaker identification across complete-modality, missing-face, and cross-lingual scenarios. MRAF represents unavailable face inputs with a learnable missing token instead of fixed zero-valued features, providing a trainable representation of the missing visual state. This design reduces the distribution gap caused by missing inputs and allows subsequent reliability estimation and cross-modal fusion to operate within a unified token space. To adaptively integrate modalities with different reliability, MRAF further introduces a reliability-aware cross-attention fusion module, which estimates face and audio reliability scores, normalizes them into modality weights, and applies these weights to token representations before bidirectional cross-attention. In this way, the model can emphasize reliable modality cues while suppressing unreliable ones. During training, MRAF jointly optimizes multi-branch classification losses, audio-only knowledge distillation, and center loss to improve speaker discrimination and missing-modality robustness. Experiments on the official POLY-SIM 2026 test set demonstrate the effectiveness of the proposed framework. In the final evaluation, MRAF achieves 100% accuracy on P3 and P5, and obtains competitive results on the more challenging missing-face settings P4 and P6. The source code will be released at https://github.com/MSA-LMC/MRAF.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/14/2606.10504v1-cross-modal-knowledge-distillation-without-paired-data-theoretical-foundation-and-algorithm",
+      "section": "quick",
+      "title_en": "Cross-Modal Knowledge Distillation without Paired Data: Theoretical Foundation and Algorithm",
+      "authors": "Trong Khiem Tran, Anh Duc Chu, Quang Hung Pham, Phi Le Nguyen, Trong Nghia Hoang",
+      "date": "2026-06-09",
+      "pdf": "https://arxiv.org/pdf/2606.10504v1",
+      "score": "6.0",
+      "evidence": "跨模态知识蒸馏无需配对数据，通过对齐特征空间增强了多模态学习的鲁棒性",
+      "tldr": "跨模态知识蒸馏常依赖昂贵且难获取的配对数据。本文针对无配对数据场景，理论上建立了教师与学生模型间的分布关系，揭示特征对齐与标签对齐两个关键量。基于此提出对齐分布而非样本的框架，在多个多模态基准上，无配对与配对设置下均显著优于先前方法。",
+      "tags": "query:mm",
+      "abstract_en": "Cross-modal knowledge distillation (CMKD) studies how a (large) teacher model trained on one type of data (e.g., images) can guide a (smaller) student model building on another type of data (e.g., text/audio). Existing CMKD methods often require paired multi-modal data with aligned semantics, but obtaining such paired data are often costly and impractical. To mitigate this limitation, we develop a new CMKD framework for the more challenging setting where paired data are unavailable. In particular, we establish a cross-modal distributional relationship between teacher and student models, which reveals two fundamental quantities governing effective distillation: feature alignment and label alignment. These quantities characterize semantic discrepancy between modalities at the levels of representation and prediction distributions, respectively. Motivated by this insight, we propose a principled framework, with theoretical guarantees, that enables effective cross-modal knowledge distillation by aligning distributions rather than individual samples. Extensive experiments across a wide range of multimodal benchmarks show that our framework is highly effective in both unpaired and paired data settings, improving significantly over prior work.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/14/2606.11614v1-information-theoretic-decomposition-for-multimodal-interaction-learning",
+      "section": "quick",
+      "title_en": "Information-Theoretic Decomposition for Multimodal Interaction Learning",
+      "authors": "Zequn Yang, Yake Wei, Haotian Ni, Zhihao Xu, Di Hu",
+      "date": "2026-06-10",
+      "pdf": "https://arxiv.org/pdf/2606.11614v1",
+      "score": "6.0",
+      "evidence": "多模态交互的信息论分解",
+      "tldr": "多模态学习中存在样本间动态变化的冗余、独特和协同交互，但传统集成方法难以捕捉协同，联合学习则欠利用冗余。为此提出DMIL，先通过变分分解架构分离出交互组件，再在微调中显式利用这些组件实现全面交互学习。实验表明DMIL在多种任务和架构上持续取得更优性能，为多模态学习建立了灵活通用的交互中心范式。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal learning hinges on capturing redundant, unique, and synergistic information across modalities, which collectively constitute multimodal interactions. A critical yet underexplored challenge is that these implicit interactions vary dynamically across samples. In this work, we present the first systematic, information-theoretic analysis highlighting why learning these dynamic, sample-specific interactions is critical for effective multimodal learning. Our analysis further reveals deficits in conventional paradigms at learning these distinct interaction types: modality ensemble approaches struggle to capture synergy, while joint learning paradigms often under-utilize redundant information. This highlights the need for an approach that can adaptively learn from different interaction types on a per-sample basis. To this end, we propose Decomposition-based Multimodal Interaction Learning (DMIL), a novel paradigm that explicitly models and learns from sample-specific interactions. First, we design a variational decomposition architecture to isolate the constituent interaction components. Second, we employ a new learning strategy that leverages these explicit interaction components in a fine-tuning process to achieve comprehensive interaction learning. Extensive experiments across diverse tasks and architectures demonstrate that DMIL consistently achieves superior performance by adapting to holistic sample-specific interactions. Our framework is flexible and broadly applicable, establishing an interaction-centric paradigm for multimodal learning. The code is available at https://github.com/GeWu-Lab/DMIL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/14/2606.13030v1-a-multi-modal-framework-with-cross-subject-pseudo-labeling-and-semantic-alignment-for-micro-gesture-recognition",
+      "section": "quick",
+      "title_en": "A Multi-Modal Framework with Cross-Subject Pseudo-Labeling and Semantic Alignment for Micro-Gesture Recognition",
+      "authors": "Haoran Zhang, Haokun Zhang, Pengyu Liu, Yujia Zhang, Weibao Xue, Yanbin Hao",
+      "date": "2026-06-11",
+      "pdf": "https://arxiv.org/pdf/2606.13030v1",
+      "score": "6.0",
+      "evidence": "用于微手势识别的多模态框架，手势传达隐藏情绪",
+      "tldr": "微手势识别面临低信噪比、长尾分布和跨主体域偏移等挑战。本文提出多模态框架，包括显著性引导的多模态提取、平方根平滑加权、正交语义嵌入损失，以及跨模态伪标记无监督域适应。在MiGA挑战赛Track1上取得68.13%的F1分数，排名第4。该工作为微手势识别中的域泛化和长尾问题提供了有效方案。",
+      "tags": "query:mm",
+      "abstract_en": "Micro-gestures (MGs) are spontaneous and subtle body movements that frequently convey hidden human emotions. Recognizing MGs in untrimmed videos remains highly challenging due to their extremely low signal-to-noise ratio, severe long-tailed class distribution, and the inherent domain shift encountered in cross-subject evaluation scenarios. In this paper, we propose a comprehensive multi-modal framework for Track 1 of the 4th MiGA-IJCAI Challenge. To capture fine-grained representations, we design a saliency-guided multi-modal extraction pipeline integrating 68-keypoint skeleton joint coordinates, 3D heatmap volumes, and high-resolution RGB visual features. We introduce a gentle square-root smoothed weighting mechanism paired with an Orthogonal Semantic Embedding Loss to protect tail classes without compromising overall recognition capabilities. More importantly, to bridge the cross-subject generalization gap, we propose a Cross-Modal Pseudo-Labeling (CMPL) strategy for unsupervised domain adaptation, which significantly boosts single-modal robustness. A temperature-scaled soft-voting mechanism is finally utilized to alleviate overconfidence during late fusion. Extensive experiments demonstrate that our framework achieves a competitive F1-score of 68.13\\%, securing the 4th place.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

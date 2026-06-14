@@ -1,0 +1,581 @@
+Title: Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification
+
+URL Source: https://arxiv.org/pdf/2606.12495v1
+
+Published Time: Fri, 12 Jun 2026 00:03:04 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification 
+
+# Peng Jia ∗
+
+2020214631@mail.hfut.edu.cn Hefei University of Technology Hefei, China 
+
+# Li Dai ∗
+
+2025110483@mail.hfut.edu.cn Hefei University of Technology Hefei, China 
+
+# Jia Li †
+
+jiali@hfut.edu.cn Hefei University of Technology Hefei, China 
+
+# Zhenzhen Hu 
+
+zzhu@hfut.edu.cn Intelligent Interconnected Systems Laboratory of Anhui Province Hefei University of Technology Hefei, China 
+
+# Ye Zhao 
+
+zhaoye@hfut.edu.cn Hefei University of Technology Hefei, China 
+
+# Richang Hong 
+
+hongrc.hfut@gmail.com Hefei University of Technology Hefei, China 
+
+## Abstract 
+
+Accurate and robust multimodal speaker identification is essen-tial for multimedia understanding and biometric authentication. However, real-world polyglot scenarios pose two key challenges: speaker-discriminative representations should generalize across languages, and the model should remain reliable when face in-formation is unavailable. To address these challenges, we pro-pose MRAF , a Missing-Token Prompted Reliability-Aware Fusion framework for polyglot speaker identification across complete-modality, missing-face, and cross-lingual scenarios. MRAF repre-sents unavailable face inputs with a learnable missing token instead of fixed zero-valued features, providing a trainable representation of the missing visual state. This design reduces the distribution gap caused by missing inputs and allows subsequent reliability es-timation and cross-modal fusion to operate within a unified token space. To adaptively integrate modalities with different reliabil-ity, MRAF further introduces a reliability-aware cross-attention fusion module, which estimates face and audio reliability scores, normalizes them into modality weights, and applies these weights to token representations before bidirectional cross-attention. In this way, the model can emphasize reliable modality cues while suppressing unreliable ones. During training, MRAF jointly op-timizes multi-branch classification losses, audio-only knowledge distillation, and center loss to improve speaker discrimination and missing-modality robustness. Experiments on the official POLY-SIM 2026 test set demonstrate the effectiveness of the proposed framework. In the final evaluation, MRAF achieves 100% accuracy on P3 and P5, obtains competitive results on the more challenging missing-face settings P4 and P6. The source code will be released at https://github.com/MSA-LMC/MRAF. 
+
+## CCS Concepts 
+
+• Computing methodologies → Artificial intelligence .
+
+## Keywords 
+
+audio-visual speaker identification, polyglot speaker identification, missing-face modality 
+
+> ∗Both authors contributed equally to this research.
+> †Corresponding author.
+
+## 1 Introduction 
+
+Audio-visual speaker identification aims to recognize speaker iden-tity by jointly modeling facial appearance and speech signals [ 19 ,31 , 34 , 38 ]. Compared with unimodal systems, it exploits comple-mentary cues from face and voice, making it useful for multime-dia retrieval, biometric authentication, and human-centered video understanding. Large-scale in-the-wild benchmarks such as Vox-Celeb [ 32 ] and VoxCeleb2 [ 6] have advanced speaker modeling from unconstrained videos, while recent studies further explore cross-modal discriminative learning and attention-based interac-tion beyond simple late fusion [35, 37, 47]. Despite this progress, robust audio-visual speaker identification remains challenging in realistic polyglot scenarios. Visual cues may be degraded or unavailable due to occlusion, detection failure, or poor alignment, while acoustic cues can be affected by noise, channel distortion, or short speech duration. Such quality variations weaken fixed fusion strategies that assume both modalities are reliable. Moreover, cross-language conditions may further degrade recognition, as speaker-discriminative acoustic patterns can be entangled with phonetic and language-dependent variations, even with strong audio backbones such as ECAPA-TDNN [ 7]. Therefore, existing methods may struggle with missing or quality-varying modalities in polyglot speaker identification [35, 37, 57]. These challenges are systematically formulated in the POLY-SIM 2026 Challenge [ 30 ], which targets robust speaker identification under polyglot and incomplete-modality conditions. As shown in Fig. 1, the benchmark evaluates both in-language and cross-lingual speaker identification, under either complete audio-visual inputs or audio-only inputs with the face modality missing. Therefore, the task requires a unified model that can exploit complementary face-audio cues when both modalities are available, while maintaining reliable predictions when visual information is absent. To address these challenges, we propose MRAF , a Missing-Token Prompted Reliability-Aware Fusion framework for robust polyglot speaker identification. MRAF introduces a learnable missing to-ken to represent unavailable face inputs, enabling a consistent token-level representation under both complete and missing-face conditions. It further estimates sample-wise modality reliability and uses reliability-aware cross-attention to adaptively fuse face 
+
+> arXiv:2606.12495v1 [cs.SD] 10 Jun 2026 Peng Jia, Li Dai, Jia Li, Zhenzhen Hu, Ye Zhao, and Richang Hong
+
+# + 
+
+> Train
+> Face Voice ( English )
+
+# + 
+
+> P3:Inference ( In -
+> Language Multimodal )
+> Face Voice ( English )
+> Model
+
+# +
+
+> P4:Inference ( In -
+> Language Missing -Face )
+> Voice ( English )
+
+# + 
+
+> P5:Inference ( Cross -
+> Lingual Multimodal )
+> Face Voice ( Urdu )
+
+# +
+
+> P6:Inference ( Cross -
+> Lingual Missing -Face )
+> Voice ( Urdu )
+
+Figure 1: Task settings of the POLY-SIM 2026 Challenge, cov-ering multimodal, missing-face, and cross-lingual speaker identification. 
+
+and audio cues. To reduce the gap between multimodal training and audio-only inference, MRAF employs audio-only knowledge distillation. In the official POLY-SIM 2026 final evaluation, MRAF achieved 100% accuracy on P3 and P5, obtained competitive results on P4 and P6, and ranked second overall. Our contributions are summarized as follows: 
+
+• We propose a learnable missing token to model unavailable face inputs and maintain a unified token-level representa-tion path under complete and missing-face conditions. 
+
+• We design a reliability-aware cross-attention fusion module that adaptively modulates face-audio interaction according to sample-wise modality reliability. 
+
+• We introduce audio-only knowledge distillation to bridge multimodal training and missing-face inference, and val-idate MRAF in the POLY-SIM 2026 Challenge, where it achieves 100% accuracy on P3/P5 and ranks second overall. 
+
+## 2 Related Work 
+
+Audio-Visual Speaker Identification. Audio-visual speaker iden-tification exploits complementary facial and speech cues. Vox-Celeb [ 32 ] and VoxCeleb2 [ 6 ] have advanced speaker recognition and audio-visual identity modeling, while MAV-Celeb and FAME 2024/2026 study multilingual face-voice association in cross-lingual environments [ 28 , 40 ]. Recent facial representation studies extend static image models to dynamic facial understanding [ 4 , 5 ]. Fu-sion strategies include joint cross-attention [ 36 ], dynamic cross-attention [ 37 ], comparative modality fusion [ 10 ], gated fusion [ 1], tensor fusion [ 56 ], low-rank fusion [ 26 ], and Multimodal Trans-former [ 48 ]. Face-voice association methods, such as SBNet [ 39 ], Fuse after Align [ 35 ], PAEFF [ 17 ], RFOP [ 16 ], XM-ALIGN [ 9 ], inductive-bias based class separation [ 29 ], deep latent cross-modal map-ping [ 33 ], and shared multimodal embedding learning [ 44 ], focus on alignment, projection, and shared identity spaces. FuseMoE [ 15 ]and Flex-MoE [ 55 ] support arbitrary modality combinations. Unlike fixed interaction schemes, our method performs reliability-aware fusion according to modality reliability. 
+
+Language-Robust Speaker Recognition. Language-robust speaker recognition seeks to maintain speaker discriminability under multilingual or language-mismatched conditions. Classical x-vector [ 45 ] and ECAPA-TDNN [ 7] perform strongly, yet multi-lingual speech introduces phonetic, pronunciation, and acoustic variations that weaken cross-lingual generalization. Benchmarks such as TidyVoice [ 11 ], the TidyVoice 2026 Challenge [ 12 ], and SVer-itas [ 2] provide systematic multilingual verification protocols. Exist-ing methods mitigate language interference via language-invariant learning [ 23 ], Dual-LoRA adversarial disentanglement [ 43 ], Whisper-based representations [ 8, 58 ], and phonetic-guided modeling [ 27 ]. Multimodal speaker recognition has also been explored for realistic scenarios [ 42 ], but most studies remain audio-centric and underuse visual identity cues. Our method transfers audio-visual knowledge to audio-only inference through multimodal distillation. 
+
+Missing Modality Learning for Robust Multimodal Recog-nition. Missing modality learning addresses multimodal recogni-tion when modalities are unavailable due to occlusion, sensor fail-ure, privacy constraints, or corruption. Existing studies cover recon-struction, shared-specific representation learning, knowledge distil-lation, prompt learning, contrastive learning, and flexible fusion [ 24 ,54 ]. ShaSpec [ 50 ] decomposes representations into shared and modality-specific components, while cross-modal alignment and reconstruction [ 46 ] reduce complete-incomplete gaps. M3AE [ 25 ]improves robustness via modality- or patch-level masking. Distil-lation methods, including LCKD [ 51 ], one-stage modality distilla-tion [ 52 ], and Knowledge Bridger [ 21 ], transfer complete-modality knowledge to incomplete inputs. Prompt-based methods, such as multimodal prompt learning [ 14 ], deep correlated prompting [ 20 ], and PROMISE [ 3 ], adapt representations to modality availability or representation shift. Single-branch embedding has also been explored for cold-start and missing-modality scenarios [ 13 ]. Unlike general missing-modality settings, missing-face modality removes strong identity cues, and zero filling may cause distribution shift. We use a learnable missing token as a trainable placeholder for unavailable face inputs. 
+
+## 3 Method 3.1 Task Formulation 
+
+The task is formulated as polyglot multimodal speaker identification. Each sample is represented by pre-extracted face and audio features, denoted as 𝑥 𝑓 ∈ R𝑑 𝑓 and 𝑥 𝑎 ∈ R𝑑 𝑎 , respectively, and is associated with a language domain ℓ ∈ L . The objective is to predict the speaker label 𝑦 ∈ { 1, 2, . . . , 𝐶 } from a closed set of 𝐶 speakers. In practical polyglot scenarios, the model is expected to generalize across different language domains while handling varying modality availability during inference. In particular, the visual modality may be unavailable due to occlusion. Therefore, the model needs to handle both complete face-audio inputs and audio-only inputs. Specifically, under the complete-modality condition, both 𝑥 𝑓 and 
+
+𝑥 𝑎 are available. Under the audio-only condition, the face feature is replaced by a zero vector 𝑥 𝑓 = 0. The model learns a unified Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification Inputs 
+
+Face 
+
+Feature 
+
+Extraction 
+
+Voice 
+
+> Face Feature
+> Extractor
+
+𝑥 𝑓  
+
+> Audio Feature
+> Extractor
+
+𝑥 𝑎 
+
+Missing -Token Prompted 
+
+Modality Embedding     
+
+> Learnable
+> Missing Token
+> 𝑚 𝑓
+> Face Missing ?
+> Yes use 𝑚 𝑓
+> No use 𝑥 𝑓
+> Linear
+> Projection
+> Linear
+> Projection
+> Position
+> Encoding
+> Position
+> Encoding
+> Transformer
+> Encoder
+> …
+
+× 𝐿 
+
+> Transformer
+> Encoder
+> …
+
+× 𝐿 
+
+Reliability -Aware 
+
+Cross -Attention Fusion 
+
+> Fusion
+> Classifier
+> Reliability
+> Scoring
+> ( MLP )
+> Weighted Face
+> Embedding
+> …
+> Bidirectional
+> Cross -Attention
+
+Classification 
+
+Heads 
+
+> Face
+> Classifier
+> Audio
+> Classifier
+
+Center Loss ( 𝐿 𝑐𝑒𝑛𝑡𝑒𝑟 )
+
+Applied to 
+
+Fused Embedding 
+
+Cross -Entropy Loss ( 𝐿 𝑐𝑒 )
+
+> Face
+> Head
+
+Ground Truth 
+
+Speaker ID 
+
+> Fusion
+> Head
+> Audio
+> Head
+
+Training Objectives 
+
+Improves performance 
+
+under cross -lingual and 
+
+missing -face conditions. 
+
+Knowledge Distillation ( 𝐿 𝑘 𝑑 )
+
+> Full AV
+> Prediction
+> Audio -only
+> Prediction
+
+Encourages consistency and 
+
+improves generalization 
+
+> Distill
+> Face
+> Embedding
+
+𝑒 𝑓 
+
+> Audio
+> Embedding
+
+𝑒 𝑎 
+
+> Weighted Audio
+> Embedding
+> …
+
+𝑟 𝑓 
+
+𝑟 𝑎 
+
+> 𝑤 𝑓
+> 𝑤 𝑎
+> Reliability
+> Scoring
+> ( MLP )
+> Final Speaker Prediction
+
+Figure 2: Overall architecture of MRAF. Pre-extracted face and audio features are projected into modality-specific token sequences, where a learnable missing token represents unavailable face inputs. Reliability scores are estimated to weight modality tokens before bidirectional cross-attention fusion. During training, face, audio, and fusion classification heads provide multi-branch supervision, while the fusion head is used for final speaker prediction during inference. 
+
+prediction function: 
+
+ˆ𝑦 = arg max  
+
+> 𝑐
+
+𝑝 (𝑦 = 𝑐 | 𝑥 𝑓 , 𝑥 𝑎 ), (1) where the same model is applied to both complete and missing-face inputs across different language domains. 
+
+## 3.2 Overall Architecture 
+
+The proposed framework, illustrated in Figure 2, consists of three main components: the Missing-Token Prompted Modality Em-bedding module, the Reliability-Aware Cross-Attention Fu-sion module, and a multi-branch classification module. The pre-extracted face feature 𝑥 𝑓 and audio feature 𝑥 𝑎 are projected into modality-specific token sequences, with a learnable missing token 
+
+𝑚 𝑓 representing the missing visual state when the face modality is absent. Each token sequence is encoded to produce the face embed-ding 𝑒 𝑓 and audio embedding 𝑒 𝑎 , each with 512 dimensions. These embeddings are then input to the reliability-aware fusion module, where lightweight reliability scorers estimate modality confidence scores 𝑟 𝑓 and 𝑟 𝑎 , which are normalized into weights 𝑤 𝑓 and 𝑤 𝑎 to modulate token-level modality contributions. The weighted tokens are further fused via bidirectional cross-attention to generate the fused embedding 𝑒 𝑐 . Finally, three classification heads output 𝑧 𝑓 ,
+
+𝑧 𝑎 , and 𝑧 𝑐 for the face, audio, and fusion embeddings, respectively, with the fusion classifier serving as the primary prediction head during inference to produce the final speaker prediction ˆ𝑦 .
+
+## 3.3 Missing-Token Prompted Modality Embedding 
+
+The missing-token prompted modality embedding module maps pre-extracted face and audio features into a unified token-level space, producing compact modality-specific speaker representa-tions and a learnable representation for unavailable face inputs. For each modality 𝑚 ∈ { 𝑓 , 𝑎 }, the input feature 𝑥 𝑚 ∈ R𝑑 𝑚 is first projected into a sequence of 𝐾 latent tokens with dimension 𝑑 :
+
+𝑇 𝑚 = reshape (𝑊 𝑚 𝑥 𝑚 + 𝑏 𝑚 ), (2) and a positional embedding 𝑃 𝑚 ∈ R𝐾 ×𝑑 is added: 
+
+˜𝑇 𝑚 = 𝑇 𝑚 + 𝑃 𝑚 . (3) The token sequence ˜𝑇 𝑚 ∈ R𝐾 ×𝑑 is then processed by 𝐿 Trans-former encoder [ 49 ] layers. Let 𝐻 (0) 
+
+> 𝑚
+
+= ˜𝑇 𝑚 . In the 𝑙 -th layer, the input sequence 𝐻 (𝑙 −1) 
+
+> 𝑚
+
+is projected into queries, keys, and values, Peng Jia, Li Dai, Jia Li, Zhenzhen Hu, Ye Zhao, and Richang Hong 
+
+denoted as 𝑄 (𝑙 ) 
+
+> 𝑚
+
+, 𝐾 (𝑙 ) 
+
+> 𝑚
+
+, and 𝑉 (𝑙 ) 
+
+> 𝑚
+
+, respectively. For each attention head 
+
+ℎ, the attention output is computed as: head ℎ = softmax ©«
+
+𝑄 (𝑙 )
+
+> 𝑚,ℎ
+
+𝐾 (𝑙 )
+
+> 𝑚,ℎ
+> ⊤
+
+√𝑑 ℎ
+
+ª®¬
+
+𝑉 (𝑙 )
+
+> 𝑚,ℎ
+
+, (4) where 𝑄 (𝑙 ) 
+
+> 𝑚,ℎ
+
+, 𝐾 (𝑙 ) 
+
+> 𝑚,ℎ
+
+, and 𝑉 (𝑙 ) 
+
+> 𝑚,ℎ
+
+are the split query, key, and value projections for head ℎ, 𝑑 ℎ = 𝑑 /𝐻 is the per-head dimension, and 
+
+𝐻 is the number of heads. Here, MHA (·) denotes the multi-head self-attention operation. The outputs of all heads are concatenated and linearly projected: MHA (𝐻 (𝑙 −1) 
+
+> 𝑚
+
+) = Concat (head 1, . . . , head 𝐻 )𝑊 𝑂 . (5) The layer output includes a residual connection and layer nor-malization, followed by a position-wise feed-forward network: 
+
+𝑈 (𝑙 ) 
+
+> 𝑚
+
+= LayerNorm 
+
+
+
+𝐻 (𝑙 −1) 
+
+> 𝑚
+
++ MHA (𝐻 (𝑙 −1) 
+
+> 𝑚
+
+)
+
+
+
+, (6) 
+
+𝐻 (𝑙 ) 
+
+> 𝑚
+
+= LayerNorm 
+
+
+
+𝑈 (𝑙 ) 
+
+> 𝑚
+
++ FFN (𝑈 (𝑙 ) 
+
+> 𝑚
+
+)
+
+
+
+, (7) where FFN (𝑥 ) = ReLU (𝑥𝑊 1 + 𝑏 1)𝑊 2 + 𝑏 2. After 𝐿 layers, the en-coded token sequence 𝐻 (𝐿 ) 
+
+> 𝑚
+
+∈ R𝐾 ×𝑑 is obtained. Finally, mean pooling across the 𝐾 tokens, followed by layer normalization and 
+
+ℓ2 normalization, produces the modality embedding: 
+
+𝑒 𝑚 = Norm LayerNorm 1
+
+𝐾 
+
+> 𝐾
+
+∑︁ 
+
+> 𝑖 =1
+
+𝐻 (𝐿,𝑖 )
+
+> 𝑚
+
+!! 
+
+, (8) where 𝑒 𝑚 ∈ R512 for each modality. 
+
+Missing face handling. When the face modality is unavailable, the zero-valued face input is replaced by a learnable missing token 
+
+𝑚 𝑓 :
+
+𝑥 𝑓 =
+
+(
+
+𝑚 𝑓 , if 𝑥 𝑓 = 0,𝑥 𝑓 , otherwise . (9) This design provides a trainable and modality-aware representa-tion for absent face information, rather than treating the missing modality as a fixed zero vector. By representing missing faces in the same token space as valid face features, the model can reduce the distribution gap caused by missing inputs and provide more infor-mative token representations for subsequent reliability estimation and cross-attention fusion. 
+
+## 3.4 Reliability-Aware Cross-Attention Fusion 
+
+Face and audio modalities provide complementary speaker cues, but their reliability may vary across samples due to missing or degraded inputs. To address this issue, the reliability-aware cross-attention fusion module estimates the confidence of each modality and uses it to adaptively control its contribution. Given the face embedding 𝑒 𝑓 and audio embedding 𝑒 𝑎 , two light-weight reliability scorers are used to estimate scalar reliability scores: 
+
+𝑟 𝑓 = 𝜎 (𝑊 𝑟 𝑓 𝑒 𝑓 + 𝑏 𝑟 𝑓 ), 𝑟 𝑎 = 𝜎 (𝑊 𝑟 𝑎 𝑒 𝑎 + 𝑏 𝑟 𝑎 ), (10) where 𝜎 (·) denotes the sigmoid function. The reliability scores are then normalized into modality weights: 
+
+𝑤 𝑓 = 𝑟 𝑓 
+
+𝑟 𝑓 + 𝑟 𝑎 + 𝜖 , 𝑤 𝑎 = 𝑟 𝑎 
+
+𝑟 𝑓 + 𝑟 𝑎 + 𝜖 , (11) where 𝜖 is a small constant for numerical stability. When the face modality is missing, its reliability score is set to zero, encourag-ing the fusion module to rely more on the audio modality. The normalized weights are applied to the corresponding token repre-sentations: 
+
+ˆ𝐻 𝑓 = 𝑤 𝑓 𝐻 𝑓 , ˆ𝐻 𝑎 = 𝑤 𝑎 𝐻 𝑎 , (12) where 𝐻 𝑓 and 𝐻 𝑎 denote the encoded face and audio token se-quences, respectively. The reliability-weighted tokens are then fused through bidirectional cross-attention: 
+
+𝐶 𝑓 = MHA ( ˆ𝐻 𝑓 , ˆ𝐻 𝑎 , ˆ𝐻 𝑎 ), 𝐶 𝑎 = MHA ( ˆ𝐻 𝑎 , ˆ𝐻 𝑓 , ˆ𝐻 𝑓 ), (13) This bidirectional design allows each modality to attend to the other modality while being modulated by its estimated reliability. The attention outputs are further processed with residual connections and layer normalization, producing ¯𝐶 𝑓 and ¯𝐶 𝑎 .Finally, the fused representation is obtained by aggregating the two cross-attended token sequences: 
+
+𝑒 𝑐 = LayerNorm 
+
+ 12
+
+ MeanPool ( ¯𝐶 𝑓 ) + MeanPool ( ¯𝐶 𝑎 )
+
+. (14) The fused embedding 𝑒 𝑐 serves as the primary representation for the fusion classifier, integrating face-audio cues under reliability-aware modulation. By emphasizing reliable information while sup-pressing unreliable cues, it supports robust speaker prediction under both complete-modality and missing-face conditions. 
+
+## 3.5 Training Objectives 
+
+The model is trained with complementary objectives to improve speaker discrimination under both complete-modality and missing-face conditions. Three classification heads are attached to the face embedding 𝑒 𝑓 , audio embedding 𝑒 𝑎 , and fused embedding 𝑒 𝑐 , pro-ducing logits 𝑧 𝑓 = 𝑔 𝑓 (𝑒 𝑓 ), 𝑧 𝑎 = 𝑔 𝑎 (𝑒 𝑎 ), and 𝑧 𝑐 = 𝑔 𝑐 (𝑒 𝑐 ), respectively. The face and audio branches provide auxiliary supervision, while the fusion branch serves as the primary prediction branch. The classification loss is defined as: 
+
+L𝑐𝑒 = 𝜆 𝑓 CE (𝑧 𝑓 , 𝑦 ) + 𝜆 𝑎 CE (𝑧 𝑎 , 𝑦 ) + 𝜆 𝑐 CE (𝑧 𝑐 , 𝑦 ), (15) where 𝜆 𝑓 , 𝜆 𝑎 , and 𝜆 𝑐 control the contributions of different branches. To improve missing-face robustness, audio-only knowledge dis-tillation [ 18 ] is introduced by using the complete face-audio pre-diction as the teacher and the audio-only prediction as the student. Let 𝑧 𝐴𝑉 𝑐 and 𝑧 𝐴 𝑐 denote the fusion logits under complete-modality and audio-only inputs, respectively. The distillation loss is: 
+
+L𝑘𝑑 = 𝑇 2 KL 
+
+
+
+softmax  𝑧 𝐴𝑉 𝑐 /𝑇  ∥ softmax  𝑧 𝐴 𝑐 /𝑇 
+
+, (16) where 𝑇 is the temperature parameter. This objective transfers discriminative knowledge from complete audio-visual inference to audio-only inference. Center loss [ 53 ] is further applied to the fused embedding to en-hance intra-class compactness, defined as L𝑐𝑒𝑛𝑡𝑒𝑟 = 12
+
+Í𝐵 𝑖 =1 ∥𝑒 (𝑖 ) 
+
+> 𝑐
+
+−
+
+𝜇 𝑦 𝑖 ∥22, where 𝜇 𝑦 𝑖 is the class center of speaker 𝑦 𝑖 . The overall objec-tive is: 
+
+L = L𝑐𝑒 + 𝜆 𝑘𝑑 L𝑘𝑑 + 𝜆 𝑐𝑒𝑛𝑡𝑒𝑟 L𝑐𝑒𝑛𝑡𝑒𝑟 , (17) where 𝜆 𝑘𝑑 and 𝜆 𝑐𝑒𝑛𝑡𝑒𝑟 balance the distillation and center losses. Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification 
+
+Table 1: Statistics of the MAV-Celeb dataset. Language Videos (Train / Val / Test) Samples (Train / Val / Test) 
+
+English 262 / 70 / 70 4039 / 1290 / 1521 Urdu 415 / 70 / 70 9304 / 1779 / 1623 
+
+## 4 Experiments 4.1 Dataset and Evaluation Protocol 
+
+Experiments are conducted on the MAV-Celeb dataset [ 34 ] adopted by the POLY-SIM 2026 challenge [ 30 ]. MAV-Celeb contains paired face images and speech audio from English and Urdu speakers collected from unconstrained YouTube videos, with each sample annotated by a speaker ID. The dataset includes diverse real-world variations in both visual and audio modalities. 1 Its statistics are summarized in Table 1. Following the challenge protocol [ 30 ], evaluation covers four settings. P3 and P5 use complete audio-visual inputs, while P4 and P6 evaluate audio-only recognition with the face modality missing. P3/P4 are in-language settings, whereas P5/P6 assess cross-lingual generalization. Top-1 accuracy is reported for each setting, and the final score is the average over all four tasks. 
+
+## 4.2 Experimental Setup 
+
+All experiments use the pre-extracted features provided by the POLY-SIM 2026 challenge [ 30 ]. Face embeddings are extracted by FaceNet [ 41 ], and audio embeddings by ECAPA-TDNN [ 7]. Training and ablations are performed on a single NVIDIA RTX 4090 GPU. The model is trained with Adam [ 22 ], using a learning rate of 
+
+1 × 10 −4, batch size 64, embedding dimension 512, and dropout 0.1. To simulate missing-face conditions, complete audio-visual and audio-only samples are used with probabilities 𝑝 𝑎𝑣 = 0.8 and 𝑝 𝑎 =
+
+0.2, respectively. The branch loss weights are 𝜆 𝑓 = 𝜆 𝑎 = 𝜆 𝑐 = 1.0.The distillation temperature and weight are set to 𝑇 = 2.0 and 
+
+𝜆 𝑘𝑑 = 0.2, and the center loss weight is 𝜆 𝑐𝑒𝑛𝑡𝑒𝑟 = 0.1.
+
+## 4.3 Comparison with Competitors 
+
+We evaluate MRAF on the official POLY-SIM 2026 test set. As shown in Table 2, MRAF ranks second overall with an average accuracy of 0.99568. Under complete-modality settings, MRAF achieves 1.00000 accuracy on both P3 and P5, obtaining the best result on P3 and tied-best result on P5. This strong performance is mainly attributed to the complementary identity cues from face and audio modalities, where visual embeddings provide stable speaker-specific informa-tion and audio embeddings capture vocal characteristics. For the more challenging missing-face settings, MRAF achieves 0.98948 on P4 and 0.99320 on P6, showing competitive robustness when only audio information is available. The remaining performance gap mainly comes from the absence of visual identity cues and the increased sensitivity of audio-only recognition to pronunciation variation, acoustic conditions, and cross-lingual shifts. Compared with the official baseline, MRAF improves the average accuracy 
+
+> 1Following the POLY-SIM 2026 protocol, only the English training split is used for training, while the Urdu split is reserved for cross-lingual evaluation.
+
+Table 2: Quantitative comparison with top-ranked submis-sions. Avg. denotes the mean Top-1 accuracy over P3–P6.                     
+
+> Rank Team Avg. P3 P4 P5 P6
+> 1Ayoub ELKHOUZARI 0.99886 0.99803 0.99803 1.00000 0.99938 2MRAF (Ours) 0.99568 1.00000 0.98948 1.00000 0.99322
+> 3tartarz 0.99066 0.99934 0.97502 1.00000 0.98829 4areffarhadi 0.98776 0.99934 0.96647 0.99938 0.98583 5Yassin TERRAF 0.98324 0.99934 0.96318 0.99322 0.97720 6rin_thira 0.98258 0.99737 0.96252 0.99938 0.97104 7whalemyj 0.97600 0.99934 0.94346 0.99815 0.96303 8mmosc (Baseline) 0.73373 0.98817 0.52531 0.98275 0.43869
+
+Table 3: Ablation study on different fusion strategies. Fusion Method P3 P4 P5 P6 Avg. 
+
+Linear 0.8974 0.9020 0.8349 0.8429 0.8693 Gated 0.8679 0.8527 0.8681 0.8644 0.8633 LSTM 0.9987 0.9882 0.9975 0.9895 0.9935 
+
+Cross-attention 1.0000 0.9895 1.0000 0.9932 0.9957 
+
+from 0.73373 to 0.99568, with large gains of 0.46417 on P4 and 0.55451 on P6. These improvements demonstrate the effectiveness of the missing-token prompted reliability-aware fusion framework for incomplete-modality speaker identification. 
+
+## 4.4 Ablation Study 
+
+4.4.1 Ablation on Fusion Strategy. We first evaluate the effective-ness of the proposed reliability-aware cross-attention fusion mod-ule by comparing it with linear fusion, gated fusion, and LSTM-based fusion. As shown in Table 3, cross-attention achieves the best average accuracy of 0.9957, outperforming linear, gated, and LSTM-based fusion by 0.1264, 0.1324, and 0.0022, respectively. Lin-ear and gated fusion mainly combine modality features through fixed or sample-level weights, which limits their ability to model fine-grained face-audio interactions. In contrast, cross-attention enables token-level bidirectional interaction between modalities and adaptively emphasizes more reliable cues, leading to stronger robustness, especially in the missing-face settings P4 and P6. Al-though LSTM-based fusion performs competitively, it models the fused sequence in a relatively implicit manner and is slightly less effective than direct cross-modal attention. 
+
+4.4.2 Ablation on Missing-Modality Handling. We then compare different strategies for handling missing face inputs, including zero filling, audio-based completion, audio-guided memory bank se-lection, and the proposed learnable missing token. As reported in Table 4, zero filling provides a simple baseline but introduces an artificial feature pattern that is not aligned with the distribu-tion of real face embeddings. Audio completion and memory bank selection provide more informative substitutes, but they rely on heuristic reconstruction or retrieval and may introduce inaccurate visual cues. The learnable missing token achieves the best average accuracy of 0.9957 and improves P6 from 0.9901 to 0.9932 over zero filling. This suggests that a trainable missing representation can Peng Jia, Li Dai, Jia Li, Zhenzhen Hu, Ye Zhao, and Richang Hong 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9                   
+
+> 0.988
+> 0.990
+> 0.992
+> 0.994
+> 0.996
+> 0.998
+> 1.000
+> Accuracy
+> (a) Full-modality
+> P3
+> P5
+> 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> 0.972
+> 0.976
+> 0.980
+> 0.984
+> 0.988
+> 0.992
+> 0.996
+> (b) Audio-only
+> P4
+> P6
+> 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> 0.982
+> 0.984
+> 0.986
+> 0.988
+> 0.990
+> 0.992
+> 0.994
+> 0.996
+> (c) Average
+> Avg.
+
+Figure 3: Effect of the sampling ratio between full-modality and audio-only training samples. The x-axis denotes the audio-only sampling probability 𝑝 𝑎 . Results are shown for (a) full-modality settings P3 and P5, (b) audio-only settings P4 and P6, and (c) average accuracy across all four settings. The best average performance is achieved at 𝑝 𝑎 = 0.2 and 𝑝 𝑎𝑣 = 0.8.Table 4: Ablation study on different missing-modality han-dling strategies. Method P3 P4 P5 P6 Avg. 
+
+Zero filling 0.9993 0.9882 0.9982 0.9901 0.9940 Audio completion 0.9993 0.9895 0.9975 0.9895 0.9940 Memory bank 0.9993 0.9895 0.9982 0.9914 0.9946 
+
+Learnable token 1.0000 0.9895 1.0000 0.9932 0.9957 
+
+better encode the absence of face modality and provide a stable placeholder for cross-modal fusion. 
+
+4.4.3 Ablation on Full-Modality and Audio-Only Sampling Ratio. 
+
+We further study the effect of the training sampling ratio between complete audio-visual samples and audio-only samples, where 𝑝 𝑎 
+
+denotes the probability of audio-only samples and 𝑝 𝑎𝑣 = 1 − 𝑝 𝑎 
+
+denotes that of full-modality samples. As shown in Figure 3, using only full-modality samples yields strong performance on complete-modality evaluation but lower robustness under missing-face con-ditions. Introducing audio-only samples improves P4 and P6 by exposing the model to missing-modality patterns during training. The best average performance is obtained at 𝑝 𝑎 = 0.2 and 𝑝 𝑎𝑣 = 0.8,indicating a good balance between exploiting visual identity cues and improving audio-only inference. When 𝑝 𝑎 becomes too large, performance decreases because excessive audio-only training weak-ens the model’s ability to benefit from visual information. 
+
+4.4.4 Limitations and Failure Cases. Although the proposed method achieves high accuracy, it may still fail under noisy utterances, low-quality face images, or face-audio mismatch, where reliable speaker cues are weakened. Stronger cross-lingual shifts in pronunciation, phonetic patterns, or recording conditions may also limit general-ization beyond the current evaluation setting. 
+
+## 5 Conclusion 
+
+In this paper, we presented MRAF for robust polyglot speaker identification with missing-face modality. Rather than using zero-filled visual features, MRAF introduces a learnable missing token to represent unavailable face information, enabling complete and missing-face inputs to share a unified token-level modeling process. Reliability-aware cross-attention adjusts face-audio interaction ac-cording to sample-wise modality confidence, improving robustness when one modality is unreliable. Audio-only knowledge distillation narrows the gap between multimodal training and missing-face inference, while center loss encourages compact speaker represen-tations. Experiments on POLY-SIM 2026 show that MRAF performs strongly across complete-modality, missing-face, and cross-lingual settings, ranking second overall. Ablation studies confirm the con-tributions of cross-attention fusion, the missing token, and the balance between full-modality and audio-only training samples. Future work will explore more general missing-modality settings and stronger language-invariant speaker representations. 
+
+## Acknowledgments 
+
+This work was supported in part by the National Key Research and Development Program under Grant No. 2023YFC2506803, and in part by the Fundamental Research Funds for the Central Universi-ties of China under Grant No. PA2025IISL0110. The computations were performed on the High-Performance Computing (HPC) Plat-form of Hefei University of Technology. 
+
+## References               
+
+> [1] John Arevalo, Thamar Solorio, Manuel Montes-y Gómez, and Fabio A González. 2017. Gated multimodal units for information fusion. arXiv preprint arXiv:1702.01992 (2017). [2] Massa Baali, Sarthak Bisht, Francisco Teixeira, Kateryna Shapovalenko, Rita Singh, and Bhiksha Raj. 2025. SVeritas: Benchmark for Robust Speaker Verifica-tion under Diverse Conditions. In Findings of the Association for Computational Linguistics: EMNLP 2025 . 9714–9731. [3] Jiajun Chen, Sai Cheng, Yuan Yutao, Yirui Zhang, Haitao Yuan, Peng Peng, and Yi Zhong. 2026. PROMISE: Prompt-Attentive Hierarchical Contrastive Learning for Robust Cross-Modal Representation with Missing Modalities. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 40. 20076–20082. [4] Yin Chen, Jia Li, Shiguang Shan, Meng Wang, and Richang Hong. 2024. From Static to Dynamic: Adapting Landmark-Aware Image Models for Facial Expres-sion Recognition in Videos. IEEE Transactions on Affective Computing (2024), 1–15. doi:10.1109/TAFFC.2024.3453443 [5] Yin Chen, Jia Li, Yu Zhang, Zhenzhen Hu, Shiguang Shan, Meng Wang, and Richang Hong. 2025. Static for Dynamic: Towards a Deeper Understanding of Dynamic Facial Expressions Using Static Expression Data. IEEE Transactions on Affective Computing (2025), 1–15. doi:10.1109/TAFFC.2025.3623135
+
+Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification 
+
+[6] Joon Son Chung, Arsha Nagrani, and Andrew Zisserman. 2018. VoxCeleb2: Deep Speaker Recognition. In Interspeech 2018 . 1086–1090. doi:10.21437/Interspeech. 2018-1929 [7] Brecht Desplanques, Jenthe Thienpondt, and Kris Demuynck. 2020. ECAPA-TDNN: Emphasized Channel Attention, Propagation and Aggregation in TDNN Based Speaker Verification. In Interspeech 2020 . 3830–3834. doi:10.21437/ Interspeech.2020-2650 [8] Jakaria Islam Emon, Md Abu Salek, and Kazi Tamanna Alam. 2025. Whisper Speaker Identification: Leveraging Pre-Trained Multilingual Transformers for Robust Speaker Embeddings. arXiv preprint arXiv:2503.10446 (2025). [9] Zhihua Fang, Shumei Tao, Junxu Wang, and Liang He. 2026. XM-ALIGN: Unified cross-modal embedding alignment for face-voice association. In ICASSP 2026-2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 21760–21762. [10] Aref Farhadipour, Masoumeh Chapariniya, Teodora Vuković, and Volker Dellwo. 2024. Comparative analysis of modality fusion approaches for audio-visual person identification and verification. In Proceedings of the 7th International Conference on Natural Language and Speech Processing (ICNLSP 2024) . 168–177. [11] Aref Farhadipour, Jan Marquenie, Srikanth Madikeri, and Eleanor Chodroff. 2026. TidyVoice: A Curated Multilingual Dataset for Speaker Verification Derived from Common Voice. arXiv preprint arXiv:2601.16358 (2026). [12] Aref Farhadipour, Jan Marquenie, Srikanth Madikeri, Teodora Vukovic, Volker Dellwo, Kathy Reid, Francis M Tyers, Ingo Siegert, and Eleanor Chodroff. 2026. TidyVoice 2026 Challenge Evaluation Plan. arXiv preprint arXiv:2601.21960 
+
+(2026). [13] Christian Ganhör, Marta Moscati, Anna Hausberger, Shah Nawaz, and Markus Schedl. 2024. A multimodal single-branch embedding network for recommenda-tion in cold-start and missing modality scenarios. In Proceedings of the 18th ACM conference on recommender systems . 380–390. [14] Zirun Guo, Tao Jin, and Zhou Zhao. 2024. Multimodal prompt learning with missing modalities for sentiment analysis and emotion recognition. In Proceedings of the 62nd annual meeting of the association for computational linguistics (volume 1: Long papers) . 1726–1736. [15] Xing Han, Huy Nguyen, Carl Harris, Nhat Ho, and Suchi Saria. 2024. Fusemoe: Mixture-of-experts transformers for fleximodal fusion. Advances in Neural Information Processing Systems 37 (2024), 67850–67900. [16] Abdul Hannan, Furqan Malik, Hina Jabbar, Syed Suleman Sadiq, and Mubashir Noman. 2026. RFOP: Rethinking fusion and orthogonal projection for face-voice association. In ICASSP 2026-2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 21778–21780. [17] Abdul Hannan, Muhammad Arslan Manzoor, Shah Nawaz, Muhammad Irzam Liaqat, Markus Schedl, and Mubashir Noman. 2025. PAEFF: Precise Alignment and Enhanced Gated Feature Fusion for Face-Voice Association. In Interspeech 2025 . 2710–2714. doi:10.21437/Interspeech.2025-268 [18] Geoffrey Hinton, Oriol Vinyals, and Jeff Dean. 2015. Distilling the knowledge in a neural network. arXiv preprint arXiv:1503.02531 (2015). [19] Shota Horiguchi, Naoyuki Kanda, and Kenji Nagamatsu. 2018. Face-voice match-ing using cross-modal embeddings. In Proceedings of the 26th ACM international conference on Multimedia . 1011–1019. [20] Lianyu Hu, Tongkai Shi, Wei Feng, Fanhua Shang, and Liang Wan. 2024. Deep correlated prompting for visual recognition with missing modalities. Advances in Neural Information Processing Systems 37 (2024), 67446–67466. [21] Guanzhou Ke, Shengfeng He, Xiao Li Wang, Bo Wang, Guoqing Chao, Yuanyang Zhang, Yi Xie, and HeXing Su. 2025. Knowledge bridger: Towards training-free missing multi-modality completion. arXiv e-prints (2025), arXiv–2502. [22] Diederik P Kingma and Jimmy Ba. 2014. Adam: A method for stochastic opti-mization. arXiv preprint arXiv:1412.6980 (2014). [23] Ze Li, Xiaoxiao Miao, Juan Liu, and Ming Li. 2026. Language-Invariant Multi-lingual Speaker Verification for the TidyVoice 2026 Challenge. arXiv preprint arXiv:2603.08092 (2026). [24] Muhammad Irzam Liaqat, Qaiser Abbas, Shah Nawaz, Zaigham Zaheer, Marta Moscati, Yufang Hou, Muhammad Haris Khan, Salman Khan, Elisabeth Andre, and Markus Schedl. 2025. Multimodal Learning Under Imperfect Data Conditions: A Survey. Authorea Preprints (2025). [25] Hong Liu, Dong Wei, Donghuan Lu, Jinghan Sun, Liansheng Wang, and Yefeng Zheng. 2023. M3AE: multimodal representation learning for brain tumor seg-mentation with missing modalities. In Proceedings of the AAAI conference on artificial intelligence , Vol. 37. 1657–1665. [26] Zhun Liu, Ying Shen, Varun Bharadhwaj Lakshminarasimhan, Paul Pu Liang, AmirAli Bagher Zadeh, and Louis-Philippe Morency. 2018. Efficient low-rank multimodal fusion with modality-specific factors. In Proceedings of the 56th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . 2247–2256. [27] Yi Ma, Shuai Wang, Tianchi Liu, and Haizhou Li. 2025. ExPO: Explainable phonetic trait-oriented network for speaker verification. IEEE Signal Processing Letters 32 (2025), 731–735. [28] Marta Moscati, Ahmed Abdullah, Muhammad Saad Saeed, Shah Nawaz, Ro-han Kumar Das, Muhammad Zaigham Zaheer, Junaid Mir, Muhammad Haroon Yousaf, Khalid Mahmood Malik, and Markus Schedl. 2026. Linking faces and voices across languages: Insights from the fame 2026 challenge. In ICASSP 2026-2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 21793–21795. [29] Marta Moscati, Oleksandr Kats, Mubashir Noman, Muhammad Zaigham Zaheer, Yufang Hou, Markus Schedl, and Shah Nawaz. 2026. Face-Voice Association with Inductive Bias for Maximum Class Separation. In ICASSP 2026-2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) .IEEE. [30] Marta Moscati, Muhammad Saad Saeed, Marina Zanoni, Mubashir Noman, Ro-han Kumar Das, Monorama Swain, Yufang Hou, Elisabeth Andre, Khalid Mah-mood Malik, Markus Schedl, et al . 2026. POLY-SIM: Polyglot Speaker Identi-fication with Missing Modality Grand Challenge 2026 Evaluation Plan. arXiv preprint arXiv:2603.24569 (2026). [31] Arsha Nagrani, Samuel Albanie, and Andrew Zisserman. 2018. Seeing voices and hearing faces: Cross-modal biometric matching. In Proceedings of the IEEE conference on computer vision and pattern recognition . 8427–8436. [32] Arsha Nagrani, Joon Son Chung, and Andrew Zisserman. 2017. VoxCeleb: A Large-Scale Speaker Identification Dataset. In Interspeech 2017 . 2616–2620. doi:10. 21437/Interspeech.2017-950 [33] Shah Nawaz, Muhammad Kamran Janjua, Ignazio Gallo, Arif Mahmood, and Alessandro Calefati. 2019. Deep latent space learning for cross-modal mapping of audio and visual signals. In 2019 Digital Image Computing: Techniques and Applications (DICTA) . IEEE, 1–7. [34] Shah Nawaz, Muhammad Saad Saeed, Pietro Morerio, Arif Mahmood, Ignazio Gallo, Muhammad Haroon Yousaf, and Alessio Del Bue. 2021. Cross-modal speaker verification and recognition: A multilingual perspective. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 1682–1691. [35] Chong Peng, Liqiang He, and Dan Su. 2024. Fuse after Align: Improving Face-Voice Association Learning via Multimodal Encoder. arXiv preprint arXiv:2404.09509 (2024). [36] R Gnana Praveen and Jahangir Alam. 2023. Audio-Visual Speaker Verification via Joint Cross-Attention. arXiv preprint arXiv:2309.16569 (2023). [37] R Gnana Praveen and Jahangir Alam. 2024. Dynamic cross attention for audio-visual person verification. In 2024 IEEE 18th International Conference on Automatic Face and Gesture Recognition (FG) . IEEE, 1–5. [38] Anindya Roy and Sébastien Marcel. 2010. Introducing crossmodal biometrics: Person identification from distinct audio & visual streams. In 2010 Fourth IEEE International Conference on Biometrics: Theory, Applications and Systems (BTAS) .IEEE, 1–6. [39] Muhammad Saad Saeed, Shah Nawaz, Muhammad Haris Khan, Muham-mad Zaigham Zaheer, Karthik Nandakumar, Muhammad Haroon Yousaf, and Arif Mahmood. 2023. Single-branch network for multimodal training. In ICASSP 2023-2023 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 1–5. [40] Muhammad Saad Saeed, Shah Nawaz, Marta Moscati, Rohan Kumar Das, Muham-mad Salman Tahir, Muhammad Zaigham Zaheer, Muhammad Irzam Liaqat, Muhammad Haris Khan, Karthik Nandakumar, Muhammad Haroon Yousaf, et al .2024. A synopsis of fame 2024 challenge: Associating faces with voices in multi-lingual environments. In Proceedings of the 32nd ACM International Conference on Multimedia . 11333–11334. [41] Florian Schroff, Dmitry Kalenichenko, and James Philbin. 2015. Facenet: A unified embedding for face recognition and clustering. In Proceedings of the IEEE conference on computer vision and pattern recognition . 815–823. [42] Saqlain Hussain Shah, Muhammad Saad Saeed, Shah Nawaz, and Muhammad Ha-roon Yousaf. 2023. Speaker recognition in realistic scenario using multimodal data. In 2023 3rd International Conference on Artificial Intelligence (ICAI) . IEEE, 209–213. [43] Qituan Shangguan, Junhao Du, Kunyang Peng, Feng Xue, Hui Zhang, Xinsheng Wang, Kai Yu, and Shuai Wang. 2026. Dual-LoRA: Parameter-Efficient Adver-sarial Disentanglement for Cross-Lingual Speaker Verification. arXiv preprint arXiv:2604.26327 (2026). [44] Christopher Simic, Korbinian Riedhammer, and Tobias Bocklet. 2026. Shared multi-modal embedding space for face-voice association. In ICASSP 2026-2026 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) .IEEE, 21766–21768. [45] David Snyder, Daniel Garcia-Romero, Gregory Sell, Daniel Povey, and Sanjeev Khudanpur. 2018. X-vectors: Robust dnn embeddings for speaker recognition. In 2018 IEEE international conference on acoustics, speech and signal processing (ICASSP) . IEEE, 5329–5333. [46] Haoqin Sun, Shiwan Zhao, Shaokai Li, Xiangyu Kong, Xuechen Wang, Jiaming Zhou, Aobo Kong, Yong Chen, Wenjia Zeng, and Yong Qin. 2025. Enhancing emotion recognition in incomplete data: A novel cross-modal alignment, recon-struction, and refinement framework. In ICASSP 2025-2025 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP) . IEEE, 1–5. [47] Ruijie Tao, Rohan Kumar Das, and Haizhou Li. 2020. Audio-visual speaker recog-nition with a cross-modal discriminative network. arXiv preprint arXiv:2008.03894 
+
+(2020). Peng Jia, Li Dai, Jia Li, Zhenzhen Hu, Ye Zhao, and Richang Hong 
+
+[48] Yao-Hung Hubert Tsai, Shaojie Bai, Paul Pu Liang, J Zico Kolter, Louis-Philippe Morency, and Ruslan Salakhutdinov. 2019. Multimodal transformer for unaligned multimodal language sequences. In Proceedings of the 57th annual meeting of the association for computational linguistics . 6558–6569. [49] Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, and Illia Polosukhin. 2017. Attention is all you need. Advances in neural information processing systems 30 (2017). [50] Hu Wang, Yuanhong Chen, Congbo Ma, Jodie Avery, Louise Hull, and Gustavo Carneiro. 2023. Multi-modal learning with missing modality via shared-specific feature modelling. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition . 15878–15887. [51] Hu Wang, Congbo Ma, Jianpeng Zhang, Yuan Zhang, Jodie Avery, Louise Hull, and Gustavo Carneiro. 2023. Learnable cross-modal knowledge distillation for multi-modal learning with missing modality. In International Conference on Medical Image Computing and Computer-Assisted Intervention . Springer, 216–226. [52] Shicai Wei, Yang Luo, and Chunbo Luo. 2023. One-stage modality distillation for incomplete multimodal learning. arXiv preprint arXiv:2309.08204 (2023). [53] Yandong Wen, Kaipeng Zhang, Zhifeng Li, and Yu Qiao. 2016. A discriminative feature learning approach for deep face recognition. In European conference on computer vision . Springer, 499–515. [54] Renjie Wu, Hu Wang, Hsiang-Ting Chen, and Gustavo Carneiro. 2024. Deep mul-timodal learning with missing modality: A survey. arXiv preprint arXiv:2409.07825 
+
+(2024). [55] Sukwon Yun, Inyoung Choi, Jie Peng, Yangfan Wu, Jingxuan Bao, Qiyiwen Zhang, Jiayi Xin, Qi Long, and Tianlong Chen. 2024. Flex-moe: Modeling arbitrary modality combination via the flexible mixture-of-experts. Advances in Neural Information Processing Systems 37 (2024), 98782–98805. [56] Amir Zadeh, Minghai Chen, Soujanya Poria, Erik Cambria, and Louis-Philippe Morency. 2017. Tensor fusion network for multimodal sentiment analysis. In 
+
+Proceedings of the 2017 conference on empirical methods in natural language processing . 1103–1114. [57] Qingyang Zhang, Yake Wei, Zongbo Han, Huazhu Fu, Xi Peng, Cheng Deng, Qinghua Hu, Cai Xu, Jie Wen, Di Hu, et al . 2024. Multimodal fusion on low-quality data: A comprehensive survey. arXiv preprint arXiv:2404.18947 (2024). [58] Yiyang Zhao, Shuai Wang, Guangzhi Sun, Zehua Chen, Chao Zhang, Mingxing Xu, and Thomas Fang Zheng. 2024. Whisper-pmfa: Partial multi-scale fea-ture aggregation for speaker verification using whisper models. arXiv preprint arXiv:2408.15585 (2024).
