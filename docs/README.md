@@ -6,33 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-14
-- 运行时间：2026-06-14 20:43:33 UTC
+- 最新运行日期：2026-06-15
+- 运行时间：2026-06-15 22:26:13 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：0
-- 速读区：4
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日速读4篇论文，涉及多语言说话人识别、跨模态知识蒸馏及多模态交互学习。重点关注缺失令牌提示的鲁棒融合方法用于多语言说话人识别，以及无配对数据的跨模态知识蒸馏理论。建议优先阅读第一篇，提升多语言场景下的模型鲁棒性。
-- 详情：[/202606/14/README](/202606/14/README)
+今日精读一篇高分论文提出缺失模态下鲁棒预测的注意力模型，另速读表情识别综述与多模态VAE改进。最值得关注缺失模态处理与多模态VAE的质量-连贯性权衡，后者提出Hölder++方法。建议初学者优先阅读精读论文，掌握应对数据缺失的建模思路。
+- 详情：[/202606/15/README](/202606/15/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [An Attention-based Model for Robust Forecasting with Missing Modality](/202606/15/2606.13970v1-an-attention-based-model-for-robust-forecasting-with-missing-modality)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于注意力机制的条件变分自编码器处理缺失模态的鲁棒预测
 
 ### 速读区论文标签
-1. [Missing-Token Prompted Reliability-Aware Fusion for Robust Polyglot Speaker Identification](/202606/14/2606.12495v1-missing-token-prompted-reliability-aware-fusion-for-robust-polyglot-speaker-identification)  
-   标签：评分：7.0/10、query:mm
-   evidence：使用可学习缺失令牌处理缺失面部模态的鲁棒融合
-2. [Cross-Modal Knowledge Distillation without Paired Data: Theoretical Foundation and Algorithm](/202606/14/2606.10504v1-cross-modal-knowledge-distillation-without-paired-data-theoretical-foundation-and-algorithm)  
+1. [Facial Expression Recognition in the Deep Learning Era: A Systematic Multi-Criteria Review of Methods, Models, Datasets, Performance, Challenges, and Future Research Directions](/202606/15/2606.08612v1-facial-expression-recognition-in-the-deep-learning-era-a-systematic-multi-criteria-review-of-methods-models-datasets-performance-challenges-and-future-research-directions)  
    标签：评分：6.0/10、query:mm
-   evidence：跨模态知识蒸馏无需配对数据，通过对齐特征空间增强了多模态学习的鲁棒性
-3. [Information-Theoretic Decomposition for Multimodal Interaction Learning](/202606/14/2606.11614v1-information-theoretic-decomposition-for-multimodal-interaction-learning)  
+   evidence：关于面部表情识别的全面综述
+2. [Hölder++: Improving the Quality-Coherence Trade-off in Multimodal VAEs](/202606/15/2606.13381v1-hlder-improving-the-quality-coherence-trade-off-in-multimodal-vaes)  
    标签：评分：6.0/10、query:mm
-   evidence：多模态交互的信息论分解
-4. [A Multi-Modal Framework with Cross-Subject Pseudo-Labeling and Semantic Alignment for Micro-Gesture Recognition](/202606/14/2606.13030v1-a-multi-modal-framework-with-cross-subject-pseudo-labeling-and-semantic-alignment-for-micro-gesture-recognition)  
-   标签：评分：6.0/10、query:mm
-   evidence：用于微手势识别的多模态框架，手势传达隐藏情绪
+   evidence：改进多模态VAE的池化方法以优化表示
 
 
 <div class="dpr-home-promo-card">
