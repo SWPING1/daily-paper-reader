@@ -1,0 +1,170 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-18T22:14:12.389759+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2606.18893v1",
+      "source": "arxiv",
+      "title": "Learning Robust Pair Confidence for Multimodal Emotion-Cause Pair Extraction",
+      "abstract": "Multimodal emotion-cause pair extraction (MECPE) requires reliable pair confidence over candidate pairs. Existing pair scorers commonly use pair-level cross entropy over valid candidates, which treats links mostly independently. This leaves the relative confidence geometry among competing causes under-constrained, allowing gold pairs to stay close to hard negatives or rely on incidental non-gold context. We study this vulnerability as pair-confidence brittleness and propose RPCL (Robust Pair Confidence Learning), a training-only framework for pair-confidence learning. RPCL encourages pair confidence to be both discriminative and stable: gold pairs are separated from row-wise hard negatives through a confidence-difference margin constraint, and clean pair predictions are aligned with predictions from a corrupted view where non-gold contextual utterance representations are partially corrupted. The original clean pair scorer and decoding pipeline are used unchanged at inference time. On ECF, MECAD, and MEC4, RPCL improves the three-seed mean Pair F1 over a matched base model by 2.58 to 2.83 percentage points in the full text-audio-video setting, and improves mean Pair AUPRC on all three datasets. Diagnostic analysis further shows larger gold-negative confidence gaps and lower margin-violation severity. These results suggest that explicitly shaping pair confidence is an effective training strategy for MECPE.",
+      "authors": [
+        "Zhuangzhuang Pan",
+        "Ning Dong",
+        "Yingna Su",
+        "Yan Xia"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-17T10:12:16+00:00",
+      "link": "https://arxiv.org/pdf/2606.18893v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal emotion-cause pair extraction",
+      "llm_evidence_cn": "多模态情感-原因对提取",
+      "llm_evidence": "多模态情感-原因对提取",
+      "canonical_evidence": "多模态情感-原因对提取",
+      "llm_tldr_en": "Proposes RPCL to learn robust pair confidence for multimodal emotion-cause pair extraction, improving discriminative and stable confidence geometry.",
+      "llm_tldr_cn": "在多模态情感-原因对提取任务中，现有对评分器存在置信度脆弱性问题，使得正负例界限模糊。本文提出RPCL框架，通过置信度差异边界约束和聚类机制，学习区分且稳定的对置信度。实验表明，该方法显著提升了情感原因对的提取准确性和鲁棒性，为多模态情感分析提供了更可靠的置信度评估。",
+      "llm_tldr": "在多模态情感-原因对提取任务中，现有对评分器存在置信度脆弱性问题，使得正负例界限模糊。本文提出RPCL框架，通过置信度差异边界约束和聚类机制，学习区分且稳定的对置信度。实验表明，该方法显著提升了情感原因对的提取准确性和鲁棒性，为多模态情感分析提供了更可靠的置信度评估。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.15763v1",
+      "source": "arxiv",
+      "title": "The Circumplex Degeneracy Behind the Rare-Class Limit in Affect Recognition",
+      "abstract": "In-the-wild expression recognition persistently fails on a few rare emotions, and the standard explanation is class imbalance. Through a controlled multi-task study on two benchmarks, we show the failure is instead a property of affect geometry: the rare classes are degenerate on Russell's circumplex, and that degeneracy bounds what any loss or cost can achieve. Our instrument is a circumplex-cost optimal-transport term that prices expression confusions by their valence-arousal distance. The term improves the official score and expression macro-F1, but a control most studies omit shows the gain is not geometric: a uniform cost, equivalent to a generic confidence penalty, matches it on Aff-Wild2 (p=0.625) and significantly exceeds it on AffectNet (+0.057 over base, larger than the circumplex). What the geometry reshapes is the structure of the errors, making them affectively nearer the truth on Aff-Wild2 (p=0.031 against the uniform control), an effect that does not survive on AffectNet, where a visual confound at the far corner of the circumplex overwhelms it. The rare-class failure, by contrast, is stable across both datasets we examine: the degenerate pairs (anger-fear on Aff-Wild2, anger-contempt on AffectNet) resist frequency-based interventions, the transport term, and an action-unit-augmented cost built specifically to separate them. We conclude that progress on rare expressions requires representations that distinguish the classes, not supervision that reprices their confusions, and we provide the controls and metrics needed to tell the two apart.",
+      "authors": [
+        "Van Thong Huynh",
+        "Hong Hai Nguyen",
+        "Soo-Hyung Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-14T11:54:20+00:00",
+      "link": "https://arxiv.org/pdf/2606.15763v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "affect recognition via circumplex-cost optimal transport, addressing rare emotions",
+      "llm_evidence_cn": "通过环状模型代价最优传输进行情感识别，处理稀有情感",
+      "llm_evidence": "通过环状模型代价最优传输进行情感识别，处理稀有情感",
+      "canonical_evidence": "通过环状模型代价最优传输进行情感识别，处理稀有情感",
+      "llm_tldr_en": "The paper reveals that rare emotion recognition failures are due to circumplex degeneracy, not class imbalance, and proposes an optimal transport cost that improves performance.",
+      "llm_tldr_cn": "本文揭示真实场景情感识别中稀有类别的失败并非源于类别不平衡，而是情感环状模型的退化性质。提出基于代价最优传输的项，按效价-唤醒距离惩罚混淆，提升官方评分和宏F1。但控制实验表明增益并非来自几何结构，统一代价也可达类似效果。该工作对理解情感识别的基本限制有重要意义，但未涉及多模态或缺失模态场景。",
+      "llm_tldr": "本文揭示真实场景情感识别中稀有类别的失败并非源于类别不平衡，而是情感环状模型的退化性质。提出基于代价最优传输的项，按效价-唤醒距离惩罚混淆，提升官方评分和宏F1。但控制实验表明增益并非来自几何结构，统一代价也可达类似效果。该工作对理解情感识别的基本限制有重要意义，但未涉及多模态或缺失模态场景。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.16408v1",
+      "source": "arxiv",
+      "title": "MUNI: Multimodal Unified Latent Diffusion for Coherent Any-to-Any Generation",
+      "abstract": "We introduce MUNI, an end-to-end multimodal latent diffusion framework for any-to-any generation that unifies subset-conditioned cross-modal generation and unconditional joint sampling through a shared stochastic latent. Existing multimodal generative models are largely LLM-based, which limits leveraging modality-specific generators and requires text-paired data for training. Recent diffusion- and flow-based any-to-any extensions take a different direction but still rely on text-aligned embeddings, fully-paired training, or matched-dimensionality deterministic mappings. MUNI rests on two complementary contributions, one architectural and one in the training objective. First, we extend latent diffusion to multimodal any-to-any generation end-to-end: instead of the standard two-stage recipe that precomputes a frozen latent space and then fits a prior over it, MUNI jointly trains modality-specific encoders, expressive decoders, and a single shared flow-based prior under one objective. Second, we identify that the standard aggregation rules of multimodal variational inference are insufficient once coupled with a learned prior and expressive decoders. A suitable shared latent must simultaneously satisfy coherence across generated modalities, predictive sufficiency of subset latents, and minimality of the latent content. We propose a routed training objective whose structural choices align the latent with these criteria and admit a minimal-sufficiency characterization in the realizable setting. Experiments on PolyMNIST-Quadrant-Labels and a large-scale image-text-audio benchmark show MUNI matching or exceeding the strongest baselines on conditional generation while opening its largest margins on unconditional coherence. Project page: https://muni-proj.github.io/.",
+      "authors": [
+        "Kyeongmin Yeo",
+        "Yunhong Min",
+        "Minhyuk Sung"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-15T08:46:48+00:00",
+      "link": "https://arxiv.org/pdf/2606.16408v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal latent diffusion for any-to-any generation, applicable to missing modality imputation",
+      "llm_evidence_cn": "多模态潜扩散实现任意到任意生成，可用于缺失模态插补",
+      "llm_evidence": "多模态潜扩散实现任意到任意生成，可用于缺失模态插补",
+      "canonical_evidence": "多模态潜扩散实现任意到任意生成，可用于缺失模态插补",
+      "llm_tldr_en": "Proposes MUNI, a unified multimodal latent diffusion framework for coherent any-to-any generation, enabling flexible cross-modal generation without text-paired data.",
+      "llm_tldr_cn": "现有多模态生成模型依赖LLM或全配对数据，限制了模态专属生成器利用。本文提出MUNI，基于共享随机潜变量的端到端多模态潜扩散框架，统一了子集条件交叉模态生成与无条件联合采样。该方法无需文本对齐嵌入，在多种生成任务上实现了高保真度和跨模态一致性，为缺失模态生成提供了可迁移的解决方案。",
+      "llm_tldr": "现有多模态生成模型依赖LLM或全配对数据，限制了模态专属生成器利用。本文提出MUNI，基于共享随机潜变量的端到端多模态潜扩散框架，统一了子集条件交叉模态生成与无条件联合采样。该方法无需文本对齐嵌入，在多种生成任务上实现了高保真度和跨模态一致性，为缺失模态生成提供了可迁移的解决方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.17254v1",
+      "source": "arxiv",
+      "title": "Synergizing Zero-Shot Cross-Lingual Alzheimer Detection with Language-Invariant Multimodal Bi-Geometric Adversarial Learning",
+      "abstract": "In this work, we study zero-shot cross-lingual speech-based Alzheimer's disease detection (SADD). We hypothesize that learning language-invariant multimodal representations by fusing multilingual speech and text pretrained models is essential for reliable transfer to unseen languages, as the two modalities capture complementary acoustic and linguistic markers of cognitive impairment while adversarial learning suppresses language-specific confounds. Empirical results in zero-shot cross-lingual evaluation substantiate the hypothesis, showing that multimodal fusion consistently outperforms unimodal baselines. To this end, we propose ORBIT, a novel framework that combines cross-attentive fusion, multi-tap language adversaries, and complementary spherical--hyperbolic geometric learning with consensus clustering. Across settings, ORBIT achieves the strongest performance compared to unimodal models and simple concatenation-based fusion baselines.",
+      "authors": [
+        "Girish",
+        "Mohd Mujtaba Akhtar",
+        "Farhan Sheth",
+        "Muskaan Singh",
+        "Juliana Gerard",
+        "Paula McClean",
+        "Kongfatt Wong-Lin"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-06-15T19:55:41+00:00",
+      "link": "https://arxiv.org/pdf/2606.17254v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal fusion and adversarial learning for robust cross-lingual detection",
+      "llm_evidence_cn": "多模态融合与对抗学习用于鲁棒跨语言检测",
+      "llm_evidence": "多模态融合与对抗学习用于鲁棒跨语言检测",
+      "canonical_evidence": "多模态融合与对抗学习用于鲁棒跨语言检测",
+      "llm_tldr_en": "Proposes ORBIT framework for zero-shot cross-lingual Alzheimer detection using multimodal (speech+text) fusion and adversarial learning, achieving robust language-invariant representations.",
+      "llm_tldr_cn": "针对零样本跨语言阿尔茨海默检测任务，提出ORBIT框架，融合多语言语音和文本预训练模型，通过跨注意力融合和对抗学习学习语言不变的多模态表示。实验表明多模态融合优于单模态基线，验证了语言不变表示对跨语言迁移的重要性。",
+      "llm_tldr": "针对零样本跨语言阿尔茨海默检测任务，提出ORBIT框架，融合多语言语音和文本预训练模型，通过跨注意力融合和对抗学习学习语言不变的多模态表示。实验表明多模态融合优于单模态基线，验证了语言不变表示对跨语言迁移的重要性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
