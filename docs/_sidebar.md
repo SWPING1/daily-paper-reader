@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-06-19 <!--dpr-date:20260619-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/19/2606.16799v1-decoupling-semantics-from-distortions-multi-scale-two-stream-vision-language-alignment-for-ai-generated-image-quality-assessment" data-sidebar-item="{&quot;title&quot;: &quot;Decoupling Semantics from Distortions: Multi-Scale Two-Stream Vision-Language Alignment for AI-Generated Image Quality Assessment&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.16799v1-decoupling-semantics-from-distortions-multi-scale-two-stream-vision-language-alignment-for-ai-generated-image-quality-assessment&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;使用双CLIP编码器显式解耦语义与失真表示&quot;}">Decoupling Semantics from Distortions: Multi-Scale Two-Stream Vision-Language Alignment for AI-Generated Image Quality Assessment</a>
   * 2026-06-18 <!--dpr-date:20260618-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/18/2606.18893v1-learning-robust-pair-confidence-for-multimodal-emotion-cause-pair-extraction" data-sidebar-item="{&quot;title&quot;: &quot;Learning Robust Pair Confidence for Multimodal Emotion-Cause Pair Extraction&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.18893v1-learning-robust-pair-confidence-for-multimodal-emotion-cause-pair-extraction&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;多模态情感-原因对提取&quot;}">Learning Robust Pair Confidence for Multimodal Emotion-Cause Pair Extraction</a>
