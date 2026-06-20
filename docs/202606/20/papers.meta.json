@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-20",
+  "date": "2026-06-20",
+  "generated_at": "2026-06-20T21:32:24",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/20/2606.16193v1-cascaded-sparse-autoencoders-learn-multi-level-visual-concepts-in-multimodal-llms",
+      "section": "quick",
+      "title_en": "Cascaded Sparse Autoencoders Learn Multi-Level Visual Concepts in Multimodal LLMs",
+      "authors": "Yusong Zhao, Hengyi Wang, Tanuja Ganu, Akshay Nambi, Hao Wang",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16193v1",
+      "score": "7.0",
+      "evidence": "级联稀疏自编码器学习解耦的多层次视觉概念",
+      "tldr": "多模态大语言模型的内部视觉表示难以解释，现有稀疏自编码器只能学习扁平特征，缺乏层次组织。本文提出级联稀疏自编码器（CSAEs），通过将第二层SAE直接作用于第一层SAE的解码器权重，学习高层级概念。在Qwen3-VL等模型上的实验表明，CSAEs相比基线提升了层次概念一致性，并支持有效的组级概念干预。该方法实现了多级视觉概念的可解释学习，增强了模型干预能力。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Large Language Models (MLLMs) have demonstrated strong performance on vision-language tasks, yet their internal visual representations remain difficult to interpret. Sparse Autoencoders (SAEs) provide a scalable way to decompose dense model activations into sparse, interpretable features. However, existing SAE architectures primarily recover flat feature dictionaries and are less suited for explicit multi-level concept organization. In this paper, we introduce cascaded sparse autoencoders (CSAEs) for learning hierarchical visual concepts in MLLMs. Rather than nesting or stacking SAE sparse activation codes, CSAEs train a second-level SAE directly on the decoder weights of the first-level SAE, treating learned low-level feature directions as inputs for higher-level abstraction. This design enables CSAEs to learn \"concepts of concepts\" while avoiding drawbacks from the shared-prefix coupling of nesting, Matryoshka-style hierarchies and the bottlenecks of naively stacked SAEs. Experiments across Qwen3-VL, Gemma-3, and LLaVA on multiple visual datasets show that CSAEs improve interpretability in terms of hierarchical concept coherence over state-of-the-art SAE baselines. Results on concept steering further demonstrate that the learned concept groups support effective group-level interventions in MLLM outputs.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/20/2606.16639v1-spice-synergy-and-partial-information-based-curriculum-evolution",
+      "section": "quick",
+      "title_en": "SPICE: Synergy and Partial Information Based Curriculum Evolution",
+      "authors": "Ankush Pratap Singh, Houwei Cao, Yong Liu",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16639v1",
+      "score": "7.0",
+      "evidence": "基于部分信息分解的多模态课程学习提升鲁棒性",
+      "tldr": "多模态学习中各模态信息量因样本和训练阶段而变化，现有课程学习假设复杂度不变，无法适应模型演化。本文提出SPICE框架，基于部分信息分解(PID)理论，将多模态交互分解为冗余、独特和协同信息，动态刻画样本复杂度，并设计从共享到特定再到协同的渐进式课程，实时调整样本排序。在多个多模态基准上持续提升性能，优于现有方法。展示了PID信息分解和自适应样本排序的有效性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal learning exploits complementary information across heterogeneous modalities. The informativeness of each modality can vary widely across samples and training stages. Existing multimodal curriculum learning strategies often assume that the relative complexity of samples remains unchanged throughout training and therefore cannot adapt to model evolution. We propose SPICE (Synergy and Partial Information based Curriculum Evolution), a novel progressive curriculum framework for multimodal interaction learning. Guided by Partial Information Decomposition (PID) theory, our approach decomposes multimodal interactions into redundant, unique, and synergistic information components, enabling an interpretable and dynamic characterization of sample complexity. Building on this decomposition, we design a progressive curriculum that evolves throughout training, allowing the model to transition from learning shared cross-modal cues to modality-specific patterns and, finally, to complex synergistic interactions. Adapting to model evolution, sample ordering is refined in real-time using PID information estimates derived from unimodal and multimodal predictions. Experiments across multiple multimodal benchmarks demonstrate consistent improvements over conventional training and state-of-the-art baselines, highlighting the effectiveness of PID information decomposition and adaptive sample ordering for multimodal curriculum learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/20/2606.20382v1-towards-modality-imbalanced-federated-graph-learning-a-data-synthesis-based-approach",
+      "section": "quick",
+      "title_en": "Towards Modality-imbalanced Federated Graph Learning: A Data Synthesis-based Approach",
+      "authors": "Zhengyu Wu, Hongchao Qin, Xunkai Li, Zekai Chen, Rong-Hua Li, Guoren Wang",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.20382v1",
+      "score": "7.0",
+      "evidence": "数据合成恢复联邦图学习中的缺失模态",
+      "tldr": "多模态联邦图学习面临客户端和节点两种粒度的模态不平衡。现有方法难以直接适应，本文将其转化为隐式图感知的潜在语义表示合成问题。提出FedMGS，包含可用性感知图编码器、原型引导潜在语义合成器和可靠性校准语义融合机制。在四项任务上取得高达17.41%的性能提升，实现最佳效率-性能权衡。",
+      "tags": "query:mm",
+      "abstract_en": "MultiModal Federated Graph Learning (MM-FGL) offers a natural collaborative training paradigm, but its practical deployment is challenged by two granularities of modality imbalance. Client-level imbalance occurs when certain clients lack entire modalities, while node-level imbalance occurs when individual nodes exhibit missing visual or textual attributes. While several relevant studies exist, our investigation reveals that they predominantly target graph-agnostic or centralized scenarios, rendering them difficult to adapt directly. To address these challenges, we formalize modality-imbalanced MM-FGL as an implicit graph-aware latent semantic representation synthesis problem. This paradigm recovers missing modal semantics directly within the representation space, thereby maximizing alignment with the original data's semantic distribution and mitigating the high variance induced by missing modalities. To this end, we propose FedMGS (Federated Modality-aware Graph Synthesis), which integrates three core components. The availability-aware graph encoder prevents missing modalities from contaminating local structural propagation. The prototype-guided latent semantic synthesizer establishes cross-client semantic anchors for unavailable modalities. The reliability-calibrated semantic fusion mechanism regulates the impact of recovered latent representations prior to predictive readout. Extensive experiments on four tasks show that FedMGS consistently outperforms competitive baselines with gains up to 17.41% with best efficiency-performance tradeoff.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/20/2606.16255v1-uniddt-unifying-multimodal-understanding-and-generation-with-decoupled-diffusion-transformer",
+      "section": "quick",
+      "title_en": "UniDDT: Unifying Multimodal Understanding and Generation with Decoupled Diffusion Transformer",
+      "authors": "Shuai Wang, Liang Li, Yang Chen, Ruopeng Gao, Yao Teng, Limin Wang",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16255v1",
+      "score": "6.0",
+      "evidence": "通过解耦扩散Transformer实现鲁棒多模态表示学习",
+      "tldr": "现有统一多模态模型面临视觉理解与生成任务的学习冲突、视觉空间不一致及对任务特定数据的过度依赖等问题。UniDDT利用Noisy ViT编码器与LLM统一语义编码，通过分离的扩散解码器解耦扩散与文本解码，并构建双数据结构利用图文内在二元性。实验在GenEval（0.87）、DPG（86.9）、MME（1699.5）和SEEDbench（76.5）上均取得领先性能，实现了理解与生成的高效统一，兼顾语义一致性与可扩展性。",
+      "tags": "query:mm",
+      "abstract_en": "Unified Multimodal Models (UMMs) have emerged as a critical direction for general-purpose multimodal intelligence, integrating understanding and generation into a single framework. However, existing UMMs face prominent challenges: (1) the inherent learning conflicts between visual understanding and generation tasks, leading to suboptimal modeling in both tasks; (2) different understanding and generation visual spaces impeding scalability; (3) over-reliance on task-specific data that neglects the duality of text-image understanding and generation. To address these challenges, we propose UniDDT, which leverages a Noisy ViT encoder along with an LLM to unify semantic encoding for visual generation and understanding tasks, while employing a separate diffusion decoder to decouple diffusion decoding from text decoding. With this Noisy ViT encoder, UniDDT is able to leverage the latent space as a unified visual representation, enabling seamless compatibility between understanding and generation tasks. Thus, the scalability within the generation tasks and the semantic expressiveness within understanding tasks can be balanced. Also, we construct dual data structures from the same image-text pairs, fostering interdependence between the generation and understanding data to exploit their inherent duality. Extensive experiments demonstrate that UniDDT achieves effective unification of multimodal understanding and generation with enhanced semantic consistency and scalability. For visual generation tasks, our UniDDT achieves 0.87 GenEval score and 86.9 DPG overall score. For multimodal understanding tasks, our UniDDT achieves 1699.5 score on MME benchmark and 76.5 overall score on SEEDbench.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
