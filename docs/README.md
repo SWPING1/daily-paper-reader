@@ -6,33 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-20
-- 运行时间：2026-06-20 21:32:18 UTC
+- 最新运行日期：2026-06-21
+- 运行时间：2026-06-21 21:16:09 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：0
+- 本次总论文数：5
+- 精读区：1
 - 速读区：4
 
 ### 今日简报（AI）
-今日速读4篇论文，均为7分佳作。最值得关注的方向：多模态LLM中利用级联稀疏自编码器学习分层视觉概念，以及利用协同与部分信息设计课程演化的方法。建议进一步探索多模态模型的可解释性机制和联邦图学习中数据合成解决方案。
-- 详情：[/202606/20/README](/202606/20/README)
+今天精读一篇多模态优化论文，并速读三篇多模态生成与概念解释工作，聚焦模态平衡与细粒度控制。最值得看的是《Pareto LoRA》8.0高分提出帕累托最优梯度融合解决模态不平衡，以及《EmoZone-Talker》用面部动作单元实现说话头部区域语义控制。建议优先精读Pareto LoRA理解梯度冲突解法，对说话头生成感兴趣可参考EmoZone-Talker。
+- 详情：[/202606/21/README](/202606/21/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Pareto LoRA: Mitigating Modality Imbalance in Unified Multimodal Models via Pareto-Optimal Gradient Integration](/202606/21/2606.17296v1-pareto-lora-mitigating-modality-imbalance-in-unified-multimodal-models-via-pareto-optimal-gradient-integration)  
+   标签：评分：8.0/10、query:mm
+   evidence：通过帕累托最优梯度缓解多模态模型中的模态不平衡
 
 ### 速读区论文标签
-1. [Cascaded Sparse Autoencoders Learn Multi-Level Visual Concepts in Multimodal LLMs](/202606/20/2606.16193v1-cascaded-sparse-autoencoders-learn-multi-level-visual-concepts-in-multimodal-llms)  
-   标签：评分：7.0/10、query:mm
-   evidence：级联稀疏自编码器学习解耦的多层次视觉概念
-2. [SPICE: Synergy and Partial Information Based Curriculum Evolution](/202606/20/2606.16639v1-spice-synergy-and-partial-information-based-curriculum-evolution)  
-   标签：评分：7.0/10、query:mm
-   evidence：基于部分信息分解的多模态课程学习提升鲁棒性
-3. [Towards Modality-imbalanced Federated Graph Learning: A Data Synthesis-based Approach](/202606/20/2606.20382v1-towards-modality-imbalanced-federated-graph-learning-a-data-synthesis-based-approach)  
-   标签：评分：7.0/10、query:mm
-   evidence：数据合成恢复联邦图学习中的缺失模态
-4. [UniDDT: Unifying Multimodal Understanding and Generation with Decoupled Diffusion Transformer](/202606/20/2606.16255v1-uniddt-unifying-multimodal-understanding-and-generation-with-decoupled-diffusion-transformer)  
+1. [EmoZone-Talker: Regional Semantic Control of Audio-Driven 3DGS Talking Heads via Facial Action Units](/202606/21/2606.15848v1-emozone-talker-regional-semantic-control-of-audio-driven-3dgs-talking-heads-via-facial-action-units)  
    标签：评分：6.0/10、query:mm
-   evidence：通过解耦扩散Transformer实现鲁棒多模态表示学习
+   evidence：显式空间解耦的面部运动建模
+2. [MMDiff: Extending Diffusion Transformers for Multi-Modal Generation](/202606/21/2606.16673v1-mmdiff-extending-diffusion-transformers-for-multi-modal-generation)  
+   标签：评分：6.0/10、query:mm
+   evidence：生成方法用于缺失模态重建
+3. [Multimodal Concept Bottleneck Models](/202606/21/2606.19882v1-multimodal-concept-bottleneck-models)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态概念瓶颈实现解耦表示
+4. [FUSE: Frequency-domain Unification and Spectral Energy Alignment for Multi-modal Object Re-Identification](/202606/21/2606.20044v1-fuse-frequency-domain-unification-and-spectral-energy-alignment-for-multi-modal-object-re-identification)  
+   标签：评分：6.0/10、query:mm
+   evidence：频域解耦用于多模态对齐
 
 
 <div class="dpr-home-promo-card">
