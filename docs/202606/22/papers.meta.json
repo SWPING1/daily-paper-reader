@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-22",
+  "date": "2026-06-22",
+  "generated_at": "2026-06-22T22:21:34",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/22/2606.16196v1-when-confidence-lacks-concepts-interpretable-ood-detection-via-representation-perturbations",
+      "section": "quick",
+      "title_en": "When Confidence Lacks Concepts: Interpretable OOD Detection via Representation Perturbations",
+      "authors": "Anju Chhetri, Pratik Shrestha, Ramesh Rana, Prashnna Gyawali, Binod Bhattarai",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16196v1",
+      "score": "6.0",
+      "evidence": "稀疏自编码器学习类特定概念向量，解耦密集中间表示",
+      "tldr": "深度神经网络在医学图像任务中性能优异，但分布偏移时易过度泛化，危及临床部署。现有OOD检测方法依赖黑箱信号，可解释性不足。本文提出通过稀疏自编码器学习类特定概念向量，在推理时对深层表示施加语义扰动，基于logits稳定性判别OOD样本。分布内样本对扰动低敏感，OOD样本因表征错配呈现放大偏差。该方法既提供有效OOD信号，又为模型不确定性提供可解释视角，适合高安全需求医疗场景。",
+      "tags": "query:mm",
+      "abstract_en": "Deep neural networks have achieved remarkable performance across medical imaging tasks, yet their tendency to overgeneralize under distributional shifts poses a major obstacle to safe clinical deployment. Out-of-Distribution (OOD) detection methods aim to mitigate this risk, but most existing approaches rely on opaque internal signals with poorly understood semantic meaning, limiting trust in safety-critical settings. In this work, we propose an interpretable OOD detection framework that probes the stability of model predictions under class-conditioned semantic perturbations. Leveraging sparse autoencoders (SAEs), we learn class-specific concept vectors from in-distribution data that disentangle dense intermediate representations into sparse, semantically meaningful components. At inference, we perturb deeper-layer representations using the concept vectors associated with the model's predicted class and measure the class logits stability. We hypothesize that in-distribution samples exhibit low sensitivity to such perturbations, as their representations align with class-specific semantic directions, whereas OOD samples show amplified deviations due to representational misalignment. By framing OOD detection as a concept conditioned stability analysis, our approach provides both a discriminative OOD signal and an interpretable lens into the internal mechanisms driving model uncertainty, making it particularly suitable for high stakes medical applications.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/22/2606.18780v1-sama-semantic-anchor-aligned-augmentation-for-unified-low-resource-multimodal-information-extraction",
+      "section": "quick",
+      "title_en": "SAMA: Semantic Anchor-aligned Augmentation for Unified Low-Resource Multimodal Information Extraction",
+      "authors": "Quanjiang Guo, Chong Mu, Jiazhou Pan, Ming Jia, Ling Tian, Hui Gao, Zhao Kang",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.18780v1",
+      "score": "6.0",
+      "evidence": "统一框架生成高质量合成多模态数据",
+      "tldr": "多模态信息提取任务面临严重数据稀缺，现有数据增强方法因跨模态对齐粗糙和碎片化任务设计而受限。本文提出语义锚对齐多模态增强（SAMA）统一框架，通过结构化语义锚引导多专家多模态大语言模型生成文本，采用锚保持扩散机制合成图像，并利用双约束过滤模块自动筛选高保真样本。在多个基准上，SAMA在低资源和全监督设置下均优于现有方法，展示了其通用性和鲁棒性，为低资源多模态信息提取提供了有效增强方案。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Information Extraction (MIE)-covering tasks such as Multimodal Named Entity Recognition (MNER), Relation Extraction (MRE), and Event Extraction (MEE)-is essential for understanding multimedia content but remains constrained by severe data scarcity. Although data augmentation is a promising remedy, existing approaches are impeded by coarse cross-modal alignment and fragmented, task-specific designs that fail to exploit shared semantic knowledge. To overcome these limitations, we introduce Semantic Anchor-aligned Multimodal Augmentation (SAMA), a unified framework for generating high-fidelity, task-aware synthetic data. SAMA constructs structured semantic anchors from ground-truth labels to guide a Collaborative Multi-Experts Multimodal Large Language Model (CME-MLLM), which integrates a Universal Adapter for shared semantics with Task-Specific Adapters to produce diverse yet constraint-compliant textual samples. For image synthesis, SAMA employs an Anchor-Preserving Diffusion mechanism that uses anchor-weighted prompts and latent conditioning to maintain critical semantic anchors while diversifying visual contexts. To eliminate the need for manual verification, SAMA further introduces a Dual-Constraint Filtering module that selects synthetic samples based on both cross-modal consistency and anchor fidelity. Extensive experiments across benchmark datasets for MNER, MRE, and MEE demonstrate that SAMA consistently outperforms state-of-the-art augmentation baselines under both fully supervised and low-resource settings, underscoring its versatility, robustness, and effectiveness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
