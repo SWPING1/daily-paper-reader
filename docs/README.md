@@ -6,27 +6,42 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-22
-- 运行时间：2026-06-22 22:21:27 UTC
+- 最新运行日期：2026-06-23
+- 运行时间：2026-06-23 21:59:11 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 本次总论文数：6
+- 精读区：2
+- 速读区：4
 
 ### 今日简报（AI）
-今天读了2篇速读论文，分别涉及可解释OOD检测和低资源多模态信息抽取。值得关注的方向：通过表示扰动实现概念级OOD可解释性，以及语义锚定对齐提升低资源多模态抽取效果。建议普通读者关注这两个方法在实际风险检测与多模态理解任务中的应用潜力。
-- 详情：[/202606/22/README](/202606/22/README)
+今日精选6篇论文，以无监督解耦与多模态情感识别为亮点，两篇精读均获9.0分。
+
+最值得关注：功能正交性保障无监督解耦的可识别性，以及CLIP结合身体与场景的上下文情感识别方法。
+
+普通读者可优先研读这两篇高分论文，把握解耦理论与多模态融合的最新进展。
+- 详情：[/202606/23/README](/202606/23/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Unsupervised Disentanglement Without Compromises : How Functional Orthogonality Enforces Identifiability](/202606/23/2606.21385v1-unsupervised-disentanglement-without-compromises--how-functional-orthogonality-enforces-identifiability)  
+   标签：评分：9.0/10、query:mm
+   evidence：通过功能正交性实现无监督解耦
+2. [A Controlled Study of CLIP-Based Body-Scene Fusion for Emotion Recognition in Context](/202606/23/2606.22072v1-a-controlled-study-of-clip-based-body-scene-fusion-for-emotion-recognition-in-context)  
+   标签：评分：9.0/10、query:mm
+   evidence：基于CLIP的身体-场景融合进行情感识别
 
 ### 速读区论文标签
-1. [When Confidence Lacks Concepts: Interpretable OOD Detection via Representation Perturbations](/202606/22/2606.16196v1-when-confidence-lacks-concepts-interpretable-ood-detection-via-representation-perturbations)  
+1. [MixProLAP: Mixture-Induced Uncertainty Modeling for Probabilistic Language-Audio Pretraining](/202606/23/2606.20418v1-mixprolap-mixture-induced-uncertainty-modeling-for-probabilistic-language-audio-pretraining)  
+   标签：评分：7.0/10、query:mm
+   evidence：概率音频-语言预训练实现鲁棒跨模态对齐
+2. [Dementia-Agents: A Multi-Modal Multi-Agent System for Dementia Staging and Phenotyping](/202606/23/2606.21168v1-dementia-agents-a-multi-modal-multi-agent-system-for-dementia-staging-and-phenotyping)  
    标签：评分：6.0/10、query:mm
-   evidence：稀疏自编码器学习类特定概念向量，解耦密集中间表示
-2. [SAMA: Semantic Anchor-aligned Augmentation for Unified Low-Resource Multimodal Information Extraction](/202606/22/2606.18780v1-sama-semantic-anchor-aligned-augmentation-for-unified-low-resource-multimodal-information-extraction)  
+   evidence：处理不完整多模态数据
+3. [Chehre: An Emoji-Prompted Video Dataset for Perceptually Diverse Facial Expression Recognition](/202606/23/2606.21657v1-chehre-an-emoji-prompted-video-dataset-for-perceptually-diverse-facial-expression-recognition)  
    标签：评分：6.0/10、query:mm
-   evidence：统一框架生成高质量合成多模态数据
+   evidence：面部表情识别数据集，用于情感识别
+4. [Learning from Audio-Dependency Errors: Data Curation Strategies Based on Model Confusion Patterns in Audio Question Answering](/202606/23/2606.22276v1-learning-from-audio-dependency-errors-data-curation-strategies-based-on-model-confusion-patterns-in-audio-question-answering)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过空音频探测处理缺失音频模态
 
 
 <div class="dpr-home-promo-card">

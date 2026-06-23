@@ -1,0 +1,548 @@
+Title: Chehre: An Emoji-Prompted Video Dataset for Perceptually Diverse Facial Expression Recognition
+
+URL Source: https://arxiv.org/pdf/2606.21657v1
+
+Published Time: Tue, 23 Jun 2026 01:27:25 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+# Chehre: An Emoji-Prompted Video Dataset for Perceptually Diverse Facial Expression Recognition 
+
+Bita Azari, Zoe Stanley, Avneet Batra, Poorvi Bhatia, Hali Kil , Manolis Savva , Angelica Lim 
+
+Simon Fraser University, Canada  
+
+> Correspondence: bazari@sfu.ca
+
+Abstract 
+
+Facial expressions are nonverbal social sig-nals used in human interaction, but facial ex-pression recognition datasets often focus on static images, basic emotion categories, or sin-gle deterministic annotations. We introduce 
+
+Chehre 1, an emoji-prompted video dataset for analyzing dynamic facial expressions across a wide range of expressions for exploring inter-individual perceptual diversity. In Chehre , par-ticipants were prompted to express and record 40 facial emojis. Later, their facial motions were transferred onto synthetic faces to pre-serve privacy. A separate group of annotators analyzed the anonymized videos using emoji and label annotations, resulting in 2,111 high quality videos collected from 203 performers and validated by 902 annotators. We define two benchmark tasks: dominant expression recognition, which tests whether models re-cover the top human-rated labels, and distri-butional expression recognition, which tests whether models capture the diversity of hu-man responses. We benchmark recent vision-language models using random sampling and persona prompting to generate multiple predic-tions per video. Results show that both tasks are challenging: among the models evaluated, the best-performing model achieves only 32.5% Top-1 accuracy on dominant expression recog-nition and a Spread Ratio well below the human reference on distributional recognition. Chehre 
+
+provides a benchmark for evaluating diverse, dynamic, and distributional facial expression recognition. 
+
+1 Introduction 
+
+Language models are becoming more capable of interpreting and representing emotion through rich and in-the-wild text (Amin et al., 2024; Sabour et al., 2024). As embodied AI agents begin to in-teract naturally with humans, multimodal language 
+
+> 1https://chehre-dataset.github.io/
+
+Figure 1: Chehre samples. Each row shows one emoji-prompted expression video. The bar plot shows the percentage of annotators who selected each label as top-1 from the candidate set of labels for each video. 
+
+models are tasked with interpreting nonverbal so-cial signals, such as facial expressions and body language (Etesam et al., 2024). Facial expression recognition datasets used to benchmark multimodal models are not without lim-itations. First, many focus on static images rather than dynamic videos representative of real-life in-teractions. Secondly, those that are dynamic often focus on a set of basic emotion categories, which is limited in capturing the diversity of nonverbal so-cial signals used in human communication. Finally, many benchmarks assume a single definitive label 1
+
+> arXiv:2606.21657v1 [cs.CV] 19 Jun 2026
+
+per facial expression based on majority responses. Or, they do not distinguish between two fundamen-tally different sources of perceptual disagreement: cross-cultural differences in how facial expressions are interpreted, and inter-individual variation that exists even within a demographically similar popu-lation (Mohanty et al., 2025). A promising avenue for tackling these limita-tions is to consider emojis. Emojis are a widely used way of expressing nonverbal social signals beyond emotions, from attitudes (e.g. affection, sarcasm, confidence), bodily states (e.g. tiredness, dizziness); and mental states (e.g. thinking, confu-sion). An exciting direction is to bring emojis from the static realm into dynamic human faces. In this work, we introduce Chehre , an emoji-prompted video dataset (Figure 1). Participants were asked to express 40 emojis using face and head movements. We used facial reenactment to anonymize their videos and asked a separate group of annotators to evaluate the performances. We benchmark recent vision-language models (VLMs) on Chehre to evaluate if they can recognize dy-namic facial expressions in a way that aligns with human perception, both in selecting the top labels and in reproducing the diversity of human interpre-tations. Our contributions are: • We introduce Chehre , a controlled and anonymized emoji-prompted dataset of dy-namic synthetic-face videos that captures di-verse social signals, collected and validated with over 1000 participants. • We show that current VLMs still do not fully recover the diversity of human responses and cannot accurately predict the top two labels from a candidate set. • To the best of our knowledge, we are the first to test if persona prompting affects how VLMs perceive facial expression. 
+
+2 Related Work 
+
+Facial Expression Datasets Early facial expres-sion recognition methods focused on static images (Mollahosseini et al., 2017; Li et al., 2017; Lyons et al., 1998). These datasets opened the possibil-ity of studying and analyzing facial expressions, but they do not fully capture the full range of fa-cial expression as a social signal (Ambadar et al., 2005). In recent years, more dynamic facial ex-pression datasets have been introduced, such as MELD (Poria et al., 2019), DFEW(Jiang et al., 2020), CAER (Lee et al., 2019), which use basic emotion categories, and Aff-Wild2, (Kollias and Zafeiriou, 2018) and VEATIC (Ren et al., 2024), which use continuous valence/arousal scales for annotations. In order to achieve scale, many video datasets are collected from movies or in-the-wild media, under uncontrolled conditions. 
+
+Basic Emotions As Insufficient In psychology, basic emotion categories have been challenged as incomplete descriptions of facial expression (Bar-rett et al., 2019). Cowen et al. (Cowen and Kelt-ner, 2020) also highlights the limitations of basic emotion categories and continuous valence/arousal representations. They showed that naturalistic fa-cial expressions can convey 28 distinct affective dimensions mapped to smooth semantic gradients rather than a few categories. While their dataset is abundant, it contains uncontrolled visual condi-tions, and to our knowledge no annotated facial emotion dataset anonymizes participant identities. Chehre builds on this work by anonymizing and standardizing videos through facial reenactment, expanding the expression space to include social and bodily-state signals via emojis, and collecting more than 20 annotations per video. 
+
+Emojis as an alternative Emojis represent af-fective and social meaning. Prior work investigates emojis as quasi-nonverbal cues in digital communi-cation, showing that they convey emotional inten-sity and valence and can elicit affective responses similar to facial expressions in face-to-face interac-tion (Erle et al., 2022). EmojiHeroVR (Ortmann et al., 2024) uses emojis to prompt participants in a virtual reality setting but faces are occluded by the head-mounted VR display. To our knowl-edge, no existing dataset collects full, unoccluded facial expression video recordings using emojis as prompts. Chehre fills this gap by using emojis to elicit a wide variety of dynamic facial expressions, including attitudes, bodily states, and mental states, while keeping the full face visible throughout. 
+
+Affective intelligence in language models Re-cent work has evaluated large-scale models for affective understanding. Lian et al. (Lian et al., 2024) evaluate GPT-4V as a zero-shot model for generalized emotion recognition across visual, tem-poral and textual and multimodal affective tasks. Emotion-LLaMA (Cheng et al., 2024) studied mul-timodal emotion recognition and reasoning using different modalities, and EmoBench (Sabour et al., 2024) evaluated emotional intelligence in LLMs. Also, VIBE (Chakraborty et al., 2025) and MME-2Emotion (Zhang et al., 2025a) assess VLMs on social-pragmatic inference and emotional under-standing from visual scenes. However, evaluating VLMs on isolated facial and head-motion videos with per-video candidate label sets and Likert-scale ratings remains an open problem. Chehre provides this evaluation setting, enabling a controlled com-parison between model and human perception on dynamic, single-face videos. 
+
+Facial expression perception is subjective Fa-cial expression recognition is a subjective task, and individuals can interpret faces differently (Barrett et al., 2019; Mohanty et al., 2025). Perceptual diver-sity has been attributed to cultural differences (Fang et al., 2021; Jack et al., 2012), yet studies (Binetti et al., 2022) also show substantial inter-individual diversity exists even when controlling for culture. In recent years, studies in natural language pro-cessing and computer vision (Uma et al., 2021; Plank, 2022; Davani et al., 2021; Geng, 2016) have challenged the assumption that in many perception task there is only one correct single (gold) interpre-tation. Instead, they argue that the disagreement should not be treated as noise but as a meaningful signal, a stance often referred to as the perspec-tivist approach. Recent work (Fröhling et al., 2025; Lutz et al., 2025) has explored persona prompting to guide LLM responses and induce demographic variation . Chehre embraces the perspectivist ap-proach through distributional annotation and is the first to investigate how persona prompting affects VLM-based expression recognition. 
+
+3 Dataset 
+
+The Chehre dataset was constructed in two phases. In the first phase: Expression Phase, human per-formers were recorded expressing 40 commonly used facial emojis through dynamic facial and head movements while providing open-ended textual de-scriptions of the meanings they associated with each emoji. In the second phase: Perception Phase, these recorded expressions were evaluated by a sep-arate group of perceivers, who rated how well each performance matched the intended emojis and as-sociated semantic labels. This two-phase design enables the dataset to link emojis, dynamic expres-sions, and semantic interpretations. 
+
+3.1 Data Collection (Expression Phase) 
+
+In the expression phase, we recruited 280 partici-pants of whom 203 completed the task (45 male,  
+
+> Figure 2: The first row shows the original videos recorded by participants. The second row shows the same facial motion mapped to a synthetic face using LivePortrait (Guo et al., 2024).
+
+156 female, 2 unreported; mean age = 20.04) from a university in North America to record facial ex-pressions corresponding to 40 commonly used fa-cial emojis. Restricting to a demographically sim-ilar population allows inter-individual perceptual diversity to be studied independently of known cross-cultural effects. Participants were instructed to express each emoji on video using natural fa-cial and head movements, starting from a neutral expression, transitioning to the expression. In addi-tion to the video recordings, participants provided open-ended textual descriptions of what each emoji meant to them, allowing unconstrained semantic interpretations to be collected alongside expressive behavior. Data collection was conducted through a web-based recording interface (Figure 3a). Details in Appendix A.2. A total of 11,055 videos were recorded. They were divided among the research team to review for adherence to the recording instructions and overall quality: videos with issues such as im-proper camera positioning, occlusions, incomplete expressions, or insufficient visibility of facial move-ment were removed. After this cleaning process, the dataset retained 2,400 high-quality expression videos, each capturing a complete dynamic expres-sion sequence. Open-ended semantic descriptions that were properly submitted were retained for all participants, resulting in a total of 11,164 valid text labels used in subsequent analyses, described in Section 3.3. 
+
+3.2 Expression Mapping and Anonymization 
+
+To preserve participant privacy and ensure visual consistency across the dataset, all 2,400 expres-sion videos were anonymized. We generated a set of photorealistic base identities using the Chicago Face Database (Ma et al., 2015). Facial compo-nents from images in (Ma et al., 2015) including the base face, eye region, and mouth region were composited from different source images within the 3(a)  (b) 
+
+> Figure 3: Screenshots of (a) the data collection interface: participants were prompted with an emoji to record a facial expression video, and (b) the data validation interfaces: participants viewed anonymized videos and annotated them.
+
+dataset to disrupt identity cues. Each patched com-posite face was then projected into the StyleGAN2 latent space, and the nearest latent was used to gen-erate a visually coherent synthetic identity (Karras et al., 2020). EmoStyle (Azari and Lim, 2024) was used to produce neutral baseline facial appearances. This process resulted in a set of 42 synthetic indi-viduals. In addition, a consistent white background across videos helped unify the dataset and reduce visual variability unrelated to facial expression. Facial motion from the original expression videos was transferred onto the generated identi-ties using LivePortrait (Guo et al., 2024). Two samples are shown in Figure 2. This process produced anonymized dynamic facial expression videos used for downstream perceptual annotation. When assigning synthetic identities to performers, we aimed to approximately match gender and ap-parent age where possible using the age/gender esti-mation tool from DeepFace (Serengil and Ozpinar, 2026). This matching was intended to maintain visual plausibility while prioritizing anonymization and privacy. 
+
+3.3 Semantic Label Selection 
+
+To select a compact set of semantic labels for each emoji, we employed a discussion-until-agreement procedure, using a protocol based on the Consen-sual Qualitative Research (CQR) method (Hill and Knox, 2021), over the open-ended text descrip-tions collected during the expression phase. Three members of the research team jointly reviewed the text inputs for each emoji in structured discussion sessions, with the goal of selecting labels that col-lectively covered the range of all text descriptions provided by participants in the expression phase. Further details in Appendix A.1. 
+
+3.4 Data Validation (Perception Phase) 
+
+In the perception phase, we recruited 902 partici-pants (252 male, 637 female, 8 other, 5 unreported; mean age = 20.05) from a university in North Amer-ica to evaluate the recorded expression videos. Per-ceivers were presented with anonymized videos generated through the expression mapping process and were asked to assess how well each video matched the intended emoji and its associated se-mantic labels derived from Section 3.3. Data col-lection was conducted through a web-based ex-perimental interface (Figure 3b). All participants provided informed consent in accordance with an approved research ethics protocol prior to partici-pation. For each video, perceivers completed two types of evaluations. First, they rated how well the video represented the target facial emoji using a discrete 4-point scale ranging from 0 (“no match”) to 3 (“perfect match”). Second, they rated how well the videos represented the semantic label. In ad-dition, participants selected their top 1 and top 2 labels that best described the expression or indi-cated “None” if no label was appropriate. Videos were randomly selected for each participant, and the sets of videos presented for each annotator were not necessarily the same. Participants also had the option to flag videos that appeared visually unsta-ble or glitchy due to the mapping procedure ex-plained in Section 3.2. Perceivers also completed demographic questions. All participation was vol-untary, and participants could withdraw at any time without penalty. The public dataset is released for research use with ratings, videos, and frame-level MediaPipe (Lugaresi et al., 2019) facial landmark annotations (478 keypoints per frame). A final fil-tering process was performed on the 2400 videos based on participant quality flags, resulting in a fi-nal dataset comprised of 2,111 high-quality videos 
+
+with an average of 21 perceivers per video. 
+
+4 Benchmark Tasks 
+
+We propose two benchmark tasks for Chehre . Task 1 evaluates dominant expression recognition, mea-suring whether a model can recover the top-1 and 4top-2 facial expression labels most strongly sup-ported by human annotators. This task disregards annotator differences in perception and focuses on recovering the dominant annotator interpretations of the anonymized expression videos. Task 2 eval-uates distributional expression recognition. Instead of assuming that each video has a single determin-istic ground-truth label, we assume that different people perceive them differently and compare these human rating distributions to model-generated out-put rating distributions. In both tasks, models are given videos from the Chehre dataset and a set of candidate labels, including the label “None”, al-lowing models to indicate that none of the label expression is clearly visible in the video. 
+
+4.1 Task 1: Dominant Recognition 
+
+In this task we evaluate whether VLMs can recover the dominant human perception of facial expres-sions videos. To construct our human reference for this task, we aggregated human annotations by computing the mean ratings of each candidate label for each video. We then select the two labels with the highest mean ratings as the dominant human perception for that video. To benchmark VLMs, we prompt each model with the video and the same set of candidate labels shown to human annotators.The model is asked to select the top two expression labels. The label 
+
+“None” is also included in the list of candidate la-bels, in case the model does not detect any facial expression in the video. Note that, this task is not intended as open-ended facial expression recog-nition but following the same label set presented to human annotators for each video. This design allows us to evaluate models’ output with human annotations while controlling the label space and avoiding unrestricted text generation. 
+
+4.1.1 Metrics Top-1 : We measure whether the model’s top pre-diction matches the label with the highest mean human score for that video. 
+
+Recall@2 : We measure the fraction of the top two highest-rated human labels recovered by the model’s two predictions, ignoring order. 
+
+nDCG@2 : We use “ nDCG @2 ” to evaluate whether the model ranks the dominant human la-bels in the correct order. We define the relevance score from the top-1 and top-2 average human mean ratings of each video (Järvelin and Kekäläi-nen, 2002). We compute nDCG over the model’s two predicted labels. 
+
+False None Rate : We report “False None” rate to measure cases where a model selects None de-spite human evidence of a visible expression. We count a prediction as false-none when None ap-pears in the model’s top-2 predictions, fewer than 20% of annotators selected None , and at least one non-None expression has a mean human score of 
+
+> 1. All metrics are reported as averages across all videos. For more details see Appendix B.1. 
+
+4.2 Task 2: Distributional Recognition 
+
+In this task, we evaluate whether VLMs can recover the distribution of human perceptions for facial ex-pression videos. To construct the human reference for this task, instead of reducing annotations to a single mean rating vector for each video, we com-pute the rating vector provided by each annotator. This allows us to capture how much annotators differed in their interpretations. Since the human reference consists of multiple annotator rating vectors per video, a single model response is insufficient for distributional compari-son; we therefore generate multiple rating vectors per video under different prompting or decoding conditions. Rather than single-label recognition, this task tests whether VLMs can produce a range of valid and plausible rating combinations for the same video, reflecting the fact that human annota-tors may perceive the same expression differently. 
+
+4.2.1 Metrics Valid Output : “ Valid ” measures the fraction of model generations that return a complete and valid response. A model output is valid only if it assigns an integer score from 0 to 3 to every candidate label and does not add or remove labels. 
+
+Label Ratings MAE : “ MAE ” measures the ab-solute difference between the mean human rating vector and the mean model rating vector. 
+
+Rating-Distribution JSD : “ JSD ” measures whether the model captures the distribution of hu-man Likert ratings for each candidate label. For each video and candidate label, we estimate the human and model rating distributions over the four Likert scores {0, 1, 2, 3}. We then compute the Jensen-Shannon divergence between these two dis-tributions for each label. Then, for each video rating, JSD is computed by averaging over candi-date labels, and we record the mean of rating JSD across all the videos. 5Human Coverage : We define “ H. Cov. ” to mea-sure what fraction of human rating vectors are close to at least one model-generated rating vector. It is computed using the normalized L1 distance be-tween each human vector and each model vector divided by 3Dv, where Dv is the number of candi-date labels and 3 is the maximum rating value. A human vector is considered covered if its distance to at least one model-generated vector is below a threshold; we computed the threshold at which 80% of human vectors had at least one other in agreement. More details in Appendix B.1. 
+
+Spread Ratio : We introduce the “ SR ” metric. It measures whether the model under random sam-pling and persona prompting produces a similar amount of rating diversity as human annotators. For each video, we compute the normalized, mean pairwise Euclidean distance between human rating vectors and, similarly, between model-generated rating vectors. The final Spread Ratio is computed as the average model spread divided by the average human spread across videos. 
+
+Zero Rate Gap : We define “ Zero-RG ” as a met-ric to measures whether a model overuses zero ratings compared with humans. We compute the fraction of label-score entries assigned zero by the model and subtract the corresponding human zero rate. Positive values indicate that the model assigns zero more often than humans. For more details see Appendix B.1 
+
+5 Experiments 
+
+We evaluate several vision-language models on our proposed benchmarks. 
+
+Model selection: For Task 1, we selected vision-language models from the OpenVLM Video Leaderboard, which reports video-understanding benchmark results using VLMEvalKit (Duan et al., 2024). 2 Since our benchmark requires multiple inference passes over a large number of clips, we selected open-source models that were feasible to run under our computational constraints. We evalu-ate Qwen2.5-Omni-7B (Xu et al., 2025), LLaVA-Video-7B-Qwen2 (Zhang et al., 2025b), InternVL3-8B and InternVL3-38B (Zhu et al., 2025). For Task 2, we chose 3 of the models we tested in Task 1 from each family of models Qwen2.5-Omni-7B, LLaVA-Video-7B-Qwen2 and InternVL3-8B. In our experiments, we used NVIDIA L40S GPUs 
+
+> 2https://huggingface.co/spaces/opencompass/ openvlm_video_leaderboard .
+
+with 48GB memory. The models with <8B parame-ters process the video using 32 uniformly sampled frames, while InternVL-38B used 24. Experiment 1: Dominant recognition For each video, mod-els are given the same set of candidate labels used in the perception phase task, including None , as described in Section 3.4. The model is prompted to predict the top-1 and top-2 expression labels that best describe the visible facial expression in the video. We then compare the model’s predic-tions against the labels with the highest and second-highest mean human ratings using the metrics from Section 4.1.1. 
+
+Experiment 2: Distributional recognition As described in Section 3.4 participants directly se-lected the top-1 and top-2 expression labels for each video, with None available as an option. We use these rank selections to measure ambi-guity for each video. For each video, we com-pute the entropy of the selected top-1 and top-2 label distributions, normalized by the number of candidate labels. We combine the top-1 and top-2 entropy scores using a weighted average, giv-ing higher weight to top-1 selections: A(v) = 0.75 Hnorm 1 (v) + 0 .25 Hnorm 2 (v).We then rank videos by this ambiguity score and select the top 300 videos as the high-ambiguity sub-set and the bottom 300 videos as the low-ambiguity subset. Since Task 2 requires multiple inference runs per video to compare VLM and human rating distributions, evaluating the full dataset is compu-tationally expensive. We therefore report the dis-tributional expression task on the high-ambiguity and low-ambiguity subset. To generate multiple model-generated rating vectors per video, we use two different settings: First, we use Random Sampling implemented by stochastic decoding: each video is evalu-ated 25 times with the same prompt but differ-ent random seeds ( temperature = 0 .7, top-p =0.9, and top-k = 20 ). Second, we use Persona Prompting : each video is evaluated 25 times with the same prompt but a different observer perspective. This setting is inspired by the interpersonal circumplex (Leary, 2004), which represents interpersonal traits along two orthogonal axes: affiliation, ranging from very unfriendly to very friendly , and dominance, rang-ing from very submissive to very dominant . We use these two dimensions to define a 5 × 5 set of personas, resulting in 25 prompts per video. For each persona prompt, the video, candidate la-6Figure 4: Distributional comparison between human ratings and model-generated outputs for two sample videos from Chehre , with the human rating distribution (top row) and VLM-generated distributions below. Model outputs are produced using persona prompting (P) or random sampling (RS). Each stacked bar shows the percentage of ratings assigned to the candidate labels. Qwen2.5 with random sampling shows a similar distribution as humans.                        
+
+> Model Name Top-1 ↑Recall@2 ↑nDCG@2 ↑False None ↓
+> LLaVA-Video-7B 0.207 0.211 0.398 0.620 InternVL3-8B 0.307 0.273 0.486 0.627 InternVL3-38B 0.320 0.392 0.606 0.404 Qwen2.5-Omni-7B 0.325 0.427 0.662 0.317
+
+Table 1: Dominant expression recognition results on the full set of 2,111 videos. Qwen2.5-Omni achieves the best performance; overall accuracy remains low. 
+
+bel set, and the instructions in the prompt remain fixed. Only a short annotator-perspective sentence is changed, for example: “You are someone who is very friendly toward people and is submissive .” 
+
+This setting evaluates whether structured observer variation can induce the model to generate more di-verse scores and better match the disagreement ob-served in human annotators. Since Persona prompt-ing uses greedy decoding for each persona prompt, we can isolate the effect of the observer perspec-tive changes from the effect of stochastic decoding. We also report greedy decoding without persona variation as a deterministic baseline. 
+
+6 Results 
+
+Can models recover the dominant human inter-pretation of each video? Table 1 demonstrates that the selected VLMs do not fully capture the domi-nant human perception of the facial expression in 
+
+Chehre videos. Qwen2.5-Omni-7B achieves the best performance in all metrics with 32.5% top-1 accuracy, missing human-interpretable expressions (false none) 32.7% of the time. The second best performing model is InternVL3-38B. Generally, we observe a high False None Rate for all models, which shows that VLMs often choose “ None ”, even when human annotators confidently see an expres-sion in the video. Inspecting the outputs, models sometimes justify these “None” predictions with reasoning such as: “The facial expression appears neutral with no clear indication of any specific emotion.” Table 2 reports lower scores on high-ambiguity videos. Overall, the results show that the selected VLMs cannot fully recover the top two labels from a fixed subset of labels in Chehre ,and the task proved challenging even for the larger-scale model tested. 
+
+Can models capture the human rating distri-bution? Table 2 reports the distributional facial ex-pression task results on 300-video high-ambiguity and low-ambiguity subset. Overall, the results show that model-generated ratings are less diverse than the human reference. Figure 4 shows a visual comparison of the human rating distributions and model-generated output distributions for two sam-ple videos. In this task, Qwen2.5-Omni-7B with random sampling is able to cover the human distri-bution better than all other models. However, its Spread Ratio is still below 1, far from the amount of variation present in human ratings. To note, Qwen produced typos that were corrected during post-processing; however, some outputs were in-valid including missing or adding extra labels and formatting errors in the responses. LLaVA-Video performed poorly, with high MAE, high JSD and very low spread ratio. Its high zero rate gap shows overuse of zero ratings for the labels where humans rate nonzero. The Spread Ratio is notably higher in Qwen2.5-Omni model both with persona prompt-ing and random sampling. On the low-ambiguity subset, Qwen2.5-Omni performs better, showing when humans themselves agree more on the ex-pression, the models perform better. Nevertheless, model performance remains far from the human reference even in this easier setting. 
+
+Does persona prompting introduce variation? 
+
+7Subset Model Method Valid ↑ MAE ↓ JSD ↓ H. Cov. ↑ Zero-RG ↓ SR → 1 Top-1 ↑ Recall@2 ↑ nDCG@2 ↑                                                                                                                                                                                    
+
+> LLaVA-Video-7B GD 1.00 1.20 0.34 0.19 +0.67 –0.15 0.45 0.79 LLaVA-Video-7B RS 1.00 1.16 0.32 0.21 +0.56 0.29 0.15 0.47 0.80 LLaVA-Video-7B P1.00 1.19 0.33 0.20 +0.61 0.27 0.14 0.45 0.79 InternVL3-8B GD 1.00 0.99 0.33 0.16 +0.41 –0.27 0.53 0.84 InternVL3-8B RS 1.00 0.92 0.28 0.26 +0.35 0.36 0.31 0.55 0.85 InternVL3-8B P1.00 0.93 0.28 0.25 +0.37 0.32 0.33 0.55 0.85 Qwen2.5-Omni-7B GD 0.94 0.85 0.34 0.15 +0.22 –0.23 0.51 0.83 Qwen2.5-Omni-7B RS 0.94 0.58 0.14 0.52 +0.08 0.64 0.38 0.60 0.89
+> High Ambiguity Subset Qwen2.5-Omni-7B P0.94 0.75 0.21 0.37 +0.31 0.52 0.28 0.56 0.86 LLaVA-Video-7B GD 1.00 1.35 0.39 0.09 +0.67 -0.31 0.43 0.64 LLaVA-Video-7B RS 1.00 1.25 0.33 0.22 +0.60 0.30 0.40 0.62 0.78 LLaVA-Video-7B P1.00 1.34 0.38 0.09 +0.64 0.22 0.32 0.44 0.64 InternVL3-8B GD 1.00 0.97 0.33 0.15 +0.41 -0.45 0.63 0.80 InternVL3-8B RS 1.00 0.92 0.30 0.26 +0.34 0.36 0.43 0.70 0.84 InternVL3-8B P1.00 0.95 0.31 0.22 +0.35 0.31 0.42 0.65 0.81 Qwen2.5-Omni-7B GD 0.95 0.83 0.32 0.18 +0.25 -0.51 0.68 0.84 Qwen2.5-Omni-7B RS 0.95 0.63 0.16 0.56 +0.11 0.79 0.45 0.71 0.85 Low Ambiguity Subset Qwen2.5-Omni-7B P0.95 0.81 0.24 0.36 +0.32 0.56 0.49 0.70 0.86
+
+Table 2: Distributional alignment. Comparing greedy decoding (GD), persona prompting (P, 25 generations) and random sampling (RS, 25 generations). For each subset, best in bold , second best underlined . Qwen2.5-Omni (RS) performs best, although its SR < 1 indicates that model outputs are still less diverse than human ratings. Dominant recognition results (right) show that in high ambiguity subset averaging over generations improves performance for Qwen2.5-Omni and InternVL3, this does not affect LLaVA-Video, which overuses the zero rating. 
+
+Figure 5: Two sample videos analyzed with Qwen2.5-Omni, showing the effect of persona prompting. Top: With an unfriendly and dominant persona, positive emo-tions such as amazed and excited are not output, leaving only surprised. Bottom: Prompted to be unfriendly and dominant, the VLM perceives the expression as more desperate and annoyed. 
+
+Compared with greedy decoding, persona prompt-ing introduces variation but less than random sam-pling. In the challenging high ambiguity subset, the strongest persona result is with Qwen2.5-Omni achieving a Spread Ratio equal to 0.52, but still lower than Qwen2.5-Omni with random sampling. Figure 5 shows examples of persona prompting. 
+
+Does capturing variation help with dominant-label prediction? Table 2 (right side) reports the Task 1 metrics on the same subset of high/low-ambiguity videos. Here also Qwen2.5-Omni per-forms better than other methods. Remarkably, in the high-ambiguity subset, averaging over multiple runs through random sampling or persona settings achieves higher results in the Dominant Expres-sion Recognition task (top1 and top2) compared to vanilla greedy decoding, suggesting that mod-eling variation is a promising approach even for the typical task of most common label recognition. While the case for Qwen2.5-Omni and InternVL3, this trend is not observed in LLaVA-Video, which repeatedly assigns zero ratings for the labels (av-erage zero rate gap = 0.61); random sampling and persona prompting do not affect the results. 
+
+7 Future Work 
+
+Future work can include more ratings, evaluations of a broader range of VLMs, and studies of how perception varies based on annotator demograph-ics. In addition, we plan to further explore persona prompting as a controllable way to induce variation in VLM predictions (Calder et al., 2011) and ex-amine how the choice of candidate labels for each video affects human/model perception. Finally, 
+
+Chehre can support future studies on the effect of the apparent gender, ethnicity, or age of the syn-thetic face on the perceived facial expression. 
+
+8 Limitations 
+
+Here we note some of the limitations of this paper. First, we did not explore the effect of candidate la-bel set ordering in the given prompt. Since VLMs can be sensitive to prompt formatting, we main-tained a consistent format and label order across models and runs, but did not explore the effect of changing the labels’ order. Second, in our persona prompting experiments, we used personas derived from the interpersonal circumplex. While this provides a structured way to have different observer perspectives, it might not capture the individual differences. Future work 8could obtain personas from the demographic ques-tionnaire collected in the perception phase, or in-vestigate other types of persona prompting, such as mood-based: for instance, prompting the model to perceive the video from the perspective of “some-one who is feeling happy”. Third, there is a gender imbalance among performers in both phases. This bias may affect the range of expression performed and annotated in the dataset and should be consid-ered when interpreting using the dataset. Besides the gender bias, the participant pool is mostly based on a specific age, cultural, or geographic popula-tion, and future work can explore inter-individual differences in other communities. Finally, the dis-tributional experiments were limited by computa-tional constraints and evaluated on selected subsets of the dataset. Running larger VLMs on all videos in the dataset can reveal deeper insight into the capabilities of recent VLMs. A potential risk of misusing Chehre is to treat facial expressions as di-rect evidence of a person’s internal emotional state. This is not the goal of our dataset or benchmark. 
+
+Chehre measures how facial expressions are per-ceived by annotators, not what performers feel. To reduce this risk, we explicitly frame the dataset as a benchmark for perceived facial expression rather than internal feelings. 
+
+References 
+
+Zara Ambadar, Jonathan W Schooler, and Jeffrey F Cohn. 2005. Deciphering the enigmatic face: The importance of facial dynamics in interpreting subtle facial expressions. Psychological science , 16(5):403– 410. Mostafa M Amin, Rui Mao, Erik Cambria, and Björn W Schuller. 2024. A wide evaluation of chatgpt on affective computing tasks. IEEE Transactions on Affective Computing , 15(4):2204–2212. Bita Azari and Angelica Lim. 2024. Emostyle: One-shot facial expression editing using continuous emo-tion parameters. In Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vi-sion , pages 6385–6394. Lisa Feldman Barrett, Ralph Adolphs, Stacy Marsella, Aleix M Martinez, and Seth D Pollak. 2019. Emo-tional expressions reconsidered: Challenges to infer-ring emotion from human facial movements. Psycho-logical science in the public interest , 20(1):1–68. Nicola Binetti, Nadejda Roubtsova, Christina Carlisi, Darren Cosker, Essi Viding, and Isabelle Mareschal. 2022. Genetic algorithms reveal profound indi-vidual differences in emotion recognition. Pro-ceedings of the National Academy of Sciences ,119(45):e2201380119. Andrew J Calder, Michael Ewbank, and Luca Passa-monti. 2011. Personality influences the neural re-sponses to viewing facial expressions of emotion. 
+
+Philosophical Transactions of the Royal Society B: Biological Sciences , 366(1571):1684–1701. Tania Chakraborty, Eylon Caplan, and Dan Goldwasser. 2025. VIBE: Can a VLM read the room? In Find-ings of the Association for Computational Linguistics: EMNLP 2025 , pages 22992–23008, Suzhou, China. Association for Computational Linguistics. Zebang Cheng, Zhi-Qi Cheng, Jun-Yan He, Jingdong Sun, Kai Wang, Yuxiang Lin, Zheng Lian, Xiaojiang Peng, and Alexander G Hauptmann. 2024. Emotion-llama: Multimodal emotion recognition and reason-ing with instruction tuning. Advances in Neural In-formation Processing Systems , 37:110805–110853. Alan S Cowen and Dacher Keltner. 2020. What the face displays: Mapping 28 emotions conveyed by natural-istic expression. American Psychologist , 75(3):349. Aida Mostafazadeh Davani, Mark Díaz, and Vinodku-mar Prabhakaran. 2021. Dealing with disagreements: Looking beyond the majority vote in subjective an-notations. Preprint , arXiv:2110.05719. Haodong Duan, Junming Yang, Yuxuan Qiao, Xinyu Fang, Lin Chen, Yuan Liu, Xiaoyi Dong, Yuhang Zang, Pan Zhang, Jiaqi Wang, and 1 others. 2024. Vlmevalkit: An open-source toolkit for evaluating large multi-modality models. In Proceedings of the 32nd ACM International Conference on Multimedia ,pages 11198–11201. Thorsten M Erle, Karoline Schmid, Simon H Goslar, and Jared D Martin. 2022. Emojis as social informa-tion in digital communication. Emotion , 22(7):1529. Yasaman Etesam, Özge Nilay Yalçın, Chuxuan Zhang, and Angelica Lim. 2024. Contextual emotion recog-nition using large vision language models. In 2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) , pages 4769–4776. IEEE. Xia Fang, Gerben A van Kleef, Kerry Kawakami, and Disa A Sauter. 2021. Cultural differences in per-ceiving transitions in emotional facial expressions: Easterners show greater contrast effects than west-erners. Journal of Experimental Social Psychology ,95:104143. Leon Fröhling, Gianluca Demartini, and Dennis Assen-macher. 2025. Personas with attitudes: Controlling llms for diverse data annotation. In Proceedings of the The 9th Workshop on Online Abuse and Harms (WOAH) , pages 468–481. Xin Geng. 2016. Label distribution learning. IEEE Transactions on Knowledge and Data Engineering ,28(7):1734–1748. 
+
+9Jianzhu Guo, Dingyun Zhang, Xiaoqiang Liu, Zhizhou Zhong, Yuan Zhang, Pengfei Wan, and Di Zhang. 2024. Liveportrait: Efficient portrait animation with stitching and retargeting control. arXiv preprint arXiv:2407.03168 .Clara E Hill and Sarah Knox. 2021. Essentials of con-sensual qualitative research. American Psychologi-cal Association. Rachael E Jack, Oliver GB Garrod, Hui Yu, Roberto Caldara, and Philippe G Schyns. 2012. Facial ex-pressions of emotion are not culturally universal. 
+
+Proceedings of the National Academy of Sciences ,109(19):7241–7244. Kalervo Järvelin and Jaana Kekäläinen. 2002. Cu-mulated gain-based evaluation of ir techniques. 
+
+ACM Transactions on Information Systems (TOIS) ,20(4):422–446. Xingxun Jiang, Yuan Zong, Wenming Zheng, Chuangao Tang, Wanchuang Xia, Cheng Lu, and Jiateng Liu. 2020. Dfew: A large-scale database for recognizing dynamic facial expressions in the wild. In Proceed-ings of the 28th ACM international conference on multimedia , pages 2881–2889. Tero Karras, Samuli Laine, Miika Aittala, Janne Hell-sten, Jaakko Lehtinen, and Timo Aila. 2020. An-alyzing and improving the image quality of style-gan. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 8110–8119. Dimitrios Kollias and Stefanos Zafeiriou. 2018. Aff-wild2: Extending the aff-wild database for affect recognition. arXiv preprint arXiv:1811.07770 .Timothy Leary. 2004. Interpersonal diagnosis of per-sonality: A functional theory and methodology for personality evaluation . Wipf and Stock Publishers. Jiyoung Lee, Seungryong Kim, Sunok Kim, Jungin Park, and Kwanghoon Sohn. 2019. Context-aware emotion recognition networks. In Proceedings of the IEEE/CVF international conference on computer vision , pages 10143–10152. Shan Li, Weihong Deng, and JunPing Du. 2017. Re-liable crowdsourcing and deep locality-preserving learning for expression recognition in the wild. In 
+
+Proceedings of the IEEE conference on computer vision and pattern recognition , pages 2852–2861. Zheng Lian, Licai Sun, Haiyang Sun, Kang Chen, Zhuo-fan Wen, Hao Gu, Bin Liu, and Jianhua Tao. 2024. Gpt-4v with emotion: A zero-shot benchmark for generalized emotion recognition. Information Fu-sion , 108:102367. Camillo Lugaresi, Jiuqiang Tang, Hadon Nash, Chris McClanahan, Esha Uboweja, Michael Hays, Fan Zhang, Chuo-Ling Chang, Ming Guang Yong, Juhyun Lee, and 1 others. 2019. Mediapipe: Aframework for building perception pipelines. arXiv preprint arXiv:1906.08172 .Marlene Lutz, Indira Sen, Georg Ahnert, Elisa Rogers, and Markus Strohmaier. 2025. The prompt makes the person (a): A systematic evaluation of sociodemo-graphic persona prompting for large language models. 
+
+arXiv preprint arXiv:2507.16076 .Michael J Lyons, Shigeru Akamatsu, Miyuki Kamachi, Jiro Gyoba, and Julien Budynek. 1998. The japanese female facial expression (jaffe) database. In Proceed-ings of third international conference on automatic face and gesture recognition , pages 14–16. Debbie S Ma, Joshua Correll, and Bernd Wittenbrink. 2015. The chicago face database: A free stimulus set of faces and norming data. Behavior research methods , 47(4):1122–1135. Aprajita Mohanty, Jonathan Freeman, and Jingwen Jin. 2025. Top-down influences on the perception of emo-tional stimuli. Nature Reviews Psychology , 4(6):388– 403. Ali Mollahosseini, Behzad Hasani, and Mohammad H Mahoor. 2017. Affectnet: A database for facial ex-pression, valence, and arousal computing in the wild. 
+
+IEEE transactions on affective computing , 10(1):18– 31. Thorben Ortmann, Qi Wang, and Larissa Putzar. 2024. Emojiherovr: a study on facial expression recognition under partial occlusion from head-mounted displays. In 2024 12th International Conference on Affective Computing and Intelligent Interaction (ACII) , pages 80–88. IEEE. Barbara Plank. 2022. The “problem” of human label variation: On ground truth in data, modeling and evaluation. In Proceedings of the 2022 conference on empirical methods in natural language processing ,pages 10671–10682. Soujanya Poria, Devamanyu Hazarika, Navonil Ma-jumder, Gautam Naik, Erik Cambria, and Rada Mi-halcea. 2019. Meld: A multimodal multi-party dataset for emotion recognition in conversations. In 
+
+Proceedings of the 57th annual meeting of the associ-ation for computational linguistics , pages 527–536. Zhihang Ren, Jefferson Ortega, Yifan Wang, Zhimin Chen, Yunhui Guo, Stella X Yu, and David Whit-ney. 2024. Veatic: Video-based emotion and affect tracking in context dataset. In Proceedings of the IEEE/CVF winter conference on applications of com-puter vision , pages 4467–4477. Sahand Sabour, Siyang Liu, Zheyuan Zhang, June Liu, Jinfeng Zhou, Alvionna Sunaryo, Tatia Lee, Rada Mi-halcea, and Minlie Huang. 2024. Emobench: Eval-uating the emotional intelligence of large language models. In Proceedings of the 62nd Annual Meet-ing of the Association for Computational Linguistics (Volume 1: Long Papers) , pages 5986–6004. Sefik Ilkin Serengil and Alper Ozpinar. 2026. Boosted lightface: A hybrid dnn and gbm model for boosted facial recognition. Gazi University Journal of Sci-ence , 39(1):452–466. 
+
+10 Alexandra N Uma, Tommaso Fornaciari, Dirk Hovy, Sil-viu Paun, Barbara Plank, and Massimo Poesio. 2021. Learning from disagreement: A survey. Journal of Artificial Intelligence Research , 72:1385–1470. Jin Xu, Zhifang Guo, Jinzheng He, Hangrui Hu, Ting He, Shuai Bai, Keqin Chen, Jialin Wang, Yang Fan, Kai Dang, Bin Zhang, Xiong Wang, Yunfei Chu, and Junyang Lin. 2025. Qwen2.5-omni technical report.    
+
+> Preprint , arXiv:2503.20215. Fan Zhang, Zebang Cheng, Chong Deng, Haoxuan Li, Zheng Lian, Qian Chen, Huadai Liu, Wen Wang, Yi-Fan Zhang, Renrui Zhang, and 1 others. 2025a. Mme-emotion: A holistic evaluation benchmark for emotional intelligence in multimodal large language models. arXiv preprint arXiv:2508.09210 .Yuanhan Zhang, Jinming Wu, Wei Li, Bo Li, Zejun Ma, Ziwei Liu, and Chunyuan Li. 2025b. Llava-video: Video instruction tuning with synthetic data.
+> Preprint , arXiv:2410.02713. Jinguo Zhu, Weiyun Wang, Zhe Chen, Zhaoyang Liu, Shenglong Ye, Lixin Gu, Hao Tian, Yuchen Duan, Weijie Su, Jie Shao, and 1 others. 2025. Internvl3: Exploring advanced training and test-time recipes for open-source multimodal models. arXiv preprint arXiv:2504.10479 .
+
+A Additional Dataset Details 
+
+A.1 Semantic Label Selection Details 
+
+We employed the following protocol to analyze the 11,164 open-ended descriptions (approximately 275 per emoji). For each set of emoji descriptions, we first sorted the text descriptions based on their frequency. The research team reviewed the most frequent responses to identify the top most used phrases/words. Next, we merged phrases/words with the same meaning into one label. In these cases, the selected label was required to be in par-ticipants’ open-ended responses, so the team did not add new terms. For each emoji, the team was required to select a minimum three and maximum of six labels. The final labels were selected with the goal of covering the main meanings provided by participants while keeping the candidate set com-pact for the perception task. This entire protocol was conducted over multiple sessions for each of the 40 emojis, with 3 researchers who discussed until 100% agreement was achieved, following a standard discussion-until-consensus protocol. 
+
+A.2 Expression Phase Recording Protocol 
+
+During the expression phase, participants were in-structed to complete the recordings in a quiet en-vironment, position their recording device (mobile phone or laptop) at eye level, look directly at the camera, and ensure that their entire face was visi-ble within the frame. Guidance was provided on appropriate camera distance, and participants were instructed to keep their hands out of view during recording. Prior to participation, all individuals reviewed and gave informed consent in accordance with an approved research ethics protocol, which detailed the purpose of the study, video recording procedures, data handling procedures, and options for data sharing and withdrawal. As part of the data collection procedure, participants completed a de-mographic questionnaire that included age group, gender identity, country of birth, ancestry/ethnicity background, and marital status. Individuals re-ceived course credit for their participation. 
+
+A.3 Post-processing Details Video Filtering: After the expression phase 2,400 videos were selected out of 11,055 videos. Videos were selected only if participants followed the pro-tocols. In the perception phase, about 12% of the videos were flagged as videos that are visually un-stable or glitchy due to the mapping procedure explained in Section 3.2. Those videos were re-moved; the final set of 2,111 videos can be viewed on the companion website. 
+
+Synthetic Face Generation : Figure 8 shows exam-ples of the generated synthetic identities used for our study. The synthetic faces were constructed by combining facial components from Chicago Face Database images and refining the results with StyleGAN2 (Karras et al., 2020). We then applied EmoStyle (Azari and Lim, 2024) to adjust the per-ceived facial expression toward neutral valence and arousal. 
+
+A.4 Expression/Perception Phase Questionnaire 
+
+Participants were recruited through a university participant pool and received course credit. In both steps of data collection and annotation, participants after reviewing and accepting the consent form clauses, were directed to complete a questionnaire and then proceeded to the study (Expression or Perception). The questions are shown in Table 3. The distributions of age, gender, country of birth, and ethnicity/cultural background for the human performers and annotators are shown in Figures 7 and 6, respectively. 11 Figure 6: Demographic distribution of participants in the expression phase (Data Collection). 
+
+Figure 7: Demographic distribution of participants in the perception phase (Data Validation). 
+
+Item Question Response options 
+
+Age group What is your age group? Under 18; 18-21; 22-25; 26-29; 30-35; 36-39; 40-49; 50-64; 65 and older Gender identity What is your gender identity? Woman; Man; Other; Prefer not to say Country of birth Country of Birth Country dropdown list Ancestry or cultural identity What is the region of origin or cultural identity of your ancestors? North Africa; Africa excluding North Africa; Central America; South America; Eastern Europe; Western Europe; Mid-dle East or West Asia; East Asia; Central Asia; South Asia; Southeast Asia; Polyne-sia or Pacific Islands; Indigenous groups in North America; Indigenous groups in Oceania; Other Marital status What is your current marital status? Married; Common law; Divorced or sep-arated; Widowed; Dating; Single 
+
+Table 3: Demographic questionnaire completed by participants before the expression or perception task. 
+
+12 B Additional Benchmark Details 
+
+B.1 Metrics 
+
+This section provides a more detailed explanation of the metrics, along side their formulas. 
+
+Top-1 : ( T1) to check if the model’s top predic-tion matches the top dominant human label. 
+
+T1(v) = ⊮[ˆℓv, 1 = ℓ∗
+
+> v, 1
+
+]. (1) We report the mean Top-1 score across all videos. 
+
+Recall@2 : we use ( Recall @2 ) to reports how of-ten the model recovers the two highest-rated labels, ignoring order. 
+
+Recall @2 (v) = 
+
+{ˆℓv, 1, ˆℓv, 2} ∩ { ℓ∗
+
+> v, 1
+
+, ℓ ∗
+
+> v, 2
+
+}
+
+2 (2) 
+
+nDCG@2 : We use nDCG @2 to report how of-ten the model recovers the two highest-rated labels considering the order. The relevance score rv(ℓ) is calculated using the top-1 and top-2 average human mean ratings of each video (Järvelin and Kekäläi-nen, 2002). For the model prediction (ˆℓv, 1, ˆℓv, 2),we compute: 
+
+DCG @2 (v) = rv(ˆℓv, 1) + rv(ˆℓv, 2)log 2 3 . (3) We normalize by the ideal ranking of the human top-2 labels: 
+
+nDCG @2 (v) = DCG @2 (v)IDCG @2 (v) . (4) 
+
+Label Ratings MAE : ( MAE ) measures the ab-solute difference between the computed mean hu-man rating vector ( μHv,j ) and the computed mean model rating vector μMv,j :
+
+MAE( v) = 1
+
+DvDvX
+
+> j=1
+
+μHv,j − μMv,j . (5) We report the Label Ratings MAE across videos. 
+
+Rating-Distribution JSD : We measures if the model can form the distribution of human Likert ratings for each candidate label. For each video v,label j ∈ Lv, and rating score s ∈ { 0, 1, 2, 3}, we define the human rating distribution as: 
+
+P Hv,j (s) = 1
+
+NvNvX
+
+> i=1
+
+⊮[Xv,i,j = s], (6) 
+
+P Mv,j (s) = 1
+
+KvKvX
+
+> k=1
+
+⊮[Yv,k,j = s]. (7) And then compute the Jensen-Shannon divergence between these two distributions for each label. Let 
+
+Av,j (s) = 12
+
+ P Hv,j (s) + P Mv,j (s) (8) be the average distribution. The label-level Jensen-Shannon divergence is: 
+
+JSD v,j = 12
+
+> 3
+
+X
+
+> s=0
+
+P Hv,j (s) log P Hv,j (s)
+
+Av,j (s)+ 12
+
+> 3
+
+X
+
+> s=0
+
+P Mv,j (s) log P Mv,j (s)
+
+Av,j (s) .
+
+(9) Then for each video rating JSD is computed by averaging over candidate labels, and we report the mean of rating JSD across all the videos. 
+
+Human Coverage : To compute (H. Cov. ) for each video v, we first compute the normalized L1 distance between a human rating vector Xv,i and a model-generated rating vector Yv,k :
+
+d(Xv,i , Y v,k ) = ∥Xv,i − Yv,k ∥1
+
+3Dv
+
+, (10) where Dv is the number of candidate labels for video v, and 3 is the maximum possible Likert rating. A human annotator vector is considered covered if at least one model-generated vector is within a threshold τ :
+
+Cv,i = ⊮
+
+
+
+min 
+
+> 1≤k≤Kv
+
+d(Xv,i , Y v,k ) ≤ τ
+
+
+
+. (11) The Human Coverage for video v is then: 
+
+HCov( v) = 1
+
+NvNvX
+
+> i=1
+
+Cv,i . (12) We report the average Human Coverage across all videos. To set the threshold 0.15, we computed the human-human nearest-neighbor distance for each annota-tor vector: 
+
+dHv,i = min  
+
+> i′̸=i
+
+∥Xv,i − Xv,i ′ ∥1
+
+3Dv
+
+. (13) Nearly 80% of human annotator vectors have 
+
+dHv,i ≤ 0.15 . Therefore, we set τ = 0 .15 , to eval-uates if model-generated responses align with the typical level of human annotators agreement. 13 Spread Ratio : To calculate ( SR ) for each video, we compute it as the normalized, mean pairwise distance between human rating vectors: 
+
+SR H (v) = 1
+
+ Nv
+
+> 2
+
+ X
+
+> i<i ′
+
+∥Xv,i − Xv,i ′ ∥2
+
+√Dv
+
+. (14) We also compute model spread over valid model-generated rating vectors: 
+
+SR M (v) = 1
+
+ Kv
+
+> 2
+
+ X
+
+> k<k ′
+
+∥Yv,k − Yv,k ′ ∥2
+
+√Dv
+
+. (15) The final SR is computed by averaging the model spread across videos and dividing it by the average human spread across videos. 
+
+SR = Ev[SR M (v)] 
+
+Ev[SR H (v)] . (16) A value closer to 1 indicates that the model-generated rating vectors have a similar amount of diversity as human annotator rating vectors. All metrics are computed for each video and then aver-aged across all the videos. 
+
+B.2 Implementation Details 
+
+To do our study, we used 4 NVIDIA L40S GPUs with 48GB memory. Models under 8B parameters used 32 uniformly sampled video frames, while InternVL-38B used 24. Since Chehre videos begin with a neutral expression, we remove 10% of the frames from the beginning of the video before sam-pling. The average number of frames of the videos in our dataset is 67 frames. Therefore, after this trimming step, sampling 32 frames corresponds ap-proximately to observing every two frames. This preprocessing standardizes the input across models and ensures that the sampled frames span most of each video. 
+
+B.3 Prompts 
+
+Here we provide the prompt used for model infer-ence. For each video, the candidate labels were selected from the emoji-specific label set, shown in the prompt as {ALLOWED_LABELS} , alongside the label None . Here is the prompt used in the first benchmark task: dominant facial expression recog-nition. 
+
+You are analyzing a short face video. Task: Classify the visible facial expression only. ,→
+
+Allowed categories: {ALLOWED_LABELS} Important: - Return exactly two categories in the top_categories field. ,→
+
+- category one should be the most confident category. ,→
+
+- category two should be the second most confident category. ,→
+
+- if none of the categories are confident, return None for both category_1 and category_2. 
+
+> ,→
+> ,→
+
+- if only one category is confident, return None for the other category. ,→
+
+- Choose the categories from the allowed categories list only. ,→
+
+Required JSON format: {{ "top_categories": [ {"category_1": "CATEGORY_FROM_ALLOWED_LIST"}, ,→
+
+{"category_2": "CATEGORY_FROM_ALLOWED_LIST"} ,→
+
+], "visual_cues": "short explanation based only on the face" ,→
+
+}} 
+
+Here is the prompt used for the second bench-mark task: distributional facial expression recog-nition. Compared with random seed sampling, persona prompting’s prompt differed only in the observer-perspective sentence. 
+
+You are an annotator analyzing a short face video. ,→
+
+{PERSONA_DESCRIPTION} You are not describing the person 'spersonality. ,→
+
+You are reporting how the facial expression appears to you as this annotator persona. 
+
+> ,→
+> ,→
+
+Task: For each allowed facial expression label, assign an intensity score from 0 to 3. ,→
+
+Allowed categories: {ALLOWED_LABELS} Score each label from 0 to 3: - 0 = No visible evidence of this expression. ,→
+
+- 1 = Weak or uncertain evidence of this expression. ,→
+
+- 2 = Clear evidence of this expression. - 3 = Strong and obvious evidence of this expression. ,→
+
+Rules: - Score every allowed label. - Score each label independently. - Do not rank the labels. 
+
+14 - Do not choose only the best label. - Multiple labels can receive the same score. ,→
+
+> - Use only integers: 0, 1, 2, or 3. - Do not output null values in scores. - Consider the persona when judging how the expression appears to you. ,→
+> - The scores are from your perspective as the annotator persona. ,→
+> - The persona must not invent facial evidence that is not visible. ,→
+> - If the face clearly shows an expression, score it according to the visible evidence.
+> ,→
+> ,→
+> - The visual_cues field must describe only visible facial cues. ,→
+> - Do not mention the persona in visual_cues. ,→
+> Return strict JSON only: {"persona": "{PERSONA_ID}", "scores": { "{LABEL_1}": null, "{LABEL_2}": null, "...": null }, "visual_cues": "Brief explanation based only on visible facial cues." ,→
+> }
+
+The personas : Inspired by the Interpersonal Cir-cumplex (Leary, 2004), we form personas based on affiliation and dominance: The friendliness options are very unfriendly, unfriendly, neutral, friendly, very friendly. The dominance status options are very submissive, submissive, balanced, dominant, very dominant. For the prompt, we formed sentences based on these rules: • No new sentence is added to the prompt if friendliness is neutral and dominance status is balanced .• Neutral friendliness: You are someone who is [dominance status]. 
+
+• Balanced dominance status: You are someone who is [friendliness] toward people. 
+
+• Otherwise: You are someone who is [friendliness] toward people and is [dominance status]. 
+
+C Emojis and Labels 
+
+Table 4 shows the 40 emojis and the candidate label set used in our data, along with the number of videos for each emoji in the final dataset. 
+
+Figure 8: Two samples of generated faces. For each one two faces from the Chicago Face Database are used (Ma et al., 2015): the eyes of one face are patched onto the remaining regions of another face. Then each patched composite face is projected into the StyleGAN2 (Karras et al., 2020) latent space, and the nearest latent is used to generate a synthetic face . 
+
+D Licensing 
+
+All tools and models used in this work are pub-licly available open-source projects for research purposes: LivePortrait (Guo et al., 2024), Style-GAN2 (Karras et al., 2020), EmoStyle (Azari and Lim, 2024), DeepFace (Serengil and Ozpinar, 2026), and MediaPipe (Lugaresi et al., 2019). The Chicago Face Database (Ma et al., 2015) was used under its academic research license. The vision-language models evaluated in our benchmarks, Qwen2.5-Omni-7B (Xu et al., 2025), LLaVA-Video-7B-Qwen2 (Zhang et al., 2025b), InternVL3-8B, and InternVL3-38B (Zhu et al., 2025), are all open-source and publicly available. 
+
+Chehre will be released under the Creative Commons Attribution-NonCommercial 4.0 Inter-national License (CC BY-NC 4.0). 15 Emoji Code Videos High Low Labels Emoji Code Videos High Low Labels 
+
+1f601 59 2 15 Awkward, Excited, Happy, Over-joyed, Smiling 
+
+1f624 54 5 6 Angry, Annoyed, Frustrated, Furi-ous 
+
+1f603 56 11 8 Awkward, Excited, Happy, Sarcas-tic, Smiling 
+
+1f62b 40 0 6 Annoyed, Desperate, Distressed, In pain, Satisfied 
+
+1f605 60 5 14 Awkward, Embarrassed, Happy, Nervous, Relieved 
+
+1f62c 63 0 19 Awkward, Embarrassed, Nervous, Scared, Yikes 
+
+1f607 51 5 11 Angelic, Happy, Innocent, Peace-ful 
+
+1f62d 29 4 4 Crying, Devastated, Laughing, Sad 
+
+1f608 49 6 2 Devious, Evil, Mischievous 1f62e 40 3 9 Exhausted, Impressed, Relieved, Smoking 
+
+1f60a 58 6 2 Blushing, Content, Happy 1f62f 60 7 2 Amazed, Engaged, Shocked, Sur-prised 
+
+1f60c 52 19 1 Content, Proud, Relaxed, Satisfied 1f630 53 18 1 Anxious, Nervous, Scared, Stressed, Worried 
+
+1f60d 48 11 3 Admiring, Awestruck, In love 1f631 58 2 35 Scared, Shocked, Surprised, Terri-fied 
+
+1f60e 48 20 2 Confident, Cool, Smug 1f633 61 5 23 Embarrassed, Flustered, Shocked, Shy, Surprised 
+
+1f60f 60 8 1 Flirty, Mischievous, Smirking, Smug 
+
+1f634 54 11 3 Bored, Sleepy, Tired 
+
+1f611 59 8 8 Annoyed, Bored, Disappointed, Neutral, Unimpressed 
+
+1f644 63 4 14 Annoyed, Irritated, Rolling eyes, Sarcastic 
+
+1f612 65 1 6 Annoyed, Disgust, Judgmental, Side eye, Unimpressed 
+
+1f914 56 7 5 Confused, Curious, Pondering, Thinking 
+
+1f614 56 9 5 Ashamed, Disappointed, Sad, Up-set 
+
+1f922 40 11 12 Disgusted, Nauseous, Sick 
+
+1f618 42 10 9 Blowing a kiss, Flirty, Loving 1f928 61 13 4 Confused, Curious, Questioning, Suspicious 
+
+1f929 55 11 0 Amazed, Awestruck, Excited, Sur-prised 
+
+1f92c 52 17 2 Angry, Enraged, Pissed off 
+
+1f92d 53 7 1 Blushing, Cheeky, Embarrassed, Giddy, Giggly, Shy 
+
+1f92f 54 3 9 Mind blown, Shocked, Surprised 
+
+1f973 39 10 9 Celebrating, Excited, Happy, Par-tying 
+
+1f974 53 6 11 Confused, Drunk, Silly, Weirded out 
+
+1f979 44 3 6 Emotional, Grateful, Happy, Plead-ing, Proud 
+
+1f97a 45 6 5 Begging, Cute, Pouting, Sad 
+
+1f9d0 62 4 2 Confused, Curious, Questioning, Skeptical, Thinking 
+
+1fae0 45 9 3 Defeated, Embarrassed, Melting, Overwhelmed, Smiling 
+
+1fae2 53 2 16 Embarrassed, Gasping, Shocked, Surprised 
+
+1fae4 61 11 6 Confused, Disappointed, Indiffer-ent, Unsure, Upset 
+
+Table 4: Emojis with their final video counts, associated candidate label sets. High and Low indicate the number of videos for each emoji code in the high-ambiguity and low-ambiguity subsets, respectively. 
+
+16
