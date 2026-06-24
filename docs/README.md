@@ -6,42 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-23
-- 运行时间：2026-06-23 21:59:11 UTC
+- 最新运行日期：2026-06-24
+- 运行时间：2026-06-24 22:03:57 UTC
 - 运行状态：成功
-- 本次总论文数：6
-- 精读区：2
+- 本次总论文数：5
+- 精读区：1
 - 速读区：4
 
 ### 今日简报（AI）
-今日精选6篇论文，以无监督解耦与多模态情感识别为亮点，两篇精读均获9.0分。
-
-最值得关注：功能正交性保障无监督解耦的可识别性，以及CLIP结合身体与场景的上下文情感识别方法。
-
-普通读者可优先研读这两篇高分论文，把握解耦理论与多模态融合的最新进展。
-- 详情：[/202606/23/README](/202606/23/README)
+今日精选5篇论文，其中1篇精读提出跨设备微表情数据集《CDER-SME》（8.0分），为多设备情绪识别提供新基准。 值得关注的方向：微表情数据集构建与扩散模型中的主题驱动生成及去偏技术（如DivRL、双分支去偏方法）。 建议普通读者优先关注《CDER-SME》的跨设备应用潜力，以及《DivRL》中解耦自相似性奖励如何提升生成多样性。
+- 详情：[/202606/24/README](/202606/24/README)
 
 ### 精读区论文标签
-1. [Unsupervised Disentanglement Without Compromises : How Functional Orthogonality Enforces Identifiability](/202606/23/2606.21385v1-unsupervised-disentanglement-without-compromises--how-functional-orthogonality-enforces-identifiability)  
-   标签：评分：9.0/10、query:mm
-   evidence：通过功能正交性实现无监督解耦
-2. [A Controlled Study of CLIP-Based Body-Scene Fusion for Emotion Recognition in Context](/202606/23/2606.22072v1-a-controlled-study-of-clip-based-body-scene-fusion-for-emotion-recognition-in-context)  
-   标签：评分：9.0/10、query:mm
-   evidence：基于CLIP的身体-场景融合进行情感识别
+1. [CDER-SME: A Cross-Device Event-RGB Micro-Expression Dataset under Multi-Level Stress Induction](/202606/24/2606.20715v1-cder-sme-a-cross-device-event-rgb-micro-expression-dataset-under-multi-level-stress-induction)  
+   标签：评分：8.0/10、query:mm
+   evidence：跨设备事件-RGB微表情数据集用于情感识别
 
 ### 速读区论文标签
-1. [MixProLAP: Mixture-Induced Uncertainty Modeling for Probabilistic Language-Audio Pretraining](/202606/23/2606.20418v1-mixprolap-mixture-induced-uncertainty-modeling-for-probabilistic-language-audio-pretraining)  
+1. [DivRL: Disentangled Self-Similarity Rewards for Diverse Subject-Driven Generation](/202606/24/2606.23950v1-divrl-disentangled-self-similarity-rewards-for-diverse-subject-driven-generation)  
    标签：评分：7.0/10、query:mm
-   evidence：概率音频-语言预训练实现鲁棒跨模态对齐
-2. [Dementia-Agents: A Multi-Modal Multi-Agent System for Dementia Staging and Phenotyping](/202606/23/2606.21168v1-dementia-agents-a-multi-modal-multi-agent-system-for-dementia-staging-and-phenotyping)  
+   evidence：利用解耦视觉特征优化多样性
+2. [Dual-Branch Cross-Projection Debiasing through Diffusion-based Disentanglement](/202606/24/2606.24161v1-dual-branch-cross-projection-debiasing-through-diffusion-based-disentanglement)  
+   标签：评分：7.0/10、query:mm
+   evidence：基于扩散的解耦表示用于去偏
+3. [Modality-Aware Out-of-Distribution Detection for Multi-Modal Action Recognition](/202606/24/2606.24404v1-modality-aware-out-of-distribution-detection-for-multi-modal-action-recognition)  
+   标签：评分：7.0/10、query:mm
+   evidence：面向鲁棒多模态动作识别的模态感知OOD检测
+4. [Unified Multimodal Autoregressive Modeling with Shared Context-Visual Tokenizer is Key to Unification](/202606/24/2606.18249v2-unified-multimodal-autoregressive-modeling-with-shared-context-visual-tokenizer-is-key-to-unification)  
    标签：评分：6.0/10、query:mm
-   evidence：处理不完整多模态数据
-3. [Chehre: An Emoji-Prompted Video Dataset for Perceptually Diverse Facial Expression Recognition](/202606/23/2606.21657v1-chehre-an-emoji-prompted-video-dataset-for-perceptually-diverse-facial-expression-recognition)  
-   标签：评分：6.0/10、query:mm
-   evidence：面部表情识别数据集，用于情感识别
-4. [Learning from Audio-Dependency Errors: Data Curation Strategies Based on Model Confusion Patterns in Audio Question Answering](/202606/23/2606.22276v1-learning-from-audio-dependency-errors-data-curation-strategies-based-on-model-confusion-patterns-in-audio-question-answering)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过空音频探测处理缺失音频模态
+   evidence：统一多模态建模
 
 
 <div class="dpr-home-promo-card">
