@@ -1,0 +1,649 @@
+Title: SAC^2-Net: Semantic Anchoring and Complementary-Consensus Fusion for Multimodal Micro-Expression Recognition
+
+URL Source: https://arxiv.org/pdf/2606.25542v1
+
+Published Time: Thu, 25 Jun 2026 00:45:58 GMT
+
+Number of Pages: 34
+
+Markdown Content:
+# SAC 2-Net: Semantic Anchoring and Complementary-Consensus Fusion for Multimodal Micro-Expression Recognition 
+
+Xuepeng Zheng a, Tong Chen a, ∗
+
+> aCollege of Electronic and Information Engineering, Southwest University, Chongqing, 400715, , China
+
+Abstract 
+
+Micro-expression recognition (MER) is challenging due to subtle facial move-ments, limited data, and the ambiguous relationship between Action Units (AUs) and emotion categories. Optical flow and motion magnification have been widely used to describe subtle facial dynamics from different perspec-tives: the former captures local motion displacement, while the latter am-plifies weak appearance changes. In this work, we observe that these two modalities often exhibit asymmetric failure patterns: one modality may be-come noisy, distorted, or uninformative, while the other still preserves dis-criminative AU-related evidence. This phenomenon reveals their comple-mentarity, but also raises two key challenges for fusion: cross-modal hetero-geneity and spatially varying modality reliability. Motivated by this obser-vation, we propose SAC 2-Net, a Semantic Anchoring and Complementary-Consensus Network for multimodal MER, which first aligns visual modali-ties with semantic anchors and then performs reliability-aware fusion. To reduce cross-modal heterogeneity before fusion, we introduce Semantic An-choring Soft Alignment (SASA), which converts activated AUs into tex-tual prompts and uses them as stable semantic anchors to align motion-magnified and optical-flow representations. Unlike hard contrastive learn-ing, SASA constructs hierarchical AU-aware soft labels to preserve seman-tic proximity among samples with overlapping or anatomically related AU patterns. Based on the aligned representations, Complementary-Consensus   
+
+> ∗Corresponding author
+> Email address: xpzheng@email.swu.edu.cn (Xuepeng Zheng)
+> arXiv:2606.25542v1 [cs.CV] 24 Jun 2026
+
+Fusion (CCF) first repairs unreliable local evidence through complementary exchange and then enforces a shared spatial focus through consensus refine-ment. Extensive experiments on five MER benchmarks show that SAC 2-Net achieves state-of-the-art or highly competitive performance across coarse-grained, fine-grained, large-scale, and cross-dataset evaluation settings. Code is available at https://github.com/pong213/SAC2-Net .
+
+Keywords: Micro-expression recognition, Cross-modal alignment, Vision-language representation learning, Multimodal fusion 
+
+1. Introduction 
+
+Micro-expressions (MEs) are involuntary, brief facial movements that oc-cur when an individual attempts to conceal or suppress a genuine emotion [1]. Lasting fewer than 500 milliseconds and involving extremely subtle muscle activations, MEs carry critical information for applications in clinical di-agnosis, deception detection, and affective computing [2, 3]. Despite their practical importance, MER remains a challenging task: the visual signal is weak and often invisible to the naked eye, making it difficult for standard deep learning models to learn discriminative representations from raw frames alone. According to the Facial Action Coding System (FACS) [4], facial expres-sions can be decomposed into a set of Action Units (AUs), each correspond-ing to the contraction or relaxation of specific facial muscles. Since MEs are manifested through subtle AU-related movements, optical flow estimated between the onset frame and the apex frame has become a widely used repre-sentation for MER [5, 6]. Optical flow provides a motion-centric description of local facial displacement and can highlight activated facial regions that are difficult to observe from individual frames. Motion magnification offers another important visual cue by amplifying subtle facial changes into more perceivable appearance variations [7]. Compared with optical flow, motion-magnified images preserve richer facial appearance context and can reveal fine-grained local deformations. The motivation of this work comes from a key empirical observation: opti-cal flow and motion magnification often fail in different ways. As illustrated in Fig. 1, some samples exhibit distorted or artifact-contaminated magnified ap-pearances, while their optical-flow maps still preserve meaningful AU-related motion evidence. Conversely, some optical-flow maps become nearly uni-2Onset frame Apex frame Motion magnification DecFlow RAFT         
+
+> AU5 AU5
+> AU1 AU2 AU2
+> AU38 AU38
+> AU14 AU14
+> AU4
+> Failure Failure Failure Failure Failure Failure Failure Failure Failure
+
+Figure 1: Examples of modality-specific success and failure cases on CAS(ME) 3.DecFlow [8] and RAFT [9] are included to show that optical flow failure is not estimator-specific. While the first three samples retain useful AU-related evidence in at least one modality, the last two show cases where both modalities fail, motivating reliability-aware complementary fusion. 
+
+form or unreliable, whereas the corresponding magnified images still reveal discriminative facial changes. This asymmetric failure pattern suggests that the two modalities are not merely redundant descriptions of the same mo-tion; rather, they provide complementary evidence under modality-specific degradation. Therefore, an effective multimodal MER framework should not simply combine the two modalities, but should explicitly determine which modality is reliable, where it is reliable, and how its information can com-pensate for the other. However, exploiting this complementarity is nontrivial. First, optical flow and motion magnification have different representation forms and sta-tistical properties, leading to cross-modal heterogeneity before fusion. If the two modalities are directly fused, the fusion module must simultaneously resolve semantic discrepancy, suppress modality-specific noise, and perform fine-grained emotion discrimination. Second, although MEs are closely re-3lated to AUs, AUs do not have a one-to-one correspondence with emotion categories. Samples with overlapping or anatomically related AU patterns may be semantically close even if their emotion labels differ. Treating such samples as unrelated negatives in contrastive learning can disturb the se-mantic structure of the representation space. Third, local modality quality varies across facial regions. Blind concatenation or generic attention fusion may propagate unreliable evidence instead of exploiting the complementary modality for repair. To address these issues, we propose SAC 2-Net (Semantic Anchoring and Complementary-Consensus Network), a multimodal MER framework designed to transform the observed asymmetric modality failure into a useful fusion advantage. SAC 2-Net follows an align-first, fuse-later principle. Before fusion, we propose Semantic Anchoring Soft Alignment (SASA) to reduce cross-modal heterogeneity. Specifically, SASA converts activated AUs into natural-language prompts and uses them as stable semantic anchors for align-ing motion-magnified and optical-flow representations. The AU-derived tex-tual modality provides clearer, dataset-agnostic, and fine-grained semantic guidance than either visual modality alone. More importantly, SASA con-structs hierarchical AU-aware soft labels, so that samples with overlapping or anatomically related AU patterns remain close in the embedding space rather than being pushed apart as hard negatives. In this way, SASA im-poses AU-aware semantic structure before fusion, allowing the downstream fusion module to focus on complementary motion cues rather than large se-mantic discrepancies. Based on the aligned representations, SAC 2-Net further introduces Complementary-Consensus Fusion (CCF) to exploit local modality comple-mentarity. CCF follows a repair-then-agree strategy. Its Complementary Exchange Module (CEM) estimates spatial reliability maps for both modali-ties and allows each branch to borrow complementary evidence from reliable regions of the other branch. This enables the model to repair locally unre-liable responses when one modality fails but the other remains informative. Its Consensus Refinement Module (CRM) then constructs a shared spatial attention reference, encouraging both modalities to focus on the same dis-criminative facial regions while preserving modality-specific content. Thus, CEM converts cross-modal complementarity into local feature repair, while CRM further stabilizes the fusion by enforcing spatial consensus. The main contributions of this work are summarized as follows: 4• We identify and exploit the asymmetric failure phenomenon between motion magnification and optical flow in MER, and propose SAC 2-Net, a multimodal framework that turns this complementarity into a reliability-aware fusion advantage. 
+
+• We propose SASA, a text-anchored soft alignment strategy that uses AU-derived prompts as stable semantic anchors and leverages hierar-chical AU similarity to construct soft labels, thereby reducing cross-modal heterogeneity and preserving semantic proximity among related samples. 
+
+• We propose CCF, a complementary-consensus fusion mechanism com-posed of CEM and CRM, which first repairs unreliable local evidence through reliability-aware complementary exchange and then enforces shared spatial focus through consensus refinement. 
+
+• Experiments under various evaluation settings demonstrate the robust-ness and generality of SAC 2-Net. Ablation and qualitative analyses fur-ther demonstrate the effectiveness of the proposed semantic alignment and complementary-consensus fusion mechanisms. 
+
+2. Related work 
+
+2.1. Single-modal MER 
+
+Optical flow is widely used in MER because it explicitly encodes the direc-tion and magnitude of subtle facial muscle motion. Recent methods have im-proved optical-flow-based representation learning through contrastive learn-ing, attention mechanisms, graph modeling, and Transformers. For example, SRMCL [10] introduces self-expression reconstruction and prototype-based memory contrastive learning to improve generalization under limited MER data. HTNet [11] divides the face into key regions and applies hierarchical local-to-global self-attention on optical flow and optical strain. EMRNet [12] employs channel-wise region-aware attention and distance-correlation con-straints to enhance the diversity of optical-flow representations. MPFNet [13] combines multiple prior-learning strategies, while LTR3O [14] reduces depen-dence on manually specified apex frames by ranking onset-occurring-offset representations. Although these methods refine motion modeling, optical flow remains vulnerable to weak motion, low texture, and noisy estimation. 5Moreover, since AUs do not map one-to-one to emotion categories, motion cues alone provide limited semantic evidence for fine-grained discrimination. Motion magnification offers another way to enhance ME signals by ampli-fying subtle facial changes into more perceivable appearance variations. CM-Net [15] introduces contrastive magnification learning to capture intensity-related motion cues and model temporal intensity evolution. AM-MM-MER [7] first amplifies subtle facial motions using a Swin Transformer-based motion magnification network, and then performs recognition through Transformer modeling of selected facial landmarks. These methods make subtle expres-sions more observable and preserve facial appearance context that optical flow may discard. However, motion magnification is also sensitive to prepro-cessing quality. Excessive or inaccurate magnification may introduce artifacts or distortions, thereby misrepresenting the true expression. In summary, optical flow and motion magnification each capture only a partial view of facial dynamics and may fail in different, modality-specific ways. This observation motivates the joint use of both modalities. 
+
+2.2. Multimodal MER 
+
+Multimodal MER methods aim to improve robustness by combining het-erogeneous visual cues. Li et al. [16] adopt regional weighted fusion with supervised contrastive learning, and MMTNet [17] fuses dynamic images and optical strain using multi-scale Transformers and cross-modal contrastive alignment. MFDAN [18] further uses optical flow to guide attention over magnified image features. Although these methods improve visual represen-tation learning, most of them align or fuse visual modalities directly, without explicitly modeling AU-level semantic relations or the spatially varying reli-ability of each modality. AU-guided semantic learning provides another important direction. AU-GACN [19] introduces AU supervision and graph attention to model AU-emotion relationships. More recently, MER-CLIP [20] aligns visual ME dy-namics with AU-guided natural-language prompts through CLIP-style con-trastive learning. However, its hard positive-negative formulation is less suitable for samples with overlapping AU patterns, especially among sim-ilar negative emotions such as anger, fear, disgust, and sadness. Existing AU-guided methods also rarely consider hierarchical anatomical relations, such as bilateral-unilateral AU correspondence. Overall, existing multimodal MER methods still face two limitations. First, cross-modal alignment often overlooks graded AU-level semantic re-6lations, making it difficult to organize semantically related samples in the embedding space. Second, fusion modules based on concatenation or generic attention do not explicitly model the reliability or complementarity of each modality, so modality-specific noise may be propagated rather than sup-pressed. 
+
+3. Method 
+
+The overall architecture of SAC 2-Net is shown in Fig. 2 During training, AU-derived textual prompts serve as semantic anchors to guide the represen-tation learning of two visual modalities. While the textual modality provides stable and fine-grained semantic grounding, the two visual modalities pro-vide complementary but variably reliable evidence of subtle facial movements. Based on this design, SASA aligns both visual modalities toward the AU-derived text space using anatomically informed soft relational supervision, preserving the proximity of semantically related samples in the embedding space. The aligned visual features are then fed into the CCF block, which performs reliability-aware complementary repair followed by shared spatial consensus refinement for final recognition. 
+
+3.1. Modality-specific encoding 3.1.1. Hierarchical visual encoding 
+
+MER requires both local AU-related motion cues and long-range de-pendencies among facial regions. To capture these two types of informa-tion, we adopt a hybrid visual backbone termed the Hybrid Fast Encoder (HFE), which combines convolutional token mixing in shallow stages with self-attention in the deepest stage. HFE follows a four-stage hierarchical MetaFormer-style architecture [21]. Each stage is composed of repeated residual blocks: 
+
+Y ′ = X + TokenMixer(Derf( X)) , (1) 
+
+Y = Y ′ + ConvFFN(Derf( Y ′)) , (2) where Derf( ·) denotes the Dynamic erf [22], TokenMixer( ·) performs spatial information aggregation, and ConvFFN( ·) is a ConvNeXt-style feed-forward block [23]. Stages 1–3 use depthwise separable convolution to capture local motion patterns, while Stage 4 uses multi-head self-attention to model global facial dependencies. The detailed configuration is provided in Appendix A. 7Magnified Image Text Optical Flow 
+
+> Hybrid Fast Encoder
+> CLIP Text Encoder
+
+Modality-Specific Encoding  
+
+> Mag.-to-Text Alignment
+> Flow-to-Text Alignment Contrastive Loss
+> Contrastive Loss
+> Soft Labels
+> Semantic Anchoring Soft Alignment
+> CCF Block
+> GAP & Project
+> GAP & Project GAP & Project
+> CCF Block
+
+"The face shows..." 
+
+Complementary-Consensus Fusion 
+
+©
+
+> backprop.
+
+Frozen Weight Require Grad © Concatenation Addition  
+
+> unrelated partial match exact match unrelated
+> anchor
+> exact match partial match
+> Hybrid Fast Encoder
+> Conv.
+> backprop.
+
+😊 
+
+😠 
+
+🤮 
+
+😨 😲 
+
+☹
+
+> anger happiness sadness disgust fear surprise
+> GAP & MLP Head
+
+Figure 2: Overall architecture of the proposed SAC 2-Net. 
+
+Let Emag v (·) and Ef low v (·) denote the visual encoders for motion magnifi-cation and optical flow, respectively. They share the same HFE architecture but do not share parameters because the two modalities have different ap-pearance statistics and noise patterns. Given the motion-magnified image 
+
+Xmag ∈ R3×H×W and the optical-flow image Xf low ∈ R3×H×W , the spatial feature maps are extracted as 
+
+F mag = Emag v (Xmag ) ∈ RD×H′×W ′
+
+, (3) 
+
+F f low = Ef low v (Xf low ) ∈ RD×H′×W ′
+
+. (4) These spatial features are retained for subsequent complementary fusion. For semantic alignment, we further apply global average pooling (GAP) and modality-specific projection heads: 
+
+f mag = gmag 
+
+ GAP( F mag ) ∈ RD, (5) 
+
+f f low = gf low 
+
+ GAP( F f low ) ∈ RD, (6) where gmag (·) and gf low (·) are learnable projection heads. 83.1.2. Textual prompt generation and encoding 
+
+Stochastic AU-to-text prompting. To avoid overfitting to fixed sentence patterns, we design a stochastic prompting strategy. For each AU, we build a template set containing descriptions from complementary perspectives, such as anatomical movement and visible appearance. We also maintain multiple sentence prefixes to diversify the global prompt context. Let A = a1, a 2, . . . , a K denote the activated AU set of a sample. For each AU ak, one description is randomly sampled from its template set D(ak) and composed under a randomly sampled context prefix Tbase (·):
+
+T = Tbase 
+
+ D(a1) c○D(a2) c○ · · · c○D(aK ), (7) where c○ denotes concatenation. For example, for AU labels {4, 7}, one pos-sible prompt is: The facial expression is characterized by the eyebrows being pulled downward and inward, together with tightened and narrowed eyelids. 
+
+This strategy acts as semantic data augmentation, encouraging the model to focus on AU-related meaning rather than fixed syntax. The complete prompt library is provided in our code library. 
+
+Textual encoding. The generated prompt is encoded by the text encoder of CLIP [24] and projected into the shared alignment space: 
+
+f text = gt
+
+ Et(T ) ∈ RD, (8) where Et(·) denotes the CLIP text encoder and gt(·) is a learnable projec-tion head. We freeze Et during training to preserve its pre-trained semantic knowledge and reduce overfitting on small MER datasets. 
+
+3.2. Semantic anchoring soft alignment 
+
+Standard contrastive learning typically assumes binary sample relations, i.e., each pair is either a positive or a negative. Such a formulation is overly restrictive for MER, where different samples often share partial facial-action semantics. For instance, two samples may correspond to different expression categories yet still exhibit overlapping AU activations. Treating such seman-tically related pairs as hard negatives may distort the learned embedding space. To address this issue, we propose SASA, a text-anchored contrastive learning strategy that replaces binary supervision with AU-conditioned soft relational targets. 93.2.1. AU-based soft label generation 
+
+Pairwise AU similarity. In FACS, some AUs may appear either bilaterally or unilaterally. For example, AU4 may appear as bilateral activation affect-ing both eyebrows, or as L4/R4 indicating left-only or right-only activation. Standard set-overlap measures ignore this anatomical relation. We therefore define an AU-family mapping ρ(·) that removes laterality while retaining the AU identity: 
+
+ρ(4) = ρ(L4) = ρ(R4) = 4 . (9) Since each sample contains at most one label from the same AU family, cross-set matching at the family level is unique. For two AU labels a and b, their anatomically informed pairwise similarity is defined as 
+
+σ(a, b ) = 
+
+
+
+1, a = b, α, ρ(a) = ρ(b), one bilateral and one unilateral ,β, ρ(a) = ρ(b), opposite unilateral sides ,
+
+0, otherwise ,
+
+(10) where 1 > α > β > 0. Here, α and β model the anatomical similarity between bilateral–unilateral and opposite-side unilateral activations, respec-tively. In our experiments, α = 0 .7 and β = 0 .6. Their effects are analyzed in Appendix B. 
+
+Soft Jaccard similarity. Let Ai and Aj denote the AU sets of samples i
+
+and j. The matched AU-family pairs are defined as 
+
+Mij = {(a, b ) | a ∈ A i, b ∈ A j , ρ (a) = ρ(b)}. (11) The AU-level soft Jaccard similarity is then computed as 
+
+Sij =
+
+P 
+
+> (a,b )∈M ij
+
+σ(a, b )
+
+|A i| + |A j | − |M ij |. (12) This formulation preserves the union-overlap property of Jaccard similar-ity while incorporating partial anatomical correspondence within the same AU family. To obtain soft contrastive targets, we normalize the batch-wise similarity matrix: 
+
+˜Sij = Sij 
+
+PBk=1 Sik 
+
+, (13) where B is the batch size. The normalized matrix ˜S ∈ RB×B is used as the relational target for SASA. Fig. 3 illustrates the soft label generation process. 10 (a) AU Set Input   
+
+> Sample j
+> AU4 AU7
+> L4 AU7
+> (b) AU Family Matching
+> exact match
+> AU7
+> AU7
+> partial match (same AU family)
+> (c) Soft Jaccard Similarity
+
+0.85                         
+
+> Numerator: soft intersection = 1.7
+> Denominator: family-aware union = 2
+> (d) Batch-wise Similarity Matrix
+> 1.00 0.85 0.00 0.35
+> 0.85 1.00 0.00 0.30
+> 0.00 0.00 1.00 0.00
+> 0.35 0.30 0.00 1.00
+> 0.45 0.39 0.00 0.16
+> 0.40 0.47 0.00 0.14
+> 0.00 0.00 1.00 0.00
+> 0.21 0.18 0.00 0.61
+> (e) Soft Label Matrix
+> Normalization
+> AU4
+> L4
+> Sample i
+> Sample j
+> Sample i
+
+Figure 3: Example of AU-based soft label generation in SASA. 
+
+3.2.2. Text-anchored contrastive learning 
+
+Because motion magnification and optical flow are generated by differ-ent preprocessing pipelines, they may contain different noise patterns and modality-specific distortions. Directly aligning them may therefore force un-reliable visual evidence into the shared representation. SASA instead adopts an asymmetric text-anchored alignment strategy, where both visual modal-ities are aligned to the AU-derived text branch, which serves as a stable semantic reference. Given the visual embedding f vi and textual embedding f text j , where v ∈{mag, f low }, the visual-to-text alignment probability is computed as 
+
+pv→text ij = exp  sim( f vi , f text j )/τ PBk=1 exp (sim( f vi , f text k )/τ ), (14) 
+
+sim( f v, f text ) = f v · (f text )⊤
+
+∥f v∥ · ∥ f text ∥,
+
+where τ is the temperature parameter. The alignment loss is defined as the soft-target cross-entropy between the predicted alignment distribution and the AU-conditioned relational target: 
+
+Lv→text = − 1
+
+B
+
+BX
+
+i=1 
+
+BX
+
+j=1 
+
+˜Sij log pv→text ij . (15) The overall SASA loss is 
+
+LSASA = Lmag →text + Lf low →text . (16) 11 Reliability-Biased Cross-Modal Complementary Attention        
+
+> Shared-Key Attention FFN
+> Complementary Exchange Module Consensus Refinement Module
+> Cross-Informed Reliability Estimation Shared-Key Construction
+> C
+> Element-wise Multiplication
+> Matrix Multiplication
+> Logistic Function
+> Softmax Function
+> Flattening Operation
+
+Figure 4: Architecture of the proposed CCF block. Given the semantically aligned motion-magnified and optical-flow feature maps, CEM first estimates cross-informed reliability maps and performs reliability-aware complementary exchange to repair unreliable local responses. CRM then constructs a reliability-gated shared spatial reference to enforce con-sensus over task-relevant facial regions while preserving modality-specific content through separate value pathways. For attention computation in CEM and CRM, the input feature maps are serialized from RB×D×H′×W ′
+
+to RB×N ×D , where N = H′W ′.
+
+By preserving graded AU-level relations, SASA structures the visual em-bedding space before fusion. This reduces cross-modal semantic discrepancy and allows the subsequent CCF module to focus on discovering and exploiting modality complementarity under asymmetric reliability. 
+
+3.3. Complementary-consensus fusion 
+
+Although SASA reduces cross-modal semantic discrepancy, local modality-specific failures may still remain. In challenging MER samples, motion mag-nification and optical flow may exhibit asymmetric reliability, where one modality becomes unreliable while the other still preserves valid AU-related evidence. To exploit this complementarity, we propose Complementary-Consensus Fusion (CCF), a two-stage repair-then-agree fusion block, as shown in Fig. 4. CEM repairs unreliable regions by borrowing evidence from reliable regions of the other modality, while CRM builds a reliability-gated shared spatial reference to promote consistent attention to task-relevant facial re-gions without removing modality-specific content. 12 3.3.1. Complementary exchange module 
+
+CEM aims to repair unreliable local responses by modeling two fac-tors: the reliability of each modality and the spatial locations where com-plementary evidence should be injected. Let v = {mag, f low } and let 
+
+¯v denote the modality complementary to v. Given aligned feature maps 
+
+F mag , F f low ∈ RD×H′×W ′
+
+, the cross-informed reliability map of modality v is estimated as 
+
+Rv = σ
+
+
+
+Conv v
+
+> 1
+
+ GELU (Conv v
+
+> 3
+
+([ F v∥F ¯v])) 
+
+, (17) where Rv ∈ R1×H′×W ′
+
+, σ(·) denotes the sigmoid function, and ∥ denotes channel-wise concatenation. The estimator uses both streams so that the reliability of one modality is judged with reference to the other. The unreli-ability map is defined as Uv = 1 − Rv.These reliability maps are learned jointly with the recognition objective and are further constrained by a dedicated regularization loss introduced in Sec. 3.4. After flattening the spatial dimensions into sequences of length N =
+
+H′W ′, CEM performs reliability-biased cross-modal attention. For modality 
+
+v, the complementary feature borrowed from ¯v is computed as 
+
+F v←¯v = softmax 
+
+Qv(K¯v)⊤
+
+√dk
+
++ log( R¯vseq + ϵ)
+
+
+
+V ¯v, (18) where Qv is projected from F v, K¯v and V ¯v are projected from F ¯v, and R¯vseq is the flattened reliability map of the source modality. The log-reliability term acts as an attention prior, guiding the target modality to retrieve information from trustworthy source regions. The borrowed feature is then injected through an unreliability-gated resid-ual update: 
+
+F vcem = F v + Uv ⊙ F v←¯v, (19) where ⊙ denotes element-wise multiplication with spatial broadcasting. Thus, reliable target regions are preserved, whereas unreliable regions are selectively repaired using complementary evidence. 
+
+3.3.2. Consensus refinement module 
+
+After CEM, the two streams may still focus on different spatial regions due to their modality-specific statistics and noise patterns. CRM is therefore 13 introduced to establish spatial consensus after complementary repair. Instead of directly merging the two streams, CRM enforces consensus at the level of attention coordinates while retaining modality-specific values. The reliability maps are first normalized as 
+
+ˆRv = Rv
+
+Rmag + Rf low + ϵ. (20) A reliability-gated shared key is then constructed from the repaired features: 
+
+Kshared = ˆRmag ⊙ Kmag crm + ˆRf low ⊙ Kf low crm , (21) where Kmag crm and Kf low crm are key projections from the two repaired streams. The shared key provides a reliability-weighted spatial reference: regions dom-inated by one reliable modality contribute more strongly, while regions where both modalities are informative contribute jointly. Each modality then computes attention using its own query and value but shares the same key: 
+
+∆F vcrm = softmax 
+
+Qvcrm (Kshared )⊤
+
+√dk
+
+
+
+V vcrm . (22) This design separates where to attend from what to retrieve: the shared key encourages both modalities to attend to consistent facial regions, whereas modality-specific values preserve their distinct representation capacity. The CRM output is obtained by residual refinement: 
+
+F vcrm = F vcem + ∆ F vcrm , (23) 
+
+F vcrm ← F vcrm + FFN( F vcrm ). (24) After stacking L CCF blocks, the final fused magnification and flow features are concatenated and mixed by a 1 × 1 convolution: 
+
+F f used = Conv 1
+
+
+
+[F mag f used ∥F f low f used ]
+
+
+
+∈ RD×H′×W ′
+
+. (25) 
+
+3.4. Optimization objective 
+
+The overall objective consists of classification supervision, semantic an-choring, and reliability regularization: 
+
+Ltotal = λcls (e)Lcls + λSASA (e)LSASA + λrel Lrel , (26) 14 where LSASA is defined in Eq. (16), and e denotes the training epoch. 
+
+Classification loss. To reduce the effect of class imbalance in MER datasets, we adopt a class-balanced focal loss: 
+
+Lcls = − 1
+
+B
+
+> B
+
+X
+
+> i=1
+
+wyi (1 − pi,y i )γ log pi,y i , (27) where pi,y i is the predicted probability of the ground-truth class yi, γ is the focusing parameter, and wyi is the class weight. Following the effective-number formulation [25], the weight of class c is computed as 
+
+wc = 1 − β
+
+1 − βnc , (28) where nc is the number of training samples in class c, and β = ( N − 1) /N 
+
+with N denoting the total number of training samples. 
+
+Reliability regularization. Since the reliability maps in CEM guide com-plementary repair and consensus construction, they are encouraged to be spatially smooth. We regularize them using a total-variation-style loss: 
+
+Lrel = X
+
+> v∈mag,f low
+
+(∥∇ xRv∥1 + ∥∇ yRv∥1) , (29) where ∇x(·) and ∇y(·) denote horizontal and vertical finite differences. 
+
+Dynamic loss scheduling. Semantic anchoring is emphasized in the early stage to organize the visual embedding space, while classification supervision is gradually strengthened for final emotion recognition. To keep the total contribution of these two objectives stable, we adopt the following cosine schedule: 
+
+λSASA (e) = Λ2
+
+
+
+1 + cos 
+
+ πe E − 1
+
+ 
+
+, (30) 
+
+λcls (e) = Λ − λSASA (e), (31) where E is the total number of training epochs and Λ = 2 . Thus, λSASA (e)
+
+decreases from 2 to 0, while λcls (e) increases from 0 to 2. The reliability regularization weight is fixed to λrel = 0 .1.15 4. Experiments 
+
+4.1. Datasets and evaluation protocols 
+
+We evaluate SAC 2-Net on five publicly available spontaneous ME datasets. 
+
+CASME II [26] contains 247 ME samples collected from 26 subjects at 200 fps. Following common practice, experiments on this dataset are conducted under the 5-class setting, including happiness, disgust, repression, surprise, and others. 
+
+SAMM [27] consists of 159 samples from 32 subjects recorded at 200 fps. Although the dataset provides seven emotion categories, we follow the com-monly adopted 5-class setting (happiness, contempt, surprise, anger, and others). 
+
+SMIC [28] comprises 164 samples from 16 subjects captured at 100 fps and annotated with three coarse-grained emotion labels, namely positive, negative, and surprise. Since this dataset does not provide AU annotations, the activated AU labels were annotated by professional FACS experts. 
+
+MEGC2019-CD [29] was introduced by the ME Grand Challenge 2019 (MEGC2019) to enable cross-dataset evaluation under a unified label space. Following the official protocol, SMIC, CASME II, and SAMM are combined into a composite benchmark, where all samples are mapped into three coarse-grained emotion categories: positive, negative, and surprise. 
+
+CAS(ME) 3 [30] is a large-scale dataset containing 1,109 samples from 247 subjects with high-resolution depth information. In this work, we use Part A of CAS(ME) 3, which contains 860 samples from 100 subjects. Experiments are conducted under both the 4-class setting (positive, negative, surprise, and others) and the 7-class setting (happiness, disgust, surprise, fear, anger, sadness, and others). 
+
+DFME [31] is currently the largest ME dataset containing 7,526 samples from 656 subjects across seven emotion categories, including happiness, dis-gust, contempt, surprise, fear, anger, and sadness. In our experiments, we use its publicly available subset, which is partitioned into a training set (1,856 samples), Test-A set (474 samples), and Test-B set (299 samples). For evaluation, we adopt leave-one-subject-out (LOSO) cross-validation on all datasets except DFME. For DFME, we follow the protocol in [32] and conduct experiments using its predefined training and testing split. Besides, to further assess cross-dataset generalization, we conduct two transfer set-tings by using CASME II and SAMM as the training set, respectively, and 16 SMIC as the test set. Following common practice in MER, we report Ac-curacy (ACC), F1-score (F1), unweighted F1-score (UF1), and unweighted average recall (UAR), which are defined as 
+
+ACC =
+
+PCc=1 T P c
+
+PCc=1 Nc
+
+, (32) 
+
+F 1 = 
+
+> C
+
+X
+
+> c=1
+
+Nc
+
+N
+
+2T P c
+
+2T P c + F P c + F N c
+
+, (33) 
+
+U F 1 = 1
+
+C
+
+> C
+
+X
+
+> c=1
+
+2T P c
+
+2T P c + F P c + F N c
+
+, (34) 
+
+U AR = 1
+
+C
+
+> C
+
+X
+
+> c=1
+
+T P c
+
+Nc
+
+, (35) where C denotes the number of classes, Nc is the number of samples in the 
+
+c-th class, and T P c, F P c, and F N c denote the numbers of true positives, false positives, and false negatives for the c-th class, respectively. 
+
+4.2. Implementation details 
+
+In all experiments, facial regions are first aligned and cropped using Me-diaPipe [33], and then resized to 224 × 224 . The onset and apex frames of each sample are used to construct the two visual modalities. Specifically, the motion-magnified image is generated by the learning-based axial motion magnification method in [34] with the axial magnification factors set to 5,while the optical-flow image is estimated using DecFlow [8]. To initialize the visual encoder, we first perform SASA-based contrastive pretraining on the external macro-expression dataset Extended Cohn-Kanade (CK+) [35]. This external pretraining helps the HFE learn semantically structured facial motion representations before downstream MER training. During this stage, only the HFE visual encoders and SASA-related projection layers are optimized, while the subsequent fusion module and classifier are excluded. The pretrained weights are then transferred to downstream MER datasets for task-specific training. SAC 2-Net is optimized using AdamW [36] with an initial learning rate of 5 × 10 −4 and a weight decay of 5 × 10 −2. A cosine annealing schedule is employed after a 3-epoch linear warm-up. The model is trained for 200 
+
+epochs with a batch size of 64 . To stabilize fine-tuning, the visual encoders 17 are updated with a reduced learning rate equal to 0.2× the base learning rate, while the fusion module and classifier are trained using the full base rate. The number of CCF blocks L is set to 3. Unless otherwise specified, all experiments are repeated three times with different random seeds, and the average results are reported as the final performance. All experiments are implemented in PyTorch and conducted on two NVIDIA RTX A100 GPUs. 
+
+4.3. Comparison with state-of-the-art 
+
+Table 1: Comparison results on SMIC, CASME II, SAMM, and MEGC2019-CD under the 3-class setting. The best results are highlighted in bold, and the second-best results are underlined. Methods marked with ∗ are trained using multiple modalities.                                                                                                                                    
+
+> Methods Pub-Year SMIC CASME II SAMM MEGC2019-CD UF1 UAR UF1 UAR UF1 UAR UF1 UAR
+> μ-BERT [37] CVPR-23 85.50 83.84 90.34 89.14 83.86 84.75 89.03 88.42 FRL-DGT [38] CVPR-23 74.30 74.90 91.90 90.30 77.20 75.80 81.20 81.10 SRMCL [10] TAC-24 79.46 80.53 96.35 96.49 84.70 88.66 86.30 88.30 HTNet [11] NC-24 80.49 79.05 95.32 95.16 81.31 81.24 86.03 84.75 MFDAN ∗[18] TCSVT-24 68.15 70.43 91.34 93.26 78.71 81.96 84.53 86.88 EMRNet [12] AIR-25 65.09 65.96 90.74 89.95 67.82 68.97 74.68 75.46 MPFNet [13] TAC-25 80.60 80.90 91.10 92.30 79.50 83.90 84.00 84.60 Micro_NesT [39] ESWA-25 78.86 78.16 97.22 96.58 86.64 87.31 87.22 86.57 EDMDBN [40] PRL-25 79.48 80.85 94.84 96.19 83.36 86.61 88.21 89.33 MMTNet ∗[17] JVCIR-25 81.03 80.72 87.62 86.90 77.89 75.52 83.21 82.33 LTR3O [14] TAC-25 83.36 82.98 95.78 94.87 89.12 85.26 89.31 88.19 MOL [41] TPAMI-25 81.00 72.34 90.08 89.92 89.72 89.00 87.79 85.42 SAC 2-Net Ours 84.22 84.83 97.33 96.88 89.17 84.32 89.73 89.35
+
+Coarse-grained dataset evaluation. As shown in Table 1, SAC 2-Net achieves the best overall performance on the CASME II and MEGC2019-CD datasets. Table 3 further shows that SAC 2-Net obtains the highest UF1 and UAR on the 4-class setting of CAS(ME) 3. We attribute this consis-tent performance to the text-anchored alignment. Since AU descriptions are dataset-agnostic, they provide a stable semantic scaffold that generalizes across heterogeneous recording conditions. In addition, SASA’s soft labels preserve hierarchical AU similarity, preventing semantically related classes from being overly separated during training and thereby improving coarse-grained discrimination. 
+
+Fine-grained dataset evaluation. Tables 2 report results under the more challenging fine-grained classification setting. On CASME II, SAC 2-Net achieves the best performance in both ACC and UF1, while remaining highly 18 Table 2: Comparison results on CASME II and SAMM under the 5-class setting. –indicates that the corresponding paper did not report results under this setting.                                                                
+
+> Methods Pub-Year CASME II SAMM ACC UF1 ACC UF1
+> μ-BERT [37] CVPR-23 83.48 85.53 84.75 83.86
+> FRL-DGT [38] CVPR-23 75.70 74.80 ––SRMCL [10] TAC-24 83.20 82.86 74.63 65.99 MPFNet [13] TAC-25 83.10 83.30 71.90 71.80 Micro_NesT [39] ESWA-25 77.93 77.20 76.69 74.78 EDMDBN [40] PRL-25 88.26 85.91 81.58 75.73 MER-CLIP ∗[20] TAC-25 82.33 83.78 77.21 74.14 MMTNet ∗[17] JVCIR-25 80.08 80.07 75.00 67.36 LTR3O [14] TAC-25 81.78 79.05 80.15 75.74 GAMDSS [42] TAC-26 87.50 86.17 82.84 81.47 SAC 2-Net Ours 88.34 87.87 83.38 82.09
+
+Table 3: Comparison results on CAS(ME) 3 under the 4-class and 7-class settings. †
+
+indicates that the relevant results are reproduced using official code of the corresponding method. 
+
+Methods Pub-Year 4-class 7-class UF1 UAR UF1 UAR AlexNet [30] TPAMI-22 29.15 29.10 17.59 18.01 
+
+μ-BERT [37] CVPR-23 47.18 49.13 32.64 32.54 HTNet † [11] NC-24 49.35 52.34 37.56 37.69 SFAMNet [43] NC-24 44.62 47.97 23.65 23.73 PC-GCN [44] TAC-25 47.64 53.66 35.64 41.59 MER-CLIP ∗ [20] TAC-25 65.44 62.42 49.97 50.14 GAMDSS [42] TAC-26 70.75 76.03 53.29 62.73 
+
+SAC 2-Net Ours 72.33 77.34 56.99 58.28 
+
+competitive on SAMM. On the 7-class setting of CAS(ME) 3 (Tables 3), SAC 2-Net further attains the best UF1 together with competitive UAR. No-tably, the performance gain over the strongest baseline increases from +1 .58% 
+
+in the 4-class setting to +3 .70% in the 7-class setting, indicating that the ad-vantage of SAC 2-Net becomes more evident as class granularity increases. Fine-grained recognition requires distinguishing emotions with similar AUs, such as anger and disgust, which both involve AU4 (Brow Lowerer). In this setting, the reliability-aware CEM enables the model to exploit the modality that better captures subtle local differences, while the shared-key consensus in CRM guides both modalities toward the same discriminative facial regions instead of relying on inconsistent cues. 19 Table 4: Comparison results on DFME under the 7-class setting. The results of Wang et al. and He et al. are reported by [20]. 
+
+Methods Test Set 7-class UF1 UAR ACC HTNet † [11] Set A 42.35 42.83 49.14 Wang et al. [32] 40.67 40.74 46.41 He et al. [32] 41.23 42.10 48.73 MER-CLIP ∗ [20] 50.24 51.15 56.96 SAC 2-Net 52.73 52.90 58.65 
+
+HTNet † [11] Set B 36.36 37.71 39.25 Wang et al. [32] 35.34 36.61 38.13 He et al. [32] 40.16 40.08 41.47 MER-CLIP ∗ [20] 51.28 51.20 52.50 
+
+SAC 2-Net 50.68 50.57 51.50 
+
+Large-scale dataset evaluation. Table 4 reports the 7-class results on the DFME benchmark. On Test set A, SAC 2-Net achieves the best performance across all metrics. On Test set B, SAC 2-Net ranks second, trailing MER-CLIP by modest margins. Notably, both methods outperform the remaining baselines by over 10% , suggesting that cross-modal semantic guidance is crit-ical for large-scale MER. The complementary exchange mechanism plays a significant role at this scale, since the larger sample pool introduces greater variability in the quality of motion magnification and optical flow across sam-ples, making reliability-aware cross-modal compensation especially beneficial for stable prediction. 
+
+Cross-dataset evaluation. As shown in Table 5, SAC 2-Net significantly outperforms all baselines in both transfer directions, demonstrating strong cross-dataset generalization. The SASA provides dataset-agnostic semantic guidance through AU-based text anchoring and thus encourages the model to learn transferable representations rather than dataset-specific patterns. 
+
+4.4. Ablation study 
+
+Unless otherwise specified, all ablations are conducted on CAS(ME) 3 un-der the 7-class setting, and each configuration is run three times with different random seeds. 
+
+Module-level ablations. Table 6 isolates the contribution of each major 20 Table 5: Cross-dataset comparison results from CASME II and SAMM to SMIC under the 3-class setting. Following the protocol in [19], models are trained on CASME II or SAMM and tested on SMIC to evaluate cross-dataset generalization. 
+
+Methods Pub-Year CASME II → SMIC SAMM → SMIC Acc F1 Acc F1 STCNN [45] IJCNN-19 31.40 19.00 32.50 19.00 CapsuleNet [46] FG-19 32.20 15.20 32.40 17.90 MER-GCN [47] MIPR-20 36.70 27.20 36.10 17.80 AU-GACN [19] ACM MM-20 34.40 31.90 45.10 30.90 MOL [41] TPAMI-25 47.13 43.91 44.58 32.32 SAC 2-Net Ours 56.46 56.60 52.17 45.41 
+
+> Table 6: Ablation study of the main components in SAC 2-Net.
+
+SASA CEM CRM CAS(ME) 3 (7-class) UF1 UAR 45.23 46.37 
+
+✓ 49.07 50.13 
+
+✓ ✓ 54.12 55.47 
+
+✓ ✓ ✓ 56.99 58.28 
+
+component in SAC 2-Net. The baseline, which uses only the visual encoders followed by feature concatenation and classification, achieves 45 .23% UF1 and 46 .37% UAR. Adding SASA alone brings a gain of 3.84% UF1, showing that semantic anchoring already provides a stronger representation space for MER. Introducing CEM further increases the improvement to 8.89% UF1, in-dicating that reliability-aware complementary exchange effectively enhances cross-modal interaction. Incorporating CRM yields the full SAC 2-Net, reach-ing 56 .99% UF1 and 58 .28% UAR. Overall, the complete model improves the baseline by 11 .76% UF1 and 11 .91% UAR, demonstrating that SASA, CEM, and CRM contribute progressively and complementarily. 
+
+Effect of SASA design. Table 7 compares three variants of the alignment strategy, namely hard labels, standard Jaccard-based soft labels, and the proposed soft Jaccard labels. Replacing hard labels with soft labels brings clear gains, indicating that soft relational supervision is more suitable than 21 Table 7: Ablation study of different SASA label-generation strategies. 
+
+Hard labels Standard Jaccard Soft Jaccard CAS(ME) 3 (7-class) UF1 UAR 
+
+✓ 53.42 54.80 
+
+✓ 55.21 56.74 
+
+✓ 56.99 58.28  
+
+> Table 8: Ablation study of the reliability estimation strategy in CEM and the shared-key construction strategy in CRM. Self-only and cross-informed reliability estimation are compared to evaluate the effect of cross-modal reliability modeling, while average and reliability-gated shared keys are compared to assess the importance of reliability-aware consensus construction.
+
+Reliability Estimation Shared-key CAS(ME) 3 (7-class) Self-only Cross-informed Average Reliability-gated UF1 UAR 
+
+✓ ✓ 52.35 53.41 
+
+✓ ✓ 55.04 56.60 
+
+✓ ✓ 53.76 54.87 
+
+✓ ✓ 56.99 58.28 
+
+binary positive/negative for MER, where samples often share partial AU se-mantics. Further replacing standard Jaccard with the proposed soft Jaccard yields the best performance, showing that encoding the anatomical structure of AUs, rather than only their co-occurrence, is essential for the alignment to reflect genuine semantic proximity. 
+
+Effect of CCF design. Table 8 analyzes two key design choices in CCF: the reliability estimation strategy in CEM and the shared-key construction strategy in CRM. Cross-informed reliability estimation contributes an aver-age gain of 2.96% UF1, confirming that reliability should be estimated with reference to both modalities rather than from each modality alone. Addition-ally, the reliability-gated shared key brings an average gain of 1.68% UF1. The best result is obtained when both designs are combined, showing that reliability information should be propagated throughout the fusion pipeline rather than introduced at only one stage. 
+
+Effect of loss scheduling. Table 9 compares fixed and dynamic loss weight-ing on CAS(ME) 3 (7-class) and CASME II (5-class). The dynamic schedule 22 Table 9: Ablation study of the loss-weighting schedule on CAS(ME) 3 and CASME II. 
+
+Schedule CAS(ME) 3 (7-class) CASME II (5-class) UF1 UAR UF1 UAR Fixed 54.17 55.38 85.62 85.20 Dynamic 56.99 58.28 87.87 88.48 
+
+> Table 10: Ablation study of the number of CCF blocks on different benchmarks.
+
+Benchmark Metric Number of CCF blocks 1 2 3 4 5CASME II (5-class) UF1 81.85 80.14 87.87 85.33 83.11 UAR 82.26 81.58 88.48 86.50 83.95 SAMM (5-class) UF1 77.68 76.32 82.09 77.31 73.82 UAR 76.49 75.64 82.36 76.95 72.69 CAS(ME) 3
+
+(7-class) UF1 51.10 50.74 56.99 54.60 53.21 UAR 52.35 50.80 58.28 56.24 55.79 MEGC2019-CD UF1 82.61 87.31 89.73 86.42 87.46 UAR 83.92 88.26 89.35 86.07 87.29 consistently outperforms the fixed setting ( λcls = λSASA = 1 .0) on both datasets. This supports our design intuition that semantic alignment should dominate the early stage of training to structure the embedding space, while classification should be emphasized later to optimize the final recognition objective. 
+
+Effect of the number of CCF blocks. To investigate the impact of CCF depth, we vary the number of stacked CCF blocks across four datasets with different scales and label granularities. As shown in Table 10 and illustrated in Fig. 5, with fewer blocks, the fusion depth is insufficient to fully exploit complementary and consensus information. In contrast, stacking more than three blocks leads to consistent degradation, likely due to redundant fea-ture refinement and overfitting on small-scale ME datasets (e.g., the SAMM dataset). The consistent results across four heterogeneous datasets suggest that setting L = 3 provides a good balance between fusion capacity and generalization, rather than being an artifact of a particular dataset. 23 1 2 3 4 5       
+
+> Number of CCF blocks
+> 50
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> 85
+> 90
+> UF1
+> 12345
+> Number of CCF blocks
+> 50
+> 55
+> 60
+> 65
+> 70
+> 75
+> 80
+> 85
+> 90
+> UAR
+> CASME II (5-class) SAMM (5-class) CAS(ME)^3 (7-class) MEGC2019-CD Figure 5: UF1 and UAR performance across four benchmarks with varying numbers of CCF blocks
+
+4.5. Qualitative analysis 
+
+To better understand the behavior of SAC 2-Net, we provide qualitative analysis from three aspects: representation structuring by SASA, reliability-aware complementary exchange in CEM, and consensus refinement in CRM. 
+
+Visualization of semantic alignment. To further examine the effect of SASA on cross-modal representation learning, we visualize the projected embeddings of the motion-magnified and optical flow branches on CAS(ME) 3
+
+and CASME II using t-SNE. As shown in Fig. 6, the embeddings learned with SASA exhibit a smaller modality gap and a clearer semantic clustering than the baseline. Samples from the two visual modalities become more closely aligned in the shared embedding space, while semantically related classes form more compact and discriminative clusters. This observation is further supported by the two quantitative indicators reported in the figure: the average cross-modal cosine similarity [24], and the Fisher discriminant ratio [48] of inter-class center distance to intra-class dispersion—both improve substantially after applying SASA. These results verify that SASA effectively reduces inter-modal discrepancy while improving the semantic structure of the learned representation space, thereby providing a stronger foundation for subsequent multimodal fusion. 
+
+Visualization of reliability-aware complementary exchange and con-sensus refinement. Fig. 7 visualizes the reliability maps and attention re-sponses of CEM and CRM on five representative samples. In the first three 24 w/o SASA with SASA CAS(ME) 3(7-class)    
+
+> CASME II (5-class) Figure 6: Visualization of the effect of SASA on cross-modal representations. Dashed circles mark representative regions where SASA brings semantically related samples closer and narrows the modality gap. The average cross-modal cosine similarity and Fisher discriminant ratio are reported to quantify cross-modal consistency and class separability, respectively.
+
+successful cases, although the two modalities exhibit different quality levels, the proposed CCF block consistently guides both branches toward the AU-relevant regions. For example, when both modalities are clean, CEM already concentrates on the brow or eye region, and CRM further makes the two branches more coherent and centered on the task-relevant area. When one modality becomes weak or noisy, such as the nearly uniform optical flow in the second sample or the distorted magnification in the third sample, CEM still enables the degraded branch to borrow complementary cues from the more reliable modality, while CRM further refines the spatial focus so that both modalities attend to the shared discriminative region. These observa-tions are consistent with our design motivation: CEM performs reliability-aware complementary repair, whereas CRM enforces consensus over where to attend without discarding modality-specific information. By contrast, in the last two failure cases, neither modality provides reliable evidence for the 25 Motion magnification Optical flow CEM Mag. Attn.     
+
+> CEM Flow. Attn. CRM
+> Mag. Attn. CRM Flow. Attn.
+> AU5 AU5
+> AU38 AU38
+> AU14 AU14
+> AU4
+> AU1 AU2 AU2
+
+Figure 7: Visualization of reliability maps and attention responses in CCF. All reliability maps and attention maps are extracted from the last CCF block, since it is closest to the final prediction and best reflects the model’s final complementary-consensus behavior. The reliability maps represent feature confidence rather than AU saliency; therefore, in clean samples they may appear relatively uniform instead of peaking only at activated AU regions. 
+
+true AU region, and both CEM and CRM are misled toward visually salient but semantically irrelevant areas. This suggests that SAC 2-Net remains ef-fective as long as at least one modality preserves usable local motion cues, while severely degraded evidence in both modalities still poses a fundamental challenge for MER. 
+
+5. Conclusion 
+
+In this paper, we presented a multimodal MER framework motivated by the observation that optical flow and motion magnification often exhibit asymmetric failure patterns. SASA reduces cross-modal heterogeneity and preserves AU-aware semantic proximity before fusion. CCF further enables 26 unreliable local evidence to be repaired by the more informative modality and guides both streams toward shared task-relevant facial regions. Experiments across multiple evaluation settings demonstrate the robustness and generality of this design. Despite these promising results, SAC 2-Net still has several limitations. First, when both motion magnification and optical flow fail to preserve valid AU-related evidence, complementary fusion becomes less effective. Sec-ond, SASA relies on AU annotations during training, and inaccurate or noisy AU labels may affect the semantic structure of the learned embed-ding space. Third, the current framework is based on onset-apex represen-tations and may not fully exploit the temporal evolution of the entire micro-expression sequences. Addressing this limitation requires reliable spotting of complete micro-expression intervals and effective sequence-level modeling, both of which remain challenging. These directions will be explored in future work. 
+
+References 
+
+[1] Paul Ekman. Telling lies: Clues to deceit in the marketplace politics and marriage . WW Norton & Company, 2009. [2] Wen-Jing Yan, Qi Wu, Yong-Jin Liu, Su-Jing Wang, and Xiaolan Fu. Casme database: A dataset of spontaneous micro-expressions collected from neutralized faces. In 2013 10th IEEE international conference and workshops on automatic face and gesture recognition (FG) , pages 1–7. IEEE, 2013. doi: https://doi.org/10.1109/FG.2013.6553799. [3] Yante Li, Jinsheng Wei, Yang Liu, Janne Kauttonen, and Guoying Zhao. Deep learning for micro-expression recognition: A survey. IEEE Transactions on Affective Computing , 13(4):2028–2046, 2022. doi: https://doi.org/10.1109/TAFFC.2022.3205170. [4] Paul Ekman and Wallace V Friesen. Facial action coding system. 
+
+Environmental Psychology & Nonverbal Behavior , 1978. doi: https: //doi.org/10.1037/t27734-000. [5] Sze-Teng Liong, Y. S. Gan, John See, Huai-Qian Khor, and Yen-Chang Huang. Shallow triple stream three-dimensional cnn (ststnet) for micro-expression recognition. In 2019 14th IEEE International Conference on 
+
+27 Automatic Face & Gesture Recognition (FG 2019) , pages 1–5, 2019. doi: https://doi.org/10.1109/FG.2019.8756567. [6] Y.S. Gan, Sze-Teng Liong, Wei-Chuen Yau, Yen-Chang Huang, and Lit-Ken Tan. Off-apexnet on micro-expression recognition system. Signal Processing: Image Communication , 74:129–139, 2019. ISSN 0923-5965. doi: https://doi.org/10.1016/j.image.2019.02.005. [7] Falin Wu, Yu Xia, Boyi Ma, Tianyang Hu, Jingyao Yang, Haoxin Li, and Di Huang. A micro-expression recognition network based on at-tention mechanism and motion magnification. IEEE Transactions on Affective Computing , 16(3):1379–1391, 2025. doi: https://doi.org/10. 1109/TAFFC.2024.3510302. [8] Jianzhi Lu, Ruian He, Shili Zhou, Weimin Tan, and Bo Yan. Fa-cialflownet: Advancing facial optical flow estimation with a diverse dataset and a decomposed model. In Proceedings of the 32nd ACM International Conference on Multimedia , pages 2194–2203, 2024. doi: https://doi.org/10.1145/3664647.3680921. [9] Zachary Teed and Jia Deng. Raft: Recurrent all-pairs field transforms for optical flow. In Andrea Vedaldi, Horst Bischof, Thomas Brox, and Jan-Michael Frahm, editors, Computer Vision – ECCV 2020 , pages 402– 419, Cham, 2020. Springer International Publishing. ISBN 978-3-030-58536-5. doi: https://doi.org/10.1007/978-3-030-58536-5_24. [10] Yongtang Bao, Chenxi Wu, Peng Zhang, Caifeng Shan, Yue Qi, and Xianye Ben. Boosting micro-expression recognition via self-expression reconstruction and memory contrastive learning. IEEE Transactions on Affective Computing , 15(4):2083–2096, 2024. doi: https://doi.org/10. 1109/TAFFC.2024.3397701. [11] Zhifeng Wang, Kaihao Zhang, Wenhan Luo, and Ramesh Sankara-narayana. Htnet for micro-expression recognition. Neurocomputing , 602: 128196, 2024. ISSN 0925-2312. doi: https://doi.org/10.1016/j.neucom. 2024.128196. [12] Gaqiong Liu, Shucheng Huang, Gang Wang, and Mingxing Li. Emrnet: enhanced micro-expression recognition network with attention and dis-tance correlation. Artificial Intelligence Review , 58(6):176, 2025. doi: https://doi.org/10.1007/s10462-025-11159-0. 28 [13] Chuang Ma, Shaokai Zhao, Dongdong Zhou, Yu Pei, Zhiguo Luo, Liang Xie, Ye Yan, and Erwei Yin. Mpfnet: A multi-prior fusion network with a progressive training strategy for micro-expression recognition. 
+
+IEEE Transactions on Affective Computing , 17(1):348–365, 2026. doi: https://doi.org/10.1109/TAFFC.2025.3617652. [14] Jie Zhu, Yuan Zong, Jingang Shi, Cheng Lu, Hongli Chang, and Wen-ming Zheng. Learning to rank onset-occurring-offset representations for micro-expression recognition. IEEE Transactions on Affective Comput-ing , 16(4):2690–2704, 2025. doi: https://doi.org/10.1109/TAFFC.2025. 3566113. [15] Mengting Wei, Xingxun Jiang, Wenming Zheng, Yuan Zong, Cheng Lu, and Jiateng Liu. Cmnet: Contrastive magnification network for micro-expression recognition. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 37, pages 119–127, 2023. doi: https: //doi.org/10.1609/aaai.v37i1.25083. [16] Shuaichao Li, Mingze Li, Jiaao Sun, and Shuhua Lu. Micro-expression recognition through feature enhancement and region weighted fusion based on supervised contrastive learning. Signal Processing , 238:110171, 2026. ISSN 0165-1684. doi: https://doi.org/10.1016/j.sigpro.2025. 110171. [17] Fengping Wang, Jie Li, Chun Qi, Lin Wang, and Pan Wang. A multi-modal multi-scale network based on transformer for micro-expression recognition. Journal of Visual Communication and Image Representa-tion , 111:104537, 2025. ISSN 1047-3203. doi: https://doi.org/10.1016/ j.jvcir.2025.104537. [18] Wenhao Cai, Junli Zhao, Ran Yi, Minjing Yu, Fuqing Duan, Zhenkuan Pan, and Yong-Jin Liu. Mfdan: Multi-level flow-driven attention net-work for micro-expression recognition. IEEE Transactions on Circuits and Systems for Video Technology , 34(12):12823–12836, 2024. doi: https://doi.org/10.1109/TCSVT.2024.3437481. [19] Hong-Xia Xie, Ling Lo, Hong-Han Shuai, and Wen-Huang Cheng. Au-assisted graph attention convolutional network for micro-expression recognition. In Proceedings of the 28th ACM International Confer-ence on Multimedia , MM ’20, page 2871–2880, New York, NY, USA, 29 2020. Association for Computing Machinery. ISBN 9781450379885. doi: https://doi.org/10.1145/3394171.3414012. [20] Shifeng Liu, Xinglong Mao, Sirui Zhao, Peiming Li, Tong Xu, and En-hong Chen. Mer-clip: Au-guided vision-language alignment for micro-expression recognition. IEEE Transactions on Affective Computing ,2025. doi: https://doi.org/10.1109/TAFFC.2025.3572931. [21] Pavan Kumar Anasosalu Vasu, James Gabriel, Jeff Zhu, Oncel Tuzel, and Anurag Ranjan. Fastvit: A fast hybrid vision transformer using structural reparameterization. In Proceedings of the IEEE/CVF inter-national conference on computer vision , pages 5785–5795, 2023. doi: https://doi.org/10.1109/ICCV51070.2023.00532. [22] Mingzhi Chen, Taiming Lu, Jiachen Zhu, Mingjie Sun, and Zhuang Liu. Stronger normalization-free transformers. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,pages 27418–27428, 2026. doi: https://doi.org/10.48550/arXiv.2512. 10938. [23] Zhuang Liu, Hanzi Mao, Chao-Yuan Wu, Christoph Feichtenhofer, Trevor Darrell, and Saining Xie. A convnet for the 2020s. In Pro-ceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 11976–11986, 2022. doi: https://doi.org/10.1109/ CVPR52688.2022.01167. [24] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning ,pages 8748–8763. PmLR, 2021. doi: https://doi.org/10.48550/arXiv. 2103.00020. [25] Yin Cui, Menglin Jia, Tsung-Yi Lin, Yang Song, and Serge Belongie. Class-balanced loss based on effective number of samples. In Proceedings of the IEEE/CVF conference on computer vision and pattern recogni-tion , pages 9268–9277, 2019. doi: https://doi.org/10.1109/CVPR.2019. 00949. 30 [26] Wen-Jing Yan, Xiaobai Li, Su-Jing Wang, Guoying Zhao, Yong-Jin Liu, Yu-Hsin Chen, and Xiaolan Fu. Casme ii: An improved spontaneous micro-expression database and the baseline evaluation. PloS one , 9(1): e86041, 2014. doi: https://doi.org/10.1371/journal.pone.0086041. [27] Adrian K Davison, Cliff Lansley, Nicholas Costen, Kevin Tan, and Moi Hoon Yap. Samm: A spontaneous micro-facial movement dataset. 
+
+IEEE transactions on affective computing , 9(1):116–129, 2016. doi: https://doi.org/10.1109/TAFFC.2016.2573832. [28] Xiaobai Li, Tomas Pfister, Xiaohua Huang, Guoying Zhao, and Matti Pietikäinen. A spontaneous micro-expression database: Inducement, collection and baseline. In 2013 10th IEEE International Conference and Workshops on Automatic face and gesture recognition (fg) , pages 1–6. IEEE, 2013. doi: https://doi.org/10.1109/FG.2013.6553717. [29] John See, Moi Hoon Yap, Jingting Li, Xiaopeng Hong, and Su-Jing Wang. Megc 2019–the second facial micro-expressions grand chal-lenge. In 2019 14th IEEE International Conference on Automatic Face & Gesture Recognition (FG 2019) , pages 1–5. IEEE, 2019. doi: https://doi.org/10.1109/FG.2019.8756611. [30] Jingting Li, Zizhao Dong, Shaoyuan Lu, Su-Jing Wang, Wen-Jing Yan, Yinhuan Ma, Ye Liu, Changbing Huang, and Xiaolan Fu. Cas (me) 3: A third generation facial spontaneous micro-expression database with depth information and high ecological validity. IEEE transactions on pattern analysis and machine intelligence , 45(3):2782–2800, 2022. doi: https://doi.org/10.1109/TPAMI.2022.3174895. [31] Sirui Zhao, Huaying Tang, Xinglong Mao, Shifeng Liu, Yiming Zhang, Hao Wang, Tong Xu, and Enhong Chen. Dfme: A new benchmark for dynamic facial micro-expression recognition. IEEE Transactions on Affective Computing , 15(3):1371–1386, 2023. doi: https://doi.org/10. 1109/TAFFC.2023.3341918. [32] Sirui Zhao, Huaying Tang, Xinglong Mao, and Shifeng Liu. Dynamic micro-expression automatic recognition challenge on the fourth chinese conference on affective computing, 2024. 31 [33] Camillo Lugaresi, Jiuqiang Tang, Hadon Nash, Chris McClanahan, Esha Uboweja, Michael Hays, Fan Zhang, Chuo-Ling Chang, Ming Guang Yong, Juhyun Lee, et al. Mediapipe: A framework for building per-ception pipelines. arXiv preprint arXiv:1906.08172 , 2019. doi: https: //doi.org/10.48550/arXiv.1906.08172. [34] Kwon Byung-Ki, Oh Hyun-Bin, Kim Jun-Seong, Hyunwoo Ha, and Tae-Hyun Oh. Learning-based axial video motion magnification. In European Conference on Computer Vision , pages 179–195. Springer, 2024. doi: https://doi.org/10.1007/978-3-031-72949-2_11. [35] Patrick Lucey, Jeffrey F Cohn, Takeo Kanade, Jason Saragih, Zara Ambadar, and Iain Matthews. The extended cohn-kanade dataset (ck+): A complete dataset for action unit and emotion-specified ex-pression. In 2010 ieee computer society conference on computer vi-sion and pattern recognition-workshops , pages 94–101. IEEE, 2010. doi: https://doi.org/10.1109/CVPRW.2010.5543262. [36] Ilya Loshchilov and Frank Hutter. Decoupled weight decay regulariza-tion. arXiv preprint arXiv:1711.05101 , 2017. doi: https://doi.org/10. 48550/arXiv.1711.05101. [37] Xuan-Bac Nguyen, Chi Nhan Duong, Xin Li, Susan Gauch, Han-Seok Seo, and Khoa Luu. Micron-bert: Bert-based facial micro-expression recognition. In Proceedings of the ieee/cvf conference on computer vision and pattern recognition , pages 1482–1492, 2023. doi: https://doi.org/ 10.1109/CVPR52729.2023.00149. [38] Zhijun Zhai, Jianhui Zhao, Chengjiang Long, Wenju Xu, Shuangjiang He, and Huijuan Zhao. Feature representation learning with adaptive displacement generation and transformer fusion for micro-expression recognition. In Proceedings of the IEEE/CVF conference on com-puter vision and pattern recognition , pages 22086–22095, 2023. doi: https://doi.org/10.1109/CVPR52729.2023.02115. [39] Jing He, Yuanhui Xiao, Han Zhang, Jingwen Cai, Li Cai, and Renyang Liu. Micro_nest: multi-scale attention enhanced micro-expression recognition framework. Expert Systems with Applications , 290:128372, 2025. doi: https://doi.org/10.1016/j.eswa.2025.128372. 32 [40] Bingyang Ma, Lu Wang, Qingfen Wang, Haoran Wang, Ruolin Li, Lisheng Xu, Yongchun Li, and Hongchao Wei. Entire-detail motion dual-branch network for micro-expression recognition. Pattern Recogni-tion Letters , 189:166–174, 2025. doi: https://doi.org/10.1016/j.patrec. 2025.01.021. [41] Zhiwen Shao, Yifan Cheng, Feiran Li, Yong Zhou, Xuequan Lu, Yuan Xie, and Lizhuang Ma. Mol: Joint estimation of micro-expression, opti-cal flow, and landmark via transformer-graph-style convolution. IEEE Transactions on Pattern Analysis and Machine Intelligence , 2025. doi: https://doi.org/10.1109/TPAMI.2025.3581162. [42] Feng Liu, Bingyu Nan, Xuezhong Qian, and Xiaolan Fu. Evaluat-ing and correcting human annotation bias in dynamic micro-expression recognition. IEEE Transactions on Affective Computing , 2026. doi: https://doi.org/10.1109/TAFFC.2026.3671731. [43] Gen-Bing Liong, Sze-Teng Liong, Chee Seng Chan, and John See. Sfam-net: A scene flow attention-based micro-expression network. Neurocom-puting , 566:126998, 2024. doi: https://doi.org/10.1016/j.neucom.2023. 126998. [44] Ren Zhang, Jianqin Yin, Chao Qi, Yonghao Dang, Zehao Wang, Zhicheng Zhang, and Huaping Liu. Facial 3d regional structural mo-tion representation using lightweight point cloud networks for micro-expression recognition. IEEE Transactions on Affective Computing ,2025. doi: https://doi.org/10.1109/TAFFC.2025.3535569. [45] Sai Prasanna Teja Reddy, Surya Teja Karri, Shiv Ram Dubey, and Sne-hasis Mukherjee. Spontaneous facial micro-expression recognition using 3d spatiotemporal convolutional neural networks. In 2019 international joint conference on neural networks (IJCNN) , pages 1–8. IEEE, 2019. doi: https://doi.org/10.1109/IJCNN.2019.8852419. [46] Nguyen Van Quang, Jinhee Chun, and Takeshi Tokuyama. Capsulenet for micro-expression recognition. In 2019 14th IEEE international con-ference on automatic face & gesture recognition (FG 2019) , pages 1–7. IEEE, 2019. doi: https://doi.org/10.1109/FG.2019.8756544. 33 [47] Ling Lo, Hong-Xia Xie, Hong-Han Shuai, and Wen-Huang Cheng. Mer-gcn: Micro-expression recognition based on relation modeling with graph convolutional networks. In 2020 IEEE conference on multime-dia information processing and retrieval (MIPR) , pages 79–84. IEEE, 2020. doi: https://doi.org/10.1109/MIPR49039.2020.00023. [48] Ronald A Fisher. The use of multiple measurements in taxonomic prob-lems. Annals of eugenics , 7(2):179–188, 1936. doi: https://doi.org/10. 1111/j.1469-1809.1936.tb02137.x. 34

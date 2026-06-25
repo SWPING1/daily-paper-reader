@@ -1,0 +1,253 @@
+Title: A Controlled Study of CLIP-Based Body-Scene Fusion for Emotion Recognition in Context
+
+URL Source: https://arxiv.org/pdf/2606.22072v2
+
+Published Time: Thu, 25 Jun 2026 00:08:57 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# A Controlled Study of CLIP-Based Body-Scene Fusion for Emotion Recognition in Context 
+
+## Zubair Abbas ORCID 1* , Muhammad Umair ORCID 1 and Muqaddas Hameed ORCID 1
+
+> 1*
+
+Department of Computer Science, University of Central Punjab, Lahore, Pakistan. *Corresponding author(s). E-mail(s): l1f22bscs0304@ucp.edu.pk; Contributing authors: dr.umair@ucp.edu.pk; l1s22bscs0383@ucp.edu.pk; 
+
+Abstract 
+
+Apparent emotion in natural images is often not visible from the face alone. The face may be small, hidden, or neutral, while posture and scene context carry much of the evidence. This work studies context-aware emotion recognition on EMOTIC with an image-only two-stream model. A ResNet-18 body stream encodes the target-person crop, and a CLIP ViT-B/16 scene stream encodes the full image. The fused feature predicts 26 categorical emotion labels and the continuous valence, arousal, and dominance values. This study examines whether small context-debiasing or rare-class training changes still help after adding a CLIP scene encoder. The clean two-stream model is compared with simplified CCIM-style intervention, CLEF-lite context-bias subtraction, ASL tuning, and class-balanced sampling under the same implementation pipeline. No tested variant improves over the clean two-stream model, which achieves 34.52% mAP on the EMOTIC test split. CLIP gives the model broad scene semantics, but the simplified causal, counterfactual, and rare-class changes do not automatically improve performance. Most remaining errors are in rare and subtle emotion categories, so the next step should focus on label relationships and finer subject-context interaction.  
+
+> Keywords: Emotion recognition, affective computing, EMOTIC, context-aware recognition, CLIP, multi-label classification
+
+# 1 Introduction 
+
+Emotion recognition in the wild is messier than facial expression recognition in a controlled image. A person may be turned away from the camera, partly occluded, far from the lens, or wearing a neutral face while the surrounding scene tells a different story. A runner at the finish line, a child at a birthday party, and a patient in a hospital room are not understood only from pixels inside the face. Context matters. That is why emotion recognition in context is not just a harder face-recognition problem. EMOTIC was built for this setting. It contains people in natural images, annotated with 26 emotion categories and three continuous affect dimensions: valence, arousal, and dominance [1, 2]. The original EMOTIC work already showed that both the target person and the surrounding scene help. Later work pushed the context side further through multimodal cues, semantic scene information, object relations, causal debiasing, counterfactual inference, depth, and single-stage subject-context transformers [3–7]. Those directions are valuable, but they also make the pipeline heavier. Recent methods add seman-tic scene information, depth-based social interac-tion, causal debiasing, counterfactual inference, or transformer-based subject-context interaction. CLIP-style emotion representation learning has also been explored through larger pretraining frameworks [8, 9]. This work asks a narrower version of the problem. If a directly supervised image-only model already uses an off-the-shelf CLIP visual encoder for scene context, do extra simplified context-debiasing or rare-class training changes still help? CLIP is attractive here because it gives a direct way to encode broad scene meaning. A separate semantic, object, or scene-context stream is not required before the classifier sees the image. Prior methods such as EmotiCon improve EMOTIC perfor-mance by combining multiple context sources, includ-ing personal cues, semantic scene information, and socio-dynamic cues. That richer design is valuable, but it is also more complex than a two-stream image model. The central comparison is whether a lighter design can capture part of the same contextual infor-mation by using CLIP as the full-scene encoder. This does not mean that CLIP replaces depth, object rela-tions, or person-person interaction. It does not. The study measures how far a CLIP-based scene branch can go as an alternative to some of those heavier context streams. 1
+
+> arXiv:2606.22072v2 [cs.CV] 23 Jun 2026
+
+Based on this motivation, the study is organized around three research questions: • RQ1: How effective is a lightweight two-stream body-scene model when CLIP ViT-B/16 is used as the full-scene context encoder? • RQ2: Under the same implementation pipeline, do simplified CCIM-style intervention, CLEF-lite context-bias subtraction, ASL tuning, or class-balanced sampling improve over the clean CLIP-based two-stream baseline? • RQ3: Which emotion categories remain difficult after CLIP-based body-scene fusion, and what do these class-level results imply for future lightweight improvements? A controlled two-stream model is built for this purpose. The body stream uses ResNet-18 on the target-person crop. The context stream uses CLIP ViT-B/16 on the full image. Around this baseline, the experiments test simplified CCIM-style interven-tion, CLEF-lite output subtraction, ASL tuning, and class-balanced sampling. The clean two-stream model gives the highest mAP among the tested variants, with 34.52% mAP on the EMOTIC test split. The main contribution of this work is a con-trolled CLIP-based empirical study, not a claim that two-stream fusion is new. The contributions are: • A lightweight image-only EMOTIC baseline is built by combining target-person body features with CLIP-based full-scene context. • The clean baseline is compared with simplified CCIM-style, CLEF-lite, ASL tuning, and class-balanced sampling variants under the same pipeline. • The experiments show that no tested extension improves over the clean CLIP-based two-stream model, so simplified add-ons do not necessarily improve this CLIP-based scene baseline. • Class-level AP is analyzed to identify rare and sub-tle categories as the main weakness, motivating label-correlation and fine-grained subject-context modeling. 
+
+# 2 Related Work 
+
+Context-aware emotion recognition has grown through several overlapping lines of work. Some papers treat the person and the scene as two com-plementary visual inputs. Others add pose, skeletons, depth, or semantic scene structure. More recent work tries to reduce context bias or learn subject-context interaction more directly. The CLIP-based two-stream study in this paper sits between the simple body-scene models and the heavier context-modeling systems. 
+
+## 2.1 Emotion Recognition in Context 
+
+Kosti et al. introduced EMOTIC and showed that emotion recognition improves when the model sees both the target person and the scene [1, 2]. That shift matters because the task is no longer only about facial expression. It is about a person inside a situation. CAER-Net follows a related idea by combining face information with hidden-face context, so surround-ing visual cues can carry the prediction when facial expression is weak or unavailable [10]. Body and context cues have also been studied out-side the exact EMOTIC setup. Huang et al. used a three-branch body, skeleton, and context model for emotion recognition in the wild [11]. For this work, the exact branch design is less important than the assumption behind it: posture and surrounding scene information can remain informative when the face is blurred, small, or missing. EmotiCon is a more complex reference point. It combines personal cues, semantic scene information, and socio-dynamic cues such as depth and interaction between agents [3]. Its reported 35.48 AP on EMOTIC is close enough to the result in this paper to be worth discussing, but the architecture is not a clean match for the image-only two-stream setup used here. It is treated as evidence that richer context streams can help, not as a model reproduced in this work. 
+
+## 2.2 Scene Semantics and Vision-Language Models 
+
+Scene semantics are another route into the same prob-lem. Wang and Sankaranarayana combined scene and semantic features with personal features on EMOTIC, using objects, attributes, and relationships as emo-tional evidence [4]. The model in this paper is simpler than that. CLIP can encode broad scene semantics, but it does not explicitly tell the classifier which object the person is using, which person they are facing, or which relation matters. Large vision-language models take the semantic idea further. Etesam et al. used LVLMs and lan-guage reasoning over the target person in a bounding box [12]. Lei et al. explored LVLMs for context-aware emotion recognition through fine-tuning, few-shot prompting, and reasoning-style inference [13]. These papers show the value of language-aligned visual rep-resentations for emotion-in-context, but they sit in a different cost range. The CLIP use in this work is lighter: the visual encoder becomes the scene branch inside a trainable two-stream model. CLIP-based emotion representation learning is close to the motivation of this work, but not identical. EmotionCLIP learns emotion-aware visual representa-tions from verbal and nonverbal communication data, while UniEmoX studies cross-modal emotion repre-sentation learning with CLIP-style semantic knowl-edge [8, 9]. Those works use broader pretraining objectives or auxiliary data. This study does not add a new emotion-pretraining stage. The CLIP visual encoder is taken off the shelf, used as the full-scene branch, and fine-tuned inside the supervised EMOTIC model. In this sense, CLIP replaces part of the semantic-context machinery, not every context module. Emoti-Con explicitly separates personal, semantic, and socio-dynamic context. Other methods use object attributes, relationships, or scene parsing. The present 2model keeps only the body crop and the full image, then lets CLIP carry as much high-level scene infor-mation as it can. 
+
+## 2.3 Context Bias and Causal Debiasing 
+
+Context can help and hurt at the same time. A model may overlearn that a hospital means sadness or that a playground means happiness, even when the target person does not match that shortcut. CCIM treats this context bias as a confounder and applies a causal intervention module [5]. CLEF attacks a related issue by removing the direct context effect through fac-tual and counterfactual comparison [6]. Both methods report consistent gains when the full framework is implemented carefully. Those papers shaped the ablations in this study. The simplified CCIM-style and CLEF-lite versions, however, did not improve the CLIP two-stream base-line. This is not a claim against CCIM or CLEF themselves. It is a narrower finding about lightweight adaptations, where the exact branch design, training protocol, and counterfactual signal are not the same as in the original papers. 
+
+## 2.4 Structured Context and Relation Modeling 
+
+Several recent papers move past global scene features and model relationships inside the image. Prior work has used semantic scene cues, object relationships, depth-based interaction cues, and agent-scene inter-action [3, 4, 7]. The shared idea is straightforward: emotion is not only tied to the background category, but also to how the target person relates to objects, other people, and the ongoing activity. This matters because the fusion block in this work uses global body and scene features. It does not know which object the person is holding, whether another person is nearby, or which region of the scene is emo-tionally relevant. Relation modeling may be a better next step than simply adding another global context stream. 
+
+## 2.5 Fine-Grained Subject-Context Interaction 
+
+Another route is to make subject-context interac-tion part of the model itself. DSCT replaces the usual two-stage pipeline with a single-stage framework that jointly handles subject localization and emotion classification through decoupled subject and context queries [7]. That design can learn fine-grained subject-context relations instead of waiting until the end to fuse two global vectors. It is also a much larger change than this project. 
+
+## 2.6 Research Gap 
+
+An open uncertainty is how much extra context mod-eling is still needed when the scene branch is already CLIP-based. Context-aware emotion recognition has benefited from body posture, scene semantics, object relations, depth, causal debiasing, and transformer-based subject-context interaction. Many of those gains come from larger pipelines, extra supervision, or care-fully designed causal and counterfactual training. This makes it hard to separate the value of the context idea from the complexity of the full method. It is also unclear whether simplified debias-ing modules or rare-class training changes still help in a lightweight image-only setting. This matters for EMOTIC because many difficult labels are subjective, visually ambiguous, or underrepresented. 
+
+# 3 Methodology 
+
+All experiments use the same basic pipeline. For each annotated subject in EMOTIC, two visual inputs are prepared: a crop of the target person for the body stream and the full image for the scene stream. The body crop is processed by ResNet-18, while the full image is processed by CLIP ViT-B/16. The two fea-tures are fused and used for both multi-label emotion classification and VAD regression. The rest of this section describes each part of that pipeline, starting from the dataset and preprocessing, then moving to the model, loss function, ablations, training setup, and evaluation metrics. 
+
+## 3.1 Dataset 
+
+The experiments use EMOTIC. Each annotated per-son has a bounding box, one or more categorical emotion labels, and valence-arousal-dominance scores. The categorical problem is multi-label, so a single subject can be annotated as both Engagement and Happiness, or with other co-occurring categories. The continuous VAD values are normalized to [0 , 1] .Table 1 gives the train, validation, and test split sizes used in the implementation. Fig. 1 shows EMOTIC examples with target-person boxes and annotations.       
+
+> Table 1 EMOTIC split sizes used in the implementation. Split Annotated subjects Train 23,706 Validation 3,334 Test 7,280
+> Fig. 1 Example EMOTIC samples with target-person bound-ing boxes, categorical emotion labels, and VAD annotations.
+
+33.2 Preprocessing 
+
+For each annotated person, two image inputs are cre-ated. The target-person crop is resized to 128 × 128 
+
+and normalized with ImageNet statistics [14]. The full image is resized to 224 × 224 and normalized with CLIP statistics [15]. During training, the body crop receives stronger augmentation because clothing, pose, scale, and crop quality vary widely. The context image receives milder augmentation so that the scene semantics remain recognizable. Fig. 2 summarizes the preprocessing flow. The same original image is used twice: once as a focused body crop and once as a full-scene context view.   
+
+> Fig. 2Preprocessing pipeline used to form the two model inputs: a target-person body crop for the ResNet-18 stream and the full image for the CLIP scene stream.
+
+## 3.3 Two-Stream Architecture 
+
+The final model has two streams. The body stream is an ImageNet-pretrained ResNet-18 [14, 16]; its final classification layer is removed, and the extracted fea-ture is projected to 256 dimensions. The context stream is CLIP ViT-B/16 [15, 17], also projected to 256 dimensions. During fine-tuning, the top four CLIP transformer blocks are unfrozen. After projection, the two streams are fused at the feature level. The fused representation feeds two heads: one head produces logits for the 26 categorical emotions, and the other predicts VAD. Formally, for each target person, the body crop is denoted as xb and the full-scene image as xs.The body and scene encoders produce two visual representations: 
+
+hb = fb(xb), hs = fs(xs), (1) where fb(·) is the ResNet-18 body encoder and fs(·) is the CLIP ViT-B/16 scene encoder. Both features are projected to the same dimension: 
+
+zb = Wbhb + bb, zs = Wshs + bs. (2) The fusion block takes the projected body and scene features after concatenation. A small fully connected module learns the shared representation used by both prediction heads. This is feature-level fusion. It com-bines global stream features and does not perform patch-level cross-attention between body and scene regions. The fused feature is computed as: 
+
+z = ϕ([ zb; zs]) , (3) where [·; ·] denotes concatenation and ϕ(·) is the fusion block. The categorical and VAD heads are defined as: 
+
+ˆy = σ(Wcz + bc), ˆv = Wv z + bv , (4) where ˆy ∈ [0 , 1] 26 gives the predicted emotion prob-abilities and ˆv ∈ [0 , 1] 3 gives the predicted valence, arousal, and dominance values. Fig. 3 shows the full architecture. The separation is simple: ResNet-18 focuses on the annotated person, and CLIP ViT-B/16 reads the whole scene. 
+
+## 3.4 Loss Function 
+
+The model is trained with a joint loss: 
+
+L = Lcat + Lvad . (5) Both losses are weighted equally in the current imple-mentation. The categorical labels use Asymmetric Loss (ASL), which is suitable for long-tailed multi-label classification [18]. VAD uses Smooth L1, also known as Huber loss [19]. Optimization uses AdamW [20], warmup, cosine decay, gradient clipping, MixUp [21], dropout regularization [22], and early stopping based on validation mAP. For the multi-label categorical task, each sample has a binary label vector y ∈ {0, 1}26 . In simpli-fied form, ASL applies different focusing weights to positive and negative labels: 
+
+Lcat = −
+
+> 26
+
+∑
+
+> k=1
+
+yk(1 −ˆyk)γ+ log(ˆ yk)+(1 −yk)ˆ yγ− 
+
+> k
+
+log(1 −ˆyk),
+
+(6) where γ+ and γ− control the positive and negative focusing terms. For VAD regression, Smooth L1 loss is used over the three continuous dimensions: 
+
+Lvad = 13
+
+> 3
+
+∑
+
+> d=1
+
+SmoothL1(ˆ vd − vd). (7) 
+
+## 3.5 Ablated Extensions 
+
+Several additions are tested around the two-stream baseline. One variant adds a simplified CCIM-style context intervention module. Another, CLEF-lite, subtracts a learned context-bias output from the full-scene feature path. Rare-class training changes are also tested through ASL tuning and class-balanced sampling, following the general class-imbalance moti-vation used in class-balanced learning [23]. These are lightweight ablations inspired by CCIM and CLEF, not exact reproductions, because the original meth-ods include specific causal or counterfactual branch designs and training procedures. 4Fig. 3 Final two-stream architecture. The body branch encodes the target-person crop with ResNet-18, while the context branch encodes the full image with CLIP ViT-B/16. The projected features are fused and passed to separate categorical emotion and VAD regression heads. 
+
+## 3.6 Training Setup 
+
+Table 2 lists the main training settings. The encoders are frozen for the first five epochs. After that, the body encoder and the top CLIP blocks are fine-tuned with a smaller learning rate, and the best checkpoint is chosen by validation mAP.                     
+
+> Table 2 Main settings for the selected two-stream model. Setting Value Body encoder ResNet-18 Context encoder CLIP ViT-B/16 Feature dimension 256 Batch size 16 Epoch budget 40 Best checkpoint epoch 21 Freeze epochs 5Head learning rate 1×10 −4
+> Backbone learning rate 1×10 −5
+> Dropout 0.55 ASL γneg 4.0 MixUp α0.3
+
+## 3.7 Evaluation Metrics 
+
+For categorical emotions, the evaluation uses mean Average Precision (mAP), the main EMOTIC metric for multi-label classification. Hamming loss is reported with a fixed threshold of 0.5. The validation threshold that maximized F1 is also reported. For VAD regres-sion, the metrics are Mean Absolute Error (MAE) and Root Mean Squared Error (RMSE). The categorical score is computed as the mean of the Average Precision values over all emotion classes: 
+
+mAP = 126 
+
+> 26
+
+∑
+
+> k=1
+
+AP k. (8) For VAD regression, MAE and RMSE are computed over all test samples and the three affective dimen-sions: 
+
+MAE = 13N
+
+> N
+
+∑
+
+> i=1 3
+
+∑
+
+> d=1
+
+|ˆvi,d − vi,d |, (9) 
+
+RMSE = 
+
+√√√√ 13N
+
+> N
+
+∑
+
+> i=1 3
+
+∑
+
+> d=1
+
+(ˆ vi,d − vi,d )2. (10) 
+
+# 4 Results 
+
+The final test result is reported first, followed by class-level behavior, ablations, and comparison with earlier EMOTIC work. The numbers answer the three research questions directly. The clean CLIP-based two-stream model is the reference point for all later comparisons. 
+
+## 4.1 Overall Test Performance 
+
+The clean two-stream model has the highest score among the tested variants. On the EMOTIC test split, it reaches 34.52% mAP. No tested extension improves over this score. Table 3 gives the main metrics. Fig. 4 shows the same result as a metrics dash-board, including categorical mAP, Hamming loss, and VAD regression error. Fig. 5 adds qualitative examples with the full scene, target body crop, ground-truth labels, top predicted emotions, and normalized VAD values. These are representative examples, not a com-plete qualitative evaluation, and some cases do not place every ground-truth label among the top dis-played predictions.          
+
+> Table 3 Test performance of the selected model. Metric Result Categorical mAP 34.52% Hamming loss at 0.5 0.1241 VAD MAE 0.1064 VAD RMSE 0.1365 Best validation threshold 0.3526 Best validation F1 0.4695
+> Fig. 4 Metrics dashboard for the final two-stream checkpoint.
+
+5Fig. 5 Representative qualitative test predictions from the final two-stream model. Each example shows the full image with the target-person box, the body crop used by the body stream, ground-truth labels, top predicted emotion probabilities, and normalized ground-truth/predicted VAD values. 
+
+## 4.2 Per-Class Behavior 
+
+The class-level results are uneven, which is expected on EMOTIC. The model does well on common or visually supported categories such as Engagement, Happiness, Confidence, Excitement, and Anticipation. It is much weaker on rare or subtle categories, includ-ing Embarrassment, Yearning, Surprise, Fear, and Aversion. Global body-scene features are enough for broad affective cues. They are not enough for every fine-grained label. Table 4 lists representative strong and challenging classes. Fig. 6 gives the full AP distribution over all 26 emotion categories.                       
+
+> Table 4 Selected per-class AP values for the final model. Strong class AP Challenging class AP Engagement 88.52 Embarrassment 3.66 Happiness 80.34 Yearning 9.72 Confidence 78.36 Surprise 10.28 Excitement 73.36 Fear 10.44 Anticipation 58.26 Aversion 12.30 Pleasure 53.19 Sensitivity 12.40
+
+## 4.3 Ablation Study 
+
+Table 5 gives the main two-stream ablations. The clean model reaches 34.52% mAP. The simplified CCIM-style module drops to 34.04% mAP. CLEF-lite, ASL tuning, and balanced sampling are closer, but still below the clean baseline. These ablations changed the interpretation of the project. Context-debiasing modules were expected to help, because recent papers report gains from that direction. In this setup, the CLIP scene feature was already doing a lot of work. The simplified CCIM-style module did not improve the CLIP-based baseline, and CLEF-lite, ASL tuning, and balanced sampling stayed near the same range without passing it. With-out multiple seeds, the small differences among the close variants should be read cautiously. 
+
+## 4.4 Comparison with Prior Work 
+
+Table 6 places this result beside related EMOTIC work. This is context, not a strict leaderboard. The compared papers differ in backbone, modalities, supervision, training details, and evaluation imple-mentation. Some recent methods also report relative gains over their own base models rather than one directly matched CLIP-based two-stream setting. For CCIM and CLEF, the table uses qualita-tive wording because their results are presented as improvements over multiple base models rather than a single directly matched CLIP-based two-stream set-ting. For DSCT, the entry is the relative gain stated by the paper, not a directly comparable absolute mAP for this setting. 
+
+# 5 Discussion 
+
+The CLIP-based scene branch gives the model agood global reading of the scene. The debiasing-style variants were expected to improve on top of that, but they did not. One likely reason is architectural. CLIP already produces a global, semantically dense full-scene representation, so a context-bias subtrac-tion or intervention module may be trying to remove something that overlaps with the signal needed for prediction. In that case, the correction becomes redun-dant, or worse, partly destructive. This does not prove that causal or counterfactual debiasing is ineffective in general. The claim is narrower: simplified adaptations may not be enough when they are placed on top of a 6Table 5 Two-stream ablation results on the EMOTIC test split. 
+
+Experiment What changed mAP Reading Two-stream Clean ResNet-18 body + CLIP scene baseline 34.52 Highest tested score Two-stream + simpli-fied CCIM Added a simplified context intervention module to the CLIP scene feature 34.04 Did not improve this setup ASL tuning + bal-anced sampling Adjusted ASL and used class-balanced sampling 34.46 Near-neutral CLEF-lite Subtracted a learned context-bias output from full-scene features 34.42 Near-neutral   
+
+> Fig. 6 Per-class Average Precision (AP) for all 26 EMOTIC emotion categories from the final two-stream checkpoint.
+> Table 6 Contextual comparison with related EMOTIC work. Reported values are not a strict leaderboard because the compared methods use different backbones, modalities, and evaluation settings.
+
+Method Main idea Reported EMOTIC AP/mAP Kosti et al. [1, 2] Person crop and scene CNN fusion for emotion recognition in context 
+
+∼27–28 EmotiCon [3] Multimodal context with personal, semantic, and socio-dynamic cues 35.48 CCIM [5] Causal intervention to reduce context confound-ing Relative gains over several base models CLEF [6] Counterfactual removal of direct context bias Relative gains over several base models DSCT [7] Single-stage subject-context transformer with decoupled queries 6.46 AP gain over its two-stage baseline Ours Image-only ResNet-18 body stream + CLIP scene stream 34.52 CLIP-based scene representation that already carries a lot of semantic information. The comparison with heavier context-aware sys-tems shows the trade-off. EmotiCon uses multiple context streams for personal, semantic, and socio-dynamic information. The proposed model uses one CLIP-based scene branch and one ResNet-18 body stream. That simpler design does not replace explicit depth, object-relation, or interaction modeling, but it reaches a competitive range among earlier context-aware approaches while remaining easier to imple-ment. CLIP can cover part of the semantic context work. It cannot do all the structured reasoning. The remaining errors make that limit visible. Embarrassment, Yearning, Surprise, Fear, and Aver-sion are not only rare; they are also hard to infer from global appearance. They may depend on fine-grained social cues, the object a person is using, 7another person’s reaction, or subjective interpretation. Adding another global branch is unlikely to solve that by itself. Label-correlation modeling and fine-grained subject-context interaction are more plausible next steps. 
+
+# 6 Limitations 
+
+This work has several limitations. The model pre-dicts apparent emotion from images, not a person’s true internal emotional state. It also assumes target-person bounding boxes and does not solve subject detection. The CLIP scene stream encodes the full image globally, so irrelevant background can enter the representation, and the model does not explicitly identify which object, person, or scene region matters for the target subject. The CCIM-style and CLEF-lite variants are simplified adaptations rather than exact reproductions of the original causal and coun-terfactual methods. Finally, all experiments are on EMOTIC, and small differences between close mAP values should be read cautiously without repeated runs. 
+
+# 7 Future Work 
+
+The next experiment should start from the clean CLIP-based two-stream model, not from the simpli-fied debiasing variants. The most direct addition is a lightweight label-correlation head. EMOTIC is multi-label, and emotions such as Happiness, Excitement, Pleasure, and Engagement often co-occur. A head that models these relationships would target the label structure directly instead of asking the image encoder to learn everything alone. Fine-grained subject-context interaction is the sec-ond direction. The model should learn which scene regions, objects, or nearby people are emotionally rel-evant to the target person. The current fusion block cannot do that. It sees a body vector and a scene vector. The body stream can also be strengthened. The current model uses ResNet-18 with 128 × 128 body crops; future experiments can test ResNet-50 or Effi-cientNet backbones and increase the body input size to 224 × 224 to preserve more posture and cloth-ing detail. Longer-term work can explore patch-level body-scene attention, object relation modeling, and a DSCT-style single-stage model. Fig. 7 sketches the label-correlation direction. The goal is to keep the two-stream visual backbone and add a small graph-based refinement step over emotion labels. 
+
+# 8 Conclusion 
+
+This work studied context-aware emotion recognition on EMOTIC with a two-stream body-scene model. The final system combines a ResNet-18 body stream with a CLIP ViT-B/16 full-scene stream and achieves 34.52% mAP on the EMOTIC test split. None of the tested variants, including simplified CCIM-style        
+
+> Fig. 7Proposed future extension: alightweight label-correlation graph head that can be added on top of the current two-stream CLIP baseline.
+
+intervention, CLEF-lite context-bias subtraction, and rare-class training changes, improves over the clean two-stream model. CLIP gives broad global scene semantics, but simplified causal, counterfactual, or sampling-based modifications do not automatically improve this baseline. The hard classes remain the rare and subtle ones. The next step is structure: label-correlation modeling and fine-grained subject-context interaction. 
+
+Statements and Declarations. Funding The authors received no specific funding for this work. 
+
+Competing interests The authors declare that they have no competing interests. 
+
+Data availability The EMOTIC dataset used in this study is available from the original dataset providers subject to their access conditions. Addi-tional result files generated during this study are available from the corresponding author on reasonable request. 
+
+Code availability The implementation used for the experiments is available from the corresponding author on reasonable request. 
+
+Author contributions Zubair Abbas designed and implemented the experiments, analyzed the results, and wrote the manuscript. Muhammad Umair supervised the study. Muqaddas Hameed conducted the literature review for the project. All authors read and approved the final manuscript. 
+
+# References 
+
+[1] Kosti, R., Alvarez, J.M., Recasens, A., Lapedriza, A.: Emotion recognition in context. In: Proceed-ings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 1667–1675 (2017) [2] Kosti, R., Alvarez, J.M., Recasens, A., Lapedriza, A.: Context based emotion recognition using EMOTIC dataset. IEEE Transactions on Pattern Analysis and Machine Intelligence 42 (11), 2755– 2766 (2020) https://doi.org/10.1109/TPAMI.20 19.2916866 [3] Mittal, T., Guhan, P., Bhattacharya, U., Chan-dra, R., Bera, A., Manocha, D.: EmotiCon: Context-aware multimodal emotion recognition using frege’s principle. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 14234–14243 (2020) 8[4] Wang, Z., Sankaranarayana, R.: Using scene and semantic features for multi-modal emotion recog-nition. arXiv preprint arXiv:2308.00228 (2023) arXiv:2308.00228 [5] Yang, D., Chen, Z., Wang, Y., Wang, S., Li, M., Liu, S., Zhao, X., Huang, S., Dong, Z., Zhai, P., Zhang, L.: Context de-confounded emotion recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 19005–19015 (2023) [6] Yang, D., Yang, K., Li, M., Wang, S., Wang, S., Zhang, L.: Robust emotion recognition in con-text debiasing. arXiv preprint arXiv:2403.05963 (2024) arXiv:2403.05963 [7] Li, X., Wang, T., Zhao, J., Mao, S., Wang, J., Zheng, F., Peng, X., Li, X.: Two in one go: Single-stage emotion recognition with decou-pled subject-context transformer. arXiv preprint arXiv:2404.17205 (2024) arXiv:2404.17205 [8] Zhang, S., Pan, Y., Wang, J.Z.: Learning emotion representations from verbal and nonverbal com-munication. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 18993–19004 (2023) [9] Chen, C., Sun, X., Liu, Z.: UniEmoX: Cross-modal semantic-guided large-scale pretraining for universal scene emotion perception. IEEE Trans-actions on Image Processing (2025) h t t p s : / / d o i . o r g / 1 0 . 1 1 0 9 / T I P . 2 0 2 5 . 3 5 8 7 5 77 arXiv:2409.18877 [10] Lee, J., Kim, S., Kim, S., Park, J., Sohn, K.: Context-aware emotion recognition networks. In: Proceedings of the IEEE/CVF International Conference on Computer Vision, pp. 10143– 10152 (2019) [11] Huang, Y., Wen, H., Qing, L., Jin, R., Xiao, L.: Emotion recognition based on body and con-text fusion in the wild. In: Proceedings of the IEEE/CVF International Conference on Com-puter Vision Workshops, pp. 3609–3617 (2021) [12] Etesam, Y., Yalçın, Ö.N., Zhang, C., Lim, A.: Contextual emotion recognition using large vision language models. In: IEEE/RSJ International Conference on Intelligent Robots and Systems (2024). https://doi.org/10.1109/IROS58592.20 24.10802538 [13] Lei, Y., Yang, D., Chen, Z., Chen, J., Zhai, P., Zhang, L.: Large vision-language mod-els as emotion recognizers in context aware-ness. arXiv preprint arXiv:2407.11300 (2024) arXiv:2407.11300 [14] Deng, J., Dong, W., Socher, R., Li, L.-J., Li, K., Fei-Fei, L.: ImageNet: A large-scale hierar-chical image database. In: Proceedings of the IEEE Conference on Computer Vision and Pat-tern Recognition, pp. 248–255 (2009). h t t p s : //doi.org/10.1109/CVPR.2009.5206848 [15] Radford, A., Kim, J.W., Hallacy, C., Ramesh, A., Goh, G., Agarwal, S., Sastry, G., Askell, A., Mishkin, P., Clark, J., Krueger, G., Sutskever, I.: Learning transferable visual models from natural language supervision. In: International Conference on Machine Learning, vol. 139, pp. 8748–8763 (2021). 
+
+https://proceedings.mlr.press/v139/radford21a.html 
+
+[16] He, K., Zhang, X., Ren, S., Sun, J.: Deep residual learning for image recognition. In: Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 770–778 (2016). https: //doi.org/10.1109/CVPR.2016.90 [17] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, L., Polo-sukhin, I.: Attention is all you need. In: Advances in Neural Information Processing Systems, vol. 30 (2017) [18] Ridnik, T., Ben-Baruch, E., Zamir, N., Noy, A., Friedman, I., Protter, M., Zelnik-Manor, L.: Asymmetric loss for multi-label classifica-tion. In: Proceedings of the IEEE/CVF Interna-tional Conference on Computer Vision, pp. 82–91 (2021) [19] Huber, P.J.: Robust estimation of a location parameter. The Annals of Mathematical Statis-tics 35 (1), 73–101 (1964) https://doi.org/10.121 4/aoms/1177703732 [20] Loshchilov, I., Hutter, F.: Decoupled weight decay regularization. In: International Confer-ence on Learning Representations (2019) [21] Zhang, H., Cisse, M., Dauphin, Y.N., Lopez-Paz, D.: mixup: Beyond empirical risk minimization. In: International Conference on Learning Repre-sentations (2018) [22] Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., Salakhutdinov, R.: Dropout: Asimple way to prevent neural networks from over-fitting. Journal of Machine Learning Research 
+
+15 (56), 1929–1958 (2014) [23] Cui, Y., Jia, M., Lin, T.-Y., Song, Y., Belongie, S.: Class-balanced loss based on effective num-ber of samples. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 9268–9277 (2019). https://doi. org/10.1109/CVPR.2019.00949 9

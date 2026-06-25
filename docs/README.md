@@ -6,35 +6,41 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-24
-- 运行时间：2026-06-24 22:03:57 UTC
+- 最新运行日期：2026-06-25
+- 运行时间：2026-06-25 20:53:36 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：1
-- 速读区：4
+- 本次总论文数：7
+- 精读区：4
+- 速读区：3
 
 ### 今日简报（AI）
-今日精选5篇论文，其中1篇精读提出跨设备微表情数据集《CDER-SME》（8.0分），为多设备情绪识别提供新基准。 值得关注的方向：微表情数据集构建与扩散模型中的主题驱动生成及去偏技术（如DivRL、双分支去偏方法）。 建议普通读者优先关注《CDER-SME》的跨设备应用潜力，以及《DivRL》中解耦自相似性奖励如何提升生成多样性。
-- 详情：[/202606/24/README](/202606/24/README)
+今日研究聚焦情感计算与多模态学习，精读两篇高分论文，速读三篇相关进展。最值得关注的是隐私保护的语音情感分析管线《EmotionAI》和多模态对比学习中的记忆缓解方法《MultiMem》。建议普通读者优先探索隐私与多模态融合方向，注意记忆泄漏风险。
+- 详情：[/202606/25/README](/202606/25/README)
 
 ### 精读区论文标签
-1. [CDER-SME: A Cross-Device Event-RGB Micro-Expression Dataset under Multi-Level Stress Induction](/202606/24/2606.20715v1-cder-sme-a-cross-device-event-rgb-micro-expression-dataset-under-multi-level-stress-induction)  
+1. [EmotionAI: A Privacy-Preserving Computational Intelligence Pipeline for Speech-Emotion-Grounded Conversational Analysis](/202606/25/2606.24941v1-emotionai-a-privacy-preserving-computational-intelligence-pipeline-for-speech-emotion-grounded-conversational-analysis)  
+   标签：评分：9.0/10、query:mm
+   evidence：使用音频和ASR文本的语音情感识别流水线
+2. [MultiMem: Measuring and Mitigating Memorization in Multi-Modal Contrastive Learning](/202606/25/2606.22220v2-multimem-measuring-and-mitigating-memorization-in-multi-modal-contrastive-learning)  
    标签：评分：8.0/10、query:mm
-   evidence：跨设备事件-RGB微表情数据集用于情感识别
+   evidence：多模态对比学习中的记忆效应测量与缓解
+3. [Customizing Video Portraits via Identity-ActionDecoupling](/202606/25/2606.22347v1-customizing-video-portraits-via-identity-actiondecoupling)  
+   标签：评分：8.0/10、query:mm
+   evidence：身份-动作解耦用于解耦表示
+4. [SAC$^2$-Net: Semantic Anchoring and Complementary-Consensus Fusion for Multimodal Micro-Expression Recognition](/202606/25/2606.25542v1-sac2-net-semantic-anchoring-and-complementary-consensus-fusion-for-multimodal-micro-expression-recognition)  
+   标签：评分：8.0/10、query:mm
+   evidence：多模态微表情识别，处理模态不对称失效
 
 ### 速读区论文标签
-1. [DivRL: Disentangled Self-Similarity Rewards for Diverse Subject-Driven Generation](/202606/24/2606.23950v1-divrl-disentangled-self-similarity-rewards-for-diverse-subject-driven-generation)  
+1. [A Controlled Study of CLIP-Based Body-Scene Fusion for Emotion Recognition in Context](/202606/25/2606.22072v2-a-controlled-study-of-clip-based-body-scene-fusion-for-emotion-recognition-in-context)  
    标签：评分：7.0/10、query:mm
-   evidence：利用解耦视觉特征优化多样性
-2. [Dual-Branch Cross-Projection Debiasing through Diffusion-based Disentanglement](/202606/24/2606.24161v1-dual-branch-cross-projection-debiasing-through-diffusion-based-disentanglement)  
+   evidence：利用身体和场景模态进行情感识别
+2. [MJEPA: A Simple and Scalable Joint-Embedding Predictive Architecture for Audio-Visual Learning](/202606/25/2606.25225v1-mjepa-a-simple-and-scalable-joint-embedding-predictive-architecture-for-audio-visual-learning)  
    标签：评分：7.0/10、query:mm
-   evidence：基于扩散的解耦表示用于去偏
-3. [Modality-Aware Out-of-Distribution Detection for Multi-Modal Action Recognition](/202606/24/2606.24404v1-modality-aware-out-of-distribution-detection-for-multi-modal-action-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：面向鲁棒多模态动作识别的模态感知OOD检测
-4. [Unified Multimodal Autoregressive Modeling with Shared Context-Visual Tokenizer is Key to Unification](/202606/24/2606.18249v2-unified-multimodal-autoregressive-modeling-with-shared-context-visual-tokenizer-is-key-to-unification)  
+   evidence：用于鲁棒多模态学习的音视频联合嵌入预测架构
+3. [Mind the Heads: Topological Representation Alignment for Multimodal LLMs](/202606/25/2606.23885v1-mind-the-heads-topological-representation-alignment-for-multimodal-llms)  
    标签：评分：6.0/10、query:mm
-   evidence：统一多模态建模
+   evidence：头部级表示对齐增强多模态LLM鲁棒性
 
 
 <div class="dpr-home-promo-card">
