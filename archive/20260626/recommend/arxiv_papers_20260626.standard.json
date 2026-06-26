@@ -1,0 +1,211 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-26T21:41:11.840044+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2606.25325v1",
+      "source": "arxiv",
+      "title": "Omni-Perception Policy Optimization for Multimodal Emotion Reasoning",
+      "abstract": "We find that current emotion-oriented Omni-MLLMs still lack reliable omni-modal perception: they (i) underutilize multimodal cues in their reasoning trajectories and (ii) exhibit unfaithful behavior, often hallucinating modality-specific statements from other modalities. Building on these insights, we propose OPPO (Omni-Perception Policy Optimization), a reinforcement learning framework that explicitly optimizes multimodal perception. First, an Omni-Perception Reward decomposes ground-truth reasoning into fine-grained visual, acoustic, and emotion cues and rewards trajectories that semantically recover these cues. Second, an Omni-Perception Loss compares the policy under full and unimodally masked inputs, applying a KL penalty only to modality-specific evidence tokens to suppress cross-modal hallucination. We further introduce MEP-Bench, a diagnostic benchmark that quantifies utilization and faithfulness. Experiments show that OPPO achieves state-of-the-art performance on MER-UniBench and MME-Emotion, while substantially improving utilization and faithfulness scores on MEP-Bench, highlighting the importance of sufficient and faithful omni perception for multimodal emotion reasoning.",
+      "authors": [
+        "Zhiyuan Han",
+        "Beier Zhu",
+        "Wenwen Tong",
+        "Pengyang Shao",
+        "Peipei Song",
+        "Xinyi Wang",
+        "Jiangnan Chen",
+        "Lewei Lu",
+        "Xun Yang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-24T02:43:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.25325v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "uses unimodal masking to optimize perception under missing modalities",
+      "llm_evidence_cn": "使用单模态掩蔽优化缺失模态下的感知",
+      "llm_evidence": "使用单模态掩蔽优化缺失模态下的感知",
+      "canonical_evidence": "使用单模态掩蔽优化缺失模态下的感知",
+      "llm_tldr_en": "Proposes OPPO, a reinforcement learning framework that optimizes multimodal perception for emotion reasoning via reward decomposition and loss with unimodal masking, improving robustness to missing modalities.",
+      "llm_tldr_cn": "针对当前多模态情感推理模型对多模态线索利用不足且存在幻觉的问题，提出OPPO框架，通过将推理分解为细粒度视觉、声学和情感线索并给予奖励，同时引入单模态掩蔽损失，优化多模态感知。实验表明该方法显著提升了模型在缺失模态情况下的情感推理准确性和忠实性，为鲁棒多模态情感识别提供了新思路。",
+      "llm_tldr": "针对当前多模态情感推理模型对多模态线索利用不足且存在幻觉的问题，提出OPPO框架，通过将推理分解为细粒度视觉、声学和情感线索并给予奖励，同时引入单模态掩蔽损失，优化多模态感知。实验表明该方法显著提升了模型在缺失模态情况下的情感推理准确性和忠实性，为鲁棒多模态情感识别提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.24082v1",
+      "source": "arxiv",
+      "title": "Comparative Reasoning: Making an Audio Language Model Better at Comparing Emotions",
+      "abstract": "Large audio-language models (LALMs) can reason about audio, yet it remains unclear whether they can perform comparative judgments between two speech signals along emotional, environmental, linguistic, prosodic, and interpersonal dimensions. We study this question in the context of speech emotion recognition (SER), where the model determines which utterance exhibits higher arousal, valence, or dominance. We introduce a reasoning-guided ordinal SER framework that conditions an LALM on paired speech inputs. The model is trained using reasoning traces generated from both semantic audio descriptions and acoustic evidence derived from GeMAPS features, enabling interpretable comparative decisions. Beyond direct supervision, we also employ direct preference optimization to encourage stronger separation for emotional differences. Experiments show that the proposed framework improves preference prediction while requiring only 5% of the training data used by conventional ordinal SER systems.",
+      "authors": [
+        "Abinay Reddy Naini",
+        "Jaeyeon Kim",
+        "Chao-Han Huck Yang",
+        "Shinji Watanabe",
+        "Carlos Busso"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.SD"
+      ],
+      "published": "2026-06-23T02:55:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.24082v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "speech emotion recognition with audio-language model and reasoning-guided ordinal framework",
+      "llm_evidence_cn": "基于音频语言模型的情感比较推理框架",
+      "llm_evidence": "基于音频语言模型的情感比较推理框架",
+      "canonical_evidence": "基于音频语言模型的情感比较推理框架",
+      "llm_tldr_en": "Introduces a reasoning-guided ordinal speech emotion recognition framework using audio-language models and acoustic features, enabling comparative emotion judgments.",
+      "llm_tldr_cn": "该论文提出一种推理引导的序数情感识别框架，利用音频语言模型对成对语音信号进行情感比较，结合语义描述和声学特征生成可解释的推理路径，提升了情感比较的准确性和可解释性。",
+      "llm_tldr": "该论文提出一种推理引导的序数情感识别框架，利用音频语言模型对成对语音信号进行情感比较，结合语义描述和声学特征生成可解释的推理路径，提升了情感比较的准确性和可解释性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.26473v1",
+      "source": "arxiv",
+      "title": "When Does Quality-Aware Multimodal Fusion Matter? A Leakage-Safe Diagnostic for Decision-Level Dependence",
+      "abstract": "Many multimodal systems estimate the reliability of each modality and weight their contributions to the final prediction. However, it remains unclear whether these scores influence model decisions or merely correlate with performance. We propose a simple diagnostic to test whether reliability information is used during inference. After training, the model and inputs are fixed while reliability scores are permuted across test examples. If predictions depend on these scores, performance should degrade. Experiments on StressID for stress recognition and CMU-MOSEI for sentiment analysis show that permuting reliability scores leaves performance unchanged despite substantial potential gains from selecting the best modality per example. In positive controls where reliability signals identify the correct modality, the same frozen fusion rules yield significant improvements, indicating that reliability signals influence fused decisions only when they reliably predict unimodal correctness.",
+      "authors": [
+        "Jaden Moon",
+        "Arvind Pillai",
+        "Andrew Campbell"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "eess.AS"
+      ],
+      "published": "2026-06-25T00:14:22+00:00",
+      "link": "https://arxiv.org/pdf/2606.26473v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "diagnostic for quality-aware multimodal fusion, experiments on stress and sentiment analysis, relevant to robust multimodal learning",
+      "llm_evidence_cn": "提出多模态融合中可靠性评分使用情况的诊断方法，在压力识别和情感分析上验证，与鲁棒多模态学习相关",
+      "llm_evidence": "提出多模态融合中可靠性评分使用情况的诊断方法，在压力识别和情感分析上验证，与鲁棒多模态学习相关",
+      "canonical_evidence": "提出多模态融合中可靠性评分使用情况的诊断方法，在压力识别和情感分析上验证，与鲁棒多模态学习相关",
+      "llm_tldr_en": "This paper proposes a diagnostic test for whether multimodal systems truly use reliability scores, by permuting scores across test examples. Experiments on StressID and CMU-MOSEI show performance unchanged, indicating scores are not causally used, highlighting a gap in robust fusion design.",
+      "llm_tldr_cn": "多模态系统中模态可靠性评分常被用于加权融合，但其是否真正影响决策尚属未知。本文提出一种泄漏安全诊断方法：固定模型和输入后，置换测试样本的可靠性评分。在StressID压力识别和CMU-MOSEI情感分析上，置换后性能不变，表明现有模型未因果地利用可靠性信息。该诊断方法为设计真正鲁棒的多模态融合提供了检测工具。",
+      "llm_tldr": "多模态系统中模态可靠性评分常被用于加权融合，但其是否真正影响决策尚属未知。本文提出一种泄漏安全诊断方法：固定模型和输入后，置换测试样本的可靠性评分。在StressID压力识别和CMU-MOSEI情感分析上，置换后性能不变，表明现有模型未因果地利用可靠性信息。该诊断方法为设计真正鲁棒的多模态融合提供了检测工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.21806v1",
+      "source": "arxiv",
+      "title": "Causal Variational Deep Embedding: A Family of Interventional Generators for Confounded Images",
+      "abstract": "Deep generative models reproduce the observational distribution of their training data, inheriting any spurious associations it contains. A common source is an unobserved confounder that shapes both an attribute the user wants to control at sampling time and an attribute expected to vary in response. Existing causal generative approaches resolve the resulting ambiguity by imposing structural assumptions strong enough to single out one interventional distribution; in image domains, such assumptions are rarely warranted, and the data is generally consistent with a set of distinct causal mechanisms -- a feasible region of interventional distributions. We propose CauVaDE (Causal Variational Deep Embedding), built on a canonical augmented SCM in which the unobserved confounder collapses, without loss of generality, into a discrete latent cluster of bounded support while continuous variation is absorbed into independent noises. We prove that this canonical class is dense, in both observational and interventional Wasserstein distance, in the class of augmented SCMs compatible with a given causal diagram, and instantiate it as a mixture variational autoencoder whose cluster variable plays the role of the canonical confounder. An entropy regularizer with weight $γ$ on the cluster posterior then traces a family of candidate causal effects that fit the observational data to comparable likelihood while spanning the feasible region. Experiments on image data benchmarks show that CauVaDE produces diverse interventional samples and improves FID against an unconfounded reference.",
+      "authors": [
+        "Jingyuan Chen",
+        "Kangrui Ruan",
+        "Junzhe Zhang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-19T23:59:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.21806v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "causal generative model for disentangled interventional distributions, applicable to representation learning",
+      "llm_evidence_cn": "提出因果变分深度嵌入用于解耦干预分布生成，适用于表示学习",
+      "llm_evidence": "提出因果变分深度嵌入用于解耦干预分布生成，适用于表示学习",
+      "canonical_evidence": "提出因果变分深度嵌入用于解耦干预分布生成，适用于表示学习",
+      "llm_tldr_en": "CauVaDE proposes a family of interventional generators for confounded images that can produce a range of causal mechanisms without strong structural assumptions. It builds on a canonical augmentation approach to disentangle unobserved confounders, providing a practical solution for causal disentangled generation.",
+      "llm_tldr_cn": "深度生成模型常继承数据中的虚假关联，现有因果生成方法需强结构假设。本文提出CauVaDE家族模型，通过规范增强构建能够生成多种干预分布的生成器，无需假设单一因果机制。该方法能有效解耦未观测混淆变量，在图像上生成特定于干预的样本。虽聚焦图像，但其解耦表示框架可启发多模态情感识别中缺失模态下的解耦学习。",
+      "llm_tldr": "深度生成模型常继承数据中的虚假关联，现有因果生成方法需强结构假设。本文提出CauVaDE家族模型，通过规范增强构建能够生成多种干预分布的生成器，无需假设单一因果机制。该方法能有效解耦未观测混淆变量，在图像上生成特定于干预的样本。虽聚焦图像，但其解耦表示框架可启发多模态情感识别中缺失模态下的解耦学习。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.22043v1",
+      "source": "arxiv",
+      "title": "When Does a Video-Language Model Stop Watching? Reward Strength Controls the Formation and Reversal of Visual Shortcuts in Multimodal RLVR",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is increasingly applied to large vision-language models (LVLMs), yet outcome-only optimization can drive a model to stop attending to the video and instead exploit linguistic priors -- a failure we call a visual shortcut. While the existence of such perception bypass is by now documented, how it forms, whether it can be undone, and when intervention still helps remain open. We treat the strength of a grounding penalty, lambda, as a control knob and characterize the formation-reversal dynamics of visual shortcuts along the training time axis. On a held-out, out-of-distribution diagnostic set, we find: (i) a sharp onset -- shortcut reliance emerges abruptly over a narrow window of optimization steps and is robust across random seeds; (ii) a monotone dose-response -- increasing lambda progressively suppresses the shortcut, and at an intermediate dose the trajectory first forms and then reverses the shortcut, exposing a hysteresis-like asymmetry between acquiring and removing it; and (iii) a critical intervention window -- applying the penalty before onset arrests shortcut formation, whereas the same penalty applied after consolidation is markedly less effective. Together these results recast visual-shortcut collapse not as a binary defect but as a controllable, time-dependent, and asymmetric process, with direct implications for when and how strongly to regularize multimodal RLVR.",
+      "authors": [
+        "Zekun Xu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-06-20T13:48:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.22043v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "analysis of visual shortcut formation and reversal in multimodal RLVR, relevant to robust multimodal learning",
+      "llm_evidence_cn": "研究多模态RLVR中视觉捷径的形成与逆转，与鲁棒多模态学习相关",
+      "llm_evidence": "研究多模态RLVR中视觉捷径的形成与逆转，与鲁棒多模态学习相关",
+      "canonical_evidence": "研究多模态RLVR中视觉捷径的形成与逆转，与鲁棒多模态学习相关",
+      "llm_tldr_en": "This paper studies how visual shortcuts form and reverse in multimodal RLVR, controlled by grounding penalty strength lambda. It reveals sharp onset and difficulty of reversal, providing insights for designing robust multimodal models and handling missing modality scenarios.",
+      "llm_tldr_cn": "该论文针对多模态RLVR中模型忽略视频而利用语言先验的视觉捷径问题，将接地惩罚强度λ作为控制旋钮，沿训练时间轴刻画了捷径的形成与逆转动态。在保留测试集上发现捷径具有尖锐onset且难以逆转。该研究揭示了奖励强度对视觉捷径的可控性，为设计更鲁棒的多模态训练方法提供了理论基础，对缺失模态下的模型行为也有启示。",
+      "llm_tldr": "该论文针对多模态RLVR中模型忽略视频而利用语言先验的视觉捷径问题，将接地惩罚强度λ作为控制旋钮，沿训练时间轴刻画了捷径的形成与逆转动态。在保留测试集上发现捷径具有尖锐onset且难以逆转。该研究揭示了奖励强度对视觉捷径的可控性，为设计更鲁棒的多模态训练方法提供了理论基础，对缺失模态下的模型行为也有启示。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
