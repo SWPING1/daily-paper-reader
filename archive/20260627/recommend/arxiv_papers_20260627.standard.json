@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-27T20:13:44.301842+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.22790v1",
+      "source": "arxiv",
+      "title": "Scaling Audio Models Efficiently: A Joint Study of Compute Constraints and Optimization Behavior",
+      "abstract": "In this paper, we investigate the tradeoffs between compute allocation and model performance for two speech processing tasks: Automatic Speech Recognition (ASR) and Speech Emotion Recognition (SER). We propose a unified framework that analyzes three fundamental compute dimensions: model size ($x_N$), input length ($x_T$), and representation resolution ($x_V$). Motivated by recent advances in compute optimal scaling for multimodal models, we systematically vary these dimensions to examine their influence on task performance under fixed computational budgets. Our study provides insights into how compute resources can be optimally distributed across model capacity, temporal context, and representational granularity, offering practical guidelines for the design of efficient speech models. Through experiments on LibriSpeech and CREMA-D datasets, we demonstrate non-linear scaling behavior and identify optimal operating points. Our results show that (1) increasing model size yields diminishing returns: scaling Tiny (39M) to Small (244M) reduces WER by 8.22%, whereas Small to Medium (769M) reduces WER by only 2.35%; (2) an optimal audio duration of approximately 4 seconds exists for SER; and (3) reducing encoder token resolution provides an effective mechanism for lowering inference cost, Large-v3 (1540M) with 750 frames requires 2572 GFLOPS whereas with 1500 frames requires 5228 GFLOPS, with less than 3% relative increase in WER. Additionally, LoRA-based adaptation enables efficient finetuning with minimal performance degradation.",
+      "authors": [
+        "Vyom Agarwal",
+        "Mokshda Gangrade",
+        "Siddharth Pal",
+        "Jerry Wu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-06-22T02:56:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.22790v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "study of compute allocation for speech emotion recognition",
+      "llm_evidence_cn": "针对语音情感识别的计算分配研究",
+      "llm_evidence": "针对语音情感识别的计算分配研究",
+      "canonical_evidence": "针对语音情感识别的计算分配研究",
+      "llm_tldr_en": "Investigates tradeoffs between model size, input length, and representation resolution for ASR and SER under fixed compute budgets.",
+      "llm_tldr_cn": "针对语音情感识别和自动语音识别中的计算分配问题，提出统一框架分析模型大小、输入长度和表示分辨率三个维度的权衡。实验揭示了在固定预算下优化性能的规律，为高效音频模型设计提供指导。",
+      "llm_tldr": "针对语音情感识别和自动语音识别中的计算分配问题，提出统一框架分析模型大小、输入长度和表示分辨率三个维度的权衡。实验揭示了在固定预算下优化性能的规律，为高效音频模型设计提供指导。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

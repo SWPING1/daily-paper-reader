@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-06-27 <!--dpr-date:20260627-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/27/2606.22790v1-scaling-audio-models-efficiently-a-joint-study-of-compute-constraints-and-optimization-behavior" data-sidebar-item="{&quot;title&quot;: &quot;Scaling Audio Models Efficiently: A Joint Study of Compute Constraints and Optimization Behavior&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.22790v1-scaling-audio-models-efficiently-a-joint-study-of-compute-constraints-and-optimization-behavior&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;针对语音情感识别的计算分配研究&quot;}">Scaling Audio Models Efficiently: A Joint Study of Compute Constraints and Optimization Behavior</a>
   * 2026-06-26 <!--dpr-date:20260626-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202606/26/2606.25325v1-omni-perception-policy-optimization-for-multimodal-emotion-reasoning" data-sidebar-item="{&quot;title&quot;: &quot;Omni-Perception Policy Optimization for Multimodal Emotion Reasoning&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2606.25325v1-omni-perception-policy-optimization-for-multimodal-emotion-reasoning&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;使用单模态掩蔽优化缺失模态下的感知&quot;}">Omni-Perception Policy Optimization for Multimodal Emotion Reasoning</a>

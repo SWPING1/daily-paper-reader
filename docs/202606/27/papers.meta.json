@@ -1,0 +1,24 @@
+{
+  "label": "2026-06-27",
+  "date": "2026-06-27",
+  "generated_at": "2026-06-27T20:14:22",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202606/27/2606.22790v1-scaling-audio-models-efficiently-a-joint-study-of-compute-constraints-and-optimization-behavior",
+      "section": "quick",
+      "title_en": "Scaling Audio Models Efficiently: A Joint Study of Compute Constraints and Optimization Behavior",
+      "authors": "Vyom Agarwal, Mokshda Gangrade, Siddharth Pal, Jerry Wu",
+      "date": "2026-06-22",
+      "pdf": "https://arxiv.org/pdf/2606.22790v1",
+      "score": "6.0",
+      "evidence": "针对语音情感识别的计算分配研究",
+      "tldr": "研究音频模型在固定计算预算下的扩展策略，针对ASR和SER任务，分析模型大小、输入时长和表示分辨率三个维度的影响。实验发现模型增大收益递减（从39M到244M降低WER 8.22%，再到769M仅降2.35%），SER存在最优时长约4秒，降低编码器分辨率可大幅降低计算量（如Large-v3从5228降至2572 GFLOPS）且性能损失<3%。这些发现为高效音频模型设计提供了实用指导，揭示了计算资源分配的非线性特性。",
+      "tags": "query:mm",
+      "abstract_en": "In this paper, we investigate the tradeoffs between compute allocation and model performance for two speech processing tasks: Automatic Speech Recognition (ASR) and Speech Emotion Recognition (SER). We propose a unified framework that analyzes three fundamental compute dimensions: model size ($x_N$), input length ($x_T$), and representation resolution ($x_V$). Motivated by recent advances in compute optimal scaling for multimodal models, we systematically vary these dimensions to examine their influence on task performance under fixed computational budgets. Our study provides insights into how compute resources can be optimally distributed across model capacity, temporal context, and representational granularity, offering practical guidelines for the design of efficient speech models. Through experiments on LibriSpeech and CREMA-D datasets, we demonstrate non-linear scaling behavior and identify optimal operating points. Our results show that (1) increasing model size yields diminishing returns: scaling Tiny (39M) to Small (244M) reduces WER by 8.22%, whereas Small to Medium (769M) reduces WER by only 2.35%; (2) an optimal audio duration of approximately 4 seconds exists for SER; and (3) reducing encoder token resolution provides an effective mechanism for lowering inference cost, Large-v3 (1540M) with 750 frames requires 2572 GFLOPS whereas with 1500 frames requires 5228 GFLOPS, with less than 3% relative increase in WER. Additionally, LoRA-based adaptation enables efficient finetuning with minimal performance degradation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
