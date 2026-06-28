@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-28",
+  "date": "2026-06-28",
+  "generated_at": "2026-06-28T20:38:56",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/28/2606.25657v1-steering-vision-language-models-with-joint-sparse-autoencoders",
+      "section": "quick",
+      "title_en": "Steering Vision-Language Models with Joint Sparse Autoencoders",
+      "authors": "Huizhen Shu, Xuying Li, Hongxu Lin, Wenjie Sun, Hui Li",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25657v1",
+      "score": "7.0",
+      "evidence": "联合稀疏自编码器实现跨模态特征解耦因子分解",
+      "tldr": "针对视觉语言模型的可控跨模态特征分析难题，提出联合稀疏自编码器，通过显式对齐约束将序列池化的视觉和语言激活联合分解为可解释的图像/描述级共享特征。在LLaVA等模型上，该方法能恢复食物、动物等跨模态概念。实验发现加性干预在中间层效果最强，而抑制干预在所有层表现相似，为多模态特征的可控干预分析提供了新途径。",
+      "tags": "query:mm",
+      "abstract_en": "Sparse Autoencoders (SAEs) have shown promise for analyzing language models, but applying them to vision-language models (VLMs) often yields representations that are difficult to use as controllable cross-modal steering directions. We introduce the Joint Sparse Autoencoder (JSAE), which uses an explicit alignment constraint to jointly factorize sequence-pooled vision and language activations into shared, interpretable image/caption-level features. Applied to LLaVA, JSAE recovers cross-modal features for recognizable concepts (e.g., food and animals). Through bidirectional interventions (additive steering and suppression), we observe a layer-dependent asymmetry under our protocol: additive steering peaks at mid-to-late (pre-output) layers and weakens at both ends, whereas suppression scores remain within a comparable range across all probed layers within statistical noise. Experiments on three VLMs, namely LLaVA-v1.6-Mistral-7B, Llama3-LLaVA-8B, and the MoE-based Qwen3-VL-30B, show related layer-localized effects across architectures. Together, these results suggest that explicitly aligned sparse representations support more controllable intervention-based analysis of multimodal features, within an identifiable layer range, than the unconstrained alternatives tested here.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/28/2606.25990v1-speecheq-benchmarking-emotional-intelligence-quotient-in-socially-aware-voice-conversational-models",
+      "section": "quick",
+      "title_en": "SpeechEQ: Benchmarking Emotional Intelligence Quotient in Socially Aware Voice Conversational Models",
+      "authors": "Liang-Yuan Wu, Zih-Ching Chen, Tongshuang Wu, Chao-Han Huck Yang, Hua Shen",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25990v1",
+      "score": "7.0",
+      "evidence": "面向语音语言模型的多模态情商基准",
+      "tldr": "现有语音对话模型的情商评估局限于文本或被动感知，缺乏跨模态多轮推理的考量。为此，SpeechEQ框架基于EQ-i 2.0理论构建了包含2265个对话的数据集，并提出口语EQ（SEQ）评分协议。实验发现端到端模型虽优于级联系统，但仍受困于文本依赖的模态捷径、安全陷阱和上下文遗忘。该工作揭示了实现真正情感感知AI的关键障碍。",
+      "tags": "query:mm",
+      "abstract_en": "As multimodal conversational systems increasingly engage in spoken interaction, their ability to navigate paralinguistic social cues has become a critical bottleneck for natural human-AI communication. However, existing evaluations of machine emotional intelligence assess reasoning exclusively through isolated text or passive acoustic perception, overlooking the complex cross-modal reasoning required for active, multi-turn dialogue. We introduce \\textsc{SpeechEQ}, a comprehensive framework designed to evaluate the sociolinguistic reasoning of Speech-Language Models (SLMs). The framework includes a validated dataset of 2,265 dialogues across 15 Emotional Quotient (EQ) subscales grounded in EQ-i 2.0 theory, along with a multi-turn evaluation protocol measured by our proposed Spoken EQ (SEQ) score inspired by human EQ assessments. Experiments show limitations in how both existing Speech Emotion Recognition and end-to-end Speech-Language Models understand and apply paralinguistic cues through speech. While end-to-end architectures outperform cascaded systems, \\textsc{SpeechEQ} reveals that current multimodal models remain bottlenecked by a text-reliant ``modality shortcut,'' an alignment-induced ``safety trap,'' and ``contextual amnesia,'' highlighting the barriers to truly emotionally aware AI. Our benchmark can be accessed at https://huggingface.co/datasets/SpeechEQ/SpeechEQ and demo page at https://binomial14.github.io/speecheq-demo/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
