@@ -6,27 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-28
-- 运行时间：2026-06-28 20:38:51 UTC
+- 最新运行日期：2026-06-29
+- 运行时间：2026-06-29 21:51:25 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读2篇论文，聚焦视觉语言模型稀疏编码与情感语音对话模型评测。值得关注《Steering Vision-Language Models with Joint Sparse Autoencoders》中联合稀疏自编码器对模型调控的探索，以及《SpeechEQ》对社交语音情感智商的量化基准。建议普通读者优先浏览这两篇摘要，了解多模态可解释性与情感AI评估的新思路。
-- 详情：[/202606/28/README](/202606/28/README)
+今日推荐3篇论文，精读聚焦多模态情感推理与多视图聚类，速读关注持续学习多模态大模型。
+
+最值得看的是《MER-R1》的慢快思考协同机制（9分）和《Dual-Learning based Penalized Multi-Align Clustering》处理不完整多视图数据的方法（8分）。
+
+建议优先精读第一篇，用于提升多模态任务中的情感推理能力；对数据缺失聚类感兴趣的读者可看第二篇。
+- 详情：[/202606/29/README](/202606/29/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [MER-R1: Multimodal Emotion Reasoning via Slow-Fast Thinking Synergy](/202606/29/2606.27652v1-mer-r1-multimodal-emotion-reasoning-via-slow-fast-thinking-synergy)  
+   标签：评分：9.0/10、query:mm
+   evidence：多模态情感识别中的慢快思考协同
+2. [Dual-Learning based Penalized Multi-Align Clustering for Multi-View Incomplete and Disorderly Data](/202606/29/2606.27984v1-dual-learning-based-penalized-multi-align-clustering-for-multi-view-incomplete-and-disorderly-data)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于双学习的惩罚多对齐聚类，处理多视图不完整和杂乱数据
 
 ### 速读区论文标签
-1. [Steering Vision-Language Models with Joint Sparse Autoencoders](/202606/28/2606.25657v1-steering-vision-language-models-with-joint-sparse-autoencoders)  
-   标签：评分：7.0/10、query:mm
-   evidence：联合稀疏自编码器实现跨模态特征解耦因子分解
-2. [SpeechEQ: Benchmarking Emotional Intelligence Quotient in Socially Aware Voice Conversational Models](/202606/28/2606.25990v1-speecheq-benchmarking-emotional-intelligence-quotient-in-socially-aware-voice-conversational-models)  
-   标签：评分：7.0/10、query:mm
-   evidence：面向语音语言模型的多模态情商基准
+1. [Attention-Spectrum Regularization for Replay-Free Continual Multimodal LLMs](/202606/29/2606.23063v1-attention-spectrum-regularization-for-replay-free-continual-multimodal-llms)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态大语言模型的无需回放的持续学习，处理域漂移的鲁棒性
 
 
 <div class="dpr-home-promo-card">

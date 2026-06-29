@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-29",
+  "date": "2026-06-29",
+  "generated_at": "2026-06-29T21:51:36",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/29/2606.27652v1-mer-r1-multimodal-emotion-reasoning-via-slow-fast-thinking-synergy",
+      "section": "deep",
+      "title_en": "MER-R1: Multimodal Emotion Reasoning via Slow-Fast Thinking Synergy",
+      "authors": "Zhiyuan Han, Beier Zhu, Wenwen Tong, Chengwei Qin, Xinyi Wang, Jiayu Zhang, Jiangnan Chen, Hewei Guo, Dongchuan Ran, Lewei Lu, Xun Yang",
+      "date": "2026-06-26",
+      "pdf": "https://arxiv.org/pdf/2606.27652v1",
+      "score": "9.0",
+      "evidence": "多模态情感识别中的慢快思考协同",
+      "tldr": "多模态情感识别任务中，我们发现显式推理并不能保证提升准确率，快速思考往往表现更好。实验分析发现，快速思考倾向于提升召回率，而慢速思考则提升精确率。为此，本文提出MER-R1强化学习框架，通过双目标解耦和快慢置信度校准，使两者从互补变成协同优化。在多个基准数据集上取得最优性能，超越了此前方法，验证了推理对情感识别的实际增益。",
+      "tags": "query:mm",
+      "abstract_en": "We find that explicit reasoning does not necessarily translate into better multimodal emotion recognition (MER) accuracy, even though it makes predictions more interpretable. Specifically, for reasoning-based MLLMs, fast thinking by triggering direct answers often outperforms slow thinking after deliberative reasoning. Our empirical analyses show that fast thinking improves recall with broader and more confident predictions, whereas slow thinking favors precision through conservative filtering of incorrect categories. Building on these insights, we propose MER-R1, a reinforcement learning framework that turns slow-fast complementarity into explicit optimization. Dual-objective disentanglement separates recall and precision into two optimization signals, allowing them to be jointly optimized rather than traded off against each other. Slow-fast confidence calibration further aligns the final slow-thinking answer with fast-thinking intuition, strengthening correct emotions while suppressing incorrect ones. In this way, MER-R1 unifies the recall-oriented intuition of fast thinking with the precision-oriented selectivity of slow thinking. We further provide theoretical justification for this synergy, showing that it mitigates variance-induced interference during optimization. Extensive experiments on MER-UniBench and MME-Emotion show that MER-R1 achieves state-of-the-art performance and makes reasoning genuinely benefit emotion recognition.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/29/2606.27984v1-dual-learning-based-penalized-multi-align-clustering-for-multi-view-incomplete-and-disorderly-data",
+      "section": "deep",
+      "title_en": "Dual-Learning based Penalized Multi-Align Clustering for Multi-View Incomplete and Disorderly Data",
+      "authors": "Liang Zhao, Shubin Ma, Bo Xu, Qingchen Zhang",
+      "date": "2026-06-26",
+      "pdf": "https://arxiv.org/pdf/2606.27984v1",
+      "score": "8.0",
+      "evidence": "基于双学习的惩罚多对齐聚类，处理多视图不完整和杂乱数据",
+      "tldr": "针对多视图数据中因传感器频率不一致、网络延迟导致的缺失模态和时间异步问题，传统对齐方法无法保证样本级对齐且忽视类别数据量差异。本文提出基于双学习的惩罚多对齐聚类模型（DLPMAC），通过双学习机制从各模态学习先验知识以保留语义和结构一致性，惩罚多对齐模块实现多对多数据对齐并防止数据聚合。实验证明该方法在采样和聚类视角下有效解决数据对齐与融合挑战。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal feature fusion can effectively capture complex patterns in real-world data by integrating complementary information from different modalities. However, in many applications, such as boiler combustion monitoring, equipment failure, inconsistent sensor sampling frequencies, and network delays often cause missing modalities and temporal asynchrony. These issues lead to incomplete and disorderly multimodal data. To address them, previous studies have proposed several data fusion methods that align cluster centers before fusion. However, these methods have two key limitations. First, they cannot guarantee accurate sample-level alignment of data pairs. Second, they do not address significant discrepancies in data sizes across different classes, which may affect subsequent fusion performance.   To address these problems, we propose a dual-learning based penalized multi-align clustering model, named DLPMAC. The dual-learning mechanism enables the model to learn prior knowledge from each modality, including semantic and structural information. This helps preserve semantic consistency and structural similarity across modalities at both local and global levels. In addition, the penalized multi-align module performs multi-to-multi data alignment through a penalty mechanism. It allows one sample to form data pairs with different samples from other modalities, thereby improving data-pair alignment accuracy. The penalty mechanism also prevents data aggregation, avoiding the case where excessive samples are linked to a single sample. Experimental results demonstrate the effectiveness of DLPMAC in addressing data alignment and fusion challenges from both sampling and clustering perspectives.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/29/2606.23063v1-attention-spectrum-regularization-for-replay-free-continual-multimodal-llms",
+      "section": "quick",
+      "title_en": "Attention-Spectrum Regularization for Replay-Free Continual Multimodal LLMs",
+      "authors": "Chuangxin Zhao, Canran Xiao, Siyuan Ma, Mengyao Lyu, Yanbiao Ma, Jun Xia, Guiguang Ding, Yang Liu",
+      "date": "2026-06-22",
+      "pdf": "https://arxiv.org/pdf/2606.23063v1",
+      "score": "6.0",
+      "evidence": "多模态大语言模型的无需回放的持续学习，处理域漂移的鲁棒性",
+      "tldr": "多模态大语言模型在连续微调中会遗忘先前学到的技能，现有方法缺乏对跨模态注意模式的保护。本文提出无需回放示例的注意力频谱正则化方法，将注意力图作为二维信号提取频谱统计量，仅存储技能级原型分布，在后续阶段通过相位不变频谱正则化约束原型漂移。在多个连续VQA和指令微调基准上，该方法显著提升最终性能并降低遗忘，优于回放、正则化和适配器基线。保护技能级注意力结构是一种有效且轻量的连续微调机制。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal large language models (MLLMs) are increasingly required to adapt to non-stationary streams of visual domains, question types, and user instructions, yet continual fine-tuning often causes severe forgetting of previously acquired multimodal skills. Existing continual vision-language methods mainly preserve outputs, replay data or pseudo-data, regularize embedding geometry, or allocate task-specific parameters, but they provide limited control over how internal cross-modal attention patterns supporting old skills drift during adaptation. We propose Attention-Spectrum Regularization (ASR), a replay-free continual learning framework that preserves skill-conditioned structures of cross-modal attention. ASR treats cross-attention maps as two-dimensional signals, summarizes their scale and directional properties into compact spectral statistics, and stores only skill-wise prototype distributions instead of replaying past image-question pairs, generated pseudo-examples, or old-stage teacher snapshots. In later stages, a phase-invariant spectral regularizer constrains harmful drift of these prototypes while allowing instance-level attention to adapt to new tasks. We provide theoretical analysis showing that skill-conditioned spectral drift controls forgetting under a spectral sufficiency assumption, and that Fourier power spectra are stable to spatial translations and bounded perturbations. Experiments on continual VQA and multimodal instruction-tuning benchmarks, including VQA v2, VQACL, CLT-VQA, CoIN, and UCIT, show that ASR consistently improves final performance and reduces forgetting over strong replay-, regularization-, and adapter-based baselines. Preserving skill-level attention structure is an effective and lightweight mechanism for continual MLLMs. Code is available at https://github.com/Creative-zcx/attention-spectrum-replay",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
