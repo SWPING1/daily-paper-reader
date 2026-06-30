@@ -1,0 +1,294 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-30T22:10:08.856186+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2606.30355v1",
+      "source": "arxiv",
+      "title": "Residual-Guided Expert Specialization for Incomplete Multimodal Learning",
+      "abstract": "As real-world prediction systems often face missing modalities at inference, incomplete multimodal learning (IML) remains a practical challenge. While prior methods aim to learn representations robust to missing inputs, representations from incomplete modalities inevitably deviate from their full-modality counterparts due to missing evidence. To explicitly leverage these deviations, we propose MARS (Missingness-Aware Residual-guided Specialization), a mixture-of-experts framework that guides expert specialization based on how representations are reshaped by missingness. By contrasting task representations derived from incomplete inputs with their complete counterparts during training, we derive a privileged residual signal that captures this representational gap. The residual signal guides a residual router to assign samples to experts specialized for the corresponding deviation patterns. In parallel, a feature router learns to imitate this routing behavior using only incomplete inputs, enabling deployment without access to full modalities. To mitigate this train-test router gap, we develop a discrepancy-aware noise regularization that adaptively perturbs the residual router's decisions when the feature router deviates, enhancing expert robustness under imperfect imitation. Experiments on multimodal classification (CASIA-SURF, CREMA-D, UPMC Food-101) and segmentation (MCubeS) under missing scenarios show that MARS consistently surpasses baselines while remaining efficient and extensible to diverse backbones and tasks.",
+      "authors": [
+        "Seunghun Baek",
+        "Jihwan Park",
+        "Jaeyoon Sim",
+        "Minjae Jeong",
+        "Hoseok Lee",
+        "Won Hwa Kim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-29T14:24:05+00:00",
+      "link": "https://arxiv.org/pdf/2606.30355v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Incomplete multimodal learning framework using residual-guided expert specialization",
+      "llm_evidence_cn": "使用残差引导专家专业化的不完整多模态学习框架",
+      "llm_evidence": "使用残差引导专家专业化的不完整多模态学习框架",
+      "canonical_evidence": "使用残差引导专家专业化的不完整多模态学习框架",
+      "llm_tldr_en": "Proposes MARS, a mixture-of-experts framework that leverages privileged residual signal from complete representations to guide expert specialization under missing modalities, improving robustness in incomplete multimodal learning.",
+      "llm_tldr_cn": "针对推理时模态缺失的不完整多模态学习问题，提出MARS框架，利用完整表示与不完整表示之间的残差信号指导专家专业化（MoE），使模型能够显式利用缺失引起的表示偏差，从而提升对缺失模态的鲁棒性。实验表明该方法在多个基准上优于现有方法。",
+      "llm_tldr": "针对推理时模态缺失的不完整多模态学习问题，提出MARS框架，利用完整表示与不完整表示之间的残差信号指导专家专业化（MoE），使模型能够显式利用缺失引起的表示偏差，从而提升对缺失模态的鲁棒性。实验表明该方法在多个基准上优于现有方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.30550v1",
+      "source": "arxiv",
+      "title": "SIGMA: Saliency-Guided Sparse Mask Attacks for Speech Emotion Recognition",
+      "abstract": "Speech conveys rich emotional information. As Speech Emotion Recognition (SER) is usually deployed in privacy-sensitive and reliability-critical environments, adversarial attacks on SER have attracted increasing attention. Existing sparse attacks control the number of perturbed elements, yet, they often lack explainability guidance and explicit measures of explanation consistency. A unified treatment of sparsity and magnitude constraints is also uncommon. In addition, transferability across attack families and target models remains limited. Hence, we propose a SalIency-Guided sparse Mask Attack (SIGMA). On self-supervised speech features, we use post-hoc explainable artificial intelligence (XAI) techniques to produce saliency maps and identify the scope of the mask, and then restrict magnitude-bounded updates to this mask. The mask is computed once and can be reused across models and different sparsity attacks to amortise cost. We evaluate on the IEMOCAP and TESS datasets. Under matched budgets and across multiple sparse-attack settings, SIGMA maintains competitive attack success rates, navigating a conscious trade-off between attack efficacy and explanation consistency. SIGMA therefore provides an efficient and interpretable framework for analysing the vulnerability and explanation behaviour of SER models under structured perturbations.",
+      "authors": [
+        "Qiyang Sun",
+        "Yi Chang",
+        "Zixing Zhang",
+        "Björn W. Schuller"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-06-29T16:48:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.30550v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "adversarial attacks on speech emotion recognition",
+      "llm_evidence_cn": "语音情感识别的对抗攻击",
+      "llm_evidence": "语音情感识别的对抗攻击",
+      "canonical_evidence": "语音情感识别的对抗攻击",
+      "llm_tldr_en": "Proposes saliency-guided sparse mask attacks for SER, improving transferability and explainability.",
+      "llm_tldr_cn": "本文针对语音情感识别提出基于显著性引导的稀疏掩码攻击方法，利用可解释AI技术生成显著图并识别敏感位置，在稀疏性和幅度约束下实现高效攻击，提升了跨攻击族和模型的迁移能力。",
+      "llm_tldr": "本文针对语音情感识别提出基于显著性引导的稀疏掩码攻击方法，利用可解释AI技术生成显著图并识别敏感位置，在稀疏性和幅度约束下实现高效攻击，提升了跨攻击族和模型的迁移能力。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.22725v1",
+      "source": "arxiv",
+      "title": "Interpretable Uncertainty Routing Separating Emotion Ambiguity from Distribution Shift in Facial Expression Recognition",
+      "abstract": "Facial expression recognition (FER) is inherently ambiguous: human annotators frequently disagree, and models deployed in real environments face distribution shift. Crucially, these two conditions demand different downstream actions, as ambiguous in-distribution faces should be reported with their ambiguity whereas out-of-distribution inputs should be rejected. However, a single uncertainty score conflates the two. In this study, uncertainty decomposition into aleatoric and epistemic components for FER is investigated, and Uncertainty-Aware Routing (UAR), an inference-time routing mechanism that exploits the separation, is introduced. Specifically, aleatoric and epistemic uncertainties are obtained from a Deep Ensemble of fully fine-tuned DINOv2 models and are each validated against an independent external signal: aleatoric against human annotator disagreement, and epistemic against distribution shift induced by image corruptions. The proposed dual-validation protocol reveals that aleatoric recovers annotator disagreement with Spearman correlation 0.66 (95% CI: 0.64-0.68), and epistemic detects corruption-induced shifts, achieving average AUROC of 0.699 at the highest corruption severity. UAR retains approximately 1.8 times more ambiguous in-distribution faces than single-uncertainty routing at a matched out-of-distribution rejection rate. A strong label-distribution-learning baseline achieves comparable disagreement recovery but cannot separate ambiguity from shift and therefore cannot route, establishing that the value of decomposition lies in the separation enabling interpretable and differentiated action selection.",
+      "authors": [
+        "Keito Inoshita",
+        "Takato Ueno"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-06-21T23:54:44+00:00",
+      "link": "https://arxiv.org/pdf/2606.22725v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "uncertainty routing for facial expression recognition",
+      "llm_evidence_cn": "面部表情识别的不确定性路由",
+      "llm_evidence": "面部表情识别的不确定性路由",
+      "canonical_evidence": "面部表情识别的不确定性路由",
+      "llm_tldr_en": "Introduces uncertainty decomposition to route ambiguous in-distribution vs out-of-distribution faces in FER.",
+      "llm_tldr_cn": "本文针对面部表情识别中的内在歧义和分布偏移问题，提出不确定性感知路由机制，将不确定性分解为偶然性和认知性成分，并在推理时根据不确定性类型采取相应动作。",
+      "llm_tldr": "本文针对面部表情识别中的内在歧义和分布偏移问题，提出不确定性感知路由机制，将不确定性分解为偶然性和认知性成分，并在推理时根据不确定性类型采取相应动作。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.29335v1",
+      "source": "arxiv",
+      "title": "AMR: Adaptive Modality Routing for Multimodal Polyglot Speaker Identification",
+      "abstract": "Multimodal speaker identification systems face two key challenges in real-world deployment: missing modalities and language mismatch between training and testing conditions. In practical scenarios, background multi-speaker conversations, ambient noise, and overlapping speech further degrade identification accuracy. To address these challenges, we propose a multimodal polyglot speaker identification system for the POLY-SIM 2026 Grand Challenge. The system is fundamentally built upon Adaptive Modality Routing(AMR), a modality fusion module that dynamically assesses per-sample input quality and integrates modality information. Specifically, AMR employs two modality adapters to process the embeddings extracted from a linguistically robust audio encoder(W2V-BERT 2.0) and a large-scale pretrained face encoder(IResNet-18), producing modality-adapted embeddings. Based on these adapted embeddings, a trainable router estimates dynamic modality weights, which are subsequently applied to aggregate the modality-specific logits for the final prediction. To optimize this routing mechanism, we adopt a modality-aware training strategy that constructs four types of sample pairs to simulate diverse input conditions, with KL divergence serving as explicit supervision for weight assignment. Experimental results on the POLY-SIM 2026 evaluation set show that the proposed system achieves identification accuracy of 99.93%(English multimodal, P3), 100.00%(Urdu multimodal, P5), 97.50%(English audio-only, P4), and 98.83%(Urdu audio-only, P6). The average accuracy across all four protocols is 99.07%, surpassing the Fusion and Orthogonal Projection(FOP) baseline by 32.73%.",
+      "authors": [
+        "Chuxiao Zuo",
+        "Yao Zhu",
+        "Minqiang Xu",
+        "Manhong Wang",
+        "Yunke Zhang",
+        "Fei Huang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.SD"
+      ],
+      "published": "2026-06-28T11:03:52+00:00",
+      "link": "https://arxiv.org/pdf/2606.29335v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "handles missing modalities via adaptive routing",
+      "llm_evidence_cn": "通过自适应路由处理缺失模态",
+      "llm_evidence": "通过自适应路由处理缺失模态",
+      "canonical_evidence": "通过自适应路由处理缺失模态",
+      "llm_tldr_en": "Proposes Adaptive Modality Routing (AMR) for multimodal speaker identification that dynamically handles missing modalities by assessing per-sample input quality.",
+      "llm_tldr_cn": "现有系统在真实部署中常面临缺失模态和语言不匹配问题。本文提出自适应模态路由（AMR）模块，通过动态评估每个样本的输入质量并融合模态信息，有效处理缺失模态。实验表明该方法在POLY-SIM挑战赛上提升了多模态说话人识别鲁棒性，为缺失模态下的多模态学习提供了可迁移的通用融合策略。",
+      "llm_tldr": "现有系统在真实部署中常面临缺失模态和语言不匹配问题。本文提出自适应模态路由（AMR）模块，通过动态评估每个样本的输入质量并融合模态信息，有效处理缺失模态。实验表明该方法在POLY-SIM挑战赛上提升了多模态说话人识别鲁棒性，为缺失模态下的多模态学习提供了可迁移的通用融合策略。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.29632v1",
+      "source": "arxiv",
+      "title": "VIB-AVSR: Variational Information Bottleneck for Noise-Robust LLM-Based Audio-Visual Speech Recognition",
+      "abstract": "Audio-Visual Speech Recognition takes two input modalities, acoustic and visual streams, where visual information from lip movements aids recognition when audio is noisy. Recently, LLM-based AVSR models have emerged as a promising paradigm by connecting pre-trained audio-visual encoders to an LLM, achieving strong results in clean conditions. However, these models are predominantly optimized for clean acoustic conditions, with limited attention to making the LLM backbone robust to noise. No explicit mechanism is employed to produce stable representations under corrupted audio, leading to performance degradation in noisy environments. To address this, we propose VIB-AVSR, which integrates Variational Information Bottleneck layers at targeted positions within the LLM backbone to regularize representations. VIB-AVSR reduces degradation under noisy conditions across multiple SNR levels and noise types, without requiring architectural modifications or additional training data.",
+      "authors": [
+        "Piyush Arora",
+        "Navlika Singh",
+        "Umberto Cappellazzo",
+        "Stavros Petridis",
+        "Maja Pantic"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS",
+        "cs.CV",
+        "cs.SD"
+      ],
+      "published": "2026-06-28T22:31:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.29632v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "noise-robust audio-visual speech recognition with variational information bottleneck",
+      "llm_evidence_cn": "基于变分信息瓶颈的噪声鲁棒音视频语音识别",
+      "llm_evidence": "基于变分信息瓶颈的噪声鲁棒音视频语音识别",
+      "canonical_evidence": "基于变分信息瓶颈的噪声鲁棒音视频语音识别",
+      "llm_tldr_en": "VIB-AVSR integrates Variational Information Bottleneck into LLM-based AVSR for robust representations under noisy audio.",
+      "llm_tldr_cn": "本文提出VIB-AVSR，将变分信息瓶颈（VIB）引入基于大语言模型的音视频语音识别（AVSR）中，以提升在噪声环境下的鲁棒性。该方法通过VIB约束产生对音频噪声不敏感的稳定表示，在多个噪声条件下显著优于现有方法，为鲁棒多模态学习提供了有效技术。",
+      "llm_tldr": "本文提出VIB-AVSR，将变分信息瓶颈（VIB）引入基于大语言模型的音视频语音识别（AVSR）中，以提升在噪声环境下的鲁棒性。该方法通过VIB约束产生对音频噪声不敏感的稳定表示，在多个噪声条件下显著优于现有方法，为鲁棒多模态学习提供了有效技术。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.29812v1",
+      "source": "arxiv",
+      "title": "Consistency as Inductive Bias: Learning Cross-View Invariance for Robust Multimodal Reasoning",
+      "abstract": "Inductive biases steer learning toward generalizable solutions by encoding task structure. In this work, we identify a crucial missing bias in MLLMs: cross-view consistency, \\textit{i.e.}, semantically invariant views of the same instance should lead to the same answer. Standard reinforcement learning with verifiable rewards (RLVR) objectives do not impose this constraint, but instead assign pointwise rewards to each visual input. Even with data augmentation (DA), transformed views are typically rewarded independently, providing little signal once within-view rewards saturate. We propose \\textbf{ConsistRoll}, a simple but effective method that injects cross-view consistency into RLVR training by reusing the group-sampling mechanism of GRPO. Specifically, ConsistRoll places original and semantically invariant transformed views in the same generation group, and assigns a joint reward only when paired completions are both correct and consistent. In this way, ConsistRoll turns consistency into an online credit-assignment signal, \\textbf{without extra generation overhead and annotations}. Theoretically, we show that cross-view consistency is a valid inductive bias, and ConsistRoll introduces a cross-view correction term absent from DA, penalizing view dependence and alleviating advantage collapse. Comprehensive benchmarks across math, general-purpose, hallucination domains confirm that ConsistRoll achieves robust improvements in multimodal reasoning.",
+      "authors": [
+        "Xin Zou",
+        "Haolin Deng",
+        "Yibo Yan",
+        "Shuliang Liu",
+        "Kening Zheng",
+        "Zhiwei Jin",
+        "Chen Chen",
+        "Haonan Lu",
+        "Xuming Hu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-29T05:45:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.29812v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "robust multimodal reasoning via cross-view consistency",
+      "llm_evidence_cn": "通过跨视图一致性实现鲁棒多模态推理",
+      "llm_evidence": "通过跨视图一致性实现鲁棒多模态推理",
+      "canonical_evidence": "通过跨视图一致性实现鲁棒多模态推理",
+      "llm_tldr_en": "Proposes ConsistRoll to inject cross-view consistency into RLVR training, improving robustness of multimodal reasoning against input variations.",
+      "llm_tldr_cn": "该论文针对多模态大模型鲁棒性不足，提出ConsistRoll方法，通过重用组采样机制将跨视图一致性注入强化学习训练，显著提升了模型对输入变化的鲁棒性，在多个视觉推理任务上验证了有效性。",
+      "llm_tldr": "该论文针对多模态大模型鲁棒性不足，提出ConsistRoll方法，通过重用组采样机制将跨视图一致性注入强化学习训练，显著提升了模型对输入变化的鲁棒性，在多个视觉推理任务上验证了有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.30597v1",
+      "source": "arxiv",
+      "title": "Learning from Reliable Latent Prompts for Visual Recognition with Missing Modalities",
+      "abstract": "Large-scale multimodal models (LMMs) have achieved superior performance in visual recognition by synergizing information across diverse, massive-scale paired modalities. In real-world scenarios, however, missing-modality inputs are ubiquitous, causing models optimized for modality-complete data to exhibit precipitous performance degradation. Existing research has introduced prompt learning to mitigate this issue, typically by generating dynamic prompts from instance-level features, regardless of whether the input modalities are complete or partially absent. However, such input-conditioned strategies are hindered by the escalating unreliability of instance-level features; as higher missing rates increase the proportion of incomplete modalities, the resulting instability in prompt learning limits the model's performance. To address this limitation, we hypothesize that learnable latent prompts themselves encapsulate stable, modality-intrinsic priors that are decoupled from corrupted inputs. Consequently, we propose a novel paradigm: Learning from Reliable Latent Prompts. Unlike prior methods, we model input-agnostic learnable prompts as stable latent anchors that enable robust guidance and effective cross-modal knowledge compensation, even under extreme missing rates (e.g., 90%). Empirical results across three benchmark datasets demonstrate that our \"learn-from-latent-prompts\" approach achieves state-of-the-art performance across a wide range of missing-modality scenarios. Extensive experiments further confirm the effectiveness of this paradigm in providing a robust solution to the missing-modality problem.",
+      "authors": [
+        "Taixi Chen",
+        "Nancy Guo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-29T17:36:47+00:00",
+      "link": "https://arxiv.org/pdf/2606.30597v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses missing modalities in visual recognition via reliable latent prompts",
+      "llm_evidence_cn": "通过可靠潜在提示处理视觉识别中的缺失模态",
+      "llm_evidence": "通过可靠潜在提示处理视觉识别中的缺失模态",
+      "canonical_evidence": "通过可靠潜在提示处理视觉识别中的缺失模态",
+      "llm_tldr_en": "Proposes learning from reliable latent prompts to handle missing modalities in visual recognition, improving robustness without requiring complete modality input.",
+      "llm_tldr_cn": "针对大尺度多模态模型在输入模态缺失时性能急剧下降的问题，提出从可靠潜在提示中学习的方法。该方法通过生成稳定的提示表示来替代不可靠的实例级特征，有效缓解了模态缺失带来的影响。在视觉识别基准上的实验表明，该方法在多种缺失比例下均显著优于现有方法，为缺失模态鲁棒学习提供了新思路。",
+      "llm_tldr": "针对大尺度多模态模型在输入模态缺失时性能急剧下降的问题，提出从可靠潜在提示中学习的方法。该方法通过生成稳定的提示表示来替代不可靠的实例级特征，有效缓解了模态缺失带来的影响。在视觉识别基准上的实验表明，该方法在多种缺失比例下均显著优于现有方法，为缺失模态鲁棒学习提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

@@ -1,0 +1,360 @@
+Title: Interpretable Uncertainty Routing Separating Emotion Ambiguity from Distribution Shift in Facial Expression Recognition
+
+URL Source: https://arxiv.org/pdf/2606.22725v1
+
+Published Time: Tue, 23 Jun 2026 02:59:53 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# Interpretable Uncertainty Routing Separating Emotion Ambiguity from Distribution Shift in Facial Expression Recognition 
+
+Keito Inoshita ∗1,2 and Takato Ueno 3 
+
+> 1
+
+Faculty of Business and Commerce, Kansai University, Suita, Japan  
+
+> 2
+
+Data Science and AI Innovation Research Promotion Center, Shiga University, Hikone, Japan  
+
+> 3
+
+Graduate School of Data Science, Shiga University, Hikone, Japan 
+
+Abstract. Facial expression recognition (FER) is inherently ambigu-ous: human annotators frequently disagree, and models deployed in real environments face distribution shift. Crucially, these two conditions de-mand different downstream actions, as ambiguous in-distribution faces should be reported with their ambiguity whereas out-of-distribution in-puts should be rejected. However, a single uncertainty score conflates the two. In this study, uncertainty decomposition into aleatoric and epistemic components for FER is investigated, and Uncertainty-Aware Routing (UAR), an inference-time routing mechanism that exploits the separation, is introduced. Specifically, aleatoric and epistemic uncertain-ties are obtained from a Deep Ensemble of fully fine-tuned DINOv2 models and are each validated against an independent external signal: aleatoric against human annotator disagreement, and epistemic against distribution shift induced by image corruptions. The proposed dual-validation protocol reveals that aleatoric recovers annotator disagree-ment with Spearman correlation 0.66 (95% CI: 0.64–0.68), and epistemic detects corruption-induced shifts, achieving average AUROC of 0.699 at the highest corruption severity. UAR retains approximately 1.8 times more ambiguous in-distribution faces than single-uncertainty routing at a matched out-of-distribution rejection rate. A strong label-distribution-learning baseline achieves comparable disagreement recovery but cannot separate ambiguity from shift and therefore cannot route, establishing that the value of decomposition lies in the separation enabling inter-pretable and differentiated action selection. 
+
+Keywords: interpretable AI · uncertainty decomposition · facial expres-sion recognition · deep ensembles · distribution shift 
+
+## 1 Introduction 
+
+With the rapid development of deep learning, facial expression recognition (FER) has been widely adopted in human–computer interaction, driver monitoring, and affective computing. Unlike many recognition tasks, its target is subjective per-ception that varies across observers, and large-scale FER datasets are therefore  
+
+> arXiv:2606.22725v1 [cs.CV] 21 Jun 2026 2K. Inoshita and T. Ueno
+
+annotated by multiple workers who provide label distributions rather than defini-tive ground-truth labels. FERPlus [1] supplies ten votes per image across eight emotion categories; the resulting empirical voting distribution directly describes how much humans disagree about each face, and this disagreement reflects am-biguity that is intrinsic to the expression itself rather than annotation noise that should be suppressed [25]. This intrinsic ambiguity reveals two qualitatively distinct sources of uncer-tainty in FER. The first is aleatoric uncertainty, which corresponds to the fun-damental ambiguity of the expression, is reflected in annotator disagreement, and cannot be reduced by collecting additional data. The second is epistemic uncertainty, which arises from insufficient model knowledge and is expected to increase as inputs depart from the training distribution. Bayesian deep learning provides a principled framework for decomposing these two components; how-ever, recent research has shown that the two estimates can be entangled and that the semantic validity of each decomposed component depends not only on the decomposition formula itself but also on the adequacy of the estimation method and its approximation [3]. This challenge is particularly consequential for FER. Accuracy and calibra-tion alone cannot distinguish whether uncertainty originates from an intrinsically ambiguous expression or from an unknown input. A single confidence score, even after temperature calibration [8], conflates the two: low confidence may mean that humans also disagree about the expression, or it may mean that the model is operating out of distribution. This distinction is precisely what downstream systems require, as ambiguous but in-distribution faces should be reported with their ambiguity, whereas out-of-distribution inputs should be deferred to hu-man review or rejected. Prior work has proposed decomposing aleatoric and epistemic uncertainty in subjective natural language processing tasks through cyclical SG-MCMC and soft-label learning [14]; the present study transfers and develops this decomposition perspective to FER using Deep Ensembles. Conse-quently, the central challenge is not to decompose uncertainty for its own sake but to assign externally verifiable meaning to each component and to convert that separation into interpretable and actionable presentation. In this study, a framework for dual-validated uncertainty decomposition in facial expression recognition is designed and introduced, centred on a novel inference-time mechanism termed Uncertainty-Aware Routing (UAR) and its learned variant, Learned UAR (L-UAR). Specifically, aleatoric and epistemic un-certainties are obtained from a Deep Ensemble of fully fine-tuned DINOv2 [23] models following the information-theoretic decomposition of Depeweg et al . [3], consistent with the framework of Kendall and Gal [16], and each component is validated against an independent external signal before being used for routing. The main contributions of this study are summarised as follows. i) UAR is newly designed, in which epistemic uncertainty rejects out-of-distribution (OOD) inputs and aleatoric uncertainty retains ambiguous in-distribution faces, achieving the joint objective of OOD rejection and ambiguity reten-tion that is structurally impossible with any single uncertainty scalar, and its Interpretable Uncertainty Routing for FER 3
+
+learned variant L-UAR is further constructed from decomposed uncertainty features and shown to generalise to unseen corruption types, outperforming both the fixed-threshold UAR and single-confidence routing. ii) A dual-validation protocol is developed in which each uncertainty compo-nent is grounded in an independent external signal, with aleatoric validated against human annotator disagreement and epistemic validated against dis-tribution shift induced by image corruptions and cross-dataset transfer, and a strong label distribution learning (LDL) baseline [7] is shown to achieve comparable disagreement recovery while being unable to detect shift or per-form routing, thereby clarifying that the value of decomposition lies in the separation it enables. iii) A framework for presenting decomposed uncertainty as interpretable human-actionable decision-making is developed by partitioning the (Hale , H epi ) space into Accept, Defer, and Reject regions so that the reason for uncertainty (emotion ambiguity or distribution shift) is made explicit in a form that hu-mans can interpret and act upon, and this framework is evaluated honestly in broad experiments with 95% confidence intervals and significance tests. The rest of this paper is organised as follows. Section 2 reviews related work. Section 3 introduces the proposed methodology. Section 4 presents experimental results. Section 5 discusses key findings and limitations. Section 6 concludes the paper. 
+
+## 2 Related Work 
+
+2.1 Facial Expression Recognition under Label Ambiguity 
+
+Robust FER under noisy or ambiguous labels has been actively investigated. One prominent line suppresses uncertain labels. Self-Cure Network (SCN) [28] reweights and relabels uncertain samples using self-attention importance scores and rank regularisation. Latent distribution mining [26] recovers instance-level label distributions from multiple auxiliary branches, and relative uncertainty learning [30] handles sample difficulty relatively. Erasing Attention Consistency (EAC) [31] mitigates noise memorisation through random erasing and fea-ture consistency regularisation. Recent advances include landmark-aware meth-ods [29] and temporal distribution distillation [32]. A second line embraces annotator disagreement through LDL. Rather than training on majority-vote labels, LDL methods directly minimise a divergence between the predicted distribution and the empirical voting distribution [7], recovering richer supervision and improving generalisation [18]. Methods that explicitly represent uncertainty include uncertainty-aware representation learn-ing [33] and direct handling of label ambiguity [19]; strong visual feature back-bones have further advanced FER accuracy [22]. Prior work has also shown that LLM-generated emotion labels fail to reproduce human uncertainty distribu-tions [15], motivating anchoring uncertainty to human annotations; structure 4 K. Inoshita and T. Ueno 
+
+in emotion transitions has additionally been discovered from multi-annotator disagreement [13]. Both lines improve robustness or uncertainty recovery but share a common limitation: they supply a single per-instance uncertainty scalar that conflates ambiguity with distributional shift, so that an intrinsically ambiguous face and an OOD input both receive high uncertainty and are treated identically. The present study implements LDL as a strong baseline and demonstrates that it matches our decomposition on disagreement recovery while being unable to sep-arate ambiguity from shift and therefore unable to route. 
+
+2.2 Uncertainty Decomposition and Its Critique 
+
+Aleatoric–epistemic decomposition is a cornerstone of Bayesian deep learning [11, 16]. A method for decomposing aleatoric and epistemic uncertainty in subjec-tive natural language processing tasks through cyclical SG-MCMC and soft-label learning has been proposed [14]; the present study transfers and devel-ops this perspective to FER (images). Heteroscedastic formulations separate input-dependent noise from model uncertainty via learned variance heads [3], information-theoretic decomposition expresses epistemic uncertainty as mutual information [3], and Deep Ensembles provide strong predictive uncertainty [17]. Under distribution shift, ensemble models are more robust than single-model softmax confidence [24], and MC-Dropout offers a cheaper approximation [5]. However, recent studies have questioned whether truly separated decompo-sition is achievable in practice [3]: both components increase under corruptions, so aleatoric remaining constant under shift does not hold in absolute terms. The practical consequence is that decomposition cannot be validated by theory alone but must be evaluated against external signals. Broader concerns about Affective AI, from data collection to social impact, have also been raised [12], underscoring the importance of validating decomposition meaning in its social context. The present study responds to this critique by validating aleatoric and epis-temic components each against an independent external signal: human annotator disagreement and distribution shift, respectively. This conditional separation, in which each component correlates preferentially with a distinct external phe-nomenon, constitutes a practical and falsifiable notion of meaning that does not require perfect orthogonality. 
+
+2.3 Calibration, Human Disagreement, and Selective Prediction 
+
+Temperature calibration aligns confidence with accuracy and is widely applied to post-hoc improve a model’s reliability [8]. The maximum softmax probabil-ity serves as a standard baseline for misclassification and OOD detection [10]. Benchmarking under image corruptions [9] has shown that standard networks are poorly calibrated under shift, while ensemble methods and temperature scaling partially mitigate this [24]. Interpretable Uncertainty Routing for FER 5 
+
+> Fig. 1: Overall pipeline of the proposed dual-validated uncertainty decomposition and routing framework.
+
+Selective prediction allows a model to abstain on uncertain inputs, reducing risk at the cost of coverage [6]. Confidence estimation based on failure predic-tion [2] improves abstention criteria, and extensions to learning-to-defer [21] en-able routing to multiple specialists. In subjective tasks such as emotion recogni-tion, annotator disagreement is a genuine signal that should be preserved rather than suppressed [25, 27]. The present study builds on these findings by combining selective prediction with uncertainty decomposition, distinguishing the general rejection objective (where maximum probability is competitive) from the routing objective (where a single score is structurally insufficient), and reporting both settings honestly. 
+
+## 3 Methodology 
+
+Figure 1 illustrates the overall pipeline of the proposed framework, which consists of a fully fine-tuned DINOv2 ensemble, information-theoretic decomposition, dual validation, and inference-time routing. 
+
+3.1 Problem Definition and Notation 
+
+Each sample consists of a facial image x with C emotion categories and an em-pirical distribution q ∈ ∆C formed by the votes of A annotators. The majority-vote label is y = arg max c qc, and human disagreement is characterised by 
+
+d = 1 − max c qc and the entropy H(q) = − P 
+
+> c
+
+qc log qc. In FERPlus [1], A = 10 
+
+votes are available per image, providing an external description of aleatoric am-biguity that is independent of the model. The goal is to predict y while obtaining an aleatoric estimate that tracks d and an epistemic estimate that responds to distribution shift, so that the separation between the two components can be converted into routing actions at inference time. 6 K. Inoshita and T. Ueno 
+
+3.2 Deep Ensemble of Fully Fine-Tuned DINOv2 Models 
+
+Meaningful epistemic uncertainty requires diversity across models, which can-not be obtained from a posterior distribution over a frozen head. Specifically, a frozen-head cyclical SG-MCMC approximation was tested and found to yield degenerate epistemic estimates that are insensitive to shift. Accordingly, K self-supervised DINOv2 ViT-B/14 models [4, 23] are independently fine-tuned end-to-end with different random seeds and data orderings. At inference time, mem-ber k produces a predictive distribution pk(y | x), and the ensemble predictive distribution is the member average: 
+
+¯p(y | x) = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+pk(y | x). (1) In all experiments, K = 5 . Full fine-tuning is essential: frozen ImageNet features are insufficient for separation (linear-probe accuracy falls below the majority-vote baseline), whereas fully fine-tuned DINOv2 achieves approximately 0.85 test accuracy on FERPlus. The five individual members attain test accuracies of 0.851, 0.825, 0.838, 0.776, and 0.853; the ensemble accuracy of 0.857 exceeds all individual members, confirming that even the weaker member contributes positively. 
+
+3.3 Information-Theoretic Uncertainty Decomposition 
+
+Following the information-theoretic decomposition of Depeweg et al . [3], con-sistent with the framework of Kendall and Gal [16], total predictive entropy is decomposed as: 
+
+Htot = H[¯ p(y | x)] , (2) 
+
+Hale = 1
+
+K
+
+> K
+
+X
+
+> k=1
+
+H[pk(y | x)] , (3) 
+
+Hepi = Htot − Hale . (4) Here Hale is the mean within-member entropy, capturing intrinsic prediction ambiguity, while Hepi is the mutual information between the ensemble index and the prediction, measuring member disagreement as a proxy for knowledge insufficiency. Fully end-to-end fine-tuned members produce non-degenerate Hepi 
+
+values that increase monotonically with corruption severity, in contrast to frozen-head variants. 
+
+3.4 Dual-Validation Protocol 
+
+Each component is validated against an independent external signal to assign practical, falsifiable meaning. Aleatoric uncertainty is validated via an annotator disagreement detection (ADD) task. Images whose voting entropy H(q) exceeds Interpretable Uncertainty Routing for FER 7    
+
+> Fig. 2: UAR routing mechanism: each input is assigned to one of three actions based on independent thresholds on Hepi and Hale .
+
+the top-τ percentile are treated as positive examples of high disagreement, and the area under the ROC curve (AUROC) of Hale for this binary classification task, together with the Spearman correlation between Hale and d, measures how faithfully aleatoric uncertainty tracks annotator disagreement. Epistemic uncertainty is validated via a shift-detection task. Distribution shift is induced by image corruptions at five severity levels across five types, and by cross-dataset transfer to RAF-DB [20], and the AUROC of Hepi for separating in-distribution from OOD inputs measures epistemic validity. Because temperature calibration is a monotone transformation that does not change rankings, a temperature-calibrated single model [8] constitutes a strong baseline against which epistemic detection is compared. 
+
+3.5 Uncertainty-Aware Routing 
+
+The separation between aleatoric and epistemic components is converted into an inference-time routing mechanism, as illustrated in Figure 2. For each input, the pair (Hale , H epi ) is computed and the routing decision is made as follows: if Hepi > τ epi , the input is assigned to Reject (deferred to human review as out-of-distribution); otherwise, if Hale > τ ale , the input is assigned to Defer (reported with its ambiguity as an ambiguous in-distribution face); otherwise the input is assigned to Accept (the argmax prediction is returned). Thresholds τepi and τale are set on the validation split to match a target operating point, such as a desired OOD rejection rate. It is noted that UAR achieves a routing objective that is structurally impossi-ble with any single uncertainty scalar. For any monotone scalar f (x), the high-f
+
+set is the union of ambiguous in-distribution faces and OOD inputs, because both produce high predictive entropy regardless of the specific choice of f (softmax entropy, maximum probability, temperature-scaled confidence, etc .). A single threshold on f therefore inevitably rejects one type together with the other. By 8 K. Inoshita and T. Ueno 
+
+contrast, orthogonal thresholds in the two-dimensional space (Hale , H epi ) struc-turally break this constraint, allowing high-epistemic inputs (OOD) and high-aleatoric, low-epistemic inputs (ambiguous in-distribution) to receive distinct actions. The routing rule is hierarchical, with epistemic taking priority: inputs that are simultaneously high in both Hale and Hepi (ambiguous and OOD) are classified as Reject. This is a safety-side design that prevents OOD inputs from being incorrectly deferred to humans as ambiguous in-distribution faces, so that Accept and Defer exist only on the low-epistemic side ( Hepi ≤ τepi ). The novelty of UAR lies not in the branching implementation but in enabling differentiated action selection that is impossible from a single score. Furthermore, the two-dimensional (Hale , H epi ) space presents the Accept, Defer, and Reject regions in a visually and interpretably decomposable form, constituting an interpretable decision-presentation framework that allows humans to understand and act on the reason for uncertainty (emotion ambiguity or distribution shift). To further improve routing, L-UAR is constructed by training a lightweight classifier on decomposed uncertainty features. For each sample, a feature vector is formed from total entropy Htot , Hale , Hepi , mean maximum probability, the top-two-class probability gap, across-member standard deviation of maximum probability, and across-member standard deviation of entropy. To demonstrate that L-UAR does not overfit to specific corruption types, the router is trained on a subset of corruption types and evaluated on held-out types not seen during training. 
+
+## 4 Experiments 
+
+4.1 Experimental Setup Datasets. FERPlus [1] provides ten votes per image across eight emotion cate-gories and is used for training and aleatoric validation (test set: n = 3 ,563 ). RAF-DB [20] serves as a cross-dataset shift probe: its seven categories are mapped to the FERPlus label space and converted to the same greyscale format ( n = 3 ,068 ). Eleven corruption types at five severity levels are applied to the FERPlus test set following Hendrycks and Dietterich [9]: five core types (Gaussian noise, blur, cen-tre occlusion, brightness, and pixelation) and six additional ImageNet-C types (shot noise, impulse noise, motion blur, contrast, JPEG compression, and elastic deformation). 
+
+Baselines. i) A single fine-tuned DINOv2 model. ii) A temperature-calibrated single model [8] using maximum softmax probability as confi-dence [10]. iii) The Deep Ensemble ( K = 5 ). iv) LDL [7]: DINOv2 fine-tuned by minimising KL divergence between predicted and empirical voting distribu-tions. v) SCN [28]: self-attention importance reweighting, rank regularisation, and relabelling, reproduced on our fine-tuned DINOv2 features. vi) EAC [31]: random erasing and flipped-feature consistency, reproduced on our fine-tuned DINOv2 features. SCN and EAC are included as representatives of standard FER uncertainty methods. Interpretable Uncertainty Routing for FER 90.0 0.2 0.4 0.6 0.8 1.0     
+
+> Aleatoric uncertainty Hale
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> Epistemic uncertainty  Hepi
+> Clean non-ambiguous (ACCEPT)
+> Clean ambiguous (DEFER)
+> OOD corrupted (REJECT)
+> τepi (REJECT boundary)
+> τale (DEFER boundary)
+> ACCEPT DEFER
+> REJECT
+
+Fig. 3: Scatter of decomposed uncertainties on clean FERPlus test images and OOD inputs, coloured by annotator disagreement; red dash-dot line: single-scalar threshold. 
+
+Evaluation metrics. Accuracy, expected calibration error (ECE), Jensen– Shannon divergence to the human voting distribution, AUROC, and Spearman correlation are reported. All key values carry 95% confidence intervals from 2,000 bootstrap iterations; differences in OOD detection are assessed with paired boot-strap tests. All experiments use a single NVIDIA H100 NVL GPU (PyTorch 2.2, timm 1.0, CUDA 12.1), with eight epochs, learning rate 3 × 10 −5, and batch size 128. Each ensemble member takes approximately 20 minutes to train. For reproducibility, all experiment scripts and configurations are released at 
+
+https://github.com/keito-git/interpretable-uncertainty-routing .
+
+4.2 Analysis of Aleatoric Uncertainty and Annotator Disagreement 
+
+Figure 3 shows the two-dimensional scatter of (Hale , H epi ) on clean FERPlus test images and OOD inputs. The ADD task evaluates whether an uncertainty score identifies high annotator disagreement as high-valued. As shown in Figure 3, ambiguous faces with high annotator disagreement concentrate in the high-Hale region (Defer), while OOD inputs cluster in the high-Hepi region (Reject). A single 1-D threshold groups Defer and Reject on the same side and cannot separate them; the two-dimensional decomposition structurally separates the two. Table 1 quantitatively compares disagreement recovery. On the clean FER-Plus test set, aleatoric correlates with human disagreement d at Spearman ρ =0.657 (95% CI: [0 .637 , 0.677] ), while epistemic reaches ρ = 0 .586 ([0 .562 , 0.609] ); non-overlapping intervals confirm aleatoric’s advantage. ADD AUROC is 0.897 10 K. Inoshita and T. Ueno 
+
+Table 1: Annotator disagreement recovery on the FERPlus test set. Method Spearman ρ ADD AUROC Ours (aleatoric) 0.657 [0.637, 0.677] 0.897 Ours (epistemic) 0.586 [0.562, 0.609] 0.861 LDL 0.671 0.910 EAC 0.609 0.878 SCN 0.440 0.804 1 2 3 4 5 6 7 8 9 10        
+
+> Hale decile
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> Mean annotator disagreement
+> Spearman ρ=0.657
+> 95% CI [0.637, 0.677]
+> (a)
+> Mean disagreement
+> Mean Hale
+> 12345
+> Corruption severity
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> 0.9
+> 1.0
+> OOD-detection AUROC (epistemic)
+> (b)
+> Gaussian noise
+> Shot noise
+> Impulse noise
+> Blur
+> Motion blur
+> Brightness
+> Contrast
+> JPEG
+> Pixelate
+> Occlusion
+> Elastic
+> Chance (0.5)
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> Mean  Hale
+
+Fig. 4: Dual-validation results: panel (a) Hale deciles vs. mean annotator disagreement; panel (b) OOD detection AUROC by corruption severity and type. 
+
+for aleatoric and 0.861 for epistemic, with the gap robust across positive-example thresholds from the top 20% to 50% of voting entropy (0.931 to 0.836). LDL achieves comparable recovery ( ρ = 0 .671 , ADD AUROC 0.910); all ensem-ble members are trained with hard labels, so LDL holds a training-signal ad-vantage and this comparison is conservative. SCN substantially underperforms (ρ = 0 .440 , ADD AUROC 0.804). Disagreement recovery is therefore achievable by single-scalar methods; the key limitation is that no single scalar can struc-turally separate ambiguous in-distribution faces from OOD inputs for routing. 
+
+4.3 Evaluation of Distribution Shift Detection 
+
+Figure 4 summarises the dual-validation results. Panel (a) shows that Hale in-creases monotonically with annotator disagreement across deciles (Spearman 
+
+ρ = 0 .657 ), confirming that aleatoric accurately captures variability in annota-tor interpretation. Panel (b) shows OOD detection AUROC across corruption severities and types. Under corruption, single models become overconfident: accuracy falls from 0.851 to 0.608 at the highest severity and ECE rises to 0.269. As shown in Figure 4(b), decomposed epistemic increases broadly with corruption severity, achieving average AUROC 0.699 at the highest severity across the five core corruption types, exceeding single-model confidence at 0.663. Because temper-Interpretable Uncertainty Routing for FER 11 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65        
+
+> Routing AUC (ambiguous in-dist retention vs OOD rejection)
+> Ens. Epistemic
+> (ours, decomposed)
+> Ens. Total Entropy
+> (single scalar)
+> EAC Entropy
+> (single scalar)
+> Ens. 1−MaxProb
+> (single scalar)
+> Single 1−MaxProb
+> (single scalar)
+> LDL Entropy
+> (single scalar)
+> 0.492
+> 0.453
+> 0.452
+> 0.442
+> 0.396
+> 0.324
+> (a)
+> Ours (decomposed ensemble)
+> Single-scalar baselines
+> G.noise Shot
+> noise
+> Impulse
+> noise
+> Blur Motion
+> blur
+> Bright Contrast JPEG Pixelate Occlude Elastic
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> Routing AUC
+> 0.584
+> 0.480
+> 0.551
+> 0.363
+> 0.436
+> 0.535
+> 0.370
+> 0.339
+> 0.428
+> 0.541
+> 0.328
+> (b)
+> Ens. Epistemic (ours)
+> Single MaxProb (baseline)
+
+Fig. 5: Routing performance comparison: panel (a) aggregate routing AUC across all methods; panel (b) per-corruption routing AUC for decomposed epistemic versus single maximum probability. 
+
+ature calibration is monotone and preserves rankings, epistemic detection re-mains superior to the temperature-calibrated baseline. Paired bootstrap tests at the highest severity confirm significant advantages for Gaussian noise ( +0 .077 ;95% CI [0 .066 , 0.089] ), blur ( +0 .034 ; [0 .024 , 0.043] ), and pixelation ( +0 .111 ;
+
+[0 .101 , 0.121] ). For brightness the advantage is +0 .002 (non-significant), and for occlusion it is −0.042 ([−0.053 , −0.032] ): epistemic is inferior for occlusion. Across all eleven corruptions, decomposed epistemic exceeds single maximum probability for 9 out of 11 corruptions (mean AUROC 0.588 vs. 0.547), par-ticularly strong for noise-type corruptions (impulse noise 0.688, Gaussian noise 0.657) and near chance for mild structural corruptions (elastic deformation 0.504, contrast 0.531). Separation manifests in correlation direction rather than absolute magni-tudes. Aleatoric wins on disagreement detection (AUROC 0.897 vs. 0.861) and epistemic wins on shift detection (mean AUROC 0.599 vs. aleatoric 0.587). The LDL baseline achieves only AUROC 0.526 on shift detection, essentially at chance, confirming that it cannot separate ambiguity from shift. 
+
+4.4 Routing Evaluation 
+
+Figure 5 presents the routing performance comparison. Panel (a) shows aggregate AUROC across all methods, and panel (b) shows decomposed epistemic versus single maximum probability across eleven individual corruptions. UAR is evaluated on a pool mixing clean FERPlus images (in-distribution) with corrupted images (out-of-distribution) in equal proportion. At a matched OOD rejection rate of 0.70, epistemic-based routing retains 0.180 of ambiguous in-distribution faces versus 0.098 for single maximum probability, approximately 1.8 times higher. Ambiguous-retention versus OOD-rejection AUROC is 0.424 for epistemic vs. 0.376 for single maximum probability; the difference of 0.048 (95% CI [0 .041 , 0.071] ) is significant by paired bootstrap. As shown in Figure 5(a), aggregate AUROC (30-seed average) shows decom-posed epistemic at 0.492 outperforming ensemble predictive entropy 0.453, EAC 12 K. Inoshita and T. Ueno             
+
+> Table 2: Cross-dataset and natural OOD evaluation results. Metric Value RAF-DB transfer accuracy 0.71 ECE (ensemble) 0.146 ECE (single model) 0.218 Epistemic OOD-AUROC (RAF-DB) 0.538 MMD 2(linear, FER vs. RAF-DB) 110.9 MMD 2(linear, FER vs. gnoise s4) 231.3 Epistemic AUROC (non-face, n= 176 ) 0.754
+
+entropy 0.452, single maximum probability 0.396, and LDL entropy 0.324. In the extended evaluation of Figure 5(b), decomposed epistemic exceeds single max-imum probability for all eleven corruptions (11/11; aggregate AUROC 0.45 vs. 0.375). L-UAR further improves routing by learning from decomposed features. Trained on three corruption types (Gaussian noise, blur, occlusion) and evaluated on two unseen types (brightness, pixelation), L-UAR achieves AUROC 0.476 vs. 0.431 for fixed-threshold epistemic and 0.377 for single maximum probability. In leave-one-corruption-out evaluation, L-UAR consistently leads (averages: L-UAR 0.457, fixed-threshold 0.430, single maximum probability 0.374). 
+
+4.5 Cross-Dataset Evaluation 
+
+Table 2 summarises cross-dataset and natural OOD evaluation on RAF-DB. Transfer accuracy is approximately 0.71 and the ensemble is better calibrated than the uncalibrated single model (ECE 0.146 vs. 0.218). For truly OOD non-face images (176 images), epistemic effectively detects shift: mean epistemic rises from 0.104 to 0.232 and AUROC reaches 0.754. For 81 “Unknown” (ambiguous) images, aleatoric rises from 0.245 to 0.555, providing an additional positive finding that aleatoric captures natural annotation ambiguity. On RAF-DB itself, however, epistemic does not fire as OOD (AUROC 0.538). This is interpreted as a desirable selectivity property rather than a failure. Max-imum mean discrepancy (MMD) quantifies that linear MMD 2 between FERPlus and RAF-DB is 110.9, less than half of severity-4 Gaussian noise (231.3), showing that greyscale-aligned RAF-DB constitutes a benign domain transfer; epistemic responds to substantial shifts while not overreacting to benign transfer. For gen-eral rejection, single maximum probability (AUROC 0.887) is strong, consistent with the findings discussed in Section 5. 
+
+## 5 Discussion 
+
+5.1 What Decomposition Adds over Single Uncertainty 
+
+The central finding of this study is that disagreement recovery itself can be achieved by a single uncertainty score, notably by LDL, but decomposition pro-Interpretable Uncertainty Routing for FER 13 
+
+vides an equally strong aleatoric component while simultaneously supplying a separable shift detector (epistemic). This separation enables UAR, realising the joint objective of OOD rejection and ambiguity retention that is structurally impossible from any single scalar. The interpretability offered by the partition of the (Hale , H epi ) space into regions also presents the reason for uncertainty in a form that humans can interpret and act upon. This interpretability is the core value of the present study. The value of decomposition therefore lies not in accuracy or calibration but in enabling the action-differentiated, interpretable inference that characterises UAR. Furthermore, the learned variant L-UAR demonstrates that decomposed fea-tures support generalisation to unseen corruption types. The router exploits multiple features simultaneously: maximum probability, inter-class gap, member variance, and epistemic uncertainty. As a result, L-UAR achieves higher retention of ambiguous in-distribution faces under novel shifts than either fixed-threshold UAR or single-confidence routing. This generalisation property is not achievable from a single scalar, since such a score cannot distinguish the reason for elevated uncertainty. 
+
+5.2 Conditional Separation and the Scope of Single-Confidence Routing 
+
+Both aleatoric and epistemic uncertainties increase in absolute magnitude under corruption, so complete orthogonal separation does not hold. This observation is consistent at the level of scale with the critique of information-theoretic decom-positions raised by recent theoretical analyses [3]. Nevertheless, conditional sepa-ration is achieved: aleatoric correlates preferentially with annotator disagreement and epistemic correlates preferentially with distribution shift. This constitutes a practical, falsifiable notion of meaning that does not require perfect orthogonal-ity and provides an empirical answer to the question of whether decomposition is meaningful in this setting. It is noted that this conditional separation also ratio-nalises the L-UAR results: the router succeeds because the decomposed features carry different information, not because they are perfectly orthogonal. On the other hand, temperature-calibrated single-model confidence remains competitive for calibration quality under shift and actually outperforms the en-semble at the highest corruption severity (ECE 0.151 vs. 0.170). For general rejection (the standard selective prediction objective), maximum softmax prob-ability yields a risk–coverage AUROC of 0.073, lower than the epistemic-based predictor at 0.086. Thus, for practitioners whose sole objective is to reduce pre-diction error through abstention, single-model confidence with temperature cal-ibration is a strong and computationally cheaper alternative. Decomposition is beneficial specifically when the practitioner needs to distinguish between the two types of uncertain inputs and act differently on each. 14 K. Inoshita and T. Ueno 
+
+5.3 Limitations 
+
+Several limitations of the present study should be acknowledged. First, epis-temic uncertainty responds to substantial corruptions and to natural non-face inputs, but does not detect benign cross-dataset variation (RAF-DB), and its OOD detection advantage is corruption-type dependent, being inferior to sin-gle maximum probability for occlusion. Second, aleatoric validation is limited to FERPlus, the only widely available FER dataset with per-image voting distribu-tions. Third, SCN and EAC are reproduced on our fine-tuned DINOv2 features for stability rather than their original full-backbone implementations, though this is valid for the routing comparison. Fourth, the Deep Ensemble incurs five times the inference cost of a single model, although K = 3 is sufficient for most applications. Fifth, all experiments are conducted on low-resolution static im-ages; extension to high-resolution images and video is left for future work. The value of decomposition lies in separation and routing: calibration and general rejection are regimes in which decomposition does not show an advantage. 
+
+Ethics. FERPlus and RAF-DB are publicly released face image datasets used in accordance with their respective licences. Non-face images in FERPlus are defined by the annotators’ majority vote and contain no identifiable indi-viduals. No personally identifying information is collected or processed in this study. 
+
+## 6 Conclusion 
+
+This paper addresses the problem that a single confidence score cannot distin-guish intrinsically ambiguous facial expressions from out-of-distribution inputs in facial expression recognition. To this end, a dual-validated uncertainty decom-position framework is introduced, in which aleatoric and epistemic uncertainties are obtained from a Deep Ensemble of fully fine-tuned DINOv2 models, vali-dated against independent external signals, and converted into the inference-time Uncertainty-Aware Routing (UAR) mechanism and its learned variant (L-UAR). Experiments show that aleatoric uncertainty recovers annotator disagreement at Spearman ρ = 0 .66 , that decomposed epistemic uncertainty detects distri-bution shift at average AUROC 0.699, and that UAR retains approximately 1.8 times more ambiguous in-distribution faces than single-confidence routing at a matched rejection rate. A strong label-distribution-learning baseline achieves comparable disagreement recovery yet cannot separate ambiguity from shift or perform routing, establishing that the value of decomposition lies in the separa-tion it enables. These findings demonstrate the practical value of decomposition through in-terpretable uncertainty presentation in settings where emotion-AI systems must act differently on the two types of uncertainty. In future work, we will evaluate epistemic uncertainty under more realistic distribution shifts, extend UAR to high-resolution images and video sequences, and integrate the separated uncer-tainty components into human–AI collaborative systems. Interpretable Uncertainty Routing for FER 15 
+
+## References 
+
+1. Barsoum, E., Zhang, C., Ferrer, C.C., Zhang, Z.: Training deep networks for facial expression recognition with crowd-sourced label distribution. In: Proceedings of the 18th ACM International Conference on Multimodal Interactio. pp. 279–283 (2016). https://doi.org/10.1145/2993148.2993165 
+
+2. Corbière, C., Thome, N., Bar-Hen, A., Cord, M., Pérez, P.: Addressing failure prediction by learning model confidence. In: Proceedings of the 33rd International Conference on Neural Information Processing Systems. pp. 2902–2913. No. 261 (2019). https://doi.org/10.5555/3454287.3454548 
+
+3. Depeweg, S., Hernández-Lobato, J.M., Doshi-Velez, F., Udluft, S.: Decomposition of uncertainty in Bayesian deep learning for efficient and risk-sensitive learning. In: Proceedings of the 35 th International Conference on Machine Learning. pp. 1184–1193 (2018) 4. Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., Houlsby, N.: An image is worth 16 ×16 words: Transformers for image recognition at scale. In: Proceedings of the 9th International Conference on Learning Representations (2021) 5. Gal, Y., Ghahramani, Z.: Dropout as a Bayesian approximation: Representing model uncertainty in deep learning. In: Proceedings of The 33rd International Conference on Machine Learning. pp. 1050–1059 (2016) 6. Geifman, Y., El-Yaniv, R.: Selective classification for deep neural networks. In: Proceedings of the 31st International Conference on Neural Information Processing Systems. pp. 4885–4894 (2017). https://doi.org/10.5555/3295222.3295241 
+
+7. Geng, X.: Label distribution learning. IEEE Transactions on Knowledge and Data Engineering 28 (7), 1734–1748 (2016). https://doi.org/10.1109/TKDE.2016. 2545658 
+
+8. Guo, C., Pleiss, G., Sun, Y., Weinberger, K.Q.: On calibration of modern neu-ral networks. In: Proceedings of the 34th International Conference on Machine Learning. pp. 1321–1330 (2017) 9. Hendrycks, D., Dietterich, T.: Benchmarking neural network robustness to common corruptions and perturbations. In: Proceedings of the 7th International Conference on Learning Representations (2019) 10. Hendrycks, D., Gimpel, K.: A baseline for detecting misclassified and out-of-distribution examples in neural networks. In: Proceedings of the 5th International Conference on Learning Representations (2017) 11. Hüllermeier, E., Waegeman, W.: Aleatoric and epistemic uncertainty in machine learning: An introduction to concepts and methods. Machine Learnings 110 , 457– 506 (2021). https://doi.org/10.1007/s10994-021-05946-3 
+
+12. Inoshita, K.: Bridging the silos in affective AI: A critical perspective from data to society (2026). https://doi.org/10.2139/ssrn.6774479 , sSRN 13. Inoshita, K., Ueno, T.: Bayesian spectral emotion transition discovery from multi-annotator disagreement. arXiv (2026). https://doi.org/10.48550/arXiv.2606. 01906 
+
+14. Inoshita, K., Ueno, T.: Uncertainty decomposition via cyclical SG-MCMC and soft-label learning for subjective NLP. arXiv (2026). https://doi.org/10.48550/ arXiv.2605.24773 
+
+15. Inoshita, K., Zhou, X., Kawai, A., Yada, K.: LLMs capture emotion labels, not emotion uncertainty: Distributional analysis and calibration of human-LLM judg-ment gaps. arXiv (2026). https://doi.org/10.48550/arXiv.2604.27345 16 K. Inoshita and T. Ueno 16. Kendall, A., Gal, Y.: What uncertainties do we need in Bayesian deep learning for computer vision? In: Proceedings of the 31st International Conference on Neural Information Processing Systems. pp. 5580–5590 (2017). https://doi.org/10. 5555/3295222.3295309 
+
+17. Lakshminarayanan, B., Pritzel, A., Blundell, C.: Simple and scalable predictive uncertainty estimation using deep ensembles. In: Proceedings of the 31st Inter-national Conference on Neural Information Processing Systems. pp. 6405–6416 (2017). https://doi.org/10.5555/3295222.3295387 
+
+18. Le, N., Nguyen, K., Tran, Q., Tjiputra, E., Le, B., Nguyen, A.: Uncertainty-aware label distribution learning for facial expression recognition. In: Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision. pp. 6088–6097 (2023). https://doi.org/10.1109/WACV56688.2023.00603 
+
+19. Lee, J., Choi, Y., Kim, H., Kim, I.J., Nam, G.P.: Navigating label ambiguity for facial expression recognition in the wild. vol. 39, pp. 4517–4525 (2025). https: //doi.org/10.1609/aaai.v39i4.32476 
+
+20. Li, S., Deng, W., Du, J.: Reliable crowdsourcing and deep locality-preserving learning for expression recognition in the wild. In: Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. pp. 2852–2861 (2017). 
+
+https://doi.org/10.1109/CVPR.2017.277 
+
+21. Mao, A., Mohri, C., Mohri, M., Zhong, Y.: Two-stage learning to defer with mul-tiple experts. In: Proceedings of the 37th International Conference on Neural In-formation Processing Systems. pp. 3578–3606. No. 159 (2023). https://doi.org/ 10.5555/3666122.3666281 
+
+22. Mao, J., Xu, R., Yin, X., Chang, Y., Nie, B., Huang, A., Wang, Y.: POSTER++: A simpler and stronger facial expression recognition network 157 (C) (2025). https: //doi.org/10.1016/j.patcog.2024.110951 
+
+23. Oquab, M., Darcet, T., Moutakanni, T., Vo, H., Szafraniec, M., Khalidov, V., Fer-nandez, P., Haziza, D., Massa, F., El-Nouby, A., Assran, M., Ballas, N., Galuba, W., Howes, R., Huang, P.Y., Li, S.W., Misra, I., Rabbat, M., Sharma, V., Syn-naeve, G., Xu, H., Jégou, H., Mairal, J., Labatut, P., Joulin, A., Bojanowski, P.: DINOv2: Learning robust visual features without supervision. Transactions on Ma-chine Learning Research (2024), arXiv:2304.07193 24. Ovadia, Y., Fertig, E., Ren, J., Nado, Z., Sculley, D., Nowozin, S., Dillon, J., Lak-shminarayanan, B., Snoek, J.: Can you trust your model’s uncertainty? Evaluating predictive uncertainty under dataset shift. In: Proceedings of the 33rd International Conference on Neural Information Processing Systems. pp. 14003–14014. No. 1254 (2019). https://doi.org/10.5555/3454287.3455541 
+
+25. Plank, B.: The “Problem” of human label variation: On ground truth in data, modeling and evaluation. In: Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing. pp. 10671–10682 (2022). https://doi. org/10.18653/v1/2022.emnlp-main.731 
+
+26. She, J., Hu, Y., Shi, H., Wang, J., Shen, Q., Mei, T.: Dive into ambiguity: Latent distribution mining and pairwise uncertainty estimation for facial expression recog-nition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pat-tern Recognition. pp. 6248–6257 (2021). https://doi.org/10.1109/CVPR46437. 2021.00618 
+
+27. Uma, A., Fornaciari, T., Hovy, D., Paun, S., Plank, B., Poesio, M.: Learning from disagreement: A survey. Journal of Artificial Intelligence Research 72 , 1385–1470 (2021). https://doi.org/10.1613/jair.1.12752 Interpretable Uncertainty Routing for FER 17 28. Wang, K., Peng, X., Yang, J., Lu, S., Qiao, Y.: Suppressing uncertainties for large-scale facial expression recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 6897–6906 (2020). https:// doi.org/10.1109/CVPR42600.2020.00693 
+
+29. Wu, Z., Cui, J.: LA-Net: Landmark-aware learning for reliable facial expression recognition under label noise. In: Proceedings of the IEEE/CVF International Con-ference on Computer Vision. pp. 20698–20707 (2023). https://doi.org/10.1109/ ICCV51070.2023.01892 
+
+30. Zhang, Y., Wang, C., Deng, W.: Relative uncertainty learning for facial expres-sion recognition. In: Proceedings of the 35th International Conference on Neural Information Processing Systems. pp. 17616–17627. No. 1348 (2021) 31. Zhang, Y., Wang, C., Ling, X., Deng, W.: Learn from all: Erasing attention con-sistency for noisy label facial expression recognition. In: Computer Vision – ECCV 2022. pp. 418–434 (2022). https://doi.org/10.1007/978-3-031-19809-0_24 
+
+32. Zhang, Z., Zhao, P., Park, E., Yang, J.: MART: Masked affective RepresenTa-tion learning via masked temporal distribution distillation. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition. pp. 12830– 12840 (2024). https://doi.org/10.1109/CVPR52733.2024.01219 
+
+33. Zhou, H., Huang, S., Xu, Y.: UA-FER: Uncertainty-aware representation learning for facial expression recognition. Neurocomputing 621 , 129261 (2025). https:// doi.org/10.1016/j.neucom.2024.129261
