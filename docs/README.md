@@ -6,27 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-02
-- 运行时间：2026-07-02 21:27:39 UTC
+- 最新运行日期：2026-07-03
+- 运行时间：2026-07-03 20:15:00 UTC
 - 运行状态：成功
 - 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 精读区：1
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读两篇多模态图像融合领域论文，均得6分。值得关注恶劣天气下的掩码引导特征恢复，以及通过连续线性集成进行跨模态学习。可尝试将两种方法结合或对比实验。
-- 详情：[/202607/02/README](/202607/02/README)
+今日精读高分论文《Pattern-Calibrated Multimodal Prediction under Blockwise Missingness》，并速读一篇关于持续学习隐藏遗忘的研究。  
+最值得关注：模式校准方法可有效应对多模态特征块缺失；持续学习中准确率虽高但语义基础可能悄然退化。  
+普通读者可尝试将模式校准技巧应用于实际缺失数据场景，同时警惕持续模型表现背后的潜在风险。
+- 详情：[/202607/03/README](/202607/03/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Pattern-Calibrated Multimodal Prediction under Blockwise Missingness](/202607/03/2607.01821v1-pattern-calibrated-multimodal-prediction-under-blockwise-missingness)  
+   标签：评分：9.0/10、query:mm
+   evidence：块缺失模式校准多模态预测
 
 ### 速读区论文标签
-1. [Multi-modality Image Fusion under Adverse Weather: Mask-Guided Feature Restoration and Interaction](/202607/02/2606.26812v1-multi-modality-image-fusion-under-adverse-weather-mask-guided-feature-restoration-and-interaction)  
+1. [Hidden Forgetting in Continual Multimodal Learning: When Accuracy Survives but Grounding Fails](/202607/03/2607.02020v1-hidden-forgetting-in-continual-multimodal-learning-when-accuracy-survives-but-grounding-fails)  
    标签：评分：6.0/10、query:mm
-   evidence：恶劣天气下多模态图像融合的掩码引导特征恢复与交互方法
-2. [MSNN-LINet: Cross-Modal Learning via Continuous Linear Integration](/202607/02/2606.31135v1-msnn-linet-cross-modal-learning-via-continuous-linear-integration)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过线性集成实现连续跨模态学习，增强多模态学习的鲁棒性
+   evidence：持续多模态学习鲁棒性，隐性证据遗忘
 
 
 <div class="dpr-home-promo-card">

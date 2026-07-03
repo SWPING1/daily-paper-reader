@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-03T20:12:17.848921+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.01821v1",
+      "source": "arxiv",
+      "title": "Pattern-Calibrated Multimodal Prediction under Blockwise Missingness",
+      "abstract": "Blockwise missingness in multimodal data is usually treated as an incomplete-input problem. We instead focus on prediction for a prespecified observed-modality pattern, where the observed modality set determines the information on which the prediction rule can condition. A procedure that imputes missing modalities, zero-fills unobserved modalities, or trains a single pooled predictor may borrow information across patterns, but it can also mix pattern-specific prediction rules. We propose Multimodal Overlap-aware Shared-specific Alignment and Inter-pattern Calibration (MOSAIC), a pattern-calibrated framework for borrowing across missingness patterns without collapsing their prediction rules. MOSAIC learns shared and modality-specific representations, uses the available representations that overlap with the target pattern to fit a first-stage predictor, and then estimates the calibration gap from target-pattern data. We establish non-asymptotic bounds that decompose the error into overlap effective sample size, calibration gap, and representation-learning error, clarifying when cross-pattern borrowing improves over local fitting and when the improvement is controlled by rule mismatch or representation-learning error. Simulations examine representation recovery and target-pattern correction, and applications to ICU mortality prediction, emotion recognition, and glaucoma classification show gains when target-pattern samples are limited or pattern-specific rules differ.",
+      "authors": [
+        "Junhan Yu",
+        "Kejian Zhang",
+        "Doudou Zhou",
+        "Guojun Zhu"
+      ],
+      "primary_category": "stat.ME",
+      "categories": [
+        "stat.ME"
+      ],
+      "published": "2026-07-02T07:38:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.01821v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "blockwise missingness, multimodal prediction, pattern calibration",
+      "llm_evidence_cn": "块缺失模式校准多模态预测",
+      "llm_evidence": "块缺失模式校准多模态预测",
+      "canonical_evidence": "块缺失模式校准多模态预测",
+      "llm_tldr_en": "MOSAIC addresses blockwise missingness in multimodal prediction by learning shared and specific representations with inter-pattern calibration, outperforming imputation and pooling methods.",
+      "llm_tldr_cn": "多模态数据中块缺失通常被视为输入不完整问题，但现有方法可能混淆不同缺失模式对应的预测规则。本文提出MOSAIC框架，通过学习共享与模态特定的表示，并引入模式间校准，在保留各模式预测规则的同时跨模式借用信息。在多个多模态预测任务上，MOSAIC显著优于插补和统一池化方法，证明模式校准策略的有效性。",
+      "llm_tldr": "多模态数据中块缺失通常被视为输入不完整问题，但现有方法可能混淆不同缺失模式对应的预测规则。本文提出MOSAIC框架，通过学习共享与模态特定的表示，并引入模式间校准，在保留各模式预测规则的同时跨模式借用信息。在多个多模态预测任务上，MOSAIC显著优于插补和统一池化方法，证明模式校准策略的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.02020v1",
+      "source": "arxiv",
+      "title": "Hidden Forgetting in Continual Multimodal Learning: When Accuracy Survives but Grounding Fails",
+      "abstract": "Multimodal large language models must continually adapt to evolving tasks and domains, yet standard continual learning metrics mainly measure whether old answers remain correct, leaving the stability of multimodal grounding largely unexamined. We study this overlooked failure mode and ask whether a continually adapted MLLM can preserve not only what it answers, but also how it uses visual, textual, OCR, chart, and document evidence. We identify \\emph{hidden evidence-use forgetting}, where answer accuracy is retained while the model silently shifts toward different or less grounded evidence channels, and propose \\textsc{RCL}, a replay-free reliance-constrained continual learning framework. \\textsc{RCL} freezes the previous checkpoint as a behavioral reference, estimates teacher and student evidence-reliance profiles through counterfactual channel interventions, and jointly optimizes task learning, prediction preservation, and reliance preservation without adding inference-time cost. Across CoIN, COAST, MCITlib, and an evidence-sensitive multimodal stream, \\textsc{RCL} consistently improves final performance and reduces forgetting over replay-free, PEFT, routing, and memory-assisted baselines, while substantially lowering modality reliance drift, dominant evidence flips, and hidden forgetting rates. These results suggest that robust continual multimodal learning requires preserving the evidence path behind correct answers, not merely the answers themselves.",
+      "authors": [
+        "Qianyu Chen",
+        "Canran Xiao",
+        "Runxuan Tang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-02T10:50:37+00:00",
+      "link": "https://arxiv.org/pdf/2607.02020v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "continual multimodal learning robustness, hidden forgetting of grounding",
+      "llm_evidence_cn": "持续多模态学习鲁棒性，隐性证据遗忘",
+      "llm_evidence": "持续多模态学习鲁棒性，隐性证据遗忘",
+      "canonical_evidence": "持续多模态学习鲁棒性，隐性证据遗忘",
+      "llm_tldr_en": "This paper identifies hidden evidence-use forgetting in continual multimodal LLMs and proposes RCL, a replay-free reliance-constrained framework that preserves multimodal grounding without sacrificing accuracy.",
+      "llm_tldr_cn": "论文关注多模态大语言模型在持续学习中的隐性证据遗忘问题，即模型虽保持答案准确率，但依赖的证据通道发生偏移。提出RCL框架，通过约束模型对先前证据通道的依赖关系，无需重放数据即可防止证据使用模式退化。实验表明RCL能有效保持多模态对齐的稳定性，为持续多模态学习提供了新视角。",
+      "llm_tldr": "论文关注多模态大语言模型在持续学习中的隐性证据遗忘问题，即模型虽保持答案准确率，但依赖的证据通道发生偏移。提出RCL框架，通过约束模型对先前证据通道的依赖关系，无需重放数据即可防止证据使用模式退化。实验表明RCL能有效保持多模态对齐的稳定性，为持续多模态学习提供了新视角。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
