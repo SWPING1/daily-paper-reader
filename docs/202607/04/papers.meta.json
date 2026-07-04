@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-04",
+  "date": "2026-07-04",
+  "generated_at": "2026-07-04T20:44:03",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/04/2606.29900v1-llm-based-multimodal-personality-recognition-via-facial-action-unit-text-semantic-fusion",
+      "section": "deep",
+      "title_en": "LLM-based Multimodal Personality Recognition via Facial Action Unit-Text Semantic Fusion",
+      "authors": "Tianyi Zhang, Wei Shan, Yuan Zong, Tianhua Qi, Wenming Zheng",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.29900v1",
+      "score": "8.0",
+      "evidence": "使用面部动作单元和文本融合的多模态人格识别",
+      "tldr": "异步视频面试中的人格识别常依赖大语言模型分析文本，但忽略面部线索或丢失细粒度时序信息。本文提出融合面部动作单元(AU)与文本：将AU序列转为可解释文本描述，通过LLM与应答文本语义融合，最后用轻量回归头预测连续人格分数。在AVI-6基准上，该方法在多数人格特质上降低了预测误差，增强了与人类评分的相关性，且训练更稳定、可解释性更强。",
+      "tags": "query:mm",
+      "abstract_en": "Personality recognition in asynchronous video interviews (AVIs) has become increasingly important due to their widespread adoption in modern recruitment. Existing approaches often rely on large language models (LLMs) to analyze textual responses of interviewees in AVI. However, unimodel methods often suffer from information loss (e.g., ignore facial cues). In contrast, multimodal methods that employ full-face images or sparsely sampled frames can discard fine-grained temporal dynamics critical for accurate personality assessment. To overcome these limitations, we propose an LLM-based framework that semantically fuse facial action units (AUs) with textual responses of AVI. AU sequences are first converted into interpretable textual descriptions, which are then fused with participants' textual responses through an LLM. A lightweight regression head transforms the resulting embeddings into continuous personality scores without disrupting the underlying semantic space. Experiments on the AVI-6 benchmark demonstrate consistent improvements over most baselines, with lower prediction errors and stronger correlations with human-rated scores across multiple traits. Further analysis reveals that AU-derived semantic representations offer complementary non-verbal cues to textual responses. Decoupling semantic understanding from regression prediction within the LLM also leads to greater training stability and clearer interpretability. Overall, these findings demonstrate that AU-text fusion provides a psychologically grounded and computationally efficient framework for personality recognition in AVIs.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/04/2607.00946v1-a-geometric-perspective-on-composable-emotion-steering-in-text-to-speech-models",
+      "section": "quick",
+      "title_en": "A Geometric Perspective on Composable Emotion Steering in Text-to-Speech Models",
+      "authors": "Siyi Wang, James Bailey, Ting Dang",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.00946v1",
+      "score": "7.0",
+      "evidence": "说话人-情感解纠缠与情感子空间分析",
+      "tldr": "混合情感语音合成中，情感引导的几何性质尚不明确。本研究首次对比语音语言模型(SLM)和条件流匹配(CFM)模块作为激活位点的情感引导能力。通过线性探测和局部本征维度分析，发现SLM具有干净低维情感子空间且说话人-情感解耦好，而CFM存在说话人-情感纠缠导致跨说话人泛化差。联合引导虽增强情感强度，但降低比例控制与语音质量。结果为混合TTS系统多站点引导提供实践指导，凸显表示几何在可控语音生成中的关键作用。",
+      "tags": "query:mm",
+      "abstract_en": "While prior work has explored emotion control in hybrid text-to-speech systems, the geometric properties of these modules, and their implications for steerability, remain poorly understood. We present the first comparative study of speech language model (SLM) and conditional flow-matching (CFM) modules as activation steering sites for mixed emotion speech synthesis. We first characterize emotion representations using linear probing and local intrinsic dimensionality (LID), and then evaluate single-site and joint steering for mixed-emotion synthesis. Our results show that SLM offers a clean, low-dimensional emotion-specific subspace with strong speaker--emotion disentanglement, while CFM exhibitspoor cross-speaker generalization due to speaker--emotion entanglement. Joint steering increases emotion intensity but degrades proportional control and speech quality on in-distribution data. These findings provide practical guidance for multi-site activation steering in hybrid TTS systems and highlight the importance of representation geometry in controllable speech generation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/04/2607.00968v1-quantifying-the-affective-gap-a-zero-shot-evaluation-of-llms-on-fine-grained-emotion-taxonomies",
+      "section": "quick",
+      "title_en": "Quantifying the Affective Gap: A Zero-Shot Evaluation of LLMs on Fine-Grained Emotion Taxonomies",
+      "authors": "Lawrence Obiuwevwi, Krzysztof J. Rechowicz, Jessica M. Johnson, Vikas Ashok, Sachin Shetty, Sampath Jayarathna",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.00968v1",
+      "score": "6.0",
+      "evidence": "自然语言情感识别",
+      "tldr": "情感识别是情感计算和人机交互的关键挑战。本文对Claude、GPT-5.4和Gemini三个商业大语言模型进行零样本细粒度13类情感分类评估，使用统一提示和1000句分层样本。Gemini以39.9%准确率和0.363 macro-F1领先，但所有模型在love、confusion、shame上表现差，且无统计显著差异，揭示共享零样本天花板。Claude的极低macro-F1暴露类别不平衡偏差，突出当前前沿AI在细粒度情感理解上的局限性。",
+      "tags": "query:mm",
+      "abstract_en": "Emotion recognition in natural language is a foundational challenge in affective computing, with critical implications for human-computer interaction, mental health support, and conversational AI. This paper presents a rigorous, unified zero-shot evaluation of three leading commercial large language models: Claude (claude-sonnet-4-6), ChatGPT (GPT-5.4), and Gemini (gemini-2.5-flash). The models were queried through their respective production APIs as of April 2026 on a fine-grained 13-class emotion classification task. Using a stratified 1,000-sentence sample from the boltuix/emotions dataset, which comprises 131,306 sentences across 13 categories, a single uniform prompt with no exemplars was applied identically across all models. Gemini achieves the highest accuracy (39.9%) and macro-F1 score (0.363), followed by GPT-5.4 (38.8%, macro-F1 = 0.291) and Claude (38.0%, macro-F1 = 0.159). All models excel on sarcasm and desire while consistently failing on love, confusion, and shame. McNemar tests reveal no statistically significant pairwise differences (p > 0.10), suggesting convergence at a shared zero-shot ceiling. Claude's markedly lower macro-F1 score exposes a class-imbalance prediction bias. These findings highlight the current limitations of frontier AI systems in zero-shot fine-grained emotion classification.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
