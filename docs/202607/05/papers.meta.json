@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-05",
+  "date": "2026-07-05",
+  "generated_at": "2026-07-05T21:19:44",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/05/2606.28769v1-generative-learning-as-a-tool-to-improve-perception-of-emotional-body-motion-expressions",
+      "section": "quick",
+      "title_en": "Generative Learning as a Tool to Improve Perception of Emotional Body Motion Expressions",
+      "authors": "Huakun Liu, Miao Cheng, Xin Wei, Felix Dollack, Victor Schneider, Hideaki Uchiyama, Chia-huei Tseng, Yoshifumi Kitamura, Monica Perusquia-Hernandez",
+      "date": "2026-06-27",
+      "pdf": "https://arxiv.org/pdf/2606.28769v1",
+      "score": "7.0",
+      "evidence": "用生成模型建模情感身体动作表达",
+      "tldr": "情绪身体运动表达是非言语交流的关键，在虚拟现实和社交机器人中应用广泛但生成困难。本文利用日本演员的情绪动作捕捉数据，训练Transformer模型以13种离散情绪标签为条件生成动作。机器和人类识别准确率分别为22.8%和24.9%，表明模型能隐式学习情绪特征。该生成模型还可用于增强情绪识别、提取典型动作模式及合成情绪强度过渡，展示了数据驱动方法在情感计算中的潜力。",
+      "tags": "query:mm",
+      "abstract_en": "Emotional body motion expressions are an essential element of non-verbal communication. Effectively conveying these expressions through technology is of utmost importance, for example, with virtual reality avatars and in social robotics. Recent advances in generative models have opened new opportunities for advancing research on emotional body motion learning. However, generating accurate emotional expression representations is challenging, given the subtlety of emotional cues, individual variability, and cultural differences. We investigate whether a generative model can implicitly learn emotional body motions directly from culturally grounded motion-capture data, without explicit emotion-motion guidance. Using a dataset of emotional performances by 49 Japanese actors, we trained a Transformer-based generative model to generate expressive motions conditioned on 13 discrete emotion labels. We evaluate the generated motions from two perspectives: (1) an LSTM-based classifier to assess recognizability by machine observers, achieving a recognition accuracy of 22.80%, and (2) a human perception study with Japanese raters to assess alignment with human affective interpretations, yielding a recognition accuracy of 24.91%. Beyond these, we evaluate the utility of generative modeling for three practical tasks: augmenting emotion recognition models, extracting representative emotion-specific motion patterns, and synthesizing smooth transitions between emotion intensities. Our findings highlight the potential of implicit, data-driven generative modeling to enhance affective computing applications and our understanding of emotion expressions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/05/2606.30374v1-set-inclusive-uncertainty-modeling-for-robust-brain-tumor-segmentation",
+      "section": "quick",
+      "title_en": "Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation",
+      "authors": "Seunghun Baek, Jihwan Park, Jaeyoon Sim, Hoseok Lee, Seungjoo Lee, Won Hwa Kim",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.30374v1",
+      "score": "7.0",
+      "evidence": "处理多模态MRI中的缺失模态，使用概率不确定性建模",
+      "tldr": "多模态MRI对脑肿瘤分割至关重要，但推理时模态缺失导致信息不确定性。现有方法忽略该不确定性，生成看似合理但不可靠的结果。本文提出概率表示框架，将特征建模为高斯分布，均值捕获任务信息，方差量化缺失证据的不确定性，并利用集合包含策略和排序约束保持不确定性一致性。在BraTS 2018/2020数据集上，该方法在多种缺失模态场景下显著优于基线。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal MRI is essential for accurate brain tumor segmentation. However, acquiring all modalities at inference is often challenging in practice, which causes intrinsic uncertainty due to unavoidable information loss. Without modeling this uncertainty, existing methods encode incomplete evidence into deterministic representations that appear plausible but lack reliability. In this regime, we propose a probabilistic representation framework that models representations as Gaussian distributions, where their mean captures task information and their variance measures uncertainty from missing evidence. To make variance reflect information deficiency, we regularize the mean from each partial configuration toward its full-modality counterpart, while scaling the variance with the discrepancy between their aligned means. We further introduce a set-inclusive strategy that exploits the hierarchical structure of modality subsets and enforces an ordering constraint to maintain their consistent uncertainty relationships. Extensive experiments on BraTS 2018 and 2020 demonstrate that our approach offers superior performance over baselines across diverse missing-modality scenarios. Code and model checkpoint are available at https://github.com/atlas-sky/SIUM.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/05/2606.29948v1-heterogeneous-tactile-transformer",
+      "section": "quick",
+      "title_en": "Heterogeneous Tactile Transformer",
+      "authors": "Jianxin Bi, Qiang Wang, Jayaram Reddy, Kelvin Lin, Soibkhon Khajikhanov, Ruihan Gao, Harold Soh",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.29948v1",
+      "score": "6.0",
+      "evidence": "逐模态掩码重建用于缺失模态插补",
+      "tldr": "触觉传感器异质性导致模型无法跨传感器复用，限制了大规模操作学习。提出异构触觉Transformer（HTT），使用传感器特定编码器和共享Transformer主干，通过掩码重建和跨模态对齐预训练。在多种感知和操作任务中，HTT学习到可迁移表示，适应新任务和未见传感器。首次实现跨异构触觉传感器的表示学习，并开源数据集和模型。",
+      "tags": "query:mm",
+      "abstract_en": "Tactile sensors are inherently heterogeneous: a model trained on one sensor cannot be directly used on another, which limits learning contact-rich manipulation policies from diverse tactile data at scale. To bridge this gap, we propose the Heterogeneous Tactile Transformer (HTT), a framework that learns shared tactile representations across heterogeneous sensors. HTT consists of sensor-specific encoders and a shared transformer trunk, and is pretrained with per-modality masked reconstruction together with cross-modal alignment between paired sensors. Pretraining uses our novel Heterogeneous Paired Tactile (HPT) dataset, containing 1.6M synchronized paired frames across four vision- and array-based tactile sensors. Across distinct tactile perception and real-world manipulation tasks, HTT is shown to learn transferable representations that adapt to new tasks and previously unseen sensors. Dataset, code, and model checkpoints will be released upon publication at https://jxbi1010.github.io/htt-gh-page/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/05/2606.30611v1-reweighting-framewise-attention-in-video-transformers-for-facial-expression-understanding",
+      "section": "quick",
+      "title_en": "Reweighting Framewise Attention in Video Transformers for Facial Expression Understanding",
+      "authors": "Seongro Yoon, Donghyeon Cho, Jinsun Park, François Brémond",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.30611v1",
+      "score": "6.0",
+      "evidence": "通过注意力重分配提升视频Transformer对细微面部表情的识别能力",
+      "tldr": "视频面部表情理解受限于ViT注意力对全局运动和粗时间动态的偏向。提出MiRA，通过从自注意力图导出帧级置信度和集中度，重新分配注意力至细微局部动态，无需额外参数。精确模式和高效flashLite模式在FER基准上超越强ViT基线。",
+      "tags": "query:mm",
+      "abstract_en": "Understanding facial expressions in videos requires modeling subtle and localized facial dynamics under unconstrained conditions. Although recent Vision Transformer~(ViT)-based video models have shown strong performance through large-scale self-supervised pretraining, their attention mechanisms often emphasize dominant global motions and coarse temporal dynamics, limiting sensitivity to fine-grained facial variations. To address this limitation, we propose MiRA (Marginal-induced Attention Redistribution), a plug-in frame-marginal attention redistribution framework for ViT backbones that enhances spatio-temporal selectivity toward subtle facial dynamics without introducing additional trainable parameters. MiRA derives frame-level confidence and intra-frame concentration statistics from self-attention maps to estimate frame-wise marginal importance and redistribute attention toward spatiotemporally localized facial cues. We first introduce a principled \\textit{exact mode} based on post-softmax attention redistribution. To further improve efficiency, we propose \\textit{flashLite mode}, a lightweight pre-softmax approximation that integrates frame-marginal redistribution into FlashAttention kernels while preserving the effectiveness of the exact formulation. Experimental results on challenging Facial Expression Recognition~(FER) benchmarks demonstrate consistent improvements over strong ViT baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

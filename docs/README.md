@@ -6,31 +6,37 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-04
-- 运行时间：2026-07-04 20:43:56 UTC
+- 最新运行日期：2026-07-05
+- 运行时间：2026-07-05 21:19:36 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：1
-- 速读区：2
+- 本次总论文数：4
+- 精读区：0
+- 速读区：4
 
 ### 今日简报（AI）
-1) 今日三篇论文聚焦多模态人格识别与情感建模，精读一篇通过面部动作单元-文本语义融合提升大模型人格识别精度。  
-2) 最值得关注的方向：LLM结合面部动作单元与文本的多模态融合可显著提升人格识别效果；文本到语音中的情感转向可通过几何方法实现可组合控制。  
-3) 建议关注多模态情感计算在社交机器人或虚拟助手中的应用，尝试将面部动作识别与语言模型结合以增强人机交互的自然度。
-- 详情：[/202607/04/README](/202607/04/README)
+今日速读4篇论文，覆盖情感识别、医疗影像及触觉感知三个领域。
+
+最值得关注的是用生成学习提升情感身体动作感知，以及集合包含不确定性建模增强脑肿瘤分割的鲁棒性。
+
+建议优先精读这两篇7分论文，尝试将生成模型与不确定性方法结合应用到多模态感知任务中。
+- 详情：[/202607/05/README](/202607/05/README)
 
 ### 精读区论文标签
-1. [LLM-based Multimodal Personality Recognition via Facial Action Unit-Text Semantic Fusion](/202607/04/2606.29900v1-llm-based-multimodal-personality-recognition-via-facial-action-unit-text-semantic-fusion)  
-   标签：评分：8.0/10、query:mm
-   evidence：使用面部动作单元和文本融合的多模态人格识别
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [A Geometric Perspective on Composable Emotion Steering in Text-to-Speech Models](/202607/04/2607.00946v1-a-geometric-perspective-on-composable-emotion-steering-in-text-to-speech-models)  
+1. [Generative Learning as a Tool to Improve Perception of Emotional Body Motion Expressions](/202607/05/2606.28769v1-generative-learning-as-a-tool-to-improve-perception-of-emotional-body-motion-expressions)  
    标签：评分：7.0/10、query:mm
-   evidence：说话人-情感解纠缠与情感子空间分析
-2. [Quantifying the Affective Gap: A Zero-Shot Evaluation of LLMs on Fine-Grained Emotion Taxonomies](/202607/04/2607.00968v1-quantifying-the-affective-gap-a-zero-shot-evaluation-of-llms-on-fine-grained-emotion-taxonomies)  
+   evidence：用生成模型建模情感身体动作表达
+2. [Set-Inclusive Uncertainty Modeling for Robust Brain Tumor Segmentation](/202607/05/2606.30374v1-set-inclusive-uncertainty-modeling-for-robust-brain-tumor-segmentation)  
+   标签：评分：7.0/10、query:mm
+   evidence：处理多模态MRI中的缺失模态，使用概率不确定性建模
+3. [Heterogeneous Tactile Transformer](/202607/05/2606.29948v1-heterogeneous-tactile-transformer)  
    标签：评分：6.0/10、query:mm
-   evidence：自然语言情感识别
+   evidence：逐模态掩码重建用于缺失模态插补
+4. [Reweighting Framewise Attention in Video Transformers for Facial Expression Understanding](/202607/05/2606.30611v1-reweighting-framewise-attention-in-video-transformers-for-facial-expression-understanding)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过注意力重分配提升视频Transformer对细微面部表情的识别能力
 
 
 <div class="dpr-home-promo-card">
