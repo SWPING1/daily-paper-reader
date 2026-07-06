@@ -1,0 +1,214 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-06T21:27:11.062151+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.00461v1",
+      "source": "arxiv",
+      "title": "Multimodal Continuous Reasoning via Asymmetric Mutual Variational Learning",
+      "abstract": "Multimodal Large Language Models (MLLMs) are often constrained by a language-space bottleneck, forcing complex visual reasoning into discrete tokens which can lose perceptual nuance. A promising alternative is continuous latent reasoning, where the goal is to discover implicit reasoning pathways that bridge the multimodal query and the final answer. However, this introduces a severe train-inference mismatch: a training-time posterior, conditioned on the ground-truth answer, can exploit answer-dependent shortcuts. Standard variational training then forces the inference-time prior to mimic a posterior that has access to information unavailable at test time, leading to poor performance. To address this, we propose Asymmetric Mutual Variational Learning (AMVL), a framework that resolves this mismatch via a bidirectional calibration objective. A forward KL divergence trains the target-agnostic prior to match the posterior, while a novel reverse KL divergence simultaneously regularizes the posterior, preventing it from collapsing into inference-incompatible regions and mitigating this ``answer leakage''. We provide theoretical analysis formalizing this leakage as prior contamination and prove that our dual-KL objective reduces it. We instantiate AMVL in a latent-integrated MLLM and show that it consistently outperforms strong discrete and latent-reasoning baselines, improving the average score on the complex BLINK benchmark by +10.83 and achieving gains of up to +32.00 on individual reasoning tasks, with analyses confirming improved latent-space stability.",
+      "authors": [
+        "Shijie Li",
+        "Yilin Gao",
+        "Siyuan Yang",
+        "Tieyuan Chen",
+        "Chaofan Gan",
+        "Zhihao He",
+        "Zicheng Zhao",
+        "Yuyu Guo",
+        "Weiyao Lin",
+        "Hang Yu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-01T05:29:02+00:00",
+      "link": "https://arxiv.org/pdf/2607.00461v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses train-inference mismatch in multimodal reasoning via variational learning",
+      "llm_evidence_cn": "通过变分学习解决多模态推理中的训练-推理不匹配",
+      "llm_evidence": "通过变分学习解决多模态推理中的训练-推理不匹配",
+      "canonical_evidence": "通过变分学习解决多模态推理中的训练-推理不匹配",
+      "llm_tldr_en": "Proposes Asymmetric Mutual Variational Learning to resolve train-inference mismatch in continuous latent reasoning for MLLMs, improving multimodal reasoning robustness.",
+      "llm_tldr_cn": "本文针对多模态大语言模型在连续潜在推理中存在的训练-推理不匹配问题，提出非对称互变分学习框架，通过解耦后验和先验的优化目标，避免推理时依赖未知答案信息，从而提升了多模态推理的鲁棒性和性能，为鲁棒多模态学习提供了方法论贡献。",
+      "llm_tldr": "本文针对多模态大语言模型在连续潜在推理中存在的训练-推理不匹配问题，提出非对称互变分学习框架，通过解耦后验和先验的优化目标，避免推理时依赖未知答案信息，从而提升了多模态推理的鲁棒性和性能，为鲁棒多模态学习提供了方法论贡献。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.01275v1",
+      "source": "arxiv",
+      "title": "eXact-Prior Variational Autoencoder (X-VAE): Learning Data-Adaptive Gaussian Mixture Priors for Latent Distributions",
+      "abstract": "Variational Autoencoders (VAEs) commonly assume a standard isotropic Gaussian prior over the latent space, an assumption that often fails to capture the true distribution of latent representations for complex datasets. This mismatch can limit reconstruction accuracy, reduce sample quality, and constrain the expressive power of the learned latent space. We propose the eXact-Prior Variational Autoencoder (X-VAE), a framework that replaces the conventional standard normal prior with a Gaussian prior derived from the latent representations of a pretrained autoencoder (AE). Specifically, the empirical mean and standard deviation of the AE latent codes are used to parameterize a data-adaptive prior that more closely reflects the underlying structure of the training data. During generation, X-VAE introduces a latent scaling factor that enables explicit control over the variance of the sampled latent vectors, providing a simple mechanism for balancing sample diversity and fidelity. This flexibility makes the proposed approach particularly well suited for applications such as industrial and engineering design, where generated solutions must satisfy strict structural or functional constraints while still permitting meaningful design exploration. We present the mathematical formulation of well-suited X-VAE, derive the corresponding KL divergence objective for the proposed prior, and evaluate the method on standard benchmark datasets. Experimental results demonstrate that X-VAE preserves reconstruction quality while producing latent representations that better align with the empirical data distribution, leading to improved controllability and more realistic generated samples.",
+      "authors": [
+        "Qijun Chen",
+        "Shaofan Li"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-06-30T23:05:06+00:00",
+      "link": "https://arxiv.org/pdf/2607.01275v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "generative model prior improvement applicable to missing modality imputation",
+      "llm_evidence_cn": "生成模型先验改进可应用于缺失模态插补",
+      "llm_evidence": "生成模型先验改进可应用于缺失模态插补",
+      "canonical_evidence": "生成模型先验改进可应用于缺失模态插补",
+      "llm_tldr_en": "X-VAE replaces the standard normal prior with a data-adaptive Gaussian prior learned from a pretrained autoencoder, improving reconstruction and generation quality, offering a potential generative imputation method for missing modality robustness.",
+      "llm_tldr_cn": "该论文针对变分自编码器标准高斯先验与复杂数据分布不匹配的问题，提出X-VAE框架。该方法利用预训练自编码器的潜在编码估计经验均值和标准差，构建数据自适应的高斯先验，替代标准正态先验。实验证明X-VAE在多种数据集上提升了重建精度和样本质量，为生成式缺失模态插补提供了一种更准确的先验建模工具，但未专门针对情感识别任务进行验证。",
+      "llm_tldr": "该论文针对变分自编码器标准高斯先验与复杂数据分布不匹配的问题，提出X-VAE框架。该方法利用预训练自编码器的潜在编码估计经验均值和标准差，构建数据自适应的高斯先验，替代标准正态先验。实验证明X-VAE在多种数据集上提升了重建精度和样本质量，为生成式缺失模态插补提供了一种更准确的先验建模工具，但未专门针对情感识别任务进行验证。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.00766v1",
+      "source": "arxiv",
+      "title": "Decoupled Guidance: Disentangling Subject and Context Pathways in Text-to-Image Personalization",
+      "abstract": "Text-to-image personalization aims to generate a user-provided subject in novel scenes described by text. However, most existing methods encode subject identity (fidelity) and context (editability) through the same conditioning pathway, forcing the two to compete for attention-map resources. We refer to this phenomenon as conditioning entanglement and show that it induces a fidelity-editability trade-off. We further provide causal evidence by replacing the target subject token with a generic subject token, which produces shifts in attention allocation and corresponding changes in context adherence. To this end, we propose Decoupled Guidance (DeGu), a plug-and-play framework that routes subject identity and scene context through two independent guidance streams. We further introduce a spatial mixing mechanism that dynamically fuses these streams, ensuring each operates within its semantically relevant region without interference. Furthermore, DeGu can be readily applied to existing personalization methods without modifying the underlying backbone models, consistently improving the overall personalization performance while enabling inference-time control over the fidelity-editability balance, across diverse methods and backbones, including flow-matching Diffusion Transformers (DiTs).",
+      "authors": [
+        "Seongmin Kim",
+        "Kyucheol Shin",
+        "Heesun Jung",
+        "Jinseo Kim",
+        "Sungyong Baik"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-01T10:48:43+00:00",
+      "link": "https://arxiv.org/pdf/2607.00766v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "disentangles subject and context pathways in text-to-image personalization",
+      "llm_evidence_cn": "解耦文本到图像个性化中的主体和上下文路径",
+      "llm_evidence": "解耦文本到图像个性化中的主体和上下文路径",
+      "canonical_evidence": "解耦文本到图像个性化中的主体和上下文路径",
+      "llm_tldr_en": "Proposes Decoupled Guidance (DeGu) to disentangle subject identity and scene context pathways, overcoming the fidelity-editability trade-off in text-to-image personalization.",
+      "llm_tldr_cn": "本文针对文本到图像个性化中身份保真度与场景可编辑性之间的权衡问题，提出解耦引导框架，通过将主体身份和场景上下文路由到独立的注意力路径，消除了条件缠绕，实现了同时保持高保真度和高编辑性，为解耦表示学习在生成任务中的应用提供了新方法。",
+      "llm_tldr": "本文针对文本到图像个性化中身份保真度与场景可编辑性之间的权衡问题，提出解耦引导框架，通过将主体身份和场景上下文路由到独立的注意力路径，消除了条件缠绕，实现了同时保持高保真度和高编辑性，为解耦表示学习在生成任务中的应用提供了新方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.01657v1",
+      "source": "arxiv",
+      "title": "Domain Generalization via Text-Anchored Information Bottleneck",
+      "abstract": "Visual recognition models often fail when deployed in new environments. Domain Generalization (DG) addresses this by learning representations that remain invariant to environment-specific variations. Recent approaches increasingly rely on large vision-language models, assuming that preserving their expressive visual representations improves robustness. However, we show that such visual expressiveness can instead propagate spurious cues that tie representations to the training environments, hindering invariant learning. We therefore discard visual guidance and instead treat the language embedding space as the primary source of domain invariance, naturally acting as an information bottleneck that preserves core semantics while suppressing domain-specific variations. Extensive experiments across diverse backbones exhibit state-of-the-art performance and further analyze what makes guidance effective for robust generalization. These findings shift the focus of DG from improving representations to designing supervision that enforces invariance.",
+      "authors": [
+        "Eunyi Lyou",
+        "Yunjeong Choi",
+        "Junho Lee",
+        "Joonseok Lee"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-02T03:31:34+00:00",
+      "link": "https://arxiv.org/pdf/2607.01657v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses vision-language model for domain generalization via information bottleneck",
+      "llm_evidence_cn": "利用视觉语言模型通过信息瓶颈进行域泛化",
+      "llm_evidence": "利用视觉语言模型通过信息瓶颈进行域泛化",
+      "canonical_evidence": "利用视觉语言模型通过信息瓶颈进行域泛化",
+      "llm_tldr_en": "Proposes Text-Anchored Information Bottleneck for domain generalization, leveraging language embeddings as invariant bottleneck to suppress spurious visual cues.",
+      "llm_tldr_cn": "不相关",
+      "llm_tldr": "不相关",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.02372v1",
+      "source": "arxiv",
+      "title": "Learning Spectral and Polarimetric Clues for One-to-Multimodal Novel View Synthesis",
+      "abstract": "Neural rendering techniques allow for accurate reconstruction of the geometry and color appearance of 3D scenes. Some methods have extended their use to additional imaging modalities, such as multispectral, infrared, or polarimetric data. However, all of these approaches require expensive sensors and calibrated setups to capture new multimodal frames for each new scene. We propose Spectral and Polarimetric Implicit Learned Representation (SPoILeR), a novel method to obtain multi-view consistent renderings of unconventional modalities for scenes where either only RGB frames or very few of the additional modalities are available. Thanks to a multimodal pre-training phase, the model learns the mutual correlation between different modalities. This step allows predicting accurate renderings of unconventional modalities during a fine-tuning phase supervised only by RGB images. Experimental results show that the approach can accurately render infrared, polarimetric, and multispectral frames for scenes where no input sample captured by these types of sensors is provided.",
+      "authors": [
+        "Federico Lincetto",
+        "Gianluca Agresti",
+        "Mattia Rossi",
+        "Piergiorgio Sartor",
+        "Pietro Zanuttigh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-02T16:13:19+00:00",
+      "link": "https://arxiv.org/pdf/2607.02372v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "handles missing modalities by learning to reconstruct unconventional modalities from RGB",
+      "llm_evidence_cn": "处理缺失模态，从RGB学习重建非常规模态",
+      "llm_evidence": "处理缺失模态，从RGB学习重建非常规模态",
+      "canonical_evidence": "处理缺失模态，从RGB学习重建非常规模态",
+      "llm_tldr_en": "SPoILeR learns implicit representations for novel view synthesis from limited multimodal data, reconstructing missing modalities via correlation learning.",
+      "llm_tldr_cn": "针对多模态新视角合成中需要昂贵传感器的问题，提出SPoILeR方法，通过多模态预训练学习模态间相关性，仅用RGB或少量其他模态即可重建一致的多模态表示。实验表明该方法能有效生成多视角一致的多光谱、偏振等模态结果，降低了对完整多模态数据的依赖。",
+      "llm_tldr": "针对多模态新视角合成中需要昂贵传感器的问题，提出SPoILeR方法，通过多模态预训练学习模态间相关性，仅用RGB或少量其他模态即可重建一致的多模态表示。实验表明该方法能有效生成多视角一致的多光谱、偏振等模态结果，降低了对完整多模态数据的依赖。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
