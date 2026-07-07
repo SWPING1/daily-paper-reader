@@ -6,36 +6,36 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-06
-- 运行时间：2026-07-06 21:41:37 UTC
+- 最新运行日期：2026-07-07
+- 运行时间：2026-07-07 22:03:29 UTC
 - 运行状态：成功
 - 本次总论文数：5
 - 精读区：0
 - 速读区：5
 
 ### 今日简报（AI）
-今日速读5篇论文，均为7.0分，涵盖多模态连续推理、文本到图像个性化生成及光谱偏振新视角合成三个方向。值得关注不对称互变分学习和解耦引导路径，这些方法在提升多模态推理与图像个性化方面有重要进展。建议读者从这三篇速读入手，重点理解变分学习和解耦机制的核心思想。
-- 详情：[/202607/06/README](/202607/06/README)
+今日速读5篇论文，涵盖视觉语言学习、对话时序动态、扩散表示学习等方向。值得关注的是鲁棒视觉语言学习的核心残差对齐方法，以及对话时态动态在多模态抑郁检测中的初步探索。建议普通读者优先了解扩散表示学习中优化轨迹的引导机制。
+- 详情：[/202607/07/README](/202607/07/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Multimodal Continuous Reasoning via Asymmetric Mutual Variational Learning](/202607/06/2607.00461v1-multimodal-continuous-reasoning-via-asymmetric-mutual-variational-learning)  
+1. [Text as Partial Constraint: Core-Residual Alignment for Robust Vision-Language Learning](/202607/07/2607.03143v1-text-as-partial-constraint-core-residual-alignment-for-robust-vision-language-learning)  
    标签：评分：7.0/10、query:mm
-   evidence：通过变分学习解决多模态推理中的训练-推理不匹配
-2. [Decoupled Guidance: Disentangling Subject and Context Pathways in Text-to-Image Personalization](/202607/06/2607.00766v1-decoupled-guidance-disentangling-subject-and-context-pathways-in-text-to-image-personalization)  
+   evidence：将不完整字幕视为部分约束，通过核心-残差对齐学习鲁棒的视觉语言表示
+2. [Can Conversational Temporal Dynamics Improve Depression Detection in Dyads? A Preliminary Investigation in Multi-Modality Perspectives](/202607/07/2607.03744v1-can-conversational-temporal-dynamics-improve-depression-detection-in-dyads-a-preliminary-investigation-in-multi-modality-perspectives)  
    标签：评分：7.0/10、query:mm
-   evidence：解耦文本到图像个性化中的主体和上下文路径
-3. [Learning Spectral and Polarimetric Clues for One-to-Multimodal Novel View Synthesis](/202607/06/2607.02372v1-learning-spectral-and-polarimetric-clues-for-one-to-multimodal-novel-view-synthesis)  
+   evidence：利用对话时间动态进行多模态抑郁检测
+3. [Steering Optimisation Trajectories in Diffusion Representation Learning](/202607/07/2607.05319v1-steering-optimisation-trajectories-in-diffusion-representation-learning)  
    标签：评分：7.0/10、query:mm
-   evidence：处理缺失模态，从RGB学习重建非常规模态
-4. [eXact-Prior Variational Autoencoder (X-VAE): Learning Data-Adaptive Gaussian Mixture Priors for Latent Distributions](/202607/06/2607.01275v1-exact-prior-variational-autoencoder-x-vae-learning-data-adaptive-gaussian-mixture-priors-for-latent-distributions)  
+   evidence：研究扩散自编码器中解耦与重构的权衡
+4. [$C^3$ASD: Multi-Level Consistency-Driven Representation Learning](/202607/07/2607.03018v1-c3asd-multi-level-consistency-driven-representation-learning)  
    标签：评分：6.0/10、query:mm
-   evidence：生成模型先验改进可应用于缺失模态插补
-5. [Domain Generalization via Text-Anchored Information Bottleneck](/202607/06/2607.01657v1-domain-generalization-via-text-anchored-information-bottleneck)  
+   evidence：多级一致性驱动的表示学习用于鲁棒音视频融合
+5. [TRACE-EVC: Text-Guided Relative Affective Control for Zero-Shot Emotional Voice Conversion](/202607/07/2607.03666v1-trace-evc-text-guided-relative-affective-control-for-zero-shot-emotional-voice-conversion)  
    标签：评分：6.0/10、query:mm
-   evidence：利用视觉语言模型通过信息瓶颈进行域泛化
+   evidence：文本指令引导的情感语音转换，多模态
 
 
 <div class="dpr-home-promo-card">
