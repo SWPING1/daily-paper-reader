@@ -6,44 +6,47 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-08
-- 运行时间：2026-07-08 21:34:30 UTC
+- 最新运行日期：2026-07-09
+- 运行时间：2026-07-09 21:47:45 UTC
 - 运行状态：成功
-- 本次总论文数：8
+- 本次总论文数：9
 - 精读区：3
-- 速读区：5
+- 速读区：6
 
 ### 今日简报（AI）
-今日聚焦6篇前沿研究，涵盖情绪识别、缺失数据插补与零样本学习。最值得关注的是EEG情感识别的面部表情符号代理建模（8.0分）以及流形假设下的缺失数据插补（8.0分）。建议优先精读这两篇高分论文，并速读因果动态标签精炼与头戴式表情识别工作以拓宽应用视野。
-- 详情：[/202607/08/README](/202607/08/README)
+今日共处理9篇论文，其中精读2篇、速读6篇。最值得关注的亮点是音频情感分析中的跨模态蒸馏技术和多模态联邦学习中缺失模态的专家混合方法。若想跟进前沿，可重点了解如何利用生成字幕提升情感分析鲁棒性，以及原型条件专家混合在异构数据下的表现。
+- 详情：[/202607/09/README](/202607/09/README)
 
 ### 精读区论文标签
-1. [See the Emotion: A Facial Emoji Proxy Modeling for EEG Emotion Recognition](/202607/08/2607.02912v1-see-the-emotion-a-facial-emoji-proxy-modeling-for-eeg-emotion-recognition)  
-   标签：评分：8.0/10、query:mm
-   evidence：通过跨模态生成从脑电到面部表情符号的情感识别
-2. [Missing Data Imputation under Manifold Hypothesis](/202607/08/2607.03641v1-missing-data-imputation-under-manifold-hypothesis)  
-   标签：评分：8.0/10、query:mm
-   evidence：使用流形假设下的变分自编码器进行缺失数据插补
-3. [Uncovering Latent Depression Severity for Binary Depression Detection via Advantage-weighting Ranking](/202607/08/2607.05901v1-uncovering-latent-depression-severity-for-binary-depression-detection-via-advantage-weighting-ranking)  
-   标签：评分：8.0/10、query:mm
-   evidence：多模态情感识别用于抑郁检测，含特征解耦与排序损失
+1. [Audio Sentiment Analysis via Distillation and Cross-Modal Integration of Generated Multilingual Transcripts](/202607/09/2607.06611v1-audio-sentiment-analysis-via-distillation-and-cross-modal-integration-of-generated-multilingual-transcripts)  
+   标签：评分：9.0/10、query:mm
+   evidence：通过跨模态变压器融合音频和文本进行多模态情感分析
+2. [ProMoE-FL: Prototype-conditioned Mixture of Experts for Multimodal Federated Learning with Missing Modalities](/202607/09/2607.06633v1-promoe-fl-prototype-conditioned-mixture-of-experts-for-multimodal-federated-learning-with-missing-modalities)  
+   标签：评分：9.0/10、query:mm
+   evidence：多模态联邦学习中缺失模态特征合成
+3. [General Incomplete Multimodal Learning via Dynamic Quality Perception](/202607/09/2607.06943v1-general-incomplete-multimodal-learning-via-dynamic-quality-perception)  
+   标签：评分：9.0/10、query:mm
+   evidence：通用不完整多模态学习处理缺失模态与退化
 
 ### 速读区论文标签
-1. [CV-DCLR: Causal-Visual Dynamic Label Refinement for Robust Zero-Shot Learning](/202607/08/2607.02601v1-cv-dclr-causal-visual-dynamic-label-refinement-for-robust-zero-shot-learning)  
+1. [Learning When to Listen: Gated Affect Fusion for Human Motion Prediction](/202607/09/2607.00296v1-learning-when-to-listen-gated-affect-fusion-for-human-motion-prediction)  
    标签：评分：7.0/10、query:mm
-   evidence：通过因果视觉动态标签细化实现鲁棒零样本学习的解耦表示
-2. [$C^3$ASD: Multi-Level Consistency-Driven Representation Learning](/202607/08/2607.03018v2-c3asd-multi-level-consistency-driven-representation-learning)  
+   evidence：使用门控机制动态融合面部情感和姿态，在噪声观测下实现稳健运动预测
+2. [UBG-Net: An Uncertainty-aware Bayesian Gating Network for Robust Audio-Visual Speech Recognition](/202607/09/2607.06892v1-ubg-net-an-uncertainty-aware-bayesian-gating-network-for-robust-audio-visual-speech-recognition)  
    标签：评分：7.0/10、query:mm
-   evidence：提出一致性驱动框架，在损坏条件下实现鲁棒的视听活动说话人检测。
-3. [Enhancing Facial Expression Recognition in Head-Mounted Displays with Synthetic Data](/202607/08/2607.04490v1-enhancing-facial-expression-recognition-in-head-mounted-displays-with-synthetic-data)  
-   标签：评分：7.0/10、query:mm
-   evidence：利用合成数据增强面部表情识别
-4. [Beyond Modality Fusion: Deep Ensembles for Multimodal Classification](/202607/08/2607.05019v1-beyond-modality-fusion-deep-ensembles-for-multimodal-classification)  
-   标签：评分：7.0/10、query:mm
-   evidence：深度集成方法无需显式融合提升多模态分类鲁棒性
-5. [Do Medical Vision Language Models Actually See? A Counterfactual Grounding Framework and Hard-Negative Contrastive Training for Visually-Reliant Medical VLMs](/202607/08/2607.03647v1-do-medical-vision-language-models-actually-see-a-counterfactual-grounding-framework-and-hard-negative-contrastive-training-for-visually-reliant-medical-vlms)  
+   evidence：提出不确定性感知贝叶斯融合，在噪声条件下实现稳健视听语音识别
+3. [EmoteGPT: 3D Human Facial Expressions from Natural Language Descriptions](/202607/09/2607.02674v1-emotegpt-3d-human-facial-expressions-from-natural-language-descriptions)  
    标签：评分：6.0/10、query:mm
-   evidence：针对多模态鲁棒性的反事实评估框架
+   evidence：使用3DMM解耦参数空间生成面部表情
+4. [Modality Relevance is not Modality Utility: Post-hoc Selective Modality Escalation for Cost-Aware Multimodal RAG](/202607/09/2607.05438v1-modality-relevance-is-not-modality-utility-post-hoc-selective-modality-escalation-for-cost-aware-multimodal-rag)  
+   标签：评分：6.0/10、query:mm
+   evidence：面向缺失模态场景的事后选择性模态升级
+5. [Hierarchical Acoustic-Semantic Modeling: Modality Separation and Semantic Coherence for Full-Duplex SLMs](/202607/09/2607.06540v1-hierarchical-acoustic-semantic-modeling-modality-separation-and-semantic-coherence-for-full-duplex-slms)  
+   标签：评分：6.0/10、query:mm
+   evidence：模态分离解决声学与语义的梯度冲突，与解耦表示学习目标一致
+6. [Latent graph encoding of multimodal neuroimaging features with generative AI architectures](/202607/09/2607.07027v1-latent-graph-encoding-of-multimodal-neuroimaging-features-with-generative-ai-architectures)  
+   标签：评分：6.0/10、query:mm
+   evidence：生成式方法用于多模态特征编码与重建，可迁移至缺失模态填补
 
 
 <div class="dpr-home-promo-card">
