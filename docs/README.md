@@ -6,47 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-09
-- 运行时间：2026-07-09 21:47:45 UTC
+- 最新运行日期：2026-07-10
+- 运行时间：2026-07-10 21:20:29 UTC
 - 运行状态：成功
-- 本次总论文数：9
-- 精读区：3
-- 速读区：6
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日共处理9篇论文，其中精读2篇、速读6篇。最值得关注的亮点是音频情感分析中的跨模态蒸馏技术和多模态联邦学习中缺失模态的专家混合方法。若想跟进前沿，可重点了解如何利用生成字幕提升情感分析鲁棒性，以及原型条件专家混合在异构数据下的表现。
-- 详情：[/202607/09/README](/202607/09/README)
+1) 今日聚焦多模态情感识别，精读SHAP加权跨模态专家融合方法的证据与局限。  
+2) 最值得关注：基于SHAP值的可解释融合策略，以及深度集成与基础模型在多模态分类中的对比。  
+3) 普通读者可尝试理解SHAP如何揭示模态贡献，并警惕其在高维场景下的解释力瓶颈。
+- 详情：[/202607/10/README](/202607/10/README)
 
 ### 精读区论文标签
-1. [Audio Sentiment Analysis via Distillation and Cross-Modal Integration of Generated Multilingual Transcripts](/202607/09/2607.06611v1-audio-sentiment-analysis-via-distillation-and-cross-modal-integration-of-generated-multilingual-transcripts)  
-   标签：评分：9.0/10、query:mm
-   evidence：通过跨模态变压器融合音频和文本进行多模态情感分析
-2. [ProMoE-FL: Prototype-conditioned Mixture of Experts for Multimodal Federated Learning with Missing Modalities](/202607/09/2607.06633v1-promoe-fl-prototype-conditioned-mixture-of-experts-for-multimodal-federated-learning-with-missing-modalities)  
-   标签：评分：9.0/10、query:mm
-   evidence：多模态联邦学习中缺失模态特征合成
-3. [General Incomplete Multimodal Learning via Dynamic Quality Perception](/202607/09/2607.06943v1-general-incomplete-multimodal-learning-via-dynamic-quality-perception)  
-   标签：评分：9.0/10、query:mm
-   evidence：通用不完整多模态学习处理缺失模态与退化
+1. [SHAP-Weighted Cross-Modal Expert Fusion for Emotion and Sentiment Recognition: Evidence and Limits](/202607/10/2607.08573v1-shap-weighted-cross-modal-expert-fusion-for-emotion-and-sentiment-recognition-evidence-and-limits)  
+   标签：评分：8.0/10、query:mm
+   evidence：利用XAI引导融合的多模态情感与情绪识别
 
 ### 速读区论文标签
-1. [Learning When to Listen: Gated Affect Fusion for Human Motion Prediction](/202607/09/2607.00296v1-learning-when-to-listen-gated-affect-fusion-for-human-motion-prediction)  
+1. [Beyond Modality Fusion: Deep Ensembles for Multimodal Classification](/202607/10/2607.05019v2-beyond-modality-fusion-deep-ensembles-for-multimodal-classification)  
    标签：评分：7.0/10、query:mm
-   evidence：使用门控机制动态融合面部情感和姿态，在噪声观测下实现稳健运动预测
-2. [UBG-Net: An Uncertainty-aware Bayesian Gating Network for Robust Audio-Visual Speech Recognition](/202607/09/2607.06892v1-ubg-net-an-uncertainty-aware-bayesian-gating-network-for-robust-audio-visual-speech-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：提出不确定性感知贝叶斯融合，在噪声条件下实现稳健视听语音识别
-3. [EmoteGPT: 3D Human Facial Expressions from Natural Language Descriptions](/202607/09/2607.02674v1-emotegpt-3d-human-facial-expressions-from-natural-language-descriptions)  
+   evidence：深度集成方法处理模态不平衡，提升多模态分类鲁棒性
+2. [Moonstone: A Multimodal Foundation Model and Benchmark for Lunar Remote Sensing](/202607/10/2607.03644v1-moonstone-a-multimodal-foundation-model-and-benchmark-for-lunar-remote-sensing)  
    标签：评分：6.0/10、query:mm
-   evidence：使用3DMM解耦参数空间生成面部表情
-4. [Modality Relevance is not Modality Utility: Post-hoc Selective Modality Escalation for Cost-Aware Multimodal RAG](/202607/09/2607.05438v1-modality-relevance-is-not-modality-utility-post-hoc-selective-modality-escalation-for-cost-aware-multimodal-rag)  
-   标签：评分：6.0/10、query:mm
-   evidence：面向缺失模态场景的事后选择性模态升级
-5. [Hierarchical Acoustic-Semantic Modeling: Modality Separation and Semantic Coherence for Full-Duplex SLMs](/202607/09/2607.06540v1-hierarchical-acoustic-semantic-modeling-modality-separation-and-semantic-coherence-for-full-duplex-slms)  
-   标签：评分：6.0/10、query:mm
-   evidence：模态分离解决声学与语义的梯度冲突，与解耦表示学习目标一致
-6. [Latent graph encoding of multimodal neuroimaging features with generative AI architectures](/202607/09/2607.07027v1-latent-graph-encoding-of-multimodal-neuroimaging-features-with-generative-ai-architectures)  
-   标签：评分：6.0/10、query:mm
-   evidence：生成式方法用于多模态特征编码与重建，可迁移至缺失模态填补
+   evidence：遥感中缺失模态的注意力遮蔽
 
 
 <div class="dpr-home-promo-card">

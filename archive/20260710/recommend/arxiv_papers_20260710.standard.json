@@ -1,0 +1,126 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-10T21:16:53.204884+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2607.08573v1",
+      "source": "arxiv",
+      "title": "SHAP-Weighted Cross-Modal Expert Fusion for Emotion and Sentiment Recognition: Evidence and Limits",
+      "abstract": "Multimodal emotion and sentiment recognition is commonly addressed by early fusion, which concatenates modalities before classification, or late fusion, which combines independently trained unimodal predictors. Early fusion can be accurate but monolithic, while late fusion is modular but may lose cross-modal interactions. This paper revisits XAI-guided adaptive fusion (\\xgaf), a tree-based mixture of unimodal and cross-modal experts whose sample-level weights are derived from TreeSHAP attribution magnitudes. We focus on the effect of SHAP attribution reduction when experts have unequal feature dimensionalities. In this setting, mean-abs and median-abs reductions can suppress high-dimensional cross-modal experts, whereas sum-abs reduction preserves total attribution mass. On MELD 7-class emotion recognition, sum-abs \\xgaf{} nearly matches early fusion across three face-sequence aggregators; the Transformer variant reaches 0.5983 \\wf{}, compared with 0.6018 for early fusion and 0.4598 for probability-average late fusion. McNemar testing shows no significant difference between sum-abs \\xgaf{} and early fusion on MELD ($p=1.000$), while \\xgaf{} remains significantly better than late fusion ($p<0.0001$). On CMU-MOSEI 3-class sentiment recognition, sum-abs \\xgaf{} reaches 0.6519 \\wf{}, slightly exceeding early fusion (0.6485) and late fusion (0.5696). Ablation studies show that the main gain comes from adding cross-modal experts, especially the trimodal expert, rather than from complex per-sample routing. Diagnostics further show that mean-abs and median-abs weights are nearly uniform, while sum-abs weights concentrate on the trimodal expert. Thus, the main contribution is a transparent empirical analysis of how SHAP reduction, expert dimensionality, and cross-modal expert design affect modular multimodal fusion.",
+      "authors": [
+        "Adis Alihodzic",
+        "Selma Skopljakovic Hubljar"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-09T15:06:28+00:00",
+      "link": "https://arxiv.org/pdf/2607.08573v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal emotion and sentiment recognition with XAI-guided fusion",
+      "llm_evidence_cn": "利用XAI引导融合的多模态情感与情绪识别",
+      "llm_evidence": "利用XAI引导融合的多模态情感与情绪识别",
+      "canonical_evidence": "利用XAI引导融合的多模态情感与情绪识别",
+      "llm_tldr_en": "This paper investigates SHAP-weighted cross-modal expert fusion for emotion and sentiment recognition, analyzing the effect of attribution reduction methods on high-dimensional experts.",
+      "llm_tldr_cn": "多模态情感识别中，早期融合与晚期融合各有局限。本文重新审视XAI引导的自适应融合（XGAF），基于TreeSHAP贡献度为单模态与跨模态专家分配样本级权重，并重点研究SHAP归因缩减策略（如均值绝对值、中位数绝对值）对高维跨模态专家的影响。实验表明，不同缩减策略显著影响融合性能，为中高维模态的鲁棒融合提供了指导。",
+      "llm_tldr": "多模态情感识别中，早期融合与晚期融合各有局限。本文重新审视XAI引导的自适应融合（XGAF），基于TreeSHAP贡献度为单模态与跨模态专家分配样本级权重，并重点研究SHAP归因缩减策略（如均值绝对值、中位数绝对值）对高维跨模态专家的影响。实验表明，不同缩减策略显著影响融合性能，为中高维模态的鲁棒融合提供了指导。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.05019v2",
+      "source": "arxiv",
+      "title": "Beyond Modality Fusion: Deep Ensembles for Multimodal Classification",
+      "abstract": "In multimodal classification, late-fusion approaches classify concatenated modality-specific features extracted by unimodal neural networks. When modality imbalance is pronounced, various regularization techniques have been proposed to balance the learning process and overcome the inferior performance of late-fusion networks. In contrast, this work demonstrates that multimodal data can be effectively classified without any explicit modality fusion, using deep ensembles of unimodal networks. We systematically compare deep ensembles to late-fusion networks at equal parameter count and show that ensembles consistently outperform state-of-the-art late-fusion methods designed to address modality imbalance. This advantage also holds over intermediate-fusion techniques we evaluated and over hybrid methods that combine unimodal and multimodal predictions. We propose and empirically validate a method for selecting the number of models per modality in an ensemble, avoiding computationally expensive exhaustive search. Under extreme modality imbalance and small ensemble sizes, the heuristic indicates that ensembles of unimodal models trained solely on the stronger modality are preferable; as the ensemble scales up, incorporating models from the weaker modality becomes beneficial. Both predictions align with our empirical findings. To systematically explore the challenges of optimizing multimodal models, we propose a synthetic multimodal framework that allows control over both the number of modalities and their predictive strength; our findings are consistent across synthetic and real-world datasets. Finally, by fitting scaling laws to bimodal datasets, we estimate the asymptotic performance of ensembles.",
+      "authors": [
+        "Ilya Burenko",
+        "Dmitry Vetrov"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-07-06T12:59:45+00:00",
+      "link": "https://arxiv.org/pdf/2607.05019v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "deep ensembles for robust multimodal classification addressing modality imbalance",
+      "llm_evidence_cn": "深度集成方法处理模态不平衡，提升多模态分类鲁棒性",
+      "llm_evidence": "深度集成方法处理模态不平衡，提升多模态分类鲁棒性",
+      "canonical_evidence": "深度集成方法处理模态不平衡，提升多模态分类鲁棒性",
+      "llm_tldr_en": "Proposes deep ensembles of unimodal networks as an alternative to fusion for multimodal classification, achieving robustness to modality imbalance without explicit fusion.",
+      "llm_tldr_cn": "该文针对多模态分类中常见的模态不平衡问题，提出使用单模态网络的深度集成替代传统的特征融合方法。通过集成多个单模态网络，在无需显式模态融合的情况下，显著提升了模型对模态不平衡的鲁棒性，并在多个数据集上超越现有融合方法。该工作为多模态鲁棒学习提供了新视角。",
+      "llm_tldr": "该文针对多模态分类中常见的模态不平衡问题，提出使用单模态网络的深度集成替代传统的特征融合方法。通过集成多个单模态网络，在无需显式模态融合的情况下，显著提升了模型对模态不平衡的鲁棒性，并在多个数据集上超越现有融合方法。该工作为多模态鲁棒学习提供了新视角。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.03644v1",
+      "source": "arxiv",
+      "title": "Moonstone: A Multimodal Foundation Model and Benchmark for Lunar Remote Sensing",
+      "abstract": "Decades of orbital missions have produced multi-modal remote sensing data for the Moon, spanning optical imagery, spectroscopy, thermal emission, radar, gravity, and elemental composition. Yet these datasets remain fragmented across archives, and no benchmark exists for evaluating machine learning on lunar data. We introduce Moonstone, the first multi-modal foundation model benchmark for lunar remote sensing. Our contributions are: (1) a 28-channel, 128 pixels-per-degree (~237 m) global lunar pretraining dataset from seven instrument families across five missions, (2) MG-MAE, a modality-grouped masked autoencoder with per-group convolutional tokenizers, a shared Vision Transformer encoder, attention masking for missing modalities, coverage-adaptive masking for heterogeneous spatial coverage, and spectral continuity regularization for physically plausible reconstructions, and (3) a benchmark of six downstream tasks covering classification, regression, and segmentation. MG-MAE pretrained features outperform scratch baselines on all tasks and surpass both ImageNet-pretrained and vanilla MAE baselines by large margins. Data and code are available at https://huggingface.co/datasets/ayushprd/Moonstone and https://github.com/ayushprd/Moonstone .",
+      "authors": [
+        "Ayush Prasad",
+        "Swarnalee Mazumder"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-07-03T23:54:52+00:00",
+      "link": "https://arxiv.org/pdf/2607.03644v1",
+      "tags": [
+        "keyword:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "attention masking for missing modalities in remote sensing",
+      "llm_evidence_cn": "遥感中缺失模态的注意力遮蔽",
+      "llm_evidence": "遥感中缺失模态的注意力遮蔽",
+      "canonical_evidence": "遥感中缺失模态的注意力遮蔽",
+      "llm_tldr_en": "Moonstone presents a multimodal foundation model for lunar remote sensing using MG-MAE with attention masking for missing modalities, offering a transferable approach to handle missing data in multimodal learning.",
+      "llm_tldr_cn": "月球遥感数据存在多模态缺失问题，现有基准缺失。Moonstone提出首个月球多模态基础模型基准，并设计MG-MAE架构，通过分组卷积分词器和共享Transformer编码器，利用注意力遮蔽机制处理缺失模态。实验证明该模型在多种遥感任务上表现优异，其缺失模态处理策略可迁移至其他多模态学习场景，为鲁棒多模态学习提供了方法论参考。",
+      "llm_tldr": "月球遥感数据存在多模态缺失问题，现有基准缺失。Moonstone提出首个月球多模态基础模型基准，并设计MG-MAE架构，通过分组卷积分词器和共享Transformer编码器，利用注意力遮蔽机制处理缺失模态。实验证明该模型在多种遥感任务上表现优异，其缺失模态处理策略可迁移至其他多模态学习场景，为鲁棒多模态学习提供了方法论参考。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
