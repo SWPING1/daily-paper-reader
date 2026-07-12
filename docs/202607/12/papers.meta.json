@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-12",
+  "date": "2026-07-12",
+  "generated_at": "2026-07-12T21:06:06",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/12/2607.03825v1-q-trim-question-guided-tri-modal-attention-for-audio-visual-question-answering",
+      "section": "quick",
+      "title_en": "Q-TriM: Question-Guided Tri-Modal Attention for Audio-Visual Question Answering",
+      "authors": "SungHun Kim, SeungJun Baek",
+      "date": "2026-07-04",
+      "pdf": "https://arxiv.org/pdf/2607.03825v1",
+      "score": "6.0",
+      "evidence": "并行多模态融合减少信息损失，增强鲁棒性",
+      "tldr": "音频-视觉问答任务中，现有方法采用深层堆叠的自注意力和交叉注意力，导致跨模态信息损失和误差累积。本文提出Q-TriM，通过浅层并行融合策略，设计文本引导的视频和音频条件注意力，并引入查询、键、值来自不同模态的三模态注意力。在三个基准上取得最优结果，尤其在MUSIC-AVQA-R上大幅提升，验证了鲁棒性和泛化能力。",
+      "tags": "query:mm",
+      "abstract_en": "Audio-Visual Question Answering (AVQA) extends classical VQA by requiring joint reasoning over video and synchronized audio. However, many AVQA systems rely on deeply stacked layers of self- and cross attention across text, video, and audio. Such sequential stacking may incur loss of information such as subtle inter-modal cues over the layers, causing errors to accumulate across sequential attention layers during the fusion. We introduce Q-TriM which performs multi-modal fusion in a shallow and parallel manner instead of a deep and sequential manner. For Q-TriM, we propose a novel framework for attention operation incorporating video and audio conditioned on text. As a result, we obtain not only standard cross attention outputs but also Tri-Modal Attention representations in which Query, Key, and Value come from distinct modalities. These attention representations are combined in parallel at a single stage, thus avoiding the multi-modal fusion with deep stacks in order to mitigate error accumulation and depth-induced issues. Q-TriM achieves state-of-the-art performance on three AVQA benchmarks, including substantial gains on MUSIC-AVQA-R, which demonstrates its robustness and out-of-distribution generalization. Code is available at https://github.com/Sunghun95/Q-TriM",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.03907v1-task-oriented-multimodal-edge-intelligence-via-integrated-sensing-communication-computation",
+      "section": "quick",
+      "title_en": "Task-Oriented Multimodal Edge Intelligence via Integrated Sensing-Communication-Computation",
+      "authors": "Weiwei Chen, Yinghui He, Zhong Ye, Dingzhu Wen, Guanding Yu",
+      "date": "2026-07-04",
+      "pdf": "https://arxiv.org/pdf/2607.03907v1",
+      "score": "6.0",
+      "evidence": "通过集成感知通信计算实现多模态鲁棒性",
+      "tldr": "现有单模态集成感知通信计算面临遮挡和环境不确定性等挑战，鲁棒性不足。本文提出任务导向的多模态ISCC框架，利用最大编码率降低准则提取紧凑判别特征并评估感知质量，通过块坐标下降算法优化资源约束下的感知准确率。在人类活动识别任务上，该方法在有限资源下一致优于三种基线方案。该工作为多模态边缘智能提供了统一设计与优化理论指导。",
+      "tags": "query:mm",
+      "abstract_en": "Integrated sensing, communication, and computation (ISCC) has recently emerged as a unified framework for enabling edge intelligence. However, existing ISCC designs predominantly rely on single-modal sensing, which is inherently vulnerable to occlusions, environmental uncertainties, and modality-specific failures, leading to degraded robustness in real-world deployments. This motivates the need for multi-modal ISCC, yet its design remains insufficiently explored. Compared with the single-modal case, multi-modal ISCC is more challenging because heterogeneous modalities enlarge data dimensionality and tighten communication/computation/energy budgets, while inter-modal correlations further complicate performance characterization. To address these challenges, we propose a task-oriented multi-modal ISCC framework that integrates device-side feature extraction with edge-side joint multi-modal inference. A central component of our approach is the maximal coding rate reduction (MCR^2) criterion, which enables each device to learn compact and discriminative task-relevant features, offering clear advantages over conventional cross-entropy-based extractors. We further leverage MCR^2 as a principled metric for edge-side sensing evaluation. On this basis, we formulate a sensing accuracy maximization problem under delay and resource constraints and develop an efficient block coordinate descent (BCD) algorithm after transforming the problem into a more tractable equivalent form. Focusing on a human activity recognition task, we conduct extensive experiments on publicly available datasets to evaluate the performance of the proposed ISCC framework. The results demonstrate that our approach consistently outperforms three baseline schemes under limited resource conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.04011v1-separating-representation-from-reconstruction-enables-scalable-text-encoders",
+      "section": "quick",
+      "title_en": "Separating Representation from Reconstruction Enables Scalable Text Encoders",
+      "authors": "Megi Dervishi, Mathurin Videau, Yann LeCun",
+      "date": "2026-07-04",
+      "pdf": "https://arxiv.org/pdf/2607.04011v1",
+      "score": "6.0",
+      "evidence": "分离表示学习与重建，类似于解耦表示",
+      "tldr": "BERT编码器在冻结探测下表示难以利用，因为其扁平设计耦合了表示学习与Token重构损失。CrossBERT提出分离表示与重构的双部分架构，结合互补掩码策略支持高掩码率，提升吞吐量1.5-2倍、样本效率2倍。该方法在MTEB和冻结GLUE上实现单调扩展和更优性能。",
+      "tags": "query:mm",
+      "abstract_en": "While decoders have rapidly scaled, encoders have remained largely unchanged since BERT. We revisit this disparity by frozen backbone evaluation via probing. Under this lens, the representations of BERT encoders become increasingly $\\textit{unexploitable}$ by frozen probes, despite improved perplexity. The misalignment originates in BERT's flat design, which couples representation learning to the token reconstruction loss. We propose $\\textbf{CrossBERT}$, a two-part architecture that separates the learning of high-quality encoded representations from the rigid grounding of token reconstruction. This design further enables high masking ratios ($\\ge 50\\%$) and gradient collection over all tokens via a $\\textit{Complementary Masking Strategy}$, respectively increasing throughput by $1.5$ to $2\\times$ and sample efficiency by $2\\times$. Overall, CrossBERT demonstrates monotonic scaling and superior performance on MTEB(eng, v2) and frozen GLUE benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.05850v1-breaking-spurious-correlations-via-generative-randomization-and-cross-variant-self-supervised-learning",
+      "section": "quick",
+      "title_en": "Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning",
+      "authors": "Suraj Yadav, Anjaneya Sharma, Siddharth Yadav",
+      "date": "2026-07-07",
+      "pdf": "https://arxiv.org/pdf/2607.05850v1",
+      "score": "6.0",
+      "evidence": "通过学习背景不变表示打破虚假相关，实现解耦表示",
+      "tldr": "深度神经网络在训练时容易利用标签与背景的虚假相关性，导致分布偏移下性能下降。现有生成方法创建反事实图像，但仅用作数据增强，未能彻底去除背景干扰。本文提出两阶段框架：首先通过零样本分割和保结构扩散生成背景变体，然后使用跨变体自监督学习将同一对象的不同背景变体作为正对进行对比学习，强制模型学习背景不变表示。在三个分布偏移基准上取得最佳最差组准确率，分别达到92.5%、81.7%和87.4%，显著优于现有方法。",
+      "tags": "query:mm",
+      "abstract_en": "Deep neural networks trained with Empirical Risk Minimization (ERM) often fail under distribution shifts because they exploit spurious correlations between object labels and background context. Recent generative approaches address this issue by creating counterfactual images with altered contexts, but typically use these samples as standard data augmentation, leaving the model free to retain background-sensitive representations. We propose a two-stage framework that uses generative intervention to explicitly learn background-invariant visual representations. First, we isolate the foreground object using zero-shot segmentation and generate context-shifted variants with a structure-preserving diffusion model, preserving object identity while varying the surrounding environment. We then introduce Cross-Variant Self-Supervised Learning, where variants of the same object under different backgrounds form positive pairs in a contrastive objective. This encourages the encoder to align object-centric representations while suppressing background-specific cues. Then, we fine-tune the pretrained encoder using an ERM warm-up followed by GroupDRO with layer-wise learning rates. Experiments on distribution-shift benchmarks demonstrate best worst-group performance, achieving 92.5% on Waterbirds, 81.7% on MetaShift, and 87.4% on NICO++. Code: https://github.com/surajyadav-research/GRSSL",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

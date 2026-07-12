@@ -6,41 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-11
-- 运行时间：2026-07-11 20:32:40 UTC
+- 最新运行日期：2026-07-12
+- 运行时间：2026-07-12 21:05:59 UTC
 - 运行状态：成功
-- 本次总论文数：7
-- 精读区：1
-- 速读区：6
+- 本次总论文数：4
+- 精读区：0
+- 速读区：4
 
 ### 今日简报（AI）
-今日聚焦缺失多视图聚类中的直路径流匹配新方法，同时关注跨数据集脑电情感识别、多模态生成理解迁移及神经编码器集成模型。最值得关注的是精读论文提出的流匹配框架，以9.0高分大幅提升不完整多视图数据聚类精度；速读中脑电情感识别结合掩码生成与对比学习的方法也具较强泛化性。建议读者优先精读流匹配论文的模型设计，并关注脑电方法对跨领域迁移的借鉴价值。
-- 详情：[/202607/11/README](/202607/11/README)
+今日速读3篇多模态与表示学习论文，涵盖音频-视觉问答、多模态边缘智能和文本编码器新架构。最值得关注的是Q-TriM的多模态注意力机制和Separating Representation的表示与重建分离思路，分别对AVQA和可扩展文本编码器有启发。建议优先阅读这两篇，关注其模型设计如何提升多模态理解与表示效率。
+- 详情：[/202607/12/README](/202607/12/README)
 
 ### 精读区论文标签
-1. [Straight-Path Flow Matching for Incomplete Multi-View Clustering](/202607/11/2607.06281v1-straight-path-flow-matching-for-incomplete-multi-view-clustering)  
-   标签：评分：9.0/10、query:mm
-   evidence：使用生成流匹配恢复缺失模态，用于不完全多视图学习
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Masked Generative-Contrastive Representation Learning for Cross-Dataset EEG-Based Emotion Recognition](/202607/11/2607.04139v1-masked-generative-contrastive-representation-learning-for-cross-dataset-eeg-based-emotion-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：基于掩码生成对比学习的EEG情绪识别
-2. [Transferability Between Understanding and Generation in Unified Multimodal Models](/202607/11/2607.04423v1-transferability-between-understanding-and-generation-in-unified-multimodal-models)  
-   标签：评分：7.0/10、query:mm
-   evidence：多模态迁移性研究
-3. [Integrating Neural Encoders in Bayesian Generalized Linear Mixed Models for Multimodal Data](/202607/11/2607.04647v1-integrating-neural-encoders-in-bayesian-generalized-linear-mixed-models-for-multimodal-data)  
-   标签：评分：7.0/10、query:mm
-   evidence：多模态贝叶斯GLMM的神经编码器集成
-4. [Hierarchical Acoustic-Semantic Modeling: Modality Separation and Semantic Coherence for Full-Duplex SLMs](/202607/11/2607.06540v2-hierarchical-acoustic-semantic-modeling-modality-separation-and-semantic-coherence-for-full-duplex-slms)  
-   标签：评分：7.0/10、query:mm
-   evidence：模态分离以解决声学和语义模态之间的干扰
-5. [Two-Stage Multi-Modal Fusion with Adaptive Alignment for Action Quality Assessment](/202607/11/2607.07438v1-two-stage-multi-modal-fusion-with-adaptive-alignment-for-action-quality-assessment)  
+1. [Q-TriM: Question-Guided Tri-Modal Attention for Audio-Visual Question Answering](/202607/12/2607.03825v1-q-trim-question-guided-tri-modal-attention-for-audio-visual-question-answering)  
    标签：评分：6.0/10、query:mm
-   evidence：双阶段自适应对齐多模态融合，增强鲁棒性
-6. [When Structured Sparse Autoencoders Learn Consistent Concepts Across Modalities](/202607/11/2607.08605v1-when-structured-sparse-autoencoders-learn-consistent-concepts-across-modalities)  
+   evidence：并行多模态融合减少信息损失，增强鲁棒性
+2. [Task-Oriented Multimodal Edge Intelligence via Integrated Sensing-Communication-Computation](/202607/12/2607.03907v1-task-oriented-multimodal-edge-intelligence-via-integrated-sensing-communication-computation)  
    标签：评分：6.0/10、query:mm
-   evidence：结构化稀疏自编码器学习解耦的跨模态概念
+   evidence：通过集成感知通信计算实现多模态鲁棒性
+3. [Separating Representation from Reconstruction Enables Scalable Text Encoders](/202607/12/2607.04011v1-separating-representation-from-reconstruction-enables-scalable-text-encoders)  
+   标签：评分：6.0/10、query:mm
+   evidence：分离表示学习与重建，类似于解耦表示
+4. [Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning](/202607/12/2607.05850v1-breaking-spurious-correlations-via-generative-randomization-and-cross-variant-self-supervised-learning)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过学习背景不变表示打破虚假相关，实现解耦表示
 
 
 <div class="dpr-home-promo-card">
