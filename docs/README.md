@@ -6,33 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-12
-- 运行时间：2026-07-12 21:05:59 UTC
+- 最新运行日期：2026-07-13
+- 运行时间：2026-07-13 21:30:41 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：0
-- 速读区：4
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日速读3篇多模态与表示学习论文，涵盖音频-视觉问答、多模态边缘智能和文本编码器新架构。最值得关注的是Q-TriM的多模态注意力机制和Separating Representation的表示与重建分离思路，分别对AVQA和可扩展文本编码器有启发。建议优先阅读这两篇，关注其模型设计如何提升多模态理解与表示效率。
-- 详情：[/202607/12/README](/202607/12/README)
+今日精读2篇论文，最高分9.0聚焦多模态情绪矛盾识别。值得关注的方向：同步视觉-面部细化识别犹豫与矛盾情绪，以及通过探测学习多模态大模型中的特权模态。建议关注多模态情感分析与模型可解释性的交叉应用。
+- 详情：[/202607/13/README](/202607/13/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [SVF-CR: Synchronized Visual-Facial Cross-Refinement for Multimodal Ambivalence and Hesitancy Recognition](/202607/13/2607.09417v1-svf-cr-synchronized-visual-facial-cross-refinement-for-multimodal-ambivalence-and-hesitancy-recognition)  
+   标签：评分：9.0/10、query:mm
+   evidence：使用视觉-面部交叉精化进行多模态矛盾与犹豫识别
+2. [Mixture of Probes: Learning from Privileged Modalities in Multimodal LLMs Through Probing](/202607/13/2607.08839v1-mixture-of-probes-learning-from-privileged-modalities-in-multimodal-llms-through-probing)  
+   标签：评分：8.0/10、query:mm
+   evidence：特权模态设置和模态特定信号解耦
 
 ### 速读区论文标签
-1. [Q-TriM: Question-Guided Tri-Modal Attention for Audio-Visual Question Answering](/202607/12/2607.03825v1-q-trim-question-guided-tri-modal-attention-for-audio-visual-question-answering)  
-   标签：评分：6.0/10、query:mm
-   evidence：并行多模态融合减少信息损失，增强鲁棒性
-2. [Task-Oriented Multimodal Edge Intelligence via Integrated Sensing-Communication-Computation](/202607/12/2607.03907v1-task-oriented-multimodal-edge-intelligence-via-integrated-sensing-communication-computation)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过集成感知通信计算实现多模态鲁棒性
-3. [Separating Representation from Reconstruction Enables Scalable Text Encoders](/202607/12/2607.04011v1-separating-representation-from-reconstruction-enables-scalable-text-encoders)  
-   标签：评分：6.0/10、query:mm
-   evidence：分离表示学习与重建，类似于解耦表示
-4. [Breaking Spurious Correlations via Generative Randomization and Cross-Variant Self-Supervised Learning](/202607/12/2607.05850v1-breaking-spurious-correlations-via-generative-randomization-and-cross-variant-self-supervised-learning)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过学习背景不变表示打破虚假相关，实现解耦表示
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
