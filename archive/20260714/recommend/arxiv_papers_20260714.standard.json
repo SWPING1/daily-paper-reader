@@ -1,0 +1,485 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-14T21:38:37.282576+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 5,
+    "deep_cap": 6,
+    "deep_selected": 5,
+    "quick_candidates": 7,
+    "quick_skim_target": 11,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2607.09884v1",
+      "source": "arxiv",
+      "title": "ShapKO: Shapley-Adaptive Modality Knockout for Robust Multimodal Learning",
+      "abstract": "Multimodal medical models often degrade when inputs are missing, a common scenario in real-world clinical workflows. Separately, even when all modalities are present, modality dominance is observed during training, where optimization over-relies on a highly predictive modality and undertrains complementary sources, resulting in poor robustness under partial availability. While training-time modality knockout improves missing-modality robustness, existing approaches use static masking rates that cannot adapt to evolving modality utility during training. We introduce ShapKO (Shapley-Adaptive Modality Knockout), a dynamic training strategy that learns modality-specific knockout probabilities based on validation utility. ShapKO periodically evaluates performance across modality subsets, estimates modality importance via Shapley values, and updates masking probabilities to suppress dominant modalities more frequently. This adaptive process promotes complementary representations, while requiring no architectural modifications. We evaluate ShapKO on three datasets covering multitask clinical classification, survival prediction, and cancer detection. ShapKO consistently improves performance under modality absence and yields interpretable trajectories of learned masking behavior. Code is available at: https://github.com/sumona00/ShapKO",
+      "authors": [
+        "Nusrat Binta Nizam",
+        "Fengbei Liu",
+        "Sunwoo Kwak",
+        "Minh Nguyen",
+        "Ruining Deng",
+        "Mert R. Sabuncu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-10T18:16:20+00:00",
+      "link": "https://arxiv.org/pdf/2607.09884v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Shapley-adaptive modality knockout for robust multimodal learning under missing modalities",
+      "llm_evidence_cn": "基于沙普利值的自适应模态丢弃，提升缺失模态下的鲁棒多模态学习",
+      "llm_evidence": "基于沙普利值的自适应模态丢弃，提升缺失模态下的鲁棒多模态学习",
+      "canonical_evidence": "基于沙普利值的自适应模态丢弃，提升缺失模态下的鲁棒多模态学习",
+      "llm_tldr_en": "ShapKO dynamically adjusts modality knockout probabilities using Shapley values to improve multimodal model robustness under missing modalities.",
+      "llm_tldr_cn": "多模态模型在输入缺失时性能下降，且训练时模态主导问题削弱鲁棒性。该文提出ShapKO，基于沙普利值自适应学习模态丢弃概率，动态评估模态效用并调整训练策略，避免静态掩码，显著提升部分模态可用时的鲁棒性，方法可直接应用于缺失模态的多模态情感识别等任务。",
+      "llm_tldr": "多模态模型在输入缺失时性能下降，且训练时模态主导问题削弱鲁棒性。该文提出ShapKO，基于沙普利值自适应学习模态丢弃概率，动态评估模态效用并调整训练策略，避免静态掩码，显著提升部分模态可用时的鲁棒性，方法可直接应用于缺失模态的多模态情感识别等任务。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.10599v1",
+      "source": "arxiv",
+      "title": "MRUF: Multi-granularity Routing with Uncertainty-Aware Fusion for Robust Multimodal Sentiment Analysis",
+      "abstract": "Multimodal sentiment analysis relies on language, visual, and acoustic cues, but utterance-level modality quality may vary due to occlusion, background noise, motion blur, or imperfect transcripts, causing conventional fusion to over-trust unreliable modalities. We propose MRUF, a reliability-aware fusion method that combines multi-granularity routing with uncertainty-aware calibration. MRUF summarizes sentiment-relevant representations, performs subspace- and modality-level routing, and supervises modality routing with leave-one-out error increases to estimate utterance-level modality importance. It further predicts modality-wise uncertainty and refines modality gates through inverse-variance reweighting, while modality-invariant contrastive alignment stabilizes the shared representation space. Experiments on CMU-MOSI and CMU-MOSEI under aligned and unaligned settings show consistent improvements over strong baselines, and mechanism analysis verifies that modalities with higher predicted uncertainty receive lower fusion weights.",
+      "authors": [
+        "Haoran Ma",
+        "Yinfeng Yu",
+        "Liejun Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "eess.SP"
+      ],
+      "published": "2026-07-12T06:32:54+00:00",
+      "link": "https://arxiv.org/pdf/2607.10599v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "robust multimodal sentiment analysis handling varying modality quality with multi-granularity routing and uncertainty-aware fusion",
+      "llm_evidence_cn": "鲁棒多模态情感分析，通过多粒度路由和不确定性感知融合处理模态质量变化",
+      "llm_evidence": "鲁棒多模态情感分析，通过多粒度路由和不确定性感知融合处理模态质量变化",
+      "canonical_evidence": "鲁棒多模态情感分析，通过多粒度路由和不确定性感知融合处理模态质量变化",
+      "llm_tldr_en": "Proposes MRUF, a reliability-aware fusion method that uses multi-granularity routing and uncertainty calibration to robustly handle modality quality variations in multimodal sentiment analysis.",
+      "llm_tldr_cn": "该论文针对多模态情感分析中因遮挡、噪声等导致的模态质量波动问题，提出MRUF方法。该方法通过多粒度路由总结情感表示，利用留一法误差估计模态重要性，再预测模态不确定性并采用逆方差加权精细化模态门控，在多个鲁棒性测试集上显著优于现有融合方法，验证了不确定性感知策略的有效性。",
+      "llm_tldr": "该论文针对多模态情感分析中因遮挡、噪声等导致的模态质量波动问题，提出MRUF方法。该方法通过多粒度路由总结情感表示，利用留一法误差估计模态重要性，再预测模态不确定性并采用逆方差加权精细化模态门控，在多个鲁棒性测试集上显著优于现有融合方法，验证了不确定性感知策略的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.10238v1",
+      "source": "arxiv",
+      "title": "Benchmarking Dynamic Affective Reasoning: A Viewer-Centric Video Emotion Dataset",
+      "abstract": "Video emotion analysis is typically framed as a static classification problem, treating each clip as an independent labeled unit. However, such a formulation overlooks a key psychological fact: emotions change as a result of cumulative reactions to consecutive causal events. To bridge this gap, we introduce Dynamic Affective Reasoning, the first large-scale benchmark for viewer-centric affect transitions and causal reasoning over consecutive video events. DAR contains 15,087 videos and 36,908 event-aligned affective segments annotated with 27 emotion categories. Unlike existing video-based emotion datasets, DAR presents a new viewer-centric perspective on fine-grained emotional expressions and transitions, and provides dense, temporally grounded, and causally explicit reasoning chains. Based on DAR, we formally define three challenging tasks: affective segmentation, fine-grained emotion classification, and affective reasoning. Complementing this benchmark, we propose DAR-R1, a two-stage framework that combines supervised fine-tuning with Group Relative Policy Optimization. Experiments across 10+ MLLMs show that DAR-R1 sets a new state-of-the-art for dynamic affective reasoning, in terms of both emotional localization and affective reasoning. Project page: https://github.com/Zhang-Zhiyan/DAR.",
+      "authors": [
+        "Zhiyan Zhang",
+        "Peipei Song",
+        "Jinpeng Hu",
+        "Jingyang Jia",
+        "Xun Yang",
+        "Xiaojun Chang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-11T09:58:29+00:00",
+      "link": "https://arxiv.org/pdf/2607.10238v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "benchmark for dynamic emotional reasoning in video",
+      "llm_evidence_cn": "视频动态情感推理基准",
+      "llm_evidence": "视频动态情感推理基准",
+      "canonical_evidence": "视频动态情感推理基准",
+      "llm_tldr_en": "Introduces Dynamic Affective Reasoning benchmark for viewer-centric emotion transitions with 15K videos and 27 emotion categories.",
+      "llm_tldr_cn": "现有视频情感分析通常为静态分类，忽略情感随事件的动态变化。该文提出动态情感推理基准DAR，包含1.5万视频和3.7万事件对齐的情感片段，标注27类情感，从观众视角提供细粒度情感表达和转换，支持因果推理，推动情感识别向动态化发展。",
+      "llm_tldr": "现有视频情感分析通常为静态分类，忽略情感随事件的动态变化。该文提出动态情感推理基准DAR，包含1.5万视频和3.7万事件对齐的情感片段，标注27类情感，从观众视角提供细粒度情感表达和转换，支持因果推理，推动情感识别向动态化发展。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.10413v1",
+      "source": "arxiv",
+      "title": "SPORT: Structure-Aware Prototype Disentanglement for Incomplete Multi-View Clustering",
+      "abstract": "Prototype-based Incomplete Multi-view Clustering has recently attracted increasing attention by exploiting prototypes as semantic anchors for missing-view imputation. However, existing approaches are still limited in three aspects. First, they typically focus on enforcing cross-view prototype consistency, while ignoring view-specific information embedded in prototypes, thus limiting multi-view expressiveness. Second, most methods rely on instance-level contrastive learning that only aligns paired samples across views, failing to preserve cluster-level relational structures. Third, missing-view imputation is usually performed using global prototypes alone, without considering local geometric neighborhood structures, leading to inaccurate recovery of missing representations. To address these limitations, we propose a novel framework termed Structure-aware PrOtotype disentanglement foR incomplete multi-view clusTering (SPORT), which explicitly disentangles shared and view-specific components of prototypes while preserving cluster-level relational structures. Specifically, we decouple prototypes into orthogonal shared and view-specific components, aligning only shared components to capture consensus semantics while de-correlating view-specific components to preserve complementary information. Meanwhile, a structure-aware contrastive learning mechanism is incorporated to explicitly model cluster-level relationships during cross-view representation learning. Furthermore, a hybrid imputation strategy integrates global prototype matching with local neighborhood matching, enabling joint exploitation of semantic prototypes and manifold structures for missing-view recovery. Extensive experiments on six benchmark datasets show that SPORT achieves superior performance over state-of-the-art methods under various missing rates.",
+      "authors": [
+        "Yaoyuan Guo",
+        "Zhibin Gu",
+        "Songhe Feng",
+        "Yuhui Zheng",
+        "Bing Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-11T17:40:22+00:00",
+      "link": "https://arxiv.org/pdf/2607.10413v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "disentangled prototype learning for missing-view imputation in incomplete multi-view clustering",
+      "llm_evidence_cn": "面向缺失视图插补的解耦原型学习",
+      "llm_evidence": "面向缺失视图插补的解耦原型学习",
+      "canonical_evidence": "面向缺失视图插补的解耦原型学习",
+      "llm_tldr_en": "Proposes structure-aware prototype disentanglement for incomplete multi-view clustering, improving missing-view imputation by preserving view-specific and cluster-level structures.",
+      "llm_tldr_cn": "针对不完整多视图聚类中现有方法忽略视图特定信息和局部几何结构的问题，提出结构感知原型解耦方法（SPORT）。该方法通过解耦视图特定和共享原型，并引入局部邻居结构进行缺失视图插补，在多个多视图聚类数据集上显著提升聚类准确性，验证了结构信息在缺失补全中的重要性。",
+      "llm_tldr": "针对不完整多视图聚类中现有方法忽略视图特定信息和局部几何结构的问题，提出结构感知原型解耦方法（SPORT）。该方法通过解耦视图特定和共享原型，并引入局部邻居结构进行缺失视图插补，在多个多视图聚类数据集上显著提升聚类准确性，验证了结构信息在缺失补全中的重要性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.11120v1",
+      "source": "arxiv",
+      "title": "Simple Features and Honest Calibration for Ambivalence and Hesitancy Recognition in Video",
+      "abstract": "We address ambivalence and hesitancy (A/H) recognition in the ABAW 2026 BAH Challenge: given a short interview video, predict whether the person shows signs of A/H. Our system combines affect-specialised text, audio, and visual representations with a small set of readable linguistic hesitation cues, fused by a reliability gate we call Affective Marker Fusion (AMF), and finished with a simple AP-weighted ensemble at a fixed decision threshold. We also introduce \\emph{ASR-erased time}: speech recognisers delete fillers and hesitation pauses from the transcript, but the chunk timestamps keep the time those events took, and sixteen features built from these gaps form the strongest and most independent non-verbal channel we measured (AP $0.718$, correlation $0.11$--$0.36$ with all other members). Across controlled experiments we find three things: cross-modal conflict design does not reliably help on BAH; language is by far the strongest channel while affect-specialised audio is a useful second; and calibration matters more than architecture. Fitting ensemble weights and a threshold on the small validation split overfits: it scores $0.741$ macro-F1 on validation but only $0.690$ on the untouched test set. AP-weighting at a fixed threshold instead reaches $\\mathbf{0.731}$ on test.",
+      "authors": [
+        "Vikas Kumar",
+        "Aditya Mishra",
+        "Haroon R. Lone"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL",
+        "eess.AS"
+      ],
+      "published": "2026-07-13T05:52:40+00:00",
+      "link": "https://arxiv.org/pdf/2607.11120v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal emotion recognition with affect-specialised features and reliability fusion",
+      "llm_evidence_cn": "多模态情感识别，使用情感特征和可靠性融合",
+      "llm_evidence": "多模态情感识别，使用情感特征和可靠性融合",
+      "canonical_evidence": "多模态情感识别，使用情感特征和可靠性融合",
+      "llm_tldr_en": "Combines text, audio, visual affect features with hesitation cues, fused by a reliability gate, to recognize ambivalence and hesitancy in video, achieving top AP in the ABAW 2026 BAH Challenge.",
+      "llm_tldr_cn": "该论文针对视频中矛盾与犹豫（A/H）情感识别任务，提出一个结合文本、音频、视觉情感特征与语言犹豫线索的多模态系统。通过可靠性门控融合（AMF）和AP加权集成，在ABAW 2026 BAH挑战中取得最高平均精度，展示了简单特征与诚实校准的有效性。",
+      "llm_tldr": "该论文针对视频中矛盾与犹豫（A/H）情感识别任务，提出一个结合文本、音频、视觉情感特征与语言犹豫线索的多模态系统。通过可靠性门控融合（AMF）和AP加权集成，在ABAW 2026 BAH挑战中取得最高平均精度，展示了简单特征与诚实校准的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.08839v1",
+      "source": "arxiv",
+      "title": "Mixture of Probes: Learning from Privileged Modalities in Multimodal LLMs Through Probing",
+      "abstract": "Multimodal Large Language Models (MLLMs) are typically designed under the assumption that all modalities available during training will also be accessible at inference. However, many real-world settings violate this assumption, requiring models to operate under a privileged modality setting, where auxiliary modalities are available only during training. While these modalities contain valuable information, existing MLLMs largely fail to leverage them effectively, as they treat modalities as interchangeable inputs rather than sources of complementary supervision. We propose Mixture of Probes (MoP), a novel framework that disentangles modality-specific and modality-general signals within the MLLM, allowing the model to preserve modality-dependent structure while learning transferable representations across modalities. At its core, MoP achieves this through a structured probing mechanism that extracts and organizes information from intermediate representations of a shared modality encoder, rather than relying only on final-layer alignment as done in existing MLLMs. To support this disentanglement, we further introduce MoP Cross-modal Training (MoP-X), a training strategy for MoP centered around a probe disentanglement loss that prevents probe collapse and encourages cross-modal learning. We evaluate MoP across two domains spanning eight tasks and four modalities under a comprehensive evaluation protocol tailored to the privileged modality setting, where each modality is independently treated as the sole input at inference time. MoP consistently outperforms strong MLLM baselines, achieving up to 65% relative improvement, demonstrating that auxiliary modalities, even when unavailable at inference, can provide substantial gains when effectively leveraged during training. Code, model checkpoints, and evaluation protocols will be made available at https://github.com/Sony/MoP.",
+      "authors": [
+        "Dominick Reilly",
+        "Qiyu Wu",
+        "Hiromi Wakaki",
+        "Srijan Das",
+        "Yuki Mistufuji"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-07-09T18:00:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.08839v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "disentangles modality-specific and modality-general signals for missing modalities in MLLMs",
+      "llm_evidence_cn": "在多模态大语言模型中解耦模态特定和通用信号以处理缺失模态",
+      "llm_evidence": "在多模态大语言模型中解耦模态特定和通用信号以处理缺失模态",
+      "canonical_evidence": "在多模态大语言模型中解耦模态特定和通用信号以处理缺失模态",
+      "llm_tldr_en": "Mixture of Probes disentangles modality-specific and modality-general signals within MLLMs, enabling learning from privileged modalities and robustness to missing modalities at inference.",
+      "llm_tldr_cn": "该论文提出混合探针（MoP）框架，在多模态大语言模型中解耦模态特定和模态通用信号。在训练时利用额外模态作为特权信息，推理时即使缺失部分模态也能保持性能。该方法通过探针分离信号，为缺失模态下的多模态学习提供了解耦表示的新途径，可迁移至情感识别场景。",
+      "llm_tldr": "该论文提出混合探针（MoP）框架，在多模态大语言模型中解耦模态特定和模态通用信号。在训练时利用额外模态作为特权信息，推理时即使缺失部分模态也能保持性能。该方法通过探针分离信号，为缺失模态下的多模态学习提供了解耦表示的新途径，可迁移至情感识别场景。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled representation learning for multimodal emotion recognition with missing data",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10299v1",
+      "source": "arxiv",
+      "title": "Empowering Long-form Omni-modal Understanding with Robust Audio Perception",
+      "abstract": "Recent advances in large-scale multimodal models have drivenremarkable progress in vision-language tasks; however, comprehensiveomni-modal understanding remains under-explored, largely due to thescarcity of datasets with rich, explicitly aligned auditory cues. To bridgethis gap, we present AVDC (Audio-Visual Decoupled Captions), a large-scaledataset designed to disentangle visual and auditory semantics. Specifi-cally, we propose an automated pipeline that leverages off-the-shelf mod-els to annotate videos with tripartite captions: visual-only (V), audio-only (A), and joint audio-visual (AV). This decoupled structure explic-itly captures both modality-specific nuances and complex cross-modalinteractions. Building upon this, we introduce AVDC-QA-CoT, a Chain-of-Thought augmented question-answering dataset to foster audio-visualreasoning. To fully exploit these resources, we employ a two-stage train-ing paradigm: omni-modal caption generation pre-training on AVDC, fol-lowed by instruction tuning on AVDC-QA-CoT. Extensive experiments acrossdiverse downstream tasks, spanning video captioning, audio-centric anal-ysis, and omni-modal benchmarks, demonstrate consistent and signifi-cant performance gains, showing the efficacy of our proposed datasetsand training strategy in advancing omni-modal perception. Code anddataset are related on https://radiant0726.github.io/AVDC-web/.",
+      "authors": [
+        "Kaiying Yan",
+        "Luoyi Sun",
+        "Xiao Zhou",
+        "Weidi Xie"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-11T13:04:24+00:00",
+      "link": "https://arxiv.org/pdf/2607.10299v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "audio-visual decoupled captions for disentangled representation",
+      "llm_evidence_cn": "音频-视觉解耦描述，支持解耦表示学习",
+      "llm_evidence": "音频-视觉解耦描述，支持解耦表示学习",
+      "canonical_evidence": "音频-视觉解耦描述，支持解耦表示学习",
+      "llm_tldr_en": "AVDC dataset with decoupled audio-visual captions enables disentangling modality-specific nuances and cross-modal interactions, supporting robust audio perception.",
+      "llm_tldr_cn": "为促进全模态理解，该文构建AVDC大规模数据集，通过自动化管道生成视觉单独、音频单独和联合音频-视觉三种描述，显式捕捉模态特异性和跨模态交互，并构建问答与思维链数据集，为解耦表示和多模态学习提供基础。",
+      "llm_tldr": "为促进全模态理解，该文构建AVDC大规模数据集，通过自动化管道生成视觉单独、音频单独和联合音频-视觉三种描述，显式捕捉模态特异性和跨模态交互，并构建问答与思维链数据集，为解耦表示和多模态学习提供基础。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.10308v1",
+      "source": "arxiv",
+      "title": "Generalize LMMs to Versatile Visual Modalities via Fabricated Modality Synthesis",
+      "abstract": "Despite the advancements of Large Multimodal Models (LMMs) in RGB vision, their ability to generalize to unseen visual modalities remains a largely unexplored challenge. We argue that different visual modalities are merely distinct samplings of the same physical world. Therefore, effective generalization requires models to possess both modality-agnostic perception of scene semantics and the adaptability to modality-specific characteristics. To achieve this, we propose a training framework, VVM-Tuning, to equip LMMs with these capabilities through modality synthesis and modality contexts. Specifically, we synthesize diverse appearance-varied images from RGB scenes, training the model to disentangle invariant semantics from varying visual appearances, and align these appearances with language for visual concepts decoupled from modalities. We then introduce modality contexts in the prompt and use instruction tuning to assist the model in mapping these appearance variations back to modality-related attributes, enabling zero-shot adaptation to unseen modalities during inference. To facilitate research in this direction, we introduce VVM-Bench, a comprehensive benchmark featuring 6 real and synthetic modalities to evaluate semantic perception and modality understanding. Experiments demonstrate that, via our training on synthetic modalities, 5 tested models exhibit consistent improvements on both real-world and novel synthetic modalities without in-modality training. Source code and data will be publicly available at https://github.com/Hunter-Will/VVM-Tuning.",
+      "authors": [
+        "Shihao Yuan",
+        "Yuanze Li",
+        "Ruyi Zhang",
+        "Ming Liu",
+        "Wangmeng Zuo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-11T13:28:16+00:00",
+      "link": "https://arxiv.org/pdf/2607.10308v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "modality synthesis and disentangled semantics for unseen modalities",
+      "llm_evidence_cn": "通过模态合成和解耦语义处理未见模态",
+      "llm_evidence": "通过模态合成和解耦语义处理未见模态",
+      "canonical_evidence": "通过模态合成和解耦语义处理未见模态",
+      "llm_tldr_en": "Proposes VVM-Tuning to generalize LMMs to unseen visual modalities by synthesizing diverse appearance images and training the model to disentangle invariant semantics from modality-specific appearance.",
+      "llm_tldr_cn": "针对大语言模型（LMM）在未见视觉模态上泛化能力不足的问题，提出VVM-Tuning训练框架。通过从RGB场景合成多种外观变化的图像，训练模型解耦不变语义与模态特定外观，并利用模态上下文增强适应性。实验表明，该方法在多个未见过模态上显著提升性能，为模态重建和解耦表示提供了有效范例。",
+      "llm_tldr": "针对大语言模型（LMM）在未见视觉模态上泛化能力不足的问题，提出VVM-Tuning训练框架。通过从RGB场景合成多种外观变化的图像，训练模型解耦不变语义与模态特定外观，并利用模态上下文增强适应性。实验表明，该方法在多个未见过模态上显著提升性能，为模态重建和解耦表示提供了有效范例。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10678v1",
+      "source": "arxiv",
+      "title": "Personalized Emotional Intelligence in Generative AI through Symbolic Affective Reasoning",
+      "abstract": "Emotional intelligence enables humans to recognize emotions, infer their causes, reason about interventions, and modify their environment to achieve desired affective states. Despite recent advances in artificial intelligence (AI), current models remain largely limited to generating realistic content or performing semantic reasoning, with little capacity for understanding, predicting, and personalizing human emotional responses. Here we introduce Emotion-augmented geneRatiOn System (EROS), a hybrid AI framework that integrates symbolic reasoning with deep learning to enable personalized emotion augmentation through visual content. Leveraging large-scale image-emotion datasets, EROS discovers generalizable affective rules, identifies emotion-relevant image regions, and predicts context-aware visual modifications that preserve scene semantics while steering emotional responses toward desired targets. To account for individual variability, EROS incorporates an expandable memory bank that supports inference-time personalization without model fine-tuning, yielding interpretable emotional profiles and rapid adaptation to new users. Across extensive human psychophysics experiments, EROS elicits target emotional responses more effectively than state-of-the-art large multimodal models while adapting to individual affective preferences. Beyond affective computing, EROS provides a foundation for AI systems that can understand, reason about, and augment human cognitive states, with potential applications in mental health, adaptive media, education, and human-computer interaction.",
+      "authors": [
+        "Qing Lin",
+        "Mengmi Zhang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-12T09:51:37+00:00",
+      "link": "https://arxiv.org/pdf/2607.10678v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "personalized emotional intelligence and affective reasoning",
+      "llm_evidence_cn": "个性化情感智能与情感推理",
+      "llm_evidence": "个性化情感智能与情感推理",
+      "canonical_evidence": "个性化情感智能与情感推理",
+      "llm_tldr_en": "EROS integrates symbolic reasoning with deep learning to enable personalized emotion augmentation through visual content, leveraging large-scale image-emotion datasets.",
+      "llm_tldr_cn": "EROS提出一种混合AI框架，结合符号推理与深度学习，从大规模图像-情感数据中学习通用情感规则，实现基于视觉内容的个性化情感增强，推动了情感智能的前沿。",
+      "llm_tldr": "EROS提出一种混合AI框架，结合符号推理与深度学习，从大规模图像-情感数据中学习通用情感规则，实现基于视觉内容的个性化情感增强，推动了情感智能的前沿。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.10860v1",
+      "source": "arxiv",
+      "title": "AU-Guided Synthetic Video Generation for Micro-Expression Recognition",
+      "abstract": "Micro-expression recognition is limited by the small scale, narrow demographic coverage, and restricted emotion labels of existing datasets. We introduce EquiME, a synthetic micro-expression dataset built from AU-guided image-to-video generation. EquiME contains 75K videos generated from 15K source face images across five target emotions, together with automatically inferred demographic metadata and video-quality measurements. We evaluate EquiME using frame-pair similarity, spatial variation, and no-reference perceptual-quality metrics, together with cross-dataset MER experiments on SAMM and CASME II. Models trained on EquiME achieve competitive cross-dataset performance on SAMM and CASME II and show comparatively low variation across the four evaluated architectures. This paper focuses on the dataset design, the structured AU-conditioning pipeline used for video generation, and the empirical evidence needed to assess EquiME as a synthetic MER resource. Project page: https://kirito-blade.github.io/me-vlm/",
+      "authors": [
+        "Pei-Sze Tan",
+        "Sailaja Rajanala",
+        "Yee-Fan Tan",
+        "Raphael C. -W. Phan",
+        "Huey-Fang Ong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-12T17:50:05+00:00",
+      "link": "https://arxiv.org/pdf/2607.10860v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "micro-expression recognition (emotion recognition) with synthetic data",
+      "llm_evidence_cn": "使用合成数据的微表情识别（情感识别）",
+      "llm_evidence": "使用合成数据的微表情识别（情感识别）",
+      "canonical_evidence": "使用合成数据的微表情识别（情感识别）",
+      "llm_tldr_en": "EquiME is a synthetic micro-expression dataset generated via AU-guided image-to-video, enabling competitive cross-dataset performance on SAMM and CASME II.",
+      "llm_tldr_cn": "针对微表情识别数据集规模小、多样性不足的问题，本文基于动作单元引导的图像到视频生成，构建了包含7.5万视频的合成数据集EquiME。在该数据集上训练的模型在SAMM和CASME II上取得有竞争力的跨数据集性能。",
+      "llm_tldr": "针对微表情识别数据集规模小、多样性不足的问题，本文基于动作单元引导的图像到视频生成，构建了包含7.5万视频的合成数据集EquiME。在该数据集上训练的模型在SAMM和CASME II上取得有竞争力的跨数据集性能。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.11102v1",
+      "source": "arxiv",
+      "title": "CHARM: Charge Calibration and Acoustic Rescue for LLM-based Multimodal Sarcasm Detection",
+      "abstract": "Sarcasm detection, the identification of discrepancies between literal and intended meaning, is a fundamental task in affective computing. However, zero-shot instruction-tuned Large Language Models (LLMs) systematically over-predict the positive (sarcastic) class across the entire capability spectrum, while the prosodic cues humans rely on remain underexploited and transfer unevenly across languages. We introduce CHARM (Charge Calibration and Acoustic Rescue for Multimodal Sarcasm Detection), a training-free framework that couples two modules. Bidirectional Charge Calibration (BiCAL) steers the LLM toward opposing sarcastic and literal verdicts along a symmetric axis of charged prompts; the induced directional biases cancel by construction, and a simple aggregation recovers an unbiased pragmatic signal. Acoustic Late-Fusion Rescue (ALFR) then fuses the calibrated votes with prosodic descriptors and LLM-generated auditory-perception probes through a shallow classifier, actively down-weighting saturated text votes in favour of acoustic evidence. Without fine-tuning any backbone, BiCAL attains the highest reported zero-shot text-only Macro-F1 of 0.787 on MUStARD, while ALFR lifts weak backbones by up to +0.382 Macro-F1 on CMMA. A Stouffer meta-analysis confirms statistical significance on MUStARD and CMMA (Z = 13.89 and Z = 34.64, respectively; p < 10^-43). Our analysis further uncovers a cross-cultural prosodic decoupling: low-level acoustics fail to transfer across languages, whereas high-level perceptual abstractions remain robust. Together, these components yield an explainable, cross-lingual multimodal detector.",
+      "authors": [
+        "Qiyang Sun",
+        "Yi Chang",
+        "Yupei Li",
+        "Xi Shao",
+        "Zixing Zhang",
+        "Björn W. Schuller"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD"
+      ],
+      "published": "2026-07-13T05:19:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.11102v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal sarcasm detection (emotion recognition)",
+      "llm_evidence_cn": "多模态讽刺检测（情感识别）",
+      "llm_evidence": "多模态讽刺检测（情感识别）",
+      "canonical_evidence": "多模态讽刺检测（情感识别）",
+      "llm_tldr_en": "CHARM is a training-free framework for multimodal sarcasm detection that calibrates LLM biases with Bidirectional Charge Calibration and leverages acoustic cues, improving sarcasm detection accuracy.",
+      "llm_tldr_cn": "CHARM提出一种无需训练的框架用于多模态讽刺检测，通过双向电荷校准纠正大语言模型对积极类的过度预测，并利用声学线索增强跨语言鲁棒性。实验表明该方法有效提升了讽刺检测的性能。",
+      "llm_tldr": "CHARM提出一种无需训练的框架用于多模态讽刺检测，通过双向电荷校准纠正大语言模型对积极类的过度预测，并利用声学线索增强跨语言鲁棒性。实验表明该方法有效提升了讽刺检测的性能。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.11656v1",
+      "source": "arxiv",
+      "title": "Imputation-free transformer learning enables robust Alzheimer's disease prediction and calibrated uncertainty quantification across heterogeneous clinical cohorts",
+      "abstract": "Accurate diagnostic classification and disease-severity prediction for Alzheimer's disease are hampered by the incompleteness and heterogeneity of real-world clinical data. Left unaddressed, these barriers prevent reliable disease modelling and hinder effective clinical evaluation. Conventional imputation strategies introduce systematic bias, distort inter-feature relationships, and yield overconfident predictions, limitations especially consequential in diagnostic settings. Here, we propose NITROGEN, an imputation-free transformer that jointly models within-patient feature dependencies and between-patient relational structure through masked and intersample attention, enabling robust multimodal learning directly from partially observed records. We trained NITROGEN on ADNI (N=7858 scans), and evaluated it on two independent cohorts: OASIS-3 (N=2675 scans) and AIBL (N=1286 scans). Across cohorts and diagnostic and cognitive score prediction tasks, NITROGEN showed robust calibration and uncertainty quantification advantages over tree-based ensemble methods, while maintaining competitive discriminative performance. Cross-cohort and cross-method analyses identified cortical thickness in the temporal pole, age, and APOE genotype as important, though not individually sufficient, features for AD classification. We further introduced a modality-aware uncertainty adjustment that augments predictive uncertainty proportionally to the importance of absent modalities, enabling calibrated confidence when diagnostic information is unavailable. Together, our results show that imputation-free attention learning preserved meaningful discrimination under cohort shift, revealing expected degradation on more distributionally different cohorts, and demonstrate that evaluating models along calibration, interpretability, and cross-cohort reliability, not accuracy alone, is essential for clinical deployment.",
+      "authors": [
+        "Christelle Schneuwly Diaz",
+        "Narmina Baghirova",
+        "Duy-Thanh Vu",
+        "Duy-Cat Can",
+        "Gilles Allali",
+        "Philippe Ryvlin",
+        "Oliver Y. Chén"
+      ],
+      "primary_category": "q-bio.NC",
+      "categories": [
+        "q-bio.NC",
+        "cs.LG"
+      ],
+      "published": "2026-07-13T15:05:26+00:00",
+      "link": "https://arxiv.org/pdf/2607.11656v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses incomplete multimodal data with imputation-free transformer",
+      "llm_evidence_cn": "处理不完整多模态数据，提出免插补transformer",
+      "llm_evidence": "处理不完整多模态数据，提出免插补transformer",
+      "canonical_evidence": "处理不完整多模态数据，提出免插补transformer",
+      "llm_tldr_en": "Proposes NITROGEN, an imputation-free transformer for robust Alzheimer's prediction under incomplete clinical data, enabling calibrated uncertainty quantification.",
+      "llm_tldr_cn": "针对临床数据不完整和异质性问题，该文提出免插补的NITROGEN transformer，通过掩码和样本间注意力联合建模患者内部特征依赖和患者间关系结构，避免传统插补偏见，在阿尔茨海默病预测中实现鲁棒性和校准的不确定性量化，为缺失模态处理提供新思路。",
+      "llm_tldr": "针对临床数据不完整和异质性问题，该文提出免插补的NITROGEN transformer，通过掩码和样本间注意力联合建模患者内部特征依赖和患者间关系结构，避免传统插补偏见，在阿尔茨海默病预测中实现鲁棒性和校准的不确定性量化，为缺失模态处理提供新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
