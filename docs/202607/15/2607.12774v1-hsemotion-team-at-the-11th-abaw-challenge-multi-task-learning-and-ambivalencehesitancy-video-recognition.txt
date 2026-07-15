@@ -1,0 +1,405 @@
+Title: HSEmotion Team at the 11th ABAW Challenge: Multi-Task Learning and Ambivalence/Hesitancy Video Recognition
+
+URL Source: https://arxiv.org/pdf/2607.12774v1
+
+Published Time: Wed, 15 Jul 2026 11:59:10 GMT
+
+Number of Pages: 17
+
+Markdown Content:
+# HSEmotion Team at the 11th ABAW Challenge: Multi-Task Learning and Ambivalence/Hesitancy Video Recognition 
+
+Aleksei Bakin 1 and Andrey V. Savchenko 2,3 
+
+> 1
+
+Central University, Moscow, Russia 
+
+bakin95aa@gmail.com  
+
+> 2
+
+Sber AI Lab, Moscow, Russia  
+
+> 3
+
+HSE University, Laboratory of Algorithms and Technologies for Network Analysis, Nizhny Novgorod, Russia 
+
+avsavchenko@hse.ru 
+
+Abstract. This article presents our results for the 11th Affective Behav-ior Analysis in-the-Wild (ABAW) competition. For multi-task learning with simultaneous prediction of valence, arousal, facial expressions, and action units on s-Aff-Wild2 dataset, we use frozen lightweight facial ex-tractors, MT-EmotiDDAMFN and MT-EmotiEffNet-B0, with separate heads and systematic post-processing: temporal Gaussian smoothing, per-class expression bias, AffectNet blending, per-AU threshold tuning, and weighted backbone fusion. On the official validation set, our ensem-ble significantly exceeds the performance of the ConvNeXt baseline. For ambivalence/hesitancy video recognition on the expanded BAH dataset, we extend the audiovisual pipeline to video-level Macro F1 by late fusion of face, HuBERT audio, and RoBERTa text classifiers, temporal aggre-gation, and a global-text gate. Frame-level Weighted F1 on validation set rises from 0.74 in ABAW-8 to 0.79, while the best public-test video-level Macro F1 reaches 0.73. In both tasks, competitive performance is achieved without fine-tuning heavy backbones. These results indicate that systematic prediction calibration and lightweight multimodal fu-sion can rival substantially heavier end-to-end approaches while offering improved efficiency and deployment flexibility. 
+
+Keywords: Affective Behavior Analysis in-the-wild (ABAW) · multi-task learning · ambivalence/hesitancy recognition · valence-arousal pre-diction · facial expression recognition · action unit detection · multimodal fusion · lightweight neural networks 
+
+# 1 Introduction 
+
+Robust affect analysis in unconstrained environments is essential for human-computer interaction, mental health monitoring, and socially aware AI. The Affective Behavior Analysis in-the-wild (ABAW) workshop series [15, 20, 25] has become a major benchmark for this problem, with tasks built on Aff-Wild [23, arXiv:2607.12774v1 [cs.CV] 14 Jul 2026 2 A.A. Bakin, A.V. Savchenko 
+
+54] and Aff-Wild2 [16, 24]. Recent editions increasingly emphasize multimodal cues, temporal reasoning, and reliable evaluation under missing labels and class imbalance. At the same time, top-ranking solutions often rely on large ensembles, self-supervised vision transformers, and heavy fine-tuning [40, 56], which limits their use on mobile or privacy-sensitive platforms [14, 44]. The 11th ABAW competition [27] features two challenges. The first is multi-task learning (MTL) [18, 19], in which each facial frame must be annotated with valence, arousal, one of eight expressions, and twelve action units. This task continues the s-Aff-Wild2 line studied in ABAW-3 [16], ABAW-4 [17] and ABAW-7. The second challenge is Ambivalence/Hesitancy (A/H) recognition on the BAH dataset [9]. A/H was introduced in ABAW-8 [21] with frame-level Weighted F1; ABAW-10 [22] continued the task on the same BAH split with 
+
+video-level Macro F1 . ABAW-11 returns to A/H on an expanded release of 
+
+1,427 videos and keeps video-level Macro F1. Our approach to both challenges follows the same principle: keep strong pre-trained extractors frozen, train only lightweight task-specific classifiers, and invest accuracy gains into post-processing and fusion. For MTL, we reimple-ment the complete pipeline from ABAW-7 in PyTorch, enabling reproducible training and simplified deployment [47]. We combine MT-EmotiDDAMFN with MT-EmotiEffNet-B0 [46, 55]. For A/H, we combine MT-EmotiEffNet-B0 face descriptors with HuBERT-large audio and RoBERTa-go_emotions text embed-dings, apply late fusion of modality-specific MLPs, aggregate frame scores inside each video, and optionally filter predictions with a global transcript classifier in-herited from ABAW-8 [48]. This design allows facial, audio, and text features to be computed locally, while only compact predictions are combined downstream. Thus, unlike previous ABAW submissions that primarily improve representa-tion learning through larger pretrained encoders or additional self-supervised pretraining, we instead investigate how far frozen lightweight representations can be pushed through systematic prediction calibration and modality-specific post-processing. Our contributions are fourfold: 
+
+– We demonstrate that frozen lightweight affect recognition backbones com-bined with lightweight task-specific heads remain highly competitive for both multi-task facial affect analysis and multimodal ambivalence recognition. 
+
+– We show that carefully designed validation-time calibration, including tem-poral smoothing, expression calibration, AU threshold optimization, and backbone fusion, provides larger gains than replacing the backbone with substantially heavier architectures. 
+
+– We present a unified lightweight framework applicable to two different ABAW challenges, achieving state-of-the-art validation/public-test performance while avoiding end-to-end fine-tuning. 
+
+– We release the complete PyTorch implementation to facilitate reproducible affective computing research. The rest of the paper is organized as follows. Section 2 reviews related work on MTL and A/H recognition. Section 3 presents our pipelines for both chal-HSEmotion Team at the 11th ABAW Challenge 3
+
+lenges. Section 4 reports validation and public-test results. Section 5 concludes the paper. 
+
+# 2 Related Works 
+
+2.1 Multi-Task Learning in ABAW Competitions 
+
+The MTL challenge requires simultaneous prediction of valence, arousal, eight expressions, and twelve action units on s-Aff-Wild2 [16]. Because ABAW-3 par-ticipants were not required to train on this split [16], we focus on ABAW-4 [17] and ABAW-7 [26], which share the official combined metric PM T L =
+
+PV A + PEXP R + PAU and are closest to the ABAW-11 protocol. Early s-Aff-Wild2 solutions mainly explored task interaction and calibra-tion without large backbones. The two-aspect information interaction model [50] models relations between facial sign vehicles and emotional messages. SS-MFAR [8] combines ResNet [12] features with expression-specific thresholds estimated via semi-supervised learning. A hybrid CNN–Transformer [53] fuses ResNet-18 [12] and a spatial transformer and finished fifth on the validation leaderboard. Cross-attentive AU graphs [37] capture dependencies among action units, while SM-MEmotionNet ensembles [28] aggregate facial embeddings from multiple extrac-tors. Among lightweight approaches, MT-EmotiEffNet [46]—an EfficientNet-B0 [51] model pre-trained for joint VA/EXPR learning—reached third place without MAE fine-tuning. The top two validation submissions relied on masked-autoencoder (MAE) [11] facial priors: an EMMA ensemble of MAE ViT [6, 11] and CNN encoders [30] took second place, and an MAE+Transformer ensemble with temporal modeling [11, 56] won the challenge. ABAW-7 moved evaluation to the private test split and shifted the field to-ward heavier representation learning. The winning Netease Fuxi AI Lab pipeline [33] uses a progressive strategy: task-specific heads are trained first on a self-supervised MAE [11] extractor, then jointly refined with cross-task feature fusion and a temporal convergence module that models expression dynamics across frames. HFUT-MAC1 [49] ranked third with a multi-architecture design that blends MAE [11], ResNet [12], POSTER, and OpenFace AU descriptors through a Transformer encoder and affine feature alignment. SCU ACers [29] placed fourth using frozen DINOv2 [38] features, task-adaptive query decoding, and an AU-assisted graph convolutional network that transfers AU structure to EXPR and VA prediction. Our ABAW-7 entry [47] took second place with a contrast-ing philosophy: frozen MT-EmotiEffNet and MT-EmotiDDAMFN extractors, lightweight PyTorch heads, Gaussian temporal smoothing, per-AU threshold tuning, and weighted backbone blending, without fine-tuning large transform-ers. For ABAW-11, organizers provide a frozen ConvNeXt baseline [27, 35] as a modern convolutional reference point on the same validation protocol. 
+
+2.2 Ambivalence and Hesitancy Recognition 
+
+Ambivalence/hesitancy (A/H) recognition was introduced in ABAW-8 [21] on the BAH dataset [9], which provides frame-level labels, speech transcripts, and 4 A.A. Bakin, A.V. Savchenko 
+
+cropped faces from behavioural Q&A videos. The first edition evaluated frame-level Weighted F1 on the BAH test split [21]. The organizer baseline is a multi-modal model with visual, audio, and transcript features fused through temporal convolution and co-attention [21, 41]. Top frame-level solutions combined pretrained unimodal encoders with sim-ple fusion. The HSEmotion pipeline [48] extracts facial descriptors from Emoti-EffLib [45], acoustic embeddings from HuBERT [13] and wav2vec 2.0 [1], and text embeddings from RoBERTa [34] trained on GoEmotions [5]; non-aligned audio and text are interpolated to frame rate, and lightweight MLP classifiers are fused by blending with temporal smoothing. This audiovisual–text design won the challenge. The runner-up, HCAI-VIS (Semantic Matters) [10], pursued a complementary semantic route: ViT [6] visual features with chunk-wise tem-poral pooling, emotional-speech Wav2Vec 2.0 [1] features, and BERT text repre-sentations fused through MLP/LSTM modules, confirming that transcripts are often the strongest single cue for hesitancy. ABAW-10 [22] reformulated the task as video-level Macro F1 on an ex-panded BAH release, requiring a single binary decision per video rather than per-frame labels. The winning VisPBF solution (BROTHER) [39] trains sep-arate expert networks on visual, audio, and contextual cues, ensembles them with diversity constraints, and adds sequence modeling for temporal aggrega-tion. Fennec (ConflictAwareAH) [2] extracts VideoMAE [52], HuBERT [13], and RoBERTa–GoEmotions [5, 34] embeddings and explicitly models cross-modal conflict via pairwise embedding differences before attention pooling. LEYA [43] ranked third with a four-stream design—scene VideoMAE [52], face EfficientNet-B0 [51], EmotionWav2Vec 2.0 with Mamba temporal encoding, and fine-tuned text transformers—fused through prototype-augmented Transformer modules and ensembled for the final video decision. ABAW-11 continues video-level Macro F1 on an expanded BAH corpus of 
+
+1,427 videos [9, 27]. The official zero-shot Video-LLaVA baseline [27, 31] remains weak on the public split. 
+
+# 3 Methods 
+
+We address two tasks of the ABAW-11 challenge. Below we formulate each task and describe the proposed pipeline. 
+
+3.1 MTL Challenge 
+
+The MTL challenge requires recognizing the emotions of each video frame X(t),
+
+t = t1, t 2, . . . , t N , where 1 ≤ t1 < t 2 < . . . < t N are the observed frame indices from s-Aff-Wild2 [16]. Human affect can be represented both continuously and discretely. In the former case, the most typical emotional space is the two-factor Russell’s circumplex model of affect [42] with VA-based encoding. Discrete rep-resentations include the set of basic expressions of Paul Ekman and the Facial Action Coding System (FACS) [7] with specific facial action units (AUs). HSEmotion Team at the 11th ABAW Challenge 5   
+
+> s-Aff-Wild2 frame
+> X(t)
+> Frozen MT-Emoti-DDAMFN
+> Frozen MT-Emoti-EffNet-B0
+> VA head
+> Temporal smoothing
+> EXPR head
+> Temporal smoothing, Expression bias
+> AU head
+> Threshold tuning
+> Backbone blending ˆV , ˆA
+> Backbone blending, AffectNet blend
+> ˆc
+> Backbone blending ˆAU
+
+Fig. 1: Proposed MTL pipeline: two frozen extractors, three task-specific heads, sep-arate post-processing per task, per-task weighted backbone blending, and AffectNet blending for EXPR after backbone blending. 
+
+For the MTL competition, it is necessary to assign X(t) to three emotional representations: 1. Valence V (t) ∈ [−1, 1] and arousal A(t) ∈ [−1, 1] (multi-output regression task). 2. Facial expression c(t) ∈ { 1, . . . , C EXP R }, where CEXP R = 8 is the total number of basic emotions: Neutral, Anger, Disgust, Fear, Happiness, Sad-ness, Surprise, and Other (multi-class classification). 3. AUs AU (t) = [ AU 1(t), . . . , AU CAU (t)] , where CAU = 12 is the total number of AUs and AU i(t) ∈ { 0, 1} (multi-label classification). The official performance measure is PM T L = PV A +PEXP R +PAU , where PV A =(CCC V +CCC A)/2 is the mean Concordance Correlation Coefficient (CCC) [32] of valence and arousal; PEXP R is the macro-averaged F1-score across all eight expression categories; and PAU is the average F1-score across all twelve AUs. This paper proposes a pipeline for the ABAW-11 MTL challenge (Fig. 1). Compared to our ABAW-7 solution [47], we migrate the training code to Py-Torch, keep the backbone weights frozen, and add systematic post-processing comprising: (i) temporal Gaussian smoothing of VA and EXPR predictions; (ii) per-class expression logit bias; (iii) per-AU threshold tuning; (iv) weighted blending of the two backbones; and (v) AffectNet blending of the fused EXPR predictions. The main part of the pipeline is the feature extractor backbones based on lightweight neural network architectures [44,46,47]. We use MT-EmotiDDAMFN (Dual-Direction Attention Mixed Feature Network) [55] and MT-EmotiEffNet-B0 (EfficientNet-B0) [51]. Both models were firstly pre-trained to recognize faces from the VGGFace2 dataset [4] and next fine-tuned on AffectNet [36] to si-multaneously classify static facial expressions and predict VA using a multi-task loss [46], which is essentially a sum of weighted categorical cross-entropy for facial expressions and CCC for valence and arousal. During MTL train-ing on s-Aff-Wild2, the backbone weights remain frozen. We hypothesize that AffectNet-pretrained facial representations already capture most low-level affec-6 A.A. Bakin, A.V. Savchenko 
+
+tive information required by ABAW. Consequently, optimizing lightweight pre-diction heads and prediction calibration becomes more beneficial than updating backbone parameters, particularly under relatively limited challenge training data. MT-EmotiDDAMFN produces a 522 -dimensional descriptor ( 512 -dimensional embedding x plus 10 -dimensional scores s), while MT-EmotiEffNet-B0 pro-duces a 1290 -dimensional descriptor ( 1280 -dimensional embedding x plus 10 -dimensional scores s). In both cases, s contains eight logits of AffectNet expres-sions plus valence and arousal predictions at the output of the last layer. Next, we train lightweight PyTorch heads on the official cropped_aligned 
+
+subset of s-Aff-Wild2. The EXPR head is a linear layer with softmax outputs 
+
+pEXP R ∈ [0 , 1] 8. The VA head uses only the ten AffectNet scores s (similarly to the slice layer in [46]) and returns pV A ∈ [−1, 1] 2 with hyperbolic tangent activations. The AU head is a feed-forward network with one hidden layer ( 128 
+
+units, ReLU) and 12 logistic sigmoid outputs pAU ∈ [0 , 1] 12 . The inputs of the EXPR and AU heads are the concatenation [x, s]. Each head is trained separately with early stopping on its validation metric (macro F1 for EXPR and AU, mean CCC for VA). As sequential emotions should be smooth, we apply task-specific post-processing inside each video, fuse the two backbones with task-specific weights, and finally apply AffectNet blending to the fused EXPR stream (Fig. 1). The steps are: 1. Temporal smoothing. Dynamic changes of facial expressions and VA may be significantly different, so we use separate parameters σEXP R , σV A , δEXP R ,and δV A . In practice, smoothing decreases the quality of AU detection, so AU predictions are not smoothed. For VA and EXPR, frame-wise predictions of each backbone are smoothed inside each video with a Gaussian kernel: 
+
+p(t) = 
+
+P 
+
+> ti∈N δ(t)
+
+exp 
+
+
+
+− (ti−t)2
+
+> σ
+
+
+
+p(ti)
+
+P 
+
+> ti∈N δ(t)
+
+exp 
+
+
+
+− (ti−t)2
+
+> σ
+
+ , (1) where Nδ (t) contains frames from the same video within δ frames of t. The parameters σ and δ are selected on the validation set for each backbone and task separately. 2. Expression bias. For each backbone, a per-class logit bias vector b ∈ R8
+
+for EXPR is estimated by coordinate search on the validation set. The biased EXPR label of backbone b is defined as 
+
+ˆc(b)
+
+> M T L
+
+(t) = arg max 
+
+> k
+
+
+
+log( p(b)
+
+> EXP R,k
+
+(t) + ϵ) + bk
+
+
+
+, (2) where p(b)
+
+> EXP R
+
+(t) are the smoothed EXPR probabilities of backbone b and ϵ
+
+is a small constant for numerical stability. HSEmotion Team at the 11th ABAW Challenge 7
+
+3. AU threshold tuning. Each AU is predicted independently by comparing the head score with a class-specific threshold: 
+
+AU i(t) = 
+
+(
+
+1, if pAU,i (t) ≥ tAU,i ,
+
+0, otherwise , i = 1 , . . . , 12 . (3) We consider a fixed threshold tAU,i = 0 .5 for all AUs and the best thresholds 
+
+t∗ 
+
+> AU,i
+
+that maximize the mean F1-score over twelve AUs on the validation set. 4. Backbone blending. Frame-wise predictions of the two backbones are fused with task-specific weights wV A , wEXP R , and wAU chosen on the vali-dation set: 
+
+p(blend ) 
+
+> V A
+
+(t) = wV A · p(1) 
+
+> V A
+
+(t) + (1 − wV A ) · p(2) 
+
+> V A
+
+(t), (4) 
+
+p(blend )
+
+> EXP R
+
+(t) = wEXP R · p(1) 
+
+> EXP R,bias
+
+(t) + (1 − wEXP R ) · p(2) 
+
+> EXP R,bias
+
+(t), (5) 
+
+p(blend ) 
+
+> AU
+
+(t) = wAU · p(1)  
+
+> AU
+
+(t) + (1 − wAU ) · p(2)  
+
+> AU
+
+(t), (6) where p(b)
+
+> EXP R,bias
+
+(t) is the one-hot (or soft) EXPR distribution induced by ˆc(b)
+
+> M T L
+
+(t), and p(b) 
+
+> AU
+
+(t) are raw AU scores before thresholding. Our best configuration is wV A = 1 .0, wEXP R = 0 .4, and wAU = 0 .5, meaning that DDAMFN dominates VA estimation, while EXPR and AU predictions are mixed almost equally. 5. AffectNet blending. After backbone fusion, let pAf f ectN et k (t) be the soft-max probability of the k-th AffectNet expression computed from the frozen scores s(t) of MT-EmotiDDAMFN. The most confident AffectNet label among the first seven basic expressions is 
+
+ˆk(t) = arg max  
+
+> k< 7
+
+pAf f ectN et k (t). (7) The fused MTL label is ˆcM T L (t) = arg max k p(blend )
+
+> EXP R,k
+
+(t). The final EXPR label is 
+
+ˆcEXP R (t) = 
+
+(ˆk(t), if pAf f ectN et  
+
+> ˆk(t)
+
+(t) > τ blend ,
+
+ˆcM T L (t), otherwise , (8) where τblend = 0 .88 for the final ensemble. For single-backbone ablations, we use τblend = 0 .85 for MT-EmotiDDAMFN and τblend = 0 .90 for MT-EmotiEffNet-B0. The final VA prediction is p(blend ) 
+
+> V A
+
+(t). The EXPR output is ˆcEXP R (t) from Eq. (8). For AU detection, thresholds t∗ 
+
+> AU,i
+
+are tuned on p(blend ) 
+
+> AU
+
+(t) and applied according to Eq. (3). 
+
+3.2 A/H Video Recognition Challenge 
+
+The A/H challenge is a binary video-level classification problem. For each video V from the BAH dataset [9], the goal is to predict whether ambivalence or 8 A.A. Bakin, A.V. Savchenko    
+
+> BAH video
+> V,frame t
+> Frozen MT-Emoti-EffNet-B0
+> Frozen HuBERT-large
+> Frozen RoBERTa-GoEmotions
+> Interp to frames
+> Interp to frames
+> MLP (pos-weighted)
+> MLP (pos-weighted)
+> MLP (pos-weighted)
+> pf ace (t)
+> paudio (t)
+> ptext (t)
+> Late fusion
+> pt
+> Temporal smoothing
+> δ
+> Mean or max agg
+> →s(v)
+> Global text classifier
+> ˆy(v)
+> Global text logistic regression
+
+Fig. 2: Proposed A/H pipeline: frozen face, audio, and text descriptors; frame-level MLPs; late fusion; temporal aggregation; optional global-text gate for video-level Macro F1. 
+
+hesitancy is present ( y = 1 ) or absent ( y = 0 ). The expanded ABAW-11 release contains 1,427 videos ( 10 .6 hours, 300 participants) with frame- and video-level expert annotations, speech transcripts, and cropped-aligned faces. The official metric is video-level Macro F1 across both classes; we also report average precision (AP) of the positive class. We extend ABAW-8 audiovisual pipeline [48] from frame-level to video-level prediction. The pipeline extracts frozen multimodal descriptors, trains lightweight frame classifiers, fuses their outputs, aggregates scores inside each video, and optionally applies a global text gate. 
+
+Multimodal feature extraction Visual modality. For each frame, we use MT-EmotiEffNet-B0 [46], pre-trained on VGGFace2 [4] and fine-tuned on Af-fectNet, to extract a 1280 -dimensional facial embedding xf ace (t) and ten expres-sion/VA scores s(t) from the official cropped-aligned faces. 
+
+Audio modality. The audio track of each video is converted to 16 kHz mono wav and processed by HuBERT-large [13], producing 1024 -dimensional hidden states haudio (τ ) along the acoustic timeline. 
+
+Text modality. The official transcript of each video is encoded with RoBERTa-base trained on GoEmotions [5, 34], yielding a sequence of 768 -dimensional to-ken/sentence embeddings etext (τ ).Since audio and text are not aligned with face frames, we linearly interpolate 
+
+haudio and etext to the visual frame indices of each video, obtaining haudio (t)
+
+and etext (t).
+
+Frame-level classifiers and late fusion For each modality we train a sep-arate feed-forward network (one hidden layer with 64 ReLU units and a single logistic output) on frame-level BAH annotations. Training uses binary cross-entropy with logits and a positive-class weight w+ = Nneg /N pos to compensate for class imbalance; all frames labeled as A/H are kept, while negative frames are subsampled with step 1. For the final submission, each modality classifier is fine-tuned on the concatenation of the official training and validation splits. This yields frame-wise probabilities pf ace (t), paudio (t), and ptext (t).HSEmotion Team at the 11th ABAW Challenge 9
+
+The multimodal frame score is obtained by late fusion: 
+
+pt = w1 pf ace t + w2 paudio t + w3 ptext t , w1 + w2 + w3 = 1 . (9) We also study early fusion, where [xf ace (t), haudio (t), etext (t)] is concatenated and fed into one MLP, but the late-fusion ensemble performs better in our ex-periments. 
+
+Video-level decision ABAW-11 requires one binary label per video. Starting from fused frame probabilities, we optionally apply temporal smoothing inside each video with half-width δ:
+
+˜pt = 1
+
+|N δ (t)|
+
+X 
+
+> ti∈N δ(t)
+
+pti , (10) where Nδ (t) contains frame indices from the same video within δ frames of t.The video score is then computed by aggregating frame probabilities: 
+
+s(v) = Agg  {˜pt : t ∈ F v }, (11) where Fv is the set of labeled frames in video v, and Agg is either the arithmetic mean or the maximum. Following ABAW-8 solution [48], we additionally train a global text classi-fier at the video level. Pooled transcript embeddings (mean and standard devi-ation over tokens) are standardized and passed to logistic regression, producing a video-level text probability pglobal text (v). A hard gate filters videos for which the transcript alone does not suggest A/H: 
+
+ˆs(v) = 
+
+(
+
+0, if pglobal text (v) < τ global ,s(v), otherwise . (12) The final video label is 
+
+ˆy(v) = 
+
+(
+
+1, if ˆs(v) ≥ τ, 
+
+0, otherwise . (13) Fusion weights (w1, w 2, w 3), smoothing width δ, aggregation rule Agg , thresholds 
+
+τ and τglobal , gate mode, and global-text hyperparameters are selected by grid search on the labeled public test split ( 525 videos). The global text classifier is trained on the concatenation of training and validation splits ( 902 videos). 
+
+# 4 Experiments 
+
+4.1 MTL Challenge 
+
+We evaluate the ABAW-11 MTL pipeline (Sec. 3.1) on the official training and validation splits of s-Aff-Wild2 [16]. Due to missing labels, 142 ,333 training frames provide only 103 ,917 valence/arousal values, 90 ,645 expression labels, and 103 ,316 AU annotations. The validation set contains 26 ,876 faces with com-plete VA and AU labels, but only 15 ,440 expression labels. 10 A.A. Bakin, A.V. Savchenko 
+
+Table 1: Comparison with MTL scores on s-Aff-Wild2 from prior ABAW challenge publications. Method PV A PEXP R PAU PM T L 
+
+Organizer baseline [17] 0.12 0.10 0.12 0.34 HSEmotion [47] 0.56 0.42 0.52 1.49 AIWELL-UOC [3] 0.37 0.28 0.47 1.11 SCU ACers [29] 0.37 0.30 0.49 1.16 HFUT-MAC1 [49] 0.38 0.30 0.50 1.18 HSEmotion [47] 0.41 0.33 0.51 1.25 Netease Fuxi AI Lab [33] 0.54 0.43 0.56 1.53 ABAW-11 baseline [27, 35] – – – 0.45 Ours 0.56 0.46 0.54 1.56 Table 2: Ablation of the proposed ABAW-11 MTL pipeline on the validation set. Configuration PV A PEXP R PAU PM T L 
+
+MT-EmotiDDAMFN + heads 0.48 0.33 0.50 1.31 MT-EmotiEffNet-B0 + heads 0.44 0.34 0.49 1.27 MT-EmotiDDAMFN + post-processing 0.56 0.44 0.52 1.53 MT-EmotiEffNet-B0 + post-processing 0.52 0.45 0.52 1.49 Ensemble (DDAMFN + EffNet) 0.56 0.46 0.54 1.56 
+
+Comparison with published methods Table 1 summarizes MTL scores re-ported in prior ABAW publications on s-Aff-Wild2. Ablation of our ABAW-11 pipeline on the labeled validation split is given in Tables 2 and 3. On the s-Aff-Wild2 validation split, our ensemble reaches PM T L = 1 .56 ,improving over the ABAW-7 validation ensemble ( 1.49 , same split protocol) and over the official ABAW-11 ConvNeXt baseline ( 0.45 ). 
+
+Ablation of the proposed pipeline Table 2 isolates the contribution of each component of the proposed ABAW-11 MTL pipeline. Frame-level MT-EmotiDDAMFN and MT-EmotiEffNet-B0 heads reach PM T L = 1 .31 and 1.27 ,respectively. Post-processing improves DDAMFN to 1.53 and EffNet-B0 to 1.49 ;weighted backbone blending further raises the score to 1.56 .Table 3 details the incremental post-processing steps for MT-EmotiDDAMFN on a single backbone. VA smoothing provides the main VA gain; temporal EXPR smoothing and per-class bias improve expression recognition; AffectNet blend-ing adds a further EXPR gain in the single-backbone setting; per-AU threshold tuning adds the final AU boost. In the final ensemble, AffectNet blending is applied after weighted backbone blending (Fig. 1). A grid search over σ and δ
+
+(Eq. 1) shows that smoothing helps VA and EXPR (up to +0 .08 and +0 .11 for DDAMFN) but not AU detection. Interestingly, temporal smoothing contributes nearly all improvements in valence-arousal prediction, whereas expression cali-HSEmotion Team at the 11th ABAW Challenge 11                                     
+
+> Table 3: Incremental post-processing ablation for MT-EmotiDDAMFN. Step PV A PEXP R PAU PM T L
+> Frame-level heads 0.48 0.33 0.50 1.31 + VA smoothing 0.56 0.33 0.50 1.39 + EXPR smoothing 0.56 0.38 0.50 1.44 + EXPR bias 0.56 0.43 0.50 1.49 + AffectNet blending 0.56 0.44 0.50 1.50 + AU threshold tuning 0.56 0.44 0.52 1.53
+> Table 4: Reported video-level Macro F1 on BAH from prior ABAW challenge publi-cations. Method Macro F1 ABAW-10 baseline [22] 0.343 Lenovo PCIE [22] 0.675 LEYA [43] 0.714 Fennec [2] 0.715 VisPBF [39] 0.727 ABAW-11 baseline (Video-LLaVA zero-shot) [27] 0.283 Ours 0.731
+
+bration mainly benefits categorical recognition. AU detection benefits almost ex-clusively from threshold optimization, indicating that calibration requirements differ substantially across affective tasks. The final evaluation protocol applies the validation-selected post-processing without further adaptation and ensemble weights are applied to 51 ,159 official test frames using heads trained on the training split only. 
+
+4.2 A/H Video Recognition Challenge 
+
+We evaluate the ABAW-11 A/H pipeline (Sec. 3.2) on the official BAH splits [9, 27]: 778 training videos, 124 validation videos, and 525 public test videos. 
+
+Comparison with published methods Table 4 lists video-level Macro F1 scores reported in prior BAH challenge publications. After the competition con-cludes, we will update the table with the final test-set results. Component and fusion ablations of our ABAW-11 pipeline are in Tables 5 and 6. On the ABAW-11 public test set, the proposed pipeline reaches video Macro F1 0.73 , well above the official Video-LLaVA baseline ( 0.283 ). 
+
+Ablation of the proposed pipeline Table 5 reports frame-level diagnostics on the ABAW-11 validation split ( 79 ,538 labeled frames). Text is the strongest 12 A.A. Bakin, A.V. Savchenko                                                   
+
+> Table 5: Frame-level ablation of the proposed A/H pipeline on ABAW-11 validation (τ= 0 .5unless noted). Configuration Weighted F1 Macro F1 Face MLP only 0.71 0.52 Audio MLP only 0.67 0.53 Text MLP only 0.77 0.59 Early fusion MLP ( τ= 0 .4)0.76 0.60 Late fusion ( τ= 0 .55 )0.79 0.59
+> Table 6: Video-level ablation of the proposed A/H pipeline on ABAW-11 validation (124 videos) and the public test split ( 525 videos). The validation majority baseline always predicts no A/H. Configuration Split Macro F1 AP Majority class val 0.28 0.60 RandomForest on concatenated features val 0.67 0.82 Early fusion MLP val 0.68 0.85 Late fusion, mean aggregation val 0.72 0.85 Late fusion, max aggregation val 0.71 0.83 Late fusion, mean public 0.69 0.79 Late fusion, mean + hard global-text gate public 0.71 0.80 Late fusion, max public 0.69 0.82 Late fusion, max + hard global-text gate public 0.73 0.82 Global text classifier only public 0.73 0.87
+
+unimodal cue (Weighted F1 0.77 ), and late fusion outperforms early fusion ( 0.79 
+
+vs. 0.76 ). Table 6 summarizes video-level ablations on ABAW-11 validation and the public test split. On validation, internal baselines (always-negative majority class, RandomForest, early fusion) are outperformed by late fusion; on the pub-lic split, max aggregation with the global-text gate yields the best Macro F1 (0.731 ). The best public configuration uses max aggregation, late fusion weights 
+
+(0 .20 , 0.45 , 0.35) , smoothing δ = 40 , gate threshold τglobal = 0 .41 , and τ = 0 .35 .A transcript-only global classifier reaches a comparable video Macro F1 ( 0.734 )with higher AP ( 0.87 vs. 0.82 ), confirming that spoken language is a very strong cue; the hard gate restricts audiovisual fusion to videos whose transcript already suggests A/H. Frame MLPs are fine-tuned on all 902 training and validation videos, the global text classifier is trained on the same 902 videos, and fusion and gate hyperparameters are selected by grid search on the public test split. The pri-mary submission applies the max+gate configuration to the private test set ( 152 
+
+videos). HSEmotion Team at the 11th ABAW Challenge 13 
+
+4.3 Discussion 
+
+Our experiments reveal three consistent observations. First, temporal calibra-tion contributes substantially more than replacing lightweight frozen backbones with larger architectures, suggesting that temporal consistency rather than fea-ture quality is the dominant error source on s-Aff-Wild2. Second, transcript information remains the strongest modality for ambivalence recognition, while audiovisual cues mainly improve borderline examples. Finally, both challenges indicate that competitive affect recognition can be achieved without end-to-end fine-tuning, reducing computational cost while simplifying deployment. 
+
+# 5 Conclusion 
+
+This paper advocates a compute-on-device, fuse-locally design for in-the-wild affect analysis: strong facial, audio, and text encoders remain frozen, while ac-curacy is recovered through lightweight heads, validation-time post-processing, and modality-specific fusion rather than end-to-end fine-tuning of large back-bones. For privacy-sensitive settings, raw video and transcripts need not leave the device; only compact frame-level scores or pooled embeddings are combined downstream (Figs. 1 and 2). On s-Aff-Wild2 validation, post-processing and dual-backbone fusion raised 
+
+PM T L from 1.31 to 1.56 (Tables 2), outperforming both the official ConvNeXt baseline ( 0.45 ) and our ABAW-7 validation ensemble ( 1.49 ). The gain comes mainly from temporal smoothing, expression calibration, and per-AU threshold-ing applied after frozen feature extraction, suggesting that much of the remaining MTL error on wild faces reflects temporal inconsistency and calibration rather than backbone capacity alone. For A/H, the same frozen-extractor principle extends to video-level decisions: late fusion with a transcript gate reached Macro F1 0.731 on the public develop-ment split (Table 6), while a transcript-only global classifier reached 0.734 with higher AP. Hesitancy is therefore largely lexical, but audiovisual fusion remains useful when the transcript is ambiguous. This supports a two-stage deployment pattern: a fast text screen at the video level, with multimodal fusion reserved for borderline cases. The source code of training scripts, evaluation code, hyperparameter con-figurations, and inference pipelines for both challenges is publicly available at 4.Overall, our results suggest that careful prediction calibration and multimodal fusion can compensate for much of the performance typically attributed to in-creasingly large backbone models. This observation encourages future research on efficient affective computing systems that prioritize robustness, interpretabil-ity, and deployment efficiency over backbone scale. The proposed framework is particularly suitable for privacy-sensitive applications such as mobile affect recognition, digital health, and human-computer interaction, where transmit-ting raw audiovisual data is undesirable.  
+
+> 4https://github.com/bakinalexey/abaw-11-mtl-bah-recognition
+
+14 A.A. Bakin, A.V. Savchenko 
+
+# References 
+
+1. Baevski, A., Zhou, Y., Mohamed, A., Auli, M.: wav2vec 2.0: A framework for self-supervised learning of speech representations. Advances in Neural Information Processing Systems 33 , 12449–12460 (2020) 2. Bekhouche, S.E., Telli, H., Benlamoudi, A., Herrouz, S.E., Taleb-Ahmed, A., Ha-did, A.: Conflict-aware multimodal fusion for ambivalence and hesitancy recogni-tion. arXiv preprint arXiv:2603.15818 (2026) 3. Cabacas-Maso, J., Ortega-Beltrán, E., Benito-Altamirano, I., Ventura, C.: Enhanc-ing facial expression recognition through dual-direction attention mixed feature networks: Application to 7th ABAW challenge. arXiv preprint arXiv:2407.12390 (2024) 4. Cao, Q., Shen, L., Xie, W., Parkhi, O.M., Zisserman, A.: VGGFace2: A dataset for recognising faces across pose and age. In: Proceedings of the 13th IEEE Inter-national Conference on Automatic Face & Gesture Recognition (FG). pp. 67–74. IEEE (2018) 5. Demszky, D., Movshovitz-Attias, D., Ko, J., Cowen, A., Nemade, G., Dixon, M.: Goemotions: A dataset of fine-grained emotions. In: Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics. pp. 4040–4054 (2020) 6. Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., Uszkoreit, J., Houlsby, N.: An image is worth 16x16 words: Transformers for image recognition at scale. In: International Conference on Learning Representations (ICLR) (2021) 7. Ekman, P., Friesen, W.V.: Facial action coding system. Environmental Psychology & Nonverbal Behavior (1978) 8. Gera, D., Raj Kumar, B.V., Badveeti, N.S.K., Balasubramanian, S.: Facial affect recognition using semi-supervised learning with adaptive threshold. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 31–44. Springer (2023) 9. González-González, M., Belharbi, S., Zeeshan, M.O., Sharafi, M., Aslam, M.H., Pedersoli, M., Koerich, A.L., Bacon, S.L., Granger, E.: BAH dataset for ambiva-lence/hesitancy recognition in videos for digital behavioural change. In: Interna-tional Conference on Learning Representations (ICLR) (2026), arXiv:2505.19328 10. Hallmen, T., Kampa, R.N., Deuser, F., Oswald, N., André, E.: Semantic matters: Multimodal features for affective analysis. In: Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 5761–5770 (2025) 11. He, K., Chen, X., Xie, S., Li, Y., Doll’ar, P., Girshick, R.: Masked autoencoders are scalable vision learners. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 16000–16009 (2022) 12. He, K., Zhang, X., Ren, S., Sun, J.: Deep residual learning for image recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 770–778 (2016) 13. Hsu, W.N., Bolte, B., Tsai, Y.H.H., Lakhotia, K., Salakhutdinov, R., Mohamed, A.: HuBERT: Self-supervised speech representation learning by masked predic-tion of hidden units. IEEE/ACM Transactions on Audio, Speech, and Language Processing 29 , 3451–3460 (2021) 14. Kharchevnikova, A., Savchenko, A.: Neural networks in video-based age and gender recognition on mobile platforms. Optical Memory and Neural Networks 27 , 246– 259 (2018) HSEmotion Team at the 11th ABAW Challenge 15 15. Kollias, D., Schulc, A., Hajiyev, E., Zafeiriou, S.: Analysing affective behavior in the first ABAW 2020 competition. In: Proceedings of the 15th IEEE International Conference on Automatic Face and Gesture Recognition (FG). pp. 794–800 (2020) 16. Kollias, D.: ABAW: Valence-arousal estimation, expression recognition, action unit detection & multi-task learning challenges. In: Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition (CVPR). pp. 2328–2336 (2022) 17. Kollias, D.: ABAW: learning from synthetic data & multi-task learning challenges. In: Proceedings of the European Conference on Computer Vision (ECCV). pp. 157–172. Springer (2023) 18. Kollias, D., Sharmanska, V., Zafeiriou, S.: Face behavior a la carte: Expressions, affect and action units in a single network. arXiv preprint arXiv:1910.11111 (2019) 19. Kollias, D., Sharmanska, V., Zafeiriou, S.: Distribution matching for heteroge-neous multi-task learning: a large-scale face study. arXiv preprint arXiv:2105.03790 (2021) 20. Kollias, D., Tzirakis, P., Baird, A., Cowen, A., Zafeiriou, S.: ABAW: Valence-arousal estimation, expression recognition, action unit detection & emotional reac-tion intensity estimation challenges. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 5888–5897 (2023) 21. Kollias, D., Tzirakis, P., Cowen, A., Zafeiriou, S., Kotsia, I., Granger, E., Pedersoli, M., Bacon, S., Baird, A., Gagne, C., Shao, C., Hu, G., Belharbi, S., Aslam, M.H.: Advancements in affective and behavior analysis: The 8th ABAW workshop and competition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops (2025) 22. Kollias, D., Tzirakis, P., Cowen, A., Zafeiriou, S., Kotsia, I., Granger, E., Pedersoli, M., Bacon, S., Madsen, J., Belharbi, S., Aslam, M.H., Shao, C., Hu, G.: From affect to complex behavior: Advancing multimodal human-centered AI at the 10th ABAW workshop & competition. arXiv preprint arXiv:2605.27451 (2026) 23. Kollias, D., Tzirakis, P., Nicolaou, M.A., Papaioannou, A., Zhao, G., Schuller, B., Kotsia, I., Zafeiriou, S.: Deep affect prediction in-the-wild: Aff-wild database and challenge, deep architectures, and beyond. International Journal of Computer Vision pp. 1–23 (2019) 24. Kollias, D., Zafeiriou, S.: Expression, affect, action unit recognition: Aff-wild2, multi-task learning and arcface. arXiv preprint arXiv:1910.04855 (2019) 25. Kollias, D., Zafeiriou, S.: Affect analysis in-the-wild: Valence-arousal, expressions, action units and a unified framework. arXiv preprint arXiv:2103.15792 (2021) 26. Kollias, D., Zafeiriou, S., Kotsia, I., Dhall, A., Ghosh, S., Shao, C., Hu, G.: 7th ABAW competition: Multi-task learning and compound expression recognition. arXiv preprint arXiv:2407.03835 (2024) 27. Kollias, D., Zafeiriou, S., Kotsia, I., Granger, E., Pedersoli, M., Bacon, S., Celik-tutan, O., Belharbi, S., Zeeshan, M.O., Shao, C., Aslam, M.H., Hu, G.: The 11th affective behavior analysis in-the-wild (ABAW) workshop and competition. ECCV 2026 Workshop (2026), competition specification 28. Li, S., Xu, Y., Wu, H., Wu, D., Yin, Y., Cao, J., Ding, J.: Facial affect analy-sis: Learning from synthetic data & multi-task learning challenges. arXiv preprint arXiv:2207.09748 (2022) 29. Li, X., Du, W., Yang, H.: Affective behavior analysis using task-adaptive and AU-assisted graph network. arXiv preprint arXiv:2407.11663 (2024) 30. Li, Y., Sun, H., Liu, Z., Han, H., Shan, S.: Affective behaviour analysis using pretrained model with facial prior. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 19–30. Springer (2023) 16 A.A. Bakin, A.V. Savchenko 31. Lin, B., Yang, S., Zhu, B., Zhang, J., Ye, J., Ning, M., Jin, P., Yuan, L.: Video-LLaVA: Learning united visual representation by alignment before projection. arXiv preprint arXiv:2311.10122 (2024) 32. Lin, L.I.K.: A concordance correlation coefficient to evaluate reproducibility. Bio-metrics 45 (1), 255–268 (1989) 33. Liu, C., Zhang, W., Qiu, F., Li, L., Yu, X.: Affective behaviour analysis via pro-gressive learning. arXiv preprint arXiv:2407.16945 (2024) 34. Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., Stoyanov, V.: Roberta: A robustly optimized BERT pretraining approach. arXiv preprint arXiv:1907.11692 (2019) 35. Liu, Z., Mao, H., Wu, C.Y., Feichtenhofer, C., Darrell, T., Xie, S.: A convnet for the 2020s. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 11976–11986 (2022) 36. Mollahosseini, A., Hasani, B., Mahoor, M.H.: AffectNet: A database for facial ex-pression, valence, and arousal computing in the wild. IEEE Transactions on Affec-tive Computing 10 (1), 18–31 (2017) 37. Nguyen, D.K., Pant, S., Ho, N.H., Lee, G.S., Kim, S.H., Yang, H.J.: Affective behavior analysis using action unit relation graph and multi-task cross attention. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 132–142. Springer (2023) 38. Oquab, M., Darcet, T., Moutakanni, T., Vo, H.V., Szafraniec, M., Khalidov, V., Fernandez, P., Haziza, D., Massa, F., El-Nouby, A., Howes, R., Huang, P.Y., Xu, H., Sharma, V., Li, S.W., Galuba, W., Rabbat, M., Assran, M., Ballas, N., Syn-naeve, G., Misra, I., J’egou, H., Mairal, J., Labatut, P., Joulin, A., Bojanowski, P.: DINOv2: Learning robust visual features without supervision. Transactions on Machine Learning Research (2024) 39. Pereira, A., Barros, P., Fernandes, B.: BROTHER: Behavioral recognition opti-mized through heterogeneous ensemble regularization for ambivalence and hes-itancy. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 5362–5369 (2026) 40. Qiu, F., Du, H., Zhang, W., Liu, C., Li, L., Guo, T., Yu, X.: Learning transferable compound expressions from masked autoencoder pretraining. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 4733–4741 (2024) 41. Richet, N., Belharbi, S., Aslam, H., Schadt, M.E., González-González, M., Cortal, G., Koerich, A.L., Pedersoli, M., Finkel, A., Bacon, S., et al.: Text-and feature-based models for compound multimodal emotion recognition in the wild. arXiv preprint arXiv:2407.12927 (2024) 42. Russell, J.A.: A circumplex model of affect. Journal of Personality and Social Psychology 39 (6), 1161 (1980) 43. Ryumina, E., Axyonov, A., Sysoev, D., Abdulkadirov, T., Almetov, K., Morozova, Y., Ryumin, D.: Ensemble-based prototype-augmented multimodal fusion for am-bivalence/hesitancy recognition. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 5409–5418 (2026) 44. Savchenko, A.V.: Video-based frame-level facial analysis of affective behavior on mobile devices using EfficientNets. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 2359–2366 (2022) HSEmotion Team at the 11th ABAW Challenge 17 45. Savchenko, A.V.: EmotiEffNets for facial processing in video-based valence-arousal prediction, expression classification and action unit detection. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 5716–5724 (2023) 46. Savchenko, A.V.: MT-EmotiEffNet for multi-task human affective behavior analy-sis and learning from synthetic data. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 45–59. Springer (2023) 47. Savchenko, A.V.: Leveraging pre-trained multi-task deep models for trustworthy facial analysis in affective behaviour analysis in-the-wild. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops. pp. 4703–4712 (2024) 48. Savchenko, A.V.: HSEmotion Team at ABAW-8 Competition: Audiovisual am-bivalence/hesitancy, emotional mimicry intensity and facial expression recognition. arXiv preprint arXiv:2503.10399 (2025) 49. Shen, K., Liu, X., Wang, B., Yao, J., Liu, X., Guan, Y., Wang, Y., Li, G., Sun, X.: Facial affect recognition based on multi architecture encoder and feature fusion for the ABAW7 challenge. arXiv preprint arXiv:2407.12258 (2024) 50. Sun, H., Lian, Z., Liu, B., Tao, J., Sun, L., Cai, C., He, Y.: Two-aspect informa-tion interaction model for ABAW4 multi-task challenge. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 173–180. Springer (2023) 51. Tan, M., Le, Q.V.: EfficientNet: Rethinking model scaling for convolutional neu-ral networks. In: Proceedings of the 36th International Conference on Machine Learning (ICML). pp. 6105–6114 (2019) 52. Tong, Z., Song, Y., Wang, J., Wang, L.: VideoMAE: Masked autoencoders are data-efficient learners for self-supervised video pre-training. In: Advances in Neural Information Processing Systems. vol. 35, pp. 10078–10093 (2022) 53. Wang, L., Li, H., Liu, C.: Hybrid CNN-transformer model for facial affect recog-nition in the ABAW4 challenge. arXiv preprint arXiv:2207.10201 (2022) 54. Zafeiriou, S., Kollias, D., Nicolaou, M.A., Papaioannou, A., Zhao, G., Kotsia, I.: Aff-wild: Valence and arousal ‘in-the-wild’challenge. In: Proceedings of the Com-puter Vision and Pattern Recognition Workshops (CVPRW). pp. 1980–1987. IEEE (2017) 55. Zhang, S., Zhang, Y., Zhang, Y., Wang, Y., Song, Z.: A dual-direction attention mixed feature network for facial expression recognition. Electronics 12 (17), 3595 (2023) 56. Zhang, T., Liu, C., Liu, X., Liu, Y., Meng, L., Sun, L., Jiang, W., Zhang, F., Zhao, J., Jin, Q.: Multi-task learning framework for emotion recognition in-the-wild. In: Proceedings of the European Conference on Computer Vision (ECCV 2022) Workshops. pp. 143–156. Springer (2023)
