@@ -6,44 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-15
-- 运行时间：2026-07-15 21:36:32 UTC
+- 最新运行日期：2026-07-16
+- 运行时间：2026-07-16 21:04:04 UTC
 - 运行状态：成功
-- 本次总论文数：8
-- 精读区：5
+- 本次总论文数：4
+- 精读区：1
 - 速读区：3
 
 ### 今日简报（AI）
-今日精读5篇、速读3篇，聚焦多模态情感识别与可控语音生成。最值得看的两篇高分论文分别探讨多任务学习中的犹豫识别和是否真的需要超过10亿参数的多模态情感语言模型。普通读者可优先关注轻量化模型研究，思考小参数方案在情感计算中的实用性。
-- 详情：[/202607/15/README](/202607/15/README)
+今日精读1篇多任务情感行为分析的特征融合方法，速读3篇涵盖说话人身份学习与矛盾/犹豫识别的新方法。值得关注的是9.0高分的任务特定特征融合，以及CF-Net的说话人归一化与冲突融合策略。建议优先精读特征融合论文，并对CF-Net的矛盾识别权重机制做扩展探索。
+- 详情：[/202607/16/README](/202607/16/README)
 
 ### 精读区论文标签
-1. [HSEmotion Team at the 11th ABAW Challenge: Multi-Task Learning and Ambivalence/Hesitancy Video Recognition](/202607/15/2607.12774v1-hsemotion-team-at-the-11th-abaw-challenge-multi-task-learning-and-ambivalencehesitancy-video-recognition)  
+1. [Task-Specific Feature Fusion Method for Multi-Task Affective Behavior Analysis](/202607/16/2607.13986v1-task-specific-feature-fusion-method-for-multi-task-affective-behavior-analysis)  
    标签：评分：9.0/10、query:mm
-   evidence：多模态情感识别，多任务学习
-2. [Do We Really Need Multimodal Emotion Language Models Larger Than 1B Parameters?](/202607/15/2607.12787v1-do-we-really-need-multimodal-emotion-language-models-larger-than-1b-parameters)  
-   标签：评分：9.0/10、query:mm
-   evidence：直接研究多模态情感识别模型参数规模问题
-3. [Contrastive-Augmented Flow Matching for Style-Content Disentanglement](/202607/15/2607.12404v1-contrastive-augmented-flow-matching-for-style-content-disentanglement)  
-   标签：评分：8.0/10、query:mm
-   evidence：使用对比流匹配解缠风格与内容表示
-4. [CD-MED: Cross-Domain Multimodal Emotion Descriptor for Visual Comparison of Digital Objects](/202607/15/2607.12958v1-cd-med-cross-domain-multimodal-emotion-descriptor-for-visual-comparison-of-digital-objects)  
-   标签：评分：8.0/10、query:mm
-   evidence：跨域多模态情感描述符，整合来自多个模态的情感信息
-5. [MAMMOTH: A Multi-Modal End-to-End Policy for Off-Road Mobility Robust to Missing Modality](/202607/15/2607.12965v1-mammoth-a-multi-modal-end-to-end-policy-for-off-road-mobility-robust-to-missing-modality)  
-   标签：评分：8.0/10、query:mm
-   evidence：缺失模态下的鲁棒多模态导航
+   evidence：多任务情感行为分析，任务特定融合
 
 ### 速读区论文标签
-1. [On the modality gap and the contrastive loss in multi-modal representation learning](/202607/15/2607.10698v1-on-the-modality-gap-and-the-contrastive-loss-in-multi-modal-representation-learning)  
+1. [Learning Speaker Identity Beyond Language and Modality Constraints: Insights from the POLY-SIM 2026 Challenge](/202607/16/2607.13669v1-learning-speaker-identity-beyond-language-and-modality-constraints-insights-from-the-poly-sim-2026-challenge)  
    标签：评分：7.0/10、query:mm
-   evidence：xNCE减少模态间隙增强多模态表示鲁棒性
-2. [Segregate, Refine, Integrate: Decomposing Multimodal Fusion for Sentiment Analysis](/202607/15/2607.12686v1-segregate-refine-integrate-decomposing-multimodal-fusion-for-sentiment-analysis)  
-   标签：评分：7.0/10、query:mm
-   evidence：多模态情感分析，分离模态路径
-3. [AutoSIFT: Automatic Style Sifting for Controllable Speech Generation with Arbitrary Style Infilling](/202607/15/2607.12706v1-autosift-automatic-style-sifting-for-controllable-speech-generation-with-arbitrary-style-infilling)  
+   evidence：解决多模态说话人识别中缺失音频/视觉模态的问题
+2. [Audio-Text Cross-Attention with Psycholinguistic Support Features for Ambivalence/Hesitancy Recognition](/202607/16/2607.13345v1-audio-text-cross-attention-with-psycholinguistic-support-features-for-ambivalencehesitancy-recognition)  
    标签：评分：6.0/10、query:mm
-   evidence：语音生成中的解耦风格控制
+   evidence：音频-文本多模态系统用于矛盾/犹豫识别
+3. [CF-Net: Conflict Fusion with Speaker Normalisation and Certainty Weighting for Ambivalence/Hesitancy Recognition](/202607/16/2607.13976v1-cf-net-conflict-fusion-with-speaker-normalisation-and-certainty-weighting-for-ambivalencehesitancy-recognition)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态网络用于矛盾/犹豫识别，融合视觉、音频和文本流
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-16",
+  "date": "2026-07-16",
+  "generated_at": "2026-07-16T21:04:12",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/16/2607.13986v1-task-specific-feature-fusion-method-for-multi-task-affective-behavior-analysis",
+      "section": "deep",
+      "title_en": "Task-Specific Feature Fusion Method for Multi-Task Affective Behavior Analysis",
+      "authors": "Jiajun Sun, Zhe Gao",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13986v1",
+      "score": "9.0",
+      "evidence": "多任务情感行为分析，任务特定融合",
+      "tldr": "ABAW11多任务情感分析中，不同任务（效价-唤醒、表情分类、动作单元）需要不同的视觉特征与融合策略。本文提出任务自适应特征融合方法，冻结DINOv2 ViT-L和DINOv3 ConvNeXt-base骨干提取互补特征，系统比较多种预测头、时序处理和融合方式，为每个任务选择最优组合。在验证集上取得EXPR macro-F1 0.4222、AU macro-F1 0.5402、VA CCC 0.6717，总体得分1.6341。研究表明任务自适应融合冻结视觉特征是一种简单有效的策略。",
+      "tags": "query:mm",
+      "abstract_en": "The 11th Affective Behavior Analysis in-the-wild (ABAW11) Multi-Task Learning Challenge requires a unified system to predict valence-arousal, categorical expressions, and facial action units from the official s-Aff-Wild2 images. Although these tasks are naturally related through facial behavior, our validation experiments show that they benefit from different visual features, temporal processing strategies, fusion mechanisms, and calibration procedures. In this paper, we study task-adaptive feature fusion for ABAW11 multi-task affective behavior analysis. We first adapt two pretrained visual backbones, DINOv2 ViT-L and DINOv3 ConvNeXt-base, on an external expression-oriented facial image set and then freeze them to extract complementary frame-level features from the official ABAW11 data. On top of these frozen features, we systematically compare frame-level prediction heads, temporal convolutional heads, post-hoc temporal smoothing, LightGBM models, feature concatenation, gated fusion, residual fusion, late logit fusion, threshold calibration, and shared MTL structures. The final system selects task-specific fusion and prediction strategies rather than forcing all tasks to share a single architecture. On the ABAW11 validation set, the selected system achieves an EXPR macro-F1 of 0.4222, an AU macro-F1 of 0.5402, and a mean VA CCC of 0.6717, resulting in an overall validation score of 1.6341. The results suggest that task-adaptive fusion of frozen visual features is a simple and effective strategy for ABAW-style multi-task affective behavior analysis.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/16/2607.13669v1-learning-speaker-identity-beyond-language-and-modality-constraints-insights-from-the-poly-sim-2026-challenge",
+      "section": "quick",
+      "title_en": "Learning Speaker Identity Beyond Language and Modality Constraints: Insights from the POLY-SIM 2026 Challenge",
+      "authors": "Marta Moscati, Muhammad Saad Saeed, Marina Zanoni, Mubashir Noman, Rohan Kumar Das, Monorama Swain, Yassin Terraf, Yufang Hou, Elisabeth Andre, Khalid Mahmood Malik, Markus Schedl, Shah Nawaz",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13669v1",
+      "score": "7.0",
+      "evidence": "解决多模态说话人识别中缺失音频/视觉模态的问题",
+      "tldr": "当前多模态说话人识别系统通常假设训练和测试时模态完整且语言单一，但实际场景中存在视觉/音频缺失、多语言混合等挑战。POLY-SIM 2026挑战赛针对这些问题，提供标准化评估框架，要求系统在跨语言、跨模态条件下识别说话人身份。该挑战旨在推动系统鲁棒性和泛化能力，为真实应用提供基准。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal speaker identification systems typically assume the availability of complete and homogeneous audio-visual modalities during both training and testing, and assume each speaker only speaks a single language. However, in real-world applications, such assumptions often do not hold. Visual or audio information may be missing due to occlusions, camera or microphone failures, or privacy constraints. Multilingual speakers introduce additional complexity due to linguistic variability across languages. These situations constitute substantial challenges for the robustness and generalization capabilities of multimodal speaker identification systems. Aim of the POLY-SIM 2026 challenge is to address these aspects of speaker identification and to provide a standardized setup for the comparison of the proposed solutions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/16/2607.13345v1-audio-text-cross-attention-with-psycholinguistic-support-features-for-ambivalencehesitancy-recognition",
+      "section": "quick",
+      "title_en": "Audio-Text Cross-Attention with Psycholinguistic Support Features for Ambivalence/Hesitancy Recognition",
+      "authors": "Luiz F. B. F. Martins, Rodrigo W. Pisaia, Matheus M. Girardi, Isabella Berkembrock, João A. Almeida, André G. Hochuli, Rayson Laroca, Alceu S. Britto",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13345v1",
+      "score": "6.0",
+      "evidence": "音频-文本多模态系统用于矛盾/犹豫识别",
+      "tldr": "针对矛盾/犹豫识别任务，本文提出仅使用音频和文本的方法。将视频切分为5秒窗口，提取320维韵律描述、768维情感RoBERTa嵌入及74维手工心理语言学特征。通过时间交叉注意力融合音频与文本，并将支持特征注入门控多实例学习池化。在ABAW 2024开发集上集成模型达到平均精度0.875和宏F1 0.72，代码已开源。",
+      "tags": "query:mm",
+      "abstract_en": "We present an audio-text system for the Ambivalence/Hesitancy Video Recognition Challenge of the 11th ABAW Competition. The method excludes visual frames and represents each video as overlapping 5-second windows aligned with transcript timestamps. Each window combines a 320-dimensional prosodic audio descriptor, a 768-dimensional emotion-oriented RoBERTa embedding, and 74 handcrafted features capturing uncertainty, hedging, and attitudinal conflict. Audio and text are fused via temporal cross-attention, while support features are injected prior to gated multiple-instance learning (MIL) pooling to modulate the window's importance. Predictions from five independently initialized models are averaged. On the labeled public development set, the ensemble achieved an average precision of 0.875 and a macro-F1 of 0.72. Our source code is publicly available at https://github.com/Liga-de-IA-PUCPR/abaw-11-ah-challenge/.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/16/2607.13976v1-cf-net-conflict-fusion-with-speaker-normalisation-and-certainty-weighting-for-ambivalencehesitancy-recognition",
+      "section": "quick",
+      "title_en": "CF-Net: Conflict Fusion with Speaker Normalisation and Certainty Weighting for Ambivalence/Hesitancy Recognition",
+      "authors": "Tung Hung Bui, Hong Hai Nguyen, Van Thong Huynh",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13976v1",
+      "score": "6.0",
+      "evidence": "多模态网络用于矛盾/犹豫识别，融合视觉、音频和文本流",
+      "tldr": "针对视频中矛盾犹豫（AH）识别难题，提出CF-Net。冻结SigLIP2、HuBERT、DistilBert编码视觉、音频和文本，每说话人归一化减少身份泄漏，ConflictFusion模块显式计算跨模态不一致。训练采用确定性加权焦点损失、流形混合和模态丢弃，辅助回归头利用模糊标注。验证集Macro F1达0.7155，测试集0.7364，效果显著。",
+      "tags": "query:mm",
+      "abstract_en": "Detecting ambivalence and hesitancy (AH) in unconstrained video is challenging because the target signal is inherently ambiguous and expressed through subtle cross-modal incongruence rather than prototypical affect. We present CF-Net, a deep multimodal network submitted to the 3rd Edition of the AH Video Recognition Challenge (ABAW 11th, ECCV 2026), targeting the BAH dataset. CF-Net encodes visual, audio, and transcript streams with frozen SigLIP2, HuBERT, and DistilBERT backbones, normalises backbone features per speaker to reduce identity leakage, and fuses them via a ConflictFusion module that explicitly computes pairwise cross-modal incongruence. Training combines certainty-weighted focal loss, manifold mixup, and modality dropout; an auxiliary certainty-regression head leverages ambiguity annotations to stabilise learning on genuinely borderline samples. CF-Net achieves a Macro F1 of 0.7155 on the BAH validation set and 0.7364 (AP = 0.7492) on the private challenge test set.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
