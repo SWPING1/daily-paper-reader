@@ -1,0 +1,130 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-20T20:45:03.415894+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.12091v2",
+      "source": "arxiv",
+      "title": "Causal Supervision of Attention for Affective Behaviour Analysis",
+      "abstract": "The \\textit{11th Affective Behaviour Analysis in-the-wild Competition} includes the Multi-Task Learning Challenge, where participants develop a unified framework for Valence-Arousal Estimation, Expression Recognition, and Action Unit Detection. The challenge lies in learning emotion-related representations that generalize across subjects while remaining robust to spurious factors such as identity, illumination, pose, and demographic variation. To aggregate features extracted by a pre-trained backbone into a compact representation for prediction, attention mechanisms selectively weight the most informative facial regions. However, these attention weights can still capture dataset-specific correlations rather than genuine affective cues. To address this limitation, we propose an attention pooling framework that combines causal supervision with cross-covariance regularization of attention components, encouraging subject-invariant attention and non-redundant representations that improve generalization. Our method achieves $CCC_{VA}=0.5123$ for VA estimation on the official validation set, together with $F_{EX}=0.3116$ and $F_{AU}=0.3974$ for expression recognition and action unit detection, respectively, resulting in an overall $P$ score (the sum of the individual task metrics) of $1.2214$.",
+      "authors": [
+        "Nemanja Rašajski",
+        "Konstantinos Makantasis",
+        "Antonios Liapis",
+        "Georgios N. Yannakakis"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-13T19:11:33+00:00",
+      "link": "https://arxiv.org/pdf/2607.12091v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "causal supervision for affective behavior analysis",
+      "llm_evidence_cn": "因果注意力监督用于情感行为分析",
+      "llm_evidence": "因果注意力监督用于情感行为分析",
+      "canonical_evidence": "因果注意力监督用于情感行为分析",
+      "llm_tldr_en": "Proposes causal supervision of attention for affective behavior analysis to learn robust emotion representations by penalizing attention on spurious correlations.",
+      "llm_tldr_cn": "针对情感行为分析中注意力机制可能捕获数据集特有相关而非真情绪线索的问题，提出因果注意力监督方法，通过因果约束迫使注意力关注真正的情感区域，从而提升模型对身份、光照等干扰因素的鲁棒性。在多任务挑战集上，该方法在效价-唤醒估计、表情识别和动作单元检测上均取得显著提升。",
+      "llm_tldr": "针对情感行为分析中注意力机制可能捕获数据集特有相关而非真情绪线索的问题，提出因果注意力监督方法，通过因果约束迫使注意力关注真正的情感区域，从而提升模型对身份、光照等干扰因素的鲁棒性。在多任务挑战集上，该方法在效价-唤醒估计、表情识别和动作单元检测上均取得显著提升。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.15779v1",
+      "source": "arxiv",
+      "title": "Multimodal Ambivalence and Hesitancy Recognition via Cross-Attention and Gated Fusion",
+      "abstract": "We present a multimodal framework for Ambivalence/Hesitancy (A/H) recognition in video, developed for the ABAW11 challenge at ECCV 2026. The proposed approach fuses textual, acoustic, and visual modalities extracted from the BAH dataset using three pretrained encoders: F2LLM-v2-0.6B for transcripts (1024-d), WavLM-Large for audio (1024-d), and VideoMAE V2 for facial video (768-d). We first establish comprehensive unimodal baselines using classical classifiers (MLP, Random Forest, GBDT), each optimized via Optuna, and obtain a best unimodal Macro F1 of \\textbf{0.6659} on the test set using text features alone -- substantially outperforming the zero-shot Video-LLaVA baseline (Macro F1: 0.2827). Building on these baselines, we propose a multimodal fusion architecture that combines bidirectional cross-attention across all three modalities with a Gated Multimodal Unit (GMU), with both architectural and optimization hyperparameters selected through a 50-trial Optuna search. This model achieves a Macro F1 of \\textbf{0.7394} on the validation set, a relative improvement of 11.0\\% over the best unimodal baseline, confirming that explicit cross-modal interaction captures complementary cues that no single modality provides in isolation. Final predictions on the official, unlabeled private test set are generated using this model and submitted according to the challenge protocol. Code is publicly available at https://github.com/yassineouzar/IUSD_AH/",
+      "authors": [
+        "Oussama Berhili",
+        "Yassine Ouzar",
+        "Larbi Boubchir"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-17T09:23:36+00:00",
+      "link": "https://arxiv.org/pdf/2607.15779v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal ambivalence/hesitancy recognition",
+      "llm_evidence_cn": "多模态矛盾/犹豫识别",
+      "llm_evidence": "多模态矛盾/犹豫识别",
+      "canonical_evidence": "多模态矛盾/犹豫识别",
+      "llm_tldr_en": "Presents a multimodal framework for ambivalence/hesitancy recognition in video using cross-attention and gated fusion of text, audio, and visual features, outperforming unimodal baselines.",
+      "llm_tldr_cn": "针对视频中的矛盾/犹豫（A/H）识别任务，提出一个基于交叉注意力与门控融合的多模态框架，融合文本、音频和视觉模态。首先建立单模态基线，文本模态最佳宏F1达0.6659，而后通过多模态融合进一步提升性能。该工作为多模态情感分析中的模糊情感识别提供了有效方案。",
+      "llm_tldr": "针对视频中的矛盾/犹豫（A/H）识别任务，提出一个基于交叉注意力与门控融合的多模态框架，融合文本、音频和视觉模态。首先建立单模态基线，文本模态最佳宏F1达0.6659，而后通过多模态融合进一步提升性能。该工作为多模态情感分析中的模糊情感识别提供了有效方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.14769v1",
+      "source": "arxiv",
+      "title": "Dialogue Summarization with Emotion Dynamics Using Topic- and Participant-Centric Decomposition",
+      "abstract": "Existing text summarization research has focused much on monologic information (e.g., newspaper articles, reports) without accounting for the interaction between speakers or authors. In contrast, dialogues are a rich communication channel where multiple participants conduct back and forth exchanges to construct meaning. We propose a dialogue summarization framework that explicitly models both semantic and emotion dynamics using multimodal dialogue inputs, built on an adapted hierarchical Chain-of-Agents approach. We decompose dialogues from two perspectives: (1) topic segments based on the utterances of all participants, and (2) participant-specific utterance segments. These are used to generate corresponding summaries while incorporating automatically inferred emotions. Topic- and participant-level summaries are aggregated into a dialogue summary capturing semantic content and emotion trajectories. To evaluate beyond content accuracy, we introduce emotion trajectory metrics measuring how well summaries preserve emotional flow. Experiments with small language models on multimodal dialogue datasets show that our framework produces summaries with both semantic and emotion content. Further experiments on explicit emotion label availability highlight the efficacy of our proposed methodology and the opportunities in dialogue analysis using language models.",
+      "authors": [
+        "Linyun Xiang",
+        "Mark Neerincx",
+        "Stephanie Tan"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.MA"
+      ],
+      "published": "2026-07-16T09:53:00+00:00",
+      "link": "https://arxiv.org/pdf/2607.14769v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Explicitly models emotion dynamics in multimodal dialogue summarization",
+      "llm_evidence_cn": "在多模态对话摘要中显式建模情感动态",
+      "llm_evidence": "在多模态对话摘要中显式建模情感动态",
+      "canonical_evidence": "在多模态对话摘要中显式建模情感动态",
+      "llm_tldr_en": "Proposes a dialogue summarization framework using topic- and participant-centric decomposition to capture emotion dynamics from multimodal inputs, achieving improved summarization with emotional awareness.",
+      "llm_tldr_cn": "现有文本摘要忽视了对话中的互动和情感动态。本文提出一个基于层次化链式代理的框架，通过主题和参与者双重视角分解多模态对话输入，显式建模语义和情感变化。实验表明该方法能生成包含情感信息的摘要，提升了对话理解的质量。该工作为多模态情感分析提供了新的建模思路。",
+      "llm_tldr": "现有文本摘要忽视了对话中的互动和情感动态。本文提出一个基于层次化链式代理的框架，通过主题和参与者双重视角分解多模态对话输入，显式建模语义和情感变化。实验表明该方法能生成包含情感信息的摘要，提升了对话理解的质量。该工作为多模态情感分析提供了新的建模思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

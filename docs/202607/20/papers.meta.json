@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-20",
+  "date": "2026-07-20",
+  "generated_at": "2026-07-20T20:47:21",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/20/2607.12091v2-causal-supervision-of-attention-for-affective-behaviour-analysis",
+      "section": "deep",
+      "title_en": "Causal Supervision of Attention for Affective Behaviour Analysis",
+      "authors": "Nemanja Rašajski, Konstantinos Makantasis, Antonios Liapis, Georgios N. Yannakakis",
+      "date": "2026-07-13",
+      "pdf": "https://arxiv.org/pdf/2607.12091v2",
+      "score": "9.0",
+      "evidence": "因果注意力监督用于情感行为分析",
+      "tldr": "情感行为分析中的多任务学习面临身份、光照等混杂因素，导致注意力机制捕获虚假关联。本文提出因果监督注意力池化，通过跨协方差正则化鼓励主体不变性和非冗余表示。在ABAW竞赛验证集上，VA估计CCC达0.5123，表情识别F为0.3116，AU检测F为0.3974，综合得分P=1.2214。该方法有效提升了模型泛化能力，减少数据集特定偏差。",
+      "tags": "query:mm",
+      "abstract_en": "The \\textit{11th Affective Behaviour Analysis in-the-wild Competition} includes the Multi-Task Learning Challenge, where participants develop a unified framework for Valence-Arousal Estimation, Expression Recognition, and Action Unit Detection. The challenge lies in learning emotion-related representations that generalize across subjects while remaining robust to spurious factors such as identity, illumination, pose, and demographic variation. To aggregate features extracted by a pre-trained backbone into a compact representation for prediction, attention mechanisms selectively weight the most informative facial regions. However, these attention weights can still capture dataset-specific correlations rather than genuine affective cues. To address this limitation, we propose an attention pooling framework that combines causal supervision with cross-covariance regularization of attention components, encouraging subject-invariant attention and non-redundant representations that improve generalization. Our method achieves $CCC_{VA}=0.5123$ for VA estimation on the official validation set, together with $F_{EX}=0.3116$ and $F_{AU}=0.3974$ for expression recognition and action unit detection, respectively, resulting in an overall $P$ score (the sum of the individual task metrics) of $1.2214$.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/20/2607.15779v1-multimodal-ambivalence-and-hesitancy-recognition-via-cross-attention-and-gated-fusion",
+      "section": "deep",
+      "title_en": "Multimodal Ambivalence and Hesitancy Recognition via Cross-Attention and Gated Fusion",
+      "authors": "Oussama Berhili, Yassine Ouzar, Larbi Boubchir",
+      "date": "2026-07-17",
+      "pdf": "https://arxiv.org/pdf/2607.15779v1",
+      "score": "8.0",
+      "evidence": "多模态矛盾/犹豫识别",
+      "tldr": "视频中的矛盾与犹豫识别需要多模态信息互补。本文提出融合文本、音频和视频特征的多模态框架，使用预训练编码器，并通过双向交叉注意力与门控多模态单元实现跨模态交互。验证集Macro F1达0.7394，较最佳单模态提升11%。该工作证明显式跨模态交互能捕获互补线索，并开源代码。",
+      "tags": "query:mm",
+      "abstract_en": "We present a multimodal framework for Ambivalence/Hesitancy (A/H) recognition in video, developed for the ABAW11 challenge at ECCV 2026. The proposed approach fuses textual, acoustic, and visual modalities extracted from the BAH dataset using three pretrained encoders: F2LLM-v2-0.6B for transcripts (1024-d), WavLM-Large for audio (1024-d), and VideoMAE V2 for facial video (768-d). We first establish comprehensive unimodal baselines using classical classifiers (MLP, Random Forest, GBDT), each optimized via Optuna, and obtain a best unimodal Macro F1 of \\textbf{0.6659} on the test set using text features alone -- substantially outperforming the zero-shot Video-LLaVA baseline (Macro F1: 0.2827). Building on these baselines, we propose a multimodal fusion architecture that combines bidirectional cross-attention across all three modalities with a Gated Multimodal Unit (GMU), with both architectural and optimization hyperparameters selected through a 50-trial Optuna search. This model achieves a Macro F1 of \\textbf{0.7394} on the validation set, a relative improvement of 11.0\\% over the best unimodal baseline, confirming that explicit cross-modal interaction captures complementary cues that no single modality provides in isolation. Final predictions on the official, unlabeled private test set are generated using this model and submitted according to the challenge protocol. Code is publicly available at https://github.com/yassineouzar/IUSD_AH/",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/20/2607.14769v1-dialogue-summarization-with-emotion-dynamics-using-topic--and-participant-centric-decomposition",
+      "section": "quick",
+      "title_en": "Dialogue Summarization with Emotion Dynamics Using Topic- and Participant-Centric Decomposition",
+      "authors": "Linyun Xiang, Mark Neerincx, Stephanie Tan",
+      "date": "2026-07-16",
+      "pdf": "https://arxiv.org/pdf/2607.14769v1",
+      "score": "7.0",
+      "evidence": "在多模态对话摘要中显式建模情感动态",
+      "tldr": "现有对话摘要研究忽视情感动态，本文提出基于主题和参与者视角分解对话的框架，结合自动情感推断生成包含语义和情感轨迹的摘要。采用改进的分层Chain-of-Agents方法，在多模态对话数据集上使用小语言模型验证，表明该框架能有效保留情感流。引入情感轨迹评估指标，实验证明方法有效性，为语言模型分析对话提供新思路。",
+      "tags": "query:mm",
+      "abstract_en": "Existing text summarization research has focused much on monologic information (e.g., newspaper articles, reports) without accounting for the interaction between speakers or authors. In contrast, dialogues are a rich communication channel where multiple participants conduct back and forth exchanges to construct meaning. We propose a dialogue summarization framework that explicitly models both semantic and emotion dynamics using multimodal dialogue inputs, built on an adapted hierarchical Chain-of-Agents approach. We decompose dialogues from two perspectives: (1) topic segments based on the utterances of all participants, and (2) participant-specific utterance segments. These are used to generate corresponding summaries while incorporating automatically inferred emotions. Topic- and participant-level summaries are aggregated into a dialogue summary capturing semantic content and emotion trajectories. To evaluate beyond content accuracy, we introduce emotion trajectory metrics measuring how well summaries preserve emotional flow. Experiments with small language models on multimodal dialogue datasets show that our framework produces summaries with both semantic and emotion content. Further experiments on explicit emotion label availability highlight the efficacy of our proposed methodology and the opportunities in dialogue analysis using language models.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
