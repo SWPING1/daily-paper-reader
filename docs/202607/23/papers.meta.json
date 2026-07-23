@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-23",
+  "date": "2026-07-23",
+  "generated_at": "2026-07-23T21:21:25",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/23/2607.16546v1-affectfuse-cross-task-feature-fusion-with-temporal-modeling-for-multi-task-affective-behavior-analysis",
+      "section": "deep",
+      "title_en": "AffectFuse: Cross-Task Feature Fusion with Temporal Modeling for Multi-Task Affective Behavior Analysis",
+      "authors": "Dipit Saha, Mohammad Raihan Rashid, Shah Mohammad Abdul Mannan, Ahnaf Tahmid, Md. Mehedi Hasan",
+      "date": "2026-07-17",
+      "pdf": "https://arxiv.org/pdf/2607.16546v1",
+      "score": "8.0",
+      "evidence": "多任务情感行为分析，使用跨任务特征融合",
+      "tldr": "多任务情感行为分析需同时预测连续效价-唤醒度、分类表情和动作单元。提出AffectFuse，冻结AffectNet骨干提取多分辨率特征，配合任务特定时序头和跨任务融合模块，动作单元识别采用MAE-Face+LoRA及逐单元专家路由。在ABAW竞赛s-Aff-Wild2验证集取得P=1.7302。证明后编码器适配与任务级建模可构建强多任务流水线，无需训练新大规模模型。",
+      "tags": "query:mm",
+      "abstract_en": "Affective behavior recognition in the wild requires joint prediction of continuous valence-arousal, categorical facial expression, and multi-label action units from unconstrained face images. We present our system for the Multi-Task Learning (MTL) track of the 11th Affective Behavior Analysis in-the-wild (ABAW) competition on s-Aff-Wild2, the static selected-frame version of Aff-Wild2. The method focuses on post-encoder adaptation: frozen AffectNet-supervised backbones provide multi-resolution features, while task-specific temporal heads and cross-task fusion modules select the useful signals for each target. For action-unit recognition, we adapt MAE-Face with Low-Rank Adaptation (LoRA) and use DISFA through per-unit expert routing rather than direct sequential transfer. Ablations over backbone, temporal, fusion, and AU-adaptation choices define the final configuration. The final system obtains P = 1.7302 on the official validation split, showing that post-encoder adaptation and task-wise modeling choices provide a strong MTL pipeline without training a new large-scale face foundation model.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/23/2607.20326v1-toward-reliable-rgb-d-semantic-segmentation-handling-missing-modalities-via-condition-dropout",
+      "section": "deep",
+      "title_en": "Toward Reliable RGB-D Semantic Segmentation: Handling Missing Modalities via Condition Dropout",
+      "authors": "Xuchen Zhu, Yajuan Wei, Shuang Hao, Jiwei Jiang, Guanxiang Mao, Fang Ren",
+      "date": "2026-07-22",
+      "pdf": "https://arxiv.org/pdf/2607.20326v1",
+      "score": "8.0",
+      "evidence": "通过条件Dropout处理缺失RGB或深度模态",
+      "tldr": "RGB-D语义分割常假设RGB和深度图同时可用，但实际传感器故障或遮挡会导致单模态缺失，传统模型性能骤降。本文提出条件丢弃（ConD）继续训练范式，在预训练模型基础上随机模拟缺失模态，冻结原编码器并训练复制编码器进行零初始化特征注入。在NYU-Depth V2和SUN RGB-D上，ConD不仅增强了缺失模态下的鲁棒性，完整模态下性能甚至略有提升。该方法简单有效，无需修改网络结构即可提升模型对模态缺失的适应性。",
+      "tags": "query:mm",
+      "abstract_en": "RGB-D semantic segmentation has achieved remarkable progress, yet most models assume that RGB and depth are always available. In practice, failures or occlusions of surveillance sensors often remove one modality. Although RGB or depth alone can contain sufficient cues, models trained only on full-modality inputs fail to exploit the remaining modality once one is missing, causing severe degradation. We tackle this issue with a simple continued-training paradigm, \\emph{Condition Dropout (ConD)}, which mitigates degradation while preserving full-modality accuracy. Starting from a pretrained RGB-D model, ConD adds a second stage that randomly simulates complete, RGB-missing, and depth-missing inputs, freezes the original encoders, and trains copied encoders with zero-initialized feature injection. Experiments on NYU-Depth V2 and SUN RGB-D show that ConD improves robustness under missing modalities and even yields slight gains when modalities are complete. Our code will be made publicly available upon acceptance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/23/2607.20351v1-test-time-training-for-modality-order-consistency-in-vision-language-models",
+      "section": "quick",
+      "title_en": "Test-Time Training for Modality Order Consistency in Vision-Language Models",
+      "authors": "Aditi Gupta, Yossi Gandelsman",
+      "date": "2026-07-22",
+      "pdf": "https://arxiv.org/pdf/2607.20351v1",
+      "score": "6.0",
+      "evidence": "视觉语言模型中的模态顺序鲁棒性",
+      "tldr": "视觉语言模型对图像和问题的输入顺序敏感，图像优先始终优于问题优先，存在模态顺序失败。提出一种顺序一致的测试时训练方法，通过激活修补定位到中层网络表示差异。该方法显著缩小模态顺序差距，并提升图像优先分支性能，甚至超越基线。表明简单不对称测试时适应可缓解电路级故障并提升性能。",
+      "tags": "query:mm",
+      "abstract_en": "We find that vision-language models are sensitive to a specific semantically irrelevant change: the order in which the image and question are presented. Across three models and three benchmarks, image first prompting consistently outperforms question-first prompting, revealing a repeatable modality order failure. We use this gap to design an order-consistent test-time training method. Our method substantially closes the modality-order gap across all evaluated settings. Surprisingly, it also yields consistent improvements in the stronger image-first branch over the baseline, hence bootstrapping both orderings toward mutual consistency. Activation patching localizes the ordering failure to a narrow mid-network region where representations diverge sharply between prompt orders. We find that the test-time training method repairs this misalignment across layers. Together, our results identify modality-order sensitivity as a circuit-level failure in VLMs and demonstrate that simple, asymmetric test-time adaptation can effectively mitigate it and even improve performance over the baseline.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
