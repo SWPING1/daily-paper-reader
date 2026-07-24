@@ -6,29 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-23
-- 运行时间：2026-07-23 21:21:19 UTC
+- 最新运行日期：2026-07-24
+- 运行时间：2026-07-24 20:44:06 UTC
 - 运行状态：成功
 - 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读2篇、速读1篇，聚焦情感分析特征融合与RGB-D语义分割缺失模态处理。最值得关注的是AffectFuse通过时序建模实现多任务情感分析，以及Condition Dropout应对缺失模态的RGB-D分割方法。下一步建议深入学习缺失模态处理与多任务特征融合技术，提升模型在真实场景中的鲁棒性。
-- 详情：[/202607/23/README](/202607/23/README)
+今日精读1篇、速读2篇，聚焦多模态情感理解与融合。最值得关注的是《EmoAgent-R1》，其强化学习驱动的动态智能体专业化获9.0高分，多模态情感理解效果突出。建议普通读者从该论文切入，了解如何通过动态专业化提升情感理解精度。
+- 详情：[/202607/24/README](/202607/24/README)
 
 ### 精读区论文标签
-1. [AffectFuse: Cross-Task Feature Fusion with Temporal Modeling for Multi-Task Affective Behavior Analysis](/202607/23/2607.16546v1-affectfuse-cross-task-feature-fusion-with-temporal-modeling-for-multi-task-affective-behavior-analysis)  
-   标签：评分：8.0/10、query:mm
-   evidence：多任务情感行为分析，使用跨任务特征融合
-2. [Toward Reliable RGB-D Semantic Segmentation: Handling Missing Modalities via Condition Dropout](/202607/23/2607.20326v1-toward-reliable-rgb-d-semantic-segmentation-handling-missing-modalities-via-condition-dropout)  
-   标签：评分：8.0/10、query:mm
-   evidence：通过条件Dropout处理缺失RGB或深度模态
+1. [EmoAgent-R1: Towards Multimodal Emotion Understanding with Reinforcement Learning-based Dynamic Agent Specialization](/202607/24/2607.21013v1-emoagent-r1-towards-multimodal-emotion-understanding-with-reinforcement-learning-based-dynamic-agent-specialization)  
+   标签：评分：9.0/10、query:mm
+   evidence：通过强化学习动态智能体专门化实现多模态情感理解
 
 ### 速读区论文标签
-1. [Test-Time Training for Modality Order Consistency in Vision-Language Models](/202607/23/2607.20351v1-test-time-training-for-modality-order-consistency-in-vision-language-models)  
-   标签：评分：6.0/10、query:mm
-   evidence：视觉语言模型中的模态顺序鲁棒性
+1. [MVEI & EmObserver: Empowering MLLM-Oriented Visual Emotional Intelligence via Emotion Statement Judgement](/202607/24/2607.21061v1-mvei--emobserver-empowering-mllm-oriented-visual-emotional-intelligence-via-emotion-statement-judgement)  
+   标签：评分：7.0/10、query:mm
+   evidence：多模态情绪识别评估
+2. [Quality-Aware Multimodal Fusion Reveals Implicit Identity in Valence-Arousal Features](/202607/24/2607.21347v1-quality-aware-multimodal-fusion-reveals-implicit-identity-in-valence-arousal-features)  
+   标签：评分：7.0/10、query:mm
+   evidence：质量感知自适应融合提高多模态表示鲁棒性
 
 
 <div class="dpr-home-promo-card">

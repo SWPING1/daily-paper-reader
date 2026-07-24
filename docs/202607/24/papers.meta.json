@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-24",
+  "date": "2026-07-24",
+  "generated_at": "2026-07-24T20:44:12",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/24/2607.21013v1-emoagent-r1-towards-multimodal-emotion-understanding-with-reinforcement-learning-based-dynamic-agent-specialization",
+      "section": "deep",
+      "title_en": "EmoAgent-R1: Towards Multimodal Emotion Understanding with Reinforcement Learning-based Dynamic Agent Specialization",
+      "authors": "Lihuang Fang, Yuchen Zou, kebin Jin, Jinghui Qin",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.21013v1",
+      "score": "9.0",
+      "evidence": "通过强化学习动态智能体专门化实现多模态情感理解",
+      "tldr": "现有多模态大模型在情绪识别中依赖固定提示，无法适应动态复杂的情绪源。为此提出EmoAgent-R1，通过强化学习实现动态智能体专业化：先用冷启动训练基础能力，再用两阶段工作流（智能体选择与专业化）优化。创新性提出P-GRPO算法，将稀疏奖励转化为细粒度信号。在MER基准上取得更优情绪推理性能与训练稳定性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal large language models (MLLMs) have achieved impressive performance in multimodal emotion recognition (MER) tasks and lifted MER to a new level that is complex emotion understanding with advanced video understanding abilities and natural language description. However, existing MLLM-based methods often use a fixed prompt to perceive the emotions, ignoring the dynamicity and complexity of the emotion source in the multimodal inputs. To address these issues, we propose a novel Reinforcement Learning-based Dynamic Agent Specialization framework (\\textbf{EmoAgent-R1}) to optimize the emotion recognition, reasoning, and generalization abilities of an MLLM with dynamic agent specialization based on reinforcement learning. Specifically, we first adopt a cold start strategy to endow an MLLM with preliminary emotion recognition, reasoning, and agent routing ability by training with synthetic answer-conditioned chain-of-thought data and agent routing data. Then, we further train the MLLM with reinforcement learning to perceive emotions in a two-step agentic workflow with agent selection and agent specialization. To effectively train EmoAgent-R1, we propose a novel Progressive Group-Relative Policy Optimization (P-GRPO) to combine group-based relative advantages with a PMI-inspired progressive token-level modulation to transform sparse rewards into fine-grained learning signals, mitigating the coarse-grained uniform credit assignment issue in GRPO. Extensive experiments on MER benchmarks demonstrate the superiority of our EmoAgent-R1 in stronger emotion reasoning performance and improved optimization stability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/24/2607.21061v1-mvei--emobserver-empowering-mllm-oriented-visual-emotional-intelligence-via-emotion-statement-judgement",
+      "section": "quick",
+      "title_en": "MVEI & EmObserver: Empowering MLLM-Oriented Visual Emotional Intelligence via Emotion Statement Judgement",
+      "authors": "Daiqing Wu, Dongbao Yang, Jiashu Yao, Hongrui Zhang, Can Ma, Yu Zhou, Sicheng Zhao",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.21061v1",
+      "score": "7.0",
+      "evidence": "多模态情绪识别评估",
+      "tldr": "现有情感图像分析范式与多模态大模型的开放性不匹配，存在忽略合理响应、情感分类有限、忽视上下文、标注耗时等问题。为此，提出情感陈述判断（ESJ）将视觉情感分析转为陈述验证任务，并构建INSETS-462k数据集和MVEI基准，涵盖情感极性、解释、场景上下文和主观性。基于ESJ训练EmObserver模型，在多个基准上取得高准确率和泛化性。ESJ、MVEI和EmObserver共同推进了面向MLLM的视觉情感智能评估与发展。",
+      "tags": "query:mm",
+      "abstract_en": "Affective Image Content Analysis (AICA) aims to recognize and understand emotions elicited by visual content, representing an indispensable step toward Artificial General Intelligence (AGI). However, despite the rapid progress of Multimodal Large Language Models (MLLMs), systematic evaluation of their visual emotional intelligence remains largely absent from recent model releases. We attribute this gap to a structural mismatch between conventional AICA paradigms and the open-ended, instruction-driven nature of MLLMs, where further analysis reveals four major limitations: omission of plausible responses, limited emotion taxonomies, neglect of contextual factors, and labor-intensive annotation. To overcome these barriers, we introduce Emotion Statement Judgement (ESJ), a statement-verification formulation that preserves the expressiveness of the input space while constraining outputs to discriminative judgements. We further develop INSETS, a labor-efficient pipeline that instantiates ESJ at scale by constructing INSETS-462k and supporting MVEI, a rigorously refined benchmark spanning sentiment polarity, emotion interpretation, scene context, and perception subjectivity. Beyond evaluation, we build EmObserver, an emotion-oriented MLLM optimized on ESJ through an elaborate multi-stage recipe. Extensive evaluation of broad-spectrum MLLMs on MVEI reveals fine-grained insights into current artificial visual emotional intelligence, while experiments on multiple AICA benchmarks demonstrate the accuracy, generalization, and reasoning faithfulness of EmObserver. Collectively, these results establish ESJ as a practical formulation, MVEI as a comprehensive benchmark, and EmObserver as an advanced baseline for advancing MLLM-oriented visual emotional intelligence. Code will be released at: https://github.com/wdqqdw/EmObserver.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/24/2607.21347v1-quality-aware-multimodal-fusion-reveals-implicit-identity-in-valence-arousal-features",
+      "section": "quick",
+      "title_en": "Quality-Aware Multimodal Fusion Reveals Implicit Identity in Valence-Arousal Features",
+      "authors": "Jisu Kim, Benjamin S. Riggan",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.21347v1",
+      "score": "7.0",
+      "evidence": "质量感知自适应融合提高多模态表示鲁棒性",
+      "tldr": "传统人脸识别在非约束环境下因依赖静态外观而失效。本文提出质量感知自适应融合（QAAF），利用多模态效价-唤醒（VA）估计作为预文本任务，从视听表情动态中学习身份隐含信息。在Aff-wild2上平均CCC达0.472，优于基线，且对缺失模态鲁棒。VA特征与ArcFace融合可降低误识率，证明其作为软生物特征的有效性。",
+      "tags": "query:mm",
+      "abstract_en": "Conventional face recognition relies on static appearance cues and degrades in unconstrained settings with expression variation, occlusion, and poor lighting. We hypothesize that audiovisual expression dynamics carry identity-discriminative information complementary to static appearance, and that extracting this signal requires multimodal representations robust to the variable input quality of in-the-wild video. To learn such representations, we cast multimodal valence-arousal (VA) estimation as a pretext task and propose Quality-Aware Adaptive Fusion (QAAF), which estimates per-sample, per-modality reliability and adapts each modality's contribution through learned soft gating and a quality-dependent dropout. For the problem of VA estimation, QAAF achieves an average Concordance Correlation Coefficient (CCC) of 0.472 via late fusion ensembling on Aff-wild2, improving over a baseline ensemble under the same setting (0.415) as well as a single-backbone baseline (0.288). Furthermore, the proposed QAAF demonstrates greater resilience to unavailable modalities, with only a 7.5-34.4% relative decrease in CCC when one modality is missing. We then probe whether these VA-trained features encode identity without identity-specific training. On AFEW-VA (67 actors) and YTF (1,595 subjects), VA-trained backbone features rank first among evaluated soft biometric methods, and score-level fusion with ArcFace lowers EER on both datasets (0.022 to 0.021 on AFEW-VA, 0.106 to 0.104 on YTF), correcting 68.2% of ArcFace's false accepts on AFEW-VA. These findings establish multimodal VA estimation as a soft biometric modality complementary to conventional face recognition.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
