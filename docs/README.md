@@ -6,29 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-24
-- 运行时间：2026-07-24 20:44:06 UTC
+- 最新运行日期：2026-07-25
+- 运行时间：2026-07-25 20:11:00 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：1
+- 本次总论文数：2
+- 精读区：0
 - 速读区：2
 
 ### 今日简报（AI）
-今日精读1篇、速读2篇，聚焦多模态情感理解与融合。最值得关注的是《EmoAgent-R1》，其强化学习驱动的动态智能体专业化获9.0高分，多模态情感理解效果突出。建议普通读者从该论文切入，了解如何通过动态专业化提升情感理解精度。
-- 详情：[/202607/24/README](/202607/24/README)
+今日速读两篇论文，分别聚焦大视觉语言模型鲁棒性与半监督医学图像分割。其中，7.0分的《Dual Adversarial Fine-tuning》值得关注，提出双对抗微调策略增强模型防御能力。建议优先了解视觉语言模型的安全性与对抗训练方法，这对实际部署有重要参考价值。
+- 详情：[/202607/25/README](/202607/25/README)
 
 ### 精读区论文标签
-1. [EmoAgent-R1: Towards Multimodal Emotion Understanding with Reinforcement Learning-based Dynamic Agent Specialization](/202607/24/2607.21013v1-emoagent-r1-towards-multimodal-emotion-understanding-with-reinforcement-learning-based-dynamic-agent-specialization)  
-   标签：评分：9.0/10、query:mm
-   evidence：通过强化学习动态智能体专门化实现多模态情感理解
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [MVEI & EmObserver: Empowering MLLM-Oriented Visual Emotional Intelligence via Emotion Statement Judgement](/202607/24/2607.21061v1-mvei--emobserver-empowering-mllm-oriented-visual-emotional-intelligence-via-emotion-statement-judgement)  
+1. [Dual Adversarial Fine-tuning for Enhancing Robustness of Large Vision Language Model](/202607/25/2607.18958v1-dual-adversarial-fine-tuning-for-enhancing-robustness-of-large-vision-language-model)  
    标签：评分：7.0/10、query:mm
-   evidence：多模态情绪识别评估
-2. [Quality-Aware Multimodal Fusion Reveals Implicit Identity in Valence-Arousal Features](/202607/24/2607.21347v1-quality-aware-multimodal-fusion-reveals-implicit-identity-in-valence-arousal-features)  
-   标签：评分：7.0/10、query:mm
-   evidence：质量感知自适应融合提高多模态表示鲁棒性
+   evidence：双对抗微调增强大型视觉语言模型跨多模态任务的鲁棒性
+2. [OFD-Net: Teacher-Free Reliable Semi-supervised Medical Image Segmentation with Orthogonal Feature Disentanglement Net of Foreground-Background](/202607/25/2607.16705v1-ofd-net-teacher-free-reliable-semi-supervised-medical-image-segmentation-with-orthogonal-feature-disentanglement-net-of-foreground-background)  
+   标签：评分：6.0/10、query:mm
+   evidence：正交特征解耦用于前景背景分离
 
 
 <div class="dpr-home-promo-card">
