@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-07-27 <!--dpr-date:20260727-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202607/27/2607.19716v1-a-unified-tokenization-framework-for-pain-recognition-using-heterogeneous-3d-modalities" data-sidebar-item="{&quot;title&quot;: &quot;A Unified Tokenization Framework for Pain Recognition using Heterogeneous 3D Modalities&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2607.19716v1-a-unified-tokenization-framework-for-pain-recognition-using-heterogeneous-3d-modalities&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;使用异构3D模态（行为与脑活动）进行疼痛识别的统一令牌化框架&quot;}">A Unified Tokenization Framework for Pain Recognition using Heterogeneous 3D Modalities</a>
   * 2026-07-26 <!--dpr-date:20260726-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202607/26/2607.21004v1-auch-net-action-unit-based-consistency-aware-hypergraph-network-for-cross-domain-few-shot-facial-expression-recognition" data-sidebar-item="{&quot;title&quot;: &quot;AUCH-Net: Action Unit-Based Consistency-Aware Hypergraph Network for Cross-Domain Few-Shot Facial Expression Recognition&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2607.21004v1-auch-net-action-unit-based-consistency-aware-hypergraph-network-for-cross-domain-few-shot-facial-expression-recognition&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;跨域小样本面部表情识别&quot;}">AUCH-Net: Action Unit-Based Consistency-Aware Hypergraph Network for Cross-Domain Few-Shot Facial Expression Recognition</a>
