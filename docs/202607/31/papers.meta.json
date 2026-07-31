@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-31",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T21:26:30",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/31/2607.23600v1-confusion-continuous-fusion-space-learning-for-fine-grained-controllable-infrared-and-visible-image-fusion",
+      "section": "deep",
+      "title_en": "ConFusion: Continuous Fusion Space Learning for Fine-Grained Controllable Infrared and Visible Image Fusion",
+      "authors": "Guo Yurong, He Yufei, Li Yonghao, Chang Dongliang, Zhang Ke, Ma Zhanyu",
+      "date": "2026-07-26",
+      "pdf": "https://arxiv.org/pdf/2607.23600v1",
+      "score": "8.0",
+      "evidence": "双分支结构显式解耦模态不变与模态特有表示，属解耦表示学习",
+      "tldr": "现有可控红外与可见光图像融合方法依赖预定义的离散控制条件，导致调制空间稀疏，难以实现细粒度的实例级调控。为此，本文提出ConFusion框架，通过高斯条件与空间感知调制学习连续融合空间，采用双分支结构解耦模态不变与模态特定特征，并借助Grounded SAM实例掩码与多模态大语言模型解析用户意图，实现灵活可控的融合。实验结果表明，ConFusion在融合质量和下游任务上均达到先进水平，支持细粒度可控融合，具有实际应用价值。",
+      "tags": "query:mm",
+      "abstract_en": "Controllable infrared-visible image fusion aims to integrate complementary thermal and structural information with flexible region-aware modulation, producing fused images that adapt to diverse user requirements and downstream tasks. However, existing methods typically rely on predefined discrete control conditions, leading to a sparse space that fails to support fine-grained modulation demands. To address this, we propose ConFusion, a novel framework that learns the continuous fusion space via Gaussian-conditioned spatial-aware modulation, enabling instance-level fine-grained controllable infrared and visible image fusion. ConFusion employs a dual-branch architecture to disentangle modality-invariant and modality-specific representations under joint reconstruction and text-guided semantic alignment. Gaussian-conditioned instance modulation variables coupled with Grounded SAM-based instance masks guide instance-level fine-grained modulation through the Mask-Guided Specific Feature Modulator, while the Text-Driven Invariant Feature Enhancer improves semantic consistency and enhances fusion. During inference, the multimodal large language model parses user intents into instance-level modulation variables to guide image fusion. Extensive experiments show that ConFusion achieves state-of-the-art performance across multiple metrics in both fusion quality and downstream tasks, while supporting fine-grained controllable image fusion. Our code is available at https://github.com/HeyufeiAnto/Confusion",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/31/2607.27790v1-semantic-aligned-structural-abstraction-for-multimodal-sentiment-analysis",
+      "section": "deep",
+      "title_en": "Semantic-Aligned Structural Abstraction for Multimodal Sentiment Analysis",
+      "authors": "Wei Chen, Junkai Li, Tongguan Wang, Hui Liu, Feiyue Xue, Chuanxiang Ma, Ying Sha",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.27790v1",
+      "score": "8.0",
+      "evidence": "基于结构抽象的多模态情感分析",
+      "tldr": "多模态情感分析中，现有基于大语言模型的方法主要捕获低层表面特征，忽视结构变化与上下文交互产生的情感语义。本文提出SentiLLM框架，利用语义对齐结构抽象将连续原始信号蒸馏为紧凑语义标记，并通过双流显著-上下文校准机制分离焦点流与环境流，实现非言语模态到统一语义空间的投影。在MOSI、MOSEI、CH-SIMS及CH-SIMS v2上取得最优性能，且作为即插即用模块仅需少量可训练参数。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Sentiment Analysis (MSA) aims to interpret complex human emotions by integrating natural language with non-verbal modalities. Non-verbal modalities share a structural isomorphism with natural language, as both can be viewed as feature sequences evolving over time. This isomorphism enables the transformation of non-verbal modalities into text-like tokens for unified semantic reasoning. Large Language Models (LLMs), designed to understand and generate sequential data, can thus be utilized to interpret complex affective sequences. However, existing LLM-based methods primarily capture low-level superficial features, failing to model affective semantics arising from structural variations and contextual interactions. To address this limitation, we propose \\textbf{SentiLLM}, a unified framework that leverages \\textit{Semantic-Aligned Structural Abstraction} to distill continuous raw signals into compact, semantically meaningful tokens. Specifically, we introduce a \\textit{Dual-Stream Salience-Context Calibration Mechanism}, which disentangles non-verbal feature sequences into a focus stream and an ambient stream. The focus stream captures salient sentiment shifts (e.g., facial expressions) guided by textual priors, while the ambient stream characterizes stable background states. Through calibrating these dynamic sentiment shifts against background states, SentiLLM effectively projects non-verbal modalities into a unified semantic space, making them naturally understandable for LLMs. Serving as a plug-and-play module, SentiLLM significantly improves discriminative performance with only a small number of trainable parameters. Our method achieves superior performance on four datasets, MOSI, MOSEI, CH-SIMS, and CH-SIMS v2, demonstrating the effectiveness of the structural abstraction paradigm in MSA. Our code is available at: \\href{https://github.com/especiallyW/SentiLLM}.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/31/2607.21546v1-unda-unpaired-domain-alignment-for-cross-modal-knowledge-transfer-in-medical-imaging",
+      "section": "quick",
+      "title_en": "UnDA: Unpaired Domain Alignment for Cross-Modal Knowledge Transfer in Medical Imaging",
+      "authors": "Rafsan Jany, Shadab Tanjeed Ahmad, Ahsan Bulbul, Tahsinul Islam, Md Azam Hossain, Abu Raihan Mostofa Kamal",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.21546v1",
+      "score": "6.0",
+      "evidence": "无配对数据下的稳健跨模态知识迁移；模态间隙；无配对域对齐",
+      "tldr": "跨模态知识迁移常受限于配对数据缺失、模态差异大及噪声传播。提出UnDA框架，用对齐模块提取语义类令牌，以不确定性加权最优传输抑制低置信度监督，结合ProtoNCE维护类别原型。在严格非配对分割任务中，目标模态精度与边界质量稳定提升，验证无需配对数据的结构化知识迁移可行性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal based approaches often outperform single modality approaches in downstream tasks as the different modalities provide complementary information, yet acquiring paired clinical data remains a significant challenge in real world scenarios. While cross-modal knowledge distillation addresses this, existing methods often struggle with large modality gaps and the propagation of noise from uncertain source-domain predictions. To overcome these challenges, we propose UnDA, an anchor-guided framework for unpaired cross-modal distillation. Our approach introduces a backbone-agnostic Alignment Module that extracts semantically structured class tokens via an attention based pooling mechanism. To ensure robust knowledge transfer, we propose Uncertainty-Weighted Optimal Transport (UCT-OT), which dynamically weights feature-level alignment based on prediction confidence, effectively suppressing noisy supervision. Furthermore, a per-class ProtoNCE objective maintains stable prototype memories to enforce global discriminability across unpaired batches. Evaluations on representative segmentation tasks under strictly unpaired settings show consistent improvements in accuracy and boundary precision in the target modality, demonstrating that meaningful structural knowledge can be transferred across heterogeneous data sources without paired datasets.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
