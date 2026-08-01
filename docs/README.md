@@ -6,29 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-31
-- 运行时间：2026-07-31 21:26:24 UTC
+- 最新运行日期：2026-08-01
+- 运行时间：2026-08-01 21:23:24 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日精读2篇、速读1篇，聚焦图像融合、多模态情感分析与医学影像跨模态迁移。最值得关注的是《ConFusion》的连续融合空间学习与《Semantic-Aligned Structural Abstraction》的语义对齐方法，均获8分高分。建议优先精读这两篇，再以速读方式了解医学影像领域的不配对域对齐思路。
-- 详情：[/202607/31/README](/202607/31/README)
+今日仅速读1篇论文，主题聚焦子模信息度量在表示学习中的应用，但精读空缺，整体阅读量偏低。  
+最值得关注的是该论文从方差与分离视角分析子模目标，为理解表征学习提供新角度，可惜评分仅6.0，属于中等偏下水平。  
+建议明日优先挑选高影响力或高分论文精读，并适当补充相关领域经典文献以提升阅读深度。
+- 详情：[/202608/01/README](/202608/01/README)
 
 ### 精读区论文标签
-1. [ConFusion: Continuous Fusion Space Learning for Fine-Grained Controllable Infrared and Visible Image Fusion](/202607/31/2607.23600v1-confusion-continuous-fusion-space-learning-for-fine-grained-controllable-infrared-and-visible-image-fusion)  
-   标签：评分：8.0/10、query:mm
-   evidence：双分支结构显式解耦模态不变与模态特有表示，属解耦表示学习
-2. [Semantic-Aligned Structural Abstraction for Multimodal Sentiment Analysis](/202607/31/2607.27790v1-semantic-aligned-structural-abstraction-for-multimodal-sentiment-analysis)  
-   标签：评分：8.0/10、query:mm
-   evidence：基于结构抽象的多模态情感分析
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [UnDA: Unpaired Domain Alignment for Cross-Modal Knowledge Transfer in Medical Imaging](/202607/31/2607.21546v1-unda-unpaired-domain-alignment-for-cross-modal-knowledge-transfer-in-medical-imaging)  
+1. [Understanding Submodular Information Measure Based Objectives for Representation Learning: A Variance and Separation Perspective](/202608/01/2607.27660v1-understanding-submodular-information-measure-based-objectives-for-representation-learning-a-variance-and-separation-perspective)  
    标签：评分：6.0/10、query:mm
-   evidence：无配对数据下的稳健跨模态知识迁移；模态间隙；无配对域对齐
+   evidence：表示学习目标统一理论，与解耦表示相关
 
 
 <div class="dpr-home-promo-card">
