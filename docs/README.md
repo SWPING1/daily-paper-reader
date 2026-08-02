@@ -6,26 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-01
-- 运行时间：2026-08-01 21:23:24 UTC
+- 最新运行日期：2026-08-02
+- 运行时间：2026-08-02 21:06:50 UTC
 - 运行状态：成功
-- 本次总论文数：1
+- 本次总论文数：2
 - 精读区：0
-- 速读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日仅速读1篇论文，主题聚焦子模信息度量在表示学习中的应用，但精读空缺，整体阅读量偏低。  
-最值得关注的是该论文从方差与分离视角分析子模目标，为理解表征学习提供新角度，可惜评分仅6.0，属于中等偏下水平。  
-建议明日优先挑选高影响力或高分论文精读，并适当补充相关领域经典文献以提升阅读深度。
-- 详情：[/202608/01/README](/202608/01/README)
+今日速读2篇论文，聚焦动作识别与多模态持续学习。  
+值得关注《Knowledge-guided Disentanglement with Atomic Actions》，用原子动作知识引导解耦提升识别；《Regularizing modality contribution drift》则探讨多模态持续学习中模态贡献漂移的调控。  
+下一步建议优先精读这两篇6分论文，重点验证其方法在各自基准上的可复现性。
+- 详情：[/202608/02/README](/202608/02/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Understanding Submodular Information Measure Based Objectives for Representation Learning: A Variance and Separation Perspective](/202608/01/2607.27660v1-understanding-submodular-information-measure-based-objectives-for-representation-learning-a-variance-and-separation-perspective)  
+1. [Knowledge-guided Disentanglement with Atomic Actions for Action Recognition](/202608/02/2607.26097v1-knowledge-guided-disentanglement-with-atomic-actions-for-action-recognition)  
    标签：评分：6.0/10、query:mm
-   evidence：表示学习目标统一理论，与解耦表示相关
+   evidence：知识引导的解耦表示学习，可应用于鲁棒多模态学习
+2. [Regularizing modality contribution drift in multimodal continual learning](/202608/02/2607.27260v1-regularizing-modality-contribution-drift-in-multimodal-continual-learning)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过正则化模态贡献漂移提升多模态持续学习的鲁棒性
 
 
 <div class="dpr-home-promo-card">
