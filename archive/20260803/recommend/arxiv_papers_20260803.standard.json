@@ -1,0 +1,295 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-03T21:03:28.432002+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2607.26720v2",
+      "source": "arxiv",
+      "title": "CaIRec: Calibrated Modality Imputation for Incomplete Multimodal Recommendation",
+      "abstract": "Real-world multimodal recommender systems often face incomplete modality observations, where items lack images, text, or other content features. Such incompleteness weakens item representations and degrades recommendation performance. Existing modality imputation methods estimate missing representations from available item content, but two challenges remain. First, they optimize the recovered representation itself without explicitly considering its relations with other modalities of the same item. The completed modalities may therefore form inconsistent cross-modal relations, causing Cross-modal Structural Distortion. Second, even structurally coherent recovered information may remain ineffective for personalized ranking. Recovered representations receive limited ranking-oriented guidance, while modality missingness disrupts the item neighborhoods required for preference propagation, resulting in a Preference Adaptation Gap. To address these challenges, we propose Calibrated Imputation for Incomplete Multimodal Recommendation (CaIRec), a two-stage framework. Structural Imputation Calibration (SIC) estimates missing-modality representations from shared information inferred from available modalities and calibrates their cross-modal organization through structural regularization and correspondence supervision from observed modality pairs. Preference-oriented Representation Calibration (PRC) performs recommendation-specific adaptation at both the representation and relation levels. It constructs pseudo-missing instances to align recovered representations with observed counterparts shaped by ranking supervision in the recommendation space. It further builds completion-aware item graphs by integrating completed content relations with collaborative evidence. Extensive experiments on three datasets under different modality-missing settings demonstrate the effectiveness and robustness of CaIRec.",
+      "authors": [
+        "Ruiyu Liu",
+        "Xiaohao Liu",
+        "Miaomiao Cai",
+        "Yunshan Ma",
+        "See-Kiong Ng"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR"
+      ],
+      "published": "2026-07-29T10:10:20+00:00",
+      "link": "https://arxiv.org/pdf/2607.26720v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "calibrated modality imputation for incomplete multimodal recommendation; directly addresses missing modality and imputation robustness",
+      "llm_evidence_cn": "针对不完整多模态数据的缺失模态补全与校准，直接对应模态缺失鲁棒性任务",
+      "llm_evidence": "针对不完整多模态数据的缺失模态补全与校准，直接对应模态缺失鲁棒性任务",
+      "canonical_evidence": "针对不完整多模态数据的缺失模态补全与校准，直接对应模态缺失鲁棒性任务",
+      "llm_tldr_en": "CaIRec proposes calibrated modality imputation for incomplete multimodal recommendation, reducing cross-modal structural distortion and improving personalized ranking with recovered representations.",
+      "llm_tldr_cn": "真实推荐系统中物品常缺失图像或文本等模态，导致表示弱化。论文提出CaIRec，在估算缺失模态表示时显式建模它与同一物品其他模态的关系，以避免跨模态结构失真；同时校准恢复信息使其更适配个性化排序。该方法在缺失模态场景下提升了多模态推荐性能，为通用缺失模态补全提供了校准式鲁棒建模思路。",
+      "llm_tldr": "真实推荐系统中物品常缺失图像或文本等模态，导致表示弱化。论文提出CaIRec，在估算缺失模态表示时显式建模它与同一物品其他模态的关系，以避免跨模态结构失真；同时校准恢复信息使其更适配个性化排序。该方法在缺失模态场景下提升了多模态推荐性能，为通用缺失模态补全提供了校准式鲁棒建模思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.29310v1",
+      "source": "arxiv",
+      "title": "CALM-AH: An ABAW11-Calibrated Multimodal Ensemble with Reliability-Gated Multi-Expert Consensus for Video-Level Ambivalence and Hesitancy Recognition",
+      "abstract": "Ambivalence and hesitancy (A/H) are subtle behavioural states that may be expressed through language, voice, facial activity, and other non-verbal cues. The ABAW11 A/H Video Recognition Challenge asks systems to assign a binary A/H label to each naturalistic interview video. Performance is measured using Macro-F1 so that recognition of both A/H and No-A/H samples receives equal importance. We present CALM-AH, a multimodal ensemble that combines textual, acoustic, visual, and derived behavioural-statistical features. We construct 15 non-empty combinations of these feature branches. For each combination, we select the best of three classifier families using validation binary cross-entropy and optimise its decision threshold for validation Macro-F1. The resulting binary decisions are combined using fixed hard-voting weights transferred from BROTHER. We further introduce Reliability-Gated Multi-Expert Consensus(RG-MEC), an anchor-preserving decision-level ensemble that combines an initial prediction with three complementary correction experts: CALM-AH, AffectGPT, and a GPT-based semantic verifier. The initial system provides the default prediction. Its label is overridden only when all three correction experts unanimously support the same alternative class; otherwise, the anchor prediction is retained. This unanimity-gated design limits the influence of isolated expert errors while permitting bidirectional correction when task-specific, multimodal-affective, and semantic-pragmatic evidence are fully consistent. On the participant-disjoint ABAW11 dataset, CALM-AH achieves a Macro-F1 of 0.7525, and the complete RG-MEC system achieves 0.7771.",
+      "authors": [
+        "Wenzhuo Sun",
+        "Mingjian Liang",
+        "Richard Attfield",
+        "Zongyuan Ge",
+        "Xuelian Cheng",
+        "Pamela Carreno-Medrano"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-31T11:37:58+00:00",
+      "link": "https://arxiv.org/pdf/2607.29310v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal ensemble for ambivalence and hesitancy recognition from text, acoustic, and visual features.",
+      "llm_evidence_cn": "融合文本、声学和视觉特征的多模态集成用于矛盾与犹豫识别。",
+      "llm_evidence": "融合文本、声学和视觉特征的多模态集成用于矛盾与犹豫识别。",
+      "canonical_evidence": "融合文本、声学和视觉特征的多模态集成用于矛盾与犹豫识别。",
+      "llm_tldr_en": "CALM-AH presents a multimodal ensemble combining textual, acoustic, visual, and behavioral-statistical features with reliability-gated multi-expert consensus for video-level ambivalence and hesitancy recognition.",
+      "llm_tldr_cn": "针对ABAW11挑战中的矛盾与犹豫识别任务，提出CALM-AH多模态集成方法，融合文本、声学、视觉和行为统计特征，通过可靠性门控的多专家共识机制，提升了视频级别的A/H识别性能，达到挑战赛的领先水平。",
+      "llm_tldr": "针对ABAW11挑战中的矛盾与犹豫识别任务，提出CALM-AH多模态集成方法，融合文本、声学、视觉和行为统计特征，通过可靠性门控的多专家共识机制，提升了视频级别的A/H识别性能，达到挑战赛的领先水平。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.27436v1",
+      "source": "arxiv",
+      "title": "WeSep: A Modular and Cue-Composable Framework for Target Speaker Extraction",
+      "abstract": "The study of Target Speaker Extraction (TSE) aims to isolate a desired speaker from overlapping speech mixture given auxiliary cues. Existing systems are typically designed for specific cue types, limiting flexibility when cue availability varies across scenarios. We present WeSep, a unified framework that reformulates TSE as a heterogeneous cue-conditioned learning problem. In WeSep, cue modules and separator backbones are decoupled through standardized interfaces, enabling configurable cue injection and flexible integration of diverse modalities. The design enables systematic study of cue structure, intra- and cross-modal interaction, and dynamic cue availability within a shared optimization framework, facilitating adaptation to real-world conditions. Experiments across enrollment, spatial, visual, and textual cues reveal modality-dependent characteristics and demonstrate stable optimization under heterogeneous cue availability. The toolkit will be publicly available.",
+      "authors": [
+        "Ke Zhang",
+        "Xiaoyang Yu",
+        "Haoyu Li",
+        "Shuai Wang",
+        "Shuhan Zhang",
+        "Haizhou Li"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-07-29T20:05:39+00:00",
+      "link": "https://arxiv.org/pdf/2607.27436v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Handles dynamic cue availability and missing modalities in multimodal learning",
+      "llm_evidence_cn": "处理动态线索可用性及多模态学习中的模态缺失",
+      "llm_evidence": "处理动态线索可用性及多模态学习中的模态缺失",
+      "canonical_evidence": "处理动态线索可用性及多模态学习中的模态缺失",
+      "llm_tldr_en": "WeSep unifies target speaker extraction under a cue-conditioned learning framework, decoupling cue modules from the separator to handle dynamic cue availability and flexible multimodal integration.",
+      "llm_tldr_cn": "目标说话人提取通常针对特定提示类型设计，难以适应提示可用性变化。WeSep将任务重构为异质条件学习，通过标准化接口解耦提示模块和分离器主干，支持不同模态提示的动态组合与缺失适应。实验验证该框架在多种提示配置下均能保持性能，为处理模态缺失的多模态学习提供了通用方案。",
+      "llm_tldr": "目标说话人提取通常针对特定提示类型设计，难以适应提示可用性变化。WeSep将任务重构为异质条件学习，通过标准化接口解耦提示模块和分离器主干，支持不同模态提示的动态组合与缺失适应。实验验证该框架在多种提示配置下均能保持性能，为处理模态缺失的多模态学习提供了通用方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.23855v1",
+      "source": "arxiv",
+      "title": "OmniVAE: An Audio-Video VAE with Cross-Modal Alignment for Joint Generation",
+      "abstract": "Recent generative models are moving beyond silent video or standalone audio synthesis toward the joint generation of synchronized audio and video. Despite this progress, jointly generating audio and video with fine-grained cross-modal correspondence remains challenging due to their fundamental structural differences. Most existing methods use audio and video VAEs trained separately. As a result, the two latent spaces lack cross-modal alignment, leaving the downstream generative model to learn cross-modal synchronization from scratch. We present OmniVAE, a jointly trained audio-video VAE that learns fine-grained semantic alignment between audio and video latent representations. Beyond reconstruction, OmniVAE uses a segment-level audio-video contrastive objective to capture temporal-semantic correspondence and align the two latent spaces. In parallel, it distills features from pretrained modality-specific semantic encoders into each modality, improving the downstream learnability of both latent spaces. Extensive experiments show that both objectives consistently improve the learnability of the latent spaces, translating into higher generation quality and more accurate cross-modal synchronization in downstream text-to-audio-video generation. These findings underscore the importance of learning unified representations as a foundation for omnimodal modeling.1",
+      "authors": [
+        "Jun Zhan",
+        "Chen Yang",
+        "Yitian Gong",
+        "Donghua Yu",
+        "Kuangwei Chen",
+        "Wenbo Zhang",
+        "Kexin Huang",
+        "Qi Luo",
+        "Zhe Xu",
+        "Ying Zhu",
+        "Jin Wang",
+        "Tengyue Zhang",
+        "Qi Chen",
+        "Cheng Chang",
+        "Songlin Wang",
+        "Junqi Dai",
+        "Jiasheng Ye",
+        "Xiaogui Yang",
+        "Tianyi Liang",
+        "Xiangyu Peng",
+        "Zhaoye Fei",
+        "Shimin Li",
+        "Qinyuan Cheng",
+        "Xie Chen",
+        "Xinchi Chen",
+        "Xipeng Qiu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CV"
+      ],
+      "published": "2026-07-26T21:51:28+00:00",
+      "link": "https://arxiv.org/pdf/2607.23855v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "jointly trained audio-video VAE with cross-modal alignment for generative missing modality support",
+      "llm_evidence_cn": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "llm_evidence": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "canonical_evidence": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "llm_tldr_en": "OmniVAE jointly trains an audio-video VAE to learn fine-grained semantic alignment between audio and video latents, reducing the burden on downstream generative models for synchronized generation.",
+      "llm_tldr_cn": "针对现有音频和视频VAE分离训练导致潜空间缺乏跨模态对齐、下游生成模型难以学习同步对应的问题，本文提出OmniVAE，联合训练音频-视频VAE以学习两种模态潜表示之间的细粒度语义对齐。除重建外，OmniVAE还采用段级音视频对比学习增强一致性。实验表明，OmniVAE能为后续生成模型提供对齐良好的潜空间，简化同步音视频生成的难度，并为缺失模态生成与重建提供了可借鉴的生成式基础框架。",
+      "llm_tldr": "针对现有音频和视频VAE分离训练导致潜空间缺乏跨模态对齐、下游生成模型难以学习同步对应的问题，本文提出OmniVAE，联合训练音频-视频VAE以学习两种模态潜表示之间的细粒度语义对齐。除重建外，OmniVAE还采用段级音视频对比学习增强一致性。实验表明，OmniVAE能为后续生成模型提供对齐良好的潜空间，简化同步音视频生成的难度，并为缺失模态生成与重建提供了可借鉴的生成式基础框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.23855v2",
+      "source": "arxiv",
+      "title": "OmniVAE: An Audio-Video VAE with Cross-Modal Alignment for Joint Generation",
+      "abstract": "Recent generative models are moving beyond silent video or standalone audio synthesis toward the joint generation of synchronized audio and video. Despite this progress, jointly generating audio and video with fine-grained cross-modal correspondence remains challenging due to their fundamental structural differences. Most existing methods use audio and video VAEs trained separately. As a result, the two latent spaces lack cross-modal alignment, leaving the downstream generative model to learn cross-modal synchronization from scratch. We present OmniVAE, a jointly trained audio-video VAE that learns fine-grained semantic alignment between audio and video latent representations. Beyond reconstruction, OmniVAE uses a segment-level audio-video contrastive objective to capture temporal-semantic correspondence and align the two latent spaces. In parallel, it distills features from pretrained modality-specific semantic encoders into each modality, improving the downstream learnability of both latent spaces. Extensive experiments show that both objectives consistently improve the learnability of the latent spaces, translating into higher generation quality and more accurate cross-modal synchronization in downstream text-to-audio-video generation. These findings underscore the importance of learning unified representations as a foundation for omnimodal modeling.1",
+      "authors": [
+        "Jun Zhan",
+        "Chen Yang",
+        "Yitian Gong",
+        "Donghua Yu",
+        "Kuangwei Chen",
+        "Wenbo Zhang",
+        "Kexin Huang",
+        "Qi Luo",
+        "Zhe Xu",
+        "Ying Zhu",
+        "Jin Wang",
+        "Tengyue Zhang",
+        "Qi Chen",
+        "Cheng Chang",
+        "Songlin Wang",
+        "Junqi Dai",
+        "Jiasheng Ye",
+        "Xiaogui Yang",
+        "Tianyi Liang",
+        "Xiangyu Peng",
+        "Zhaoye Fei",
+        "Shimin Li",
+        "Qinyuan Cheng",
+        "Xie Chen",
+        "Xinchi Chen",
+        "Xipeng Qiu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CV"
+      ],
+      "published": "2026-07-26T21:51:28+00:00",
+      "link": "https://arxiv.org/pdf/2607.23855v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "jointly trained audio-video VAE with cross-modal alignment for generative missing modality support",
+      "llm_evidence_cn": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "llm_evidence": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "canonical_evidence": "联合训练的音频-视频VAE及跨模态对齐，可用于生成式缺失模态支持",
+      "llm_tldr_en": "OmniVAE jointly trains an audio-video VAE to learn fine-grained semantic alignment between audio and video latents, reducing the burden on downstream generative models for synchronized generation.",
+      "llm_tldr_cn": "针对现有音频和视频VAE分离训练导致潜空间缺乏跨模态对齐、下游生成模型难以学习同步对应的问题，本文提出OmniVAE，联合训练音频-视频VAE以学习两种模态潜表示之间的细粒度语义对齐。除重建外，OmniVAE还采用段级音视频对比学习增强一致性。实验表明，OmniVAE能为后续生成模型提供对齐良好的潜空间，简化同步音视频生成的难度，并为缺失模态生成与重建提供了可借鉴的生成式基础框架。",
+      "llm_tldr": "针对现有音频和视频VAE分离训练导致潜空间缺乏跨模态对齐、下游生成模型难以学习同步对应的问题，本文提出OmniVAE，联合训练音频-视频VAE以学习两种模态潜表示之间的细粒度语义对齐。除重建外，OmniVAE还采用段级音视频对比学习增强一致性。实验表明，OmniVAE能为后续生成模型提供对齐良好的潜空间，简化同步音视频生成的难度，并为缺失模态生成与重建提供了可借鉴的生成式基础框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.29112v1",
+      "source": "arxiv",
+      "title": "DoubleHelix: Structured Cross-Modal Fusion for Audio-Visual Speech Recognition with LLMs",
+      "abstract": "Audio-visual speech recognition (AVSR) relies on effective fusion of audio and visual modalities, yet existing approaches treat cross-modal interaction as a single-step operation without structured iterative refinement. We present DoubleHelix, a multimodal fusion framework that reformulates fusion as an iterative cross-modal interaction process with adaptive degradation-aware enhancement. The framework comprises three components including ReverseParallelHelix for multi-turn structured interaction with learned alignment constraints, QualitySensor for learning degradation-aware gating signals, and HelixReplication for consistency-guided conditional feature enhancement. Experiments on LRS3 demonstrate that DoubleHelix achieves 0.68% WER on clean audio, outperforming previous best results by 5.6% relative improvement under matched backbone settings. Comprehensive ablation studies validate each component contribution, including targeted analysis of design choices such as asymmetric pathway weighting. The framework shows improved robustness under evaluated babble-noise conditions, achieving 11.6% WER at SNR -5dB.",
+      "authors": [
+        "Ziwei Cheng",
+        "Zhenhua Tan",
+        "Zhuomin Zhu"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-07-31T07:40:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.29112v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Structured iterative cross-modal fusion with degradation-aware gating for robust audio-visual speech recognition",
+      "llm_evidence_cn": "提出结构化迭代跨模态融合与退化感知门控，增强多模态融合对输入质量下降的鲁棒性",
+      "llm_evidence": "提出结构化迭代跨模态融合与退化感知门控，增强多模态融合对输入质量下降的鲁棒性",
+      "canonical_evidence": "提出结构化迭代跨模态融合与退化感知门控，增强多模态融合对输入质量下降的鲁棒性",
+      "llm_tldr_en": "DoubleHelix reformulates AVSR fusion as iterative cross-modal interaction with degradation-aware gating and consistency-guided enhancement, achieving low WER on LRS3.",
+      "llm_tldr_cn": "针对音视频语音识别中跨模态交互被当成单步操作、对退化输入不鲁棒的问题，提出DoubleHelix框架。它将融合重构为多轮结构化交互，引入QualitySensor学习退化感知门控信号，并用一致性引导的条件特征增强。在LRS3上取得0.68%的词错误率，表明迭代式退化感知融合能提升多模态识别的鲁棒性。",
+      "llm_tldr": "针对音视频语音识别中跨模态交互被当成单步操作、对退化输入不鲁棒的问题，提出DoubleHelix框架。它将融合重构为多轮结构化交互，引入QualitySensor学习退化感知门控信号，并用一致性引导的条件特征增强。在LRS3上取得0.68%的词错误率，表明迭代式退化感知融合能提升多模态识别的鲁棒性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
