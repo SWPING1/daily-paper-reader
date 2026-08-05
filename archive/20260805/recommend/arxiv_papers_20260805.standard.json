@@ -1,0 +1,301 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-05T21:52:22.540531+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.03611v1",
+      "source": "arxiv",
+      "title": "Rethinking Modality Reliability in Multimodal Sentiment Analysis with Incomplete Observations",
+      "abstract": "Multimodal Sentiment Analysis (MSA) integrates text, audio, and vision to infer human affect, yet real-world multimodal observations are often incomplete. Existing methods for incomplete-observation MSA mainly follow two paradigms. Reconstruction-based methods recover missing information from observed modalities, while joint-representation methods learn directly from incomplete inputs. Although effective, these methods usually treat modality reliability only implicitly within representation learning or fusion design rather than modeling it explicitly. We argue that modality reliability is a central variable in incomplete-observation settings. Failure to model it explicitly gives rise to two related issues. The first is reliability mismatch, in which the affective evidence retained by each modality varies across samples and missing rates. The second is reliability propagation bias, in which messages from degraded modalities may adversely affect cross-modal interaction and predictive performance. To address these issues, we propose MRCF, a Modality Reliability-Calibrated Framework for MSA with incomplete observations. MRCF contains a Reliability-Aware Branch that estimates sample-specific modality reliability from intramodal quality cues and cross-modal semantic consistency, a Reliability-Guided Interaction Branch that uses the estimated scores to modulate cross-modal information flow, and a Reliability-Calibrated Fusion Module that integrates reliability and semantic cues for final prediction. Experiments on CMU-MOSI, CMU-MOSEI, and CH-SIMS show that MRCF achieves strong performance under standard incomplete-observation protocols. Further analyses provide evidence that explicit reliability modeling helps mitigate reliability mismatch and reliability propagation bias during interaction and fusion.",
+      "authors": [
+        "Chunlei Meng",
+        "Jacqueline J. Pang",
+        "Pengbin Feng",
+        "Zhenyu Yu",
+        "Chun Ouyang",
+        "Zhongxue Gan"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.MM"
+      ],
+      "published": "2026-08-04T13:02:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.03611v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Directly addresses multimodal sentiment analysis with incomplete observations, explicitly modeling modality reliability.",
+      "llm_evidence_cn": "直接研究不完整观测下的多模态情感分析，显式建模模态可靠性。",
+      "llm_evidence": "直接研究不完整观测下的多模态情感分析，显式建模模态可靠性。",
+      "canonical_evidence": "直接研究不完整观测下的多模态情感分析，显式建模模态可靠性。",
+      "llm_tldr_en": "The paper explicitly models modality reliability in multimodal sentiment analysis with incomplete observations, addressing robustness issues from implicit reliability estimation. It outperforms existing reconstruction and joint-representation baselines across missing-modality settings.",
+      "llm_tldr_cn": "多模态情感分析常因真实场景中文本、音频、视觉等模态缺失而性能下降。现有方法或重建缺失信息，或从不完整输入直接学习，却大多隐式处理模态可靠性。本文提出显式建模模态可靠性，以缓解可靠性估计偏差导致的鲁棒性问题。实验表明，所提方法在多组不完整模态设置下优于现有基线，为缺失观测下的多模态情感分析提供了更稳健的方案。",
+      "llm_tldr": "多模态情感分析常因真实场景中文本、音频、视觉等模态缺失而性能下降。现有方法或重建缺失信息，或从不完整输入直接学习，却大多隐式处理模态可靠性。本文提出显式建模模态可靠性，以缓解可靠性估计偏差导致的鲁棒性问题。实验表明，所提方法在多组不完整模态设置下优于现有基线，为缺失观测下的多模态情感分析提供了更稳健的方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.00621v1",
+      "source": "arxiv",
+      "title": "RHEA: Reliability-Harmonized Reconstruction and Assignment for Robust Multimodal-Attributed Graph Clustering",
+      "abstract": "Multimodal-attributed graphs (MAGs), whose nodes carry heterogeneous attributes such as text and images over a relational structure, have become a fundamental substrate for label-free entity grouping tasks, including community discovery and product segmentation. Existing MAG clustering methods effectively integrate complementary modalities when attributes are clean and complete, but degrade substantially under noisy or missing attributes because they implicitly assume equal modality reliability across all nodes. In practice, modality reliability is inherently node-specific: images may be corrupted or absent, while textual descriptions are incomplete or noisy. We argue that, under attribute homophily, graph neighborhoods naturally provide supervision-free evidence for estimating node-specific modality reliability. Based on this insight, we propose RHEA, a reliability-aware framework for MAG clustering that estimates node-specific modality reliability from neighborhood consensus and propagates this signal throughout the clustering pipeline. RHEA reconstructs unreliable or missing modalities from graph neighborhoods, adaptively weights modalities during reliability-aware fusion, and performs topology-aware optimal transport clustering with reliability-aware transport assignment and neighbor-consensus assignment distillation. Furthermore, the confidence of reconstructed representations is incorporated into the clustering objective, allowing uncertain reconstructions to contribute proportionally during optimization. Experiments on four MAG benchmarks under five attribute conditions show that RHEA consistently outperforms the strongest baseline, with NMI gains increasing as attribute quality deteriorates.",
+      "authors": [
+        "Yinlin Zhu",
+        "Di Wu",
+        "Ziyu Han",
+        "Zekai Chenm",
+        "Wang Luo",
+        "Miao Hu",
+        "Guocong Quan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-01T12:24:54+00:00",
+      "link": "https://arxiv.org/pdf/2608.00621v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes reconstruction and reliability harmonization for missing/noisy multimodal attributes, directly relevant to imputation for missing modality robustness.",
+      "llm_evidence_cn": "面向缺失/噪声多模态属性提出重建与可靠性协调，直接关联缺失模态鲁棒性的补全方法。",
+      "llm_evidence": "面向缺失/噪声多模态属性提出重建与可靠性协调，直接关联缺失模态鲁棒性的补全方法。",
+      "canonical_evidence": "面向缺失/噪声多模态属性提出重建与可靠性协调，直接关联缺失模态鲁棒性的补全方法。",
+      "llm_tldr_en": "RHEA addresses missing/noisy attributes in multimodal-attributed graph clustering by harmonizing node-specific modality reliability and reconstructing attributes, guided by attribute homophily, significantly outperforming existing clustering methods.",
+      "llm_tldr_cn": "多模态属性图聚类在属性缺失或噪声时性能严重下降，现有方法假设各节点模态可靠性相同。本文提出RHEA方法，在属性同质性指导下协调节点级模态可靠性，通过重建缺失属性并优化聚类分配。实验显示该方法在属性缺失和噪声场景下显著优于现有聚类方法，为多模态图数据聚类提供了更鲁棒的解决方案。",
+      "llm_tldr": "多模态属性图聚类在属性缺失或噪声时性能严重下降，现有方法假设各节点模态可靠性相同。本文提出RHEA方法，在属性同质性指导下协调节点级模态可靠性，通过重建缺失属性并优化聚类分配。实验显示该方法在属性缺失和噪声场景下显著优于现有聚类方法，为多模态图数据聚类提供了更鲁棒的解决方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.03475v1",
+      "source": "arxiv",
+      "title": "Adaptive Modality Reliability Diagnosis and Restoration for Robust Multimodal Intent Recognition",
+      "abstract": "Multimodal intent recognition combines linguistic, acoustic, and visual evidence, but individual modalities may be noisy, missing, semantically conflicting, or disproportionately dominant. Existing methods typically infer modality importance implicitly and either reweight or suppress unreliable inputs, without determining whether a degraded modality can be repaired and subsequently trusted. We propose PRIME (Precision-weighted Reliability Inference and Modality rEstoration), a closed-loop reliability guided framework that jointly diagnoses, restores, and reassesses modality quality at the sample level. PRIME represents the weakness of each modality through a contextual log-variance estimated from complementary diagnostic evidence, including predictive confidence, epistemic disagreement, cross-modal consensus, and feature degeneracy. Because modality-reliability annotations are unavailable, the estimator is explicitly trained using controlled modality corruption with known degradation severity, together with a heteroscedastic uncertainty objective. Rather than directly discarding an unreliable modality, PRIME uses its estimated weakness to control a prototype-conditioned variational restoration module that reconstructs the degraded representation from complementary modalities. Crucially, reliability is re-estimated after restoration, allowing the model to determine whether the repaired representation has become sufficiently trustworthy to contribute to prediction. The resulting post-restoration precisions are used for inverse-variance multimodal fusion. Experiments on multimodal intent-recognition benchmarks show that PRIME maintains competitive clean-data performance while improving robustness under missing, noisy, conflicting, and modality-imbalanced conditions.",
+      "authors": [
+        "Suraj Kumar",
+        "Mohnish Raj",
+        "Soumi Chattopadhayay",
+        "Chandranath Adak",
+        "Ayan Dutta"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-08-04T11:14:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.03475v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Diagnoses, restores, and reassesses noisy or missing modalities for robust multimodal classification",
+      "llm_evidence_cn": "诊断、恢复并再评估噪声或缺失模态，提升多模态分类鲁棒性",
+      "llm_evidence": "诊断、恢复并再评估噪声或缺失模态，提升多模态分类鲁棒性",
+      "canonical_evidence": "诊断、恢复并再评估噪声或缺失模态，提升多模态分类鲁棒性",
+      "llm_tldr_en": "PRIME adaptively diagnoses, restores, and re-evaluates unreliable or missing modalities using precision-weighted reliability inference, improving robustness of multimodal intent recognition under degraded inputs.",
+      "llm_tldr_cn": "多模态意图识别中的模态可能噪声、缺失、冲突或过度主导，而现有方法只重加权或抑制不可靠输入，不判断其是否能修复后再信任。论文提出PRIME闭环框架，用上下文对数方差表示各模态弱点，结合互补诊断证据进行精度加权可靠性推断，并在样本级诊断-恢复-再评估不断循环。实验显示，在多种模态退化条件下，PRIME能有效重建受损模态并恢复模型置信，从而显著提升鲁棒多模态分类性能，为缺失模态修复提供了通用范式。",
+      "llm_tldr": "多模态意图识别中的模态可能噪声、缺失、冲突或过度主导，而现有方法只重加权或抑制不可靠输入，不判断其是否能修复后再信任。论文提出PRIME闭环框架，用上下文对数方差表示各模态弱点，结合互补诊断证据进行精度加权可靠性推断，并在样本级诊断-恢复-再评估不断循环。实验显示，在多种模态退化条件下，PRIME能有效重建受损模态并恢复模型置信，从而显著提升鲁棒多模态分类性能，为缺失模态修复提供了通用范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.03559v1",
+      "source": "arxiv",
+      "title": "Compass: Degradation-Simulated Reciprocal Learning with Lightweight Needle RWKV for Multimodal Crack Segmentation under Missing Modalities",
+      "abstract": "In multimodal crack segmentation for industrial facilities, the key challenge is preventing missing modalities from degrading pixel-level performance while maintaining low computational cost. Existing methods struggle to address semantic degradation caused by missing modalities. We propose Compass, a lightweight network for robust crack segmentation under arbitrary missing modalities. Compass comprises Degradation Simulation Distillation (DSD), Needle Block, and Evidential Topology-Preserving Fusion (ETPF). DSD constructs a degradation simulation stream that mimics more severe missing conditions and performs reciprocal distillation with the original stream, decoupling complete perception from degradation adaptation. Within DSD, Feature-Aware Prototype Transmitter (FAPT) performs modality agnostic prototype-guided feature completion to maintain semantic integrity under incomplete modality conditions. As a lightweight backbone, Needle injects crack-direction cues into WKV modulation and combines connectivity-aware gating with anisotropic context probing for structure-aware modeling. ETPF fuses multimodal features via Dempster-Shafer evidential combination with uncertainty-gated decoding, preserving crack topology while suppressing unreliable features. Experiments on three datasets demonstrate state-of-the-art (SOTA) performance under diverse missing modality scenarios. Even with 90\\% depth modality missing on CrackDepth, Compass achieves F1 of 0.8216 and mIoU of 0.8434 with only 2.58M parameters. The code is available at https://github.com/Karl1109/Compass.",
+      "authors": [
+        "Hui Liu",
+        "Chen Jia",
+        "Fan Shi",
+        "Xu Cheng",
+        "Mianzhao Wang",
+        "Shengyong Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-04T12:27:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.03559v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly addresses missing modality robustness via degradation simulation and decoupled perception",
+      "llm_evidence_cn": "通过退化模拟与解耦感知直接处理缺失模态鲁棒性",
+      "llm_evidence": "通过退化模拟与解耦感知直接处理缺失模态鲁棒性",
+      "canonical_evidence": "通过退化模拟与解耦感知直接处理缺失模态鲁棒性",
+      "llm_tldr_en": "Compass tackles missing-modality robustness in multimodal crack segmentation with degradation simulation distillation and evidential topology-preserving fusion, maintaining high accuracy under arbitrary missing inputs with low cost.",
+      "llm_tldr_cn": "工业设施多模态裂纹分割中，任意模态缺失都会导致语义退化，现有方法难以同时保证精度和效率。本文提出轻量级网络Compass，通过退化模拟蒸馏（DSD）构建更严重的缺失条件并与原流进行互蒸馏，结合Needle Block和证据保持拓扑融合（ETPF），实现完整感知的近似与解耦。实验表明，Compass在任意模态缺失下显著减缓像素级性能下降，且计算开销低。其退化模拟与互蒸馏机制可为缺失模态鲁棒学习提供通用范式。",
+      "llm_tldr": "工业设施多模态裂纹分割中，任意模态缺失都会导致语义退化，现有方法难以同时保证精度和效率。本文提出轻量级网络Compass，通过退化模拟蒸馏（DSD）构建更严重的缺失条件并与原流进行互蒸馏，结合Needle Block和证据保持拓扑融合（ETPF），实现完整感知的近似与解耦。实验表明，Compass在任意模态缺失下显著减缓像素级性能下降，且计算开销低。其退化模拟与互蒸馏机制可为缺失模态鲁棒学习提供通用范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.02189v1",
+      "source": "arxiv",
+      "title": "Disentangled Contrastive Learning for Zero-Shot Multilingual Dense Retrieval",
+      "abstract": "Multilingual dense retrieval aims to handle queries and documents across different languages based on a unified retriever model. The challenge lies in enabling robust retrieval transfer to low-resource languages where annotated retrieval data is often scarce. Although previous studies transfer high-resource supervision to low-resource languages in multilingual semantic representation learning, the shared representation often entangles semantic and linguistic features, which may interfere with optimizing semantic relevance for retrieval. Different from existing methods that focus on learning language-agnostic semantic features under such entanglement, we propose a disentangled contrastive learning~(DCL) method for multilingual dense retrieval by separating multilingual representations into semantic and linguistic subspaces. Specifically, we design disentangled optimization objectives based on hierarchical semantic alignment and language debiasing contrastive learning. By aligning retrieval-relevant semantics across languages at both sentence and token levels while capturing language-specific variations in the linguistic subspace, these objectives reduce language-induced interference in semantic matching. We jointly optimize them with the retrieval objective to facilitate stable zero-shot transfer from English supervision to multilingual dense retrieval. Extensive experiments on mMARCO and MIRACL show that our method consistently outperforms several strong baselines, demonstrating its effectiveness and generalization ability.",
+      "authors": [
+        "Chao Huang",
+        "Yufeng Chen",
+        "Changhao Guan",
+        "Guang Yang",
+        "Dongze Chen",
+        "Kaiyu Huang"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.CL"
+      ],
+      "published": "2026-08-03T13:13:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.02189v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Disentangled contrastive learning separates semantic and linguistic features; transferable to modality disentanglement",
+      "llm_evidence_cn": "解耦对比学习分离语义与语言特征，可迁移至模态解耦",
+      "llm_evidence": "解耦对比学习分离语义与语言特征，可迁移至模态解耦",
+      "canonical_evidence": "解耦对比学习分离语义与语言特征，可迁移至模态解耦",
+      "llm_tldr_en": "Proposes disentangled contrastive learning for multilingual dense retrieval to separate semantic and linguistic features, improving cross-lingual transfer. Generalizable disentanglement methodology.",
+      "llm_tldr_cn": "多语言稠密检索的共享表示常把语义与语言特征纠缠在一起，干扰检索语义相关性。该文提出解耦对比学习DCL，将语义特征与语言特征分离，从而在不依赖语言无关语义假设的情况下提升低资源语言的检索迁移能力。实验验证了DCL在零样本多语言检索上的有效性，其解耦思路可作为多模态情感识别中分离模态无关与模态特定表示的参考方法。",
+      "llm_tldr": "多语言稠密检索的共享表示常把语义与语言特征纠缠在一起，干扰检索语义相关性。该文提出解耦对比学习DCL，将语义特征与语言特征分离，从而在不依赖语言无关语义假设的情况下提升低资源语言的检索迁移能力。实验验证了DCL在零样本多语言检索上的有效性，其解耦思路可作为多模态情感识别中分离模态无关与模态特定表示的参考方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.02769v1",
+      "source": "arxiv",
+      "title": "DAIF: A Data-Driven Intermediate Fusion Framework for Multimodal Supervised Learning via Approximate Message Passing",
+      "abstract": "Multimodal supervised learning seeks to leverage multiple heterogeneous data sources to improve predictive performance. A central challenge is determining the fusion granularity across modalities: over-integration may amplify noise while under-integration fails to exploit cross-modal dependence. Existing approaches rely on pre-specified fusion architectures, from early to late fusion, that may not adapt to the underlying dependence structure among modalities. We propose DAIF, a data adaptive intermediate fusion framework that combines random matrix theory and non-parametric dependence measures to learn fusion structure directly from data. We operate under a Bayesian multimodal factor model where the prior on the latent factors determines the cross-modal dependence. Our method clusters modalities based on estimated intermodal dependence, then performs clusterwise empirical Bayes estimation of the priors. These estimated priors are used to construct denoisers within an approximate message passing (AMP) framework, yielding denoised low-dimensional features that borrow strength across related modalities while preserving modality-specific signal. The resulting embeddings are used for downstream supervised prediction. We evaluate the framework through simulations under varying dependence structures and signal regimes, comparing against several benchmark methods, and demonstrate its practical utility on two multimodal datasets, namely a trimodal TEA-seq dataset (Swanson et al., 2021) and TCGA-BRCA dataset (Goldman et al., 2020). In the first example, we predict the expression level of a T-cell differentiation marker protein and in the second case we analyze patient survival prediction based on multimodal information. Our method competes with or outperforms the state-of-the-art techniques in both prediction problems, demonstrating its versatility across diverse supervised learning tasks.",
+      "authors": [
+        "Sagnik Nandy",
+        "Samriddha Lahiry",
+        "Pragya Sur",
+        "Subhabrata Sen"
+      ],
+      "primary_category": "stat.ME",
+      "categories": [
+        "stat.ME",
+        "cs.LG",
+        "math.ST",
+        "stat.ML"
+      ],
+      "published": "2026-08-03T18:10:58+00:00",
+      "link": "https://arxiv.org/pdf/2608.02769v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "data-adaptive intermediate fusion for robust multimodal learning",
+      "llm_evidence_cn": "数据自适应中间融合用于鲁棒多模态学习",
+      "llm_evidence": "数据自适应中间融合用于鲁棒多模态学习",
+      "canonical_evidence": "数据自适应中间融合用于鲁棒多模态学习",
+      "llm_tldr_en": "DAIF learns fusion structure directly from data using random matrix theory and non-parametric dependence measures, improving robustness to noise under multimodal supervised learning.",
+      "llm_tldr_cn": "多模态监督学习的融合粒度选择至关重要，过度整合会放大噪声，整合不足则无法利用跨模态关联。已有方法依赖预定义的早期或晚期融合架构。DAIF结合随机矩阵论和非参数依赖性度量，从数据中自适应学习中间融合结构。实验表明该方法能更好地匹配模态间的真实依赖，提升预测性能与鲁棒性，为多模态融合提供了数据驱动范式。",
+      "llm_tldr": "多模态监督学习的融合粒度选择至关重要，过度整合会放大噪声，整合不足则无法利用跨模态关联。已有方法依赖预定义的早期或晚期融合架构。DAIF结合随机矩阵论和非参数依赖性度量，从数据中自适应学习中间融合结构。实验表明该方法能更好地匹配模态间的真实依赖，提升预测性能与鲁棒性，为多模态融合提供了数据驱动范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.02907v1",
+      "source": "arxiv",
+      "title": "Bayesian Data Reweighting Improves Multimodal Retrieval for Knowledge-Based Visual Question Answering",
+      "abstract": "Multimodal retrievers are essential for knowledge-based visual question answering, where they retrieve external evidence for image-question pairs. However, existing contrastive training methods typically treat all unmatched query-document pairs as equally informative negatives, which is problematic because many unmatched documents may still be semantically relevant or partially useful. We propose Bayesian Data Reweighting, a probabilistic framework that models query-document importance as latent variables and adaptively infers posterior weights to downweight likely false negatives. With closed-form posterior updates under conjugate priors and stochastic EM optimization, our method consistently improves retrieval accuracy across three retrievers and seven knowledge-based VQA benchmarks.",
+      "authors": [
+        "Jingchen Sun",
+        "Shaobo Han",
+        "Ruiyi Zhang",
+        "Naresh Kumar Devulapally",
+        "Ming Liu",
+        "Yitao Long",
+        "Vishnu Suresh Lokhande",
+        "Changyou Chen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-03T21:46:08+00:00",
+      "link": "https://arxiv.org/pdf/2608.02907v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "robust multimodal retrieval training via reweighting false negatives",
+      "llm_evidence_cn": "通过重加权假阴性提升多模态检索鲁棒性",
+      "llm_evidence": "通过重加权假阴性提升多模态检索鲁棒性",
+      "canonical_evidence": "通过重加权假阴性提升多模态检索鲁棒性",
+      "llm_tldr_en": "Models query-document importance as latent variables to downweight false negatives, improving multimodal retrieval robustness in knowledge-based VQA.",
+      "llm_tldr_cn": "多模态检索器的对比训练通常把未匹配样本都视为同等难度的负样本，但这会引入语义上相关的假阴性，影响鲁棒性。该文提出贝叶斯数据重加权框架，把查询-文档重要性视为隐变量，通过后验推断自适应降低假阴性权重。在知识型视觉问答检索任务上，该方法稳定提升检索准确率，是一种有效的鲁棒多模态学习方法。",
+      "llm_tldr": "多模态检索器的对比训练通常把未匹配样本都视为同等难度的负样本，但这会引入语义上相关的假阴性，影响鲁棒性。该文提出贝叶斯数据重加权框架，把查询-文档重要性视为隐变量，通过后验推断自适应降低假阴性权重。在知识型视觉问答检索任务上，该方法稳定提升检索准确率，是一种有效的鲁棒多模态学习方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,906 @@
+Title: Disentangled Contrastive Learning for Zero-Shot Multilingual Dense Retrieval
+
+URL Source: https://arxiv.org/pdf/2608.02189v1
+
+Published Time: Tue, 04 Aug 2026 02:23:49 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# Disentangled Contrastive Learning for Zero-Shot Multilingual Dense Retrieval 
+
+## Chao Huang 1,2 , Yufeng Chen 1,2 , Changhao Guan 1,2 , Guang Yang 1,2 , Dongze Chen 2, Kaiyu Huang 1,2 ∗
+
+> 1
+
+Key Laboratory of Big Data & Artificial Intelligence in Transportation (Beijing Jiaotong University), Ministry of Education 
+
+> 2
+
+School of Computer Science and Technology, Beijing Jiaotong University huangchao@bjtu.edu.cn, kyhuang@bjtu.edu.cn 
+
+Abstract 
+
+Multilingual dense retrieval aims to handle queries and docu-ments across different languages based on a unified retriever model. The challenge lies in enabling robust retrieval trans-fer to low-resource languages where annotated retrieval data is often scarce. Although previous studies transfer high-resource supervision to low-resource languages in multilingual seman-tic representation learning, the shared representation often entangles semantic and linguistic features, which may inter-fere with optimizing semantic relevance for retrieval. Differ-ent from existing methods that focus on learning language-agnostic semantic features under such entanglement, we pro-pose a disentangled contrastive learning (DCL) method for multilingual dense retrieval by separating multilingual rep-resentations into semantic and linguistic subspaces. Specifi-cally, we design disentangled optimization objectives based on hierarchical semantic alignment and language debiasing contrastive learning. By aligning retrieval-relevant semantics across languages at both sentence and token levels while cap-turing language-specific variations in the linguistic subspace, these objectives reduce language-induced interference in se-mantic matching. We jointly optimize them with the retrieval objective to facilitate stable zero-shot transfer from English supervision to multilingual dense retrieval. Extensive experi-ments on mMARCO and MIRACL show that our method con-sistently outperforms several strong baselines, demonstrating its effectiveness and generalization ability. 
+
+## Introduction 
+
+Multilingual dense retrieval (Nie 2010; Zhang et al. 2023a) aims to learn a retriever in a shared semantic space so that the model can handle queries and documents in different languages. However, constructing a multilingual dense re-triever is not trivial due to the lack of annotated data, espe-cially for low-resource languages. Thus, a common practice is to train a multilingual pre-trained model on high-resource language annotated data (e.g., English) and then generalize the retrieval ability to low-resource languages (MacAvaney, Soldaini, and Goharian 2020; Lin, Ahmad, and Lin 2023; Litschko, Artemova, and Plank 2023). Although this paradigm yields some gains, its performance remains limited by two main aspects. First, multilingual pre-trained models suffer from inadequate cross-lingual seman-tic alignment. Due to the variations of linguistic features 
+
+> ∗
+
+Corresponding author. 
+
+(e.g., grammatical structure, vocabulary and word order), sentences in different languages with equivalent semantics may be mapped to different regions in the shared representa-tion space (Schuster et al. 2019; Tanwar et al. 2023; Hämmerl, Libovick` y, and Fraser 2024), which makes it difficult for retrieval supervision learned from high-resource languages to effectively generalize to low-resource languages. Second, multilingual representations often entangle retrieval-relevant semantic features with linguistic features. When fine-tuning a retriever with high-resource language data, models may over-rely on language-relevant patterns rather than learning purely transferable semantic relevance, further weakening zero-shot transfer capabilities across languages for retrieval (Huang, Huang, and Chang 2021; Jian, Gao, and Vosoughi 2022). Previous studies have predominantly concentrated on learning the effective shared representation space to enhance transferability (Wang, Wu, and Neubig 2022; Chen et al. 2024), including modular vector representations (Zhang et al. 2023a; Louis et al. 2025) and synthesizing data (Huang et al. 2023; Thakur et al. 2024). However, an excessive empha-sis on cross-lingual semantic alignment may exacerbate the entanglement between retrieval-relevant semantic features and language-specific features. Disentangling confounded semantics while optimizing the shared cross-lingual seman-tic representation space is crucial for improving transfer per-formance in multilingual retrieval. The entanglement of semantic and linguistic features can be formulated as a feature separation problem. Motivated by this, a potential solution is to design disentanglement modules and incorporate them into multilingual retrievers. Although disentangled representation learning has demon-strated its ability to decompose entangled sentence repre-sentations and exploit the disentangled semantic features to enhance natural language understanding tasks (Chen et al. 2019; Huang, Huang, and Chang 2021; Wu et al. 2022; Zhang, Carvalho, and Freitas 2024; Wang et al. 2022b, 2024), extending it to multilingual dense retrieval is non-trivial. In multilingual dense retrieval, the disentangled semantic sub-space must preserve fine-grained query-document relevance signals that are essential for ranking while maintaining cross-lingual alignment, and the linguistic subspace should absorb those language-specific differences that interfere with seman-tic matching. Thus, directly using existing disentanglement objectives may lead to unstable performance of zero-shot arXiv:2608.02189v1 [cs.IR] 3 Aug 2026 Input Construction Disentangled Representation Learning Joint Optimization 
+
+Parallel Corpus P
+
+Non-Parallel Corpus Q      
+
+> Sentence-Level CL
+> Language Debiasing CL
+> Non-Parallel Data Q
+> Shared
+> Encoder
+> s
+> Retrieval Objective
+
+q d+
+
+d-   
+
+> Parallel Sentence Data P
+
+Retrieval Data D IR              
+
+> Positive dq+
+> Negative dq-
+> Query ql
+> Parallel sentence pairs
+> Monolingual sentences
+> (low-resource / uncovered)
+> ACat sits on the mat EN
+> Un chat est assis sur le tapis FR
+> BN SW YO
+
+…
+
+…
+
+> Semantic
+> Projector
+> Ws
+
+Semantic Space Zs
+
+> Zs
+
+Language Space Zl            
+
+> ZlLanguage
+> Projector
+> Wl
+> Entangled Sentence
+> Representations
+> Orthogonal  Constraint
+> (Language-agnostic)
+> Query qs
+> Positive dq+
+> Negative dq-
+> (Language specific) Consistency Alignment
+> Token-Level CL
+> Same Language
+> （pos ）
+> Different Language （neg ）
+> Orth-Constraint
+> WsWl
+> Joint Update
+> EN BN
+> FR
+
+…            
+
+> Parallel pair
+> Pull together
+> EN
+> （Zsen ）FR
+> （Zsfr ）
+> Preserve language-specific factors ZsTZl≈0
+> Non-Parallel pair
+> EN
+> （Zsen ）
+> SW
+> （Zssw ）
+> BN
+> （Zsbn ）Consistent Semantic
+> Distance
+> dd
+> Hierarchical Semantic Alignment
+> Disentangler
+
+Figure 1: Overview of our disentangled framework, including (i) a language-semantic disentangler separating semantic and linguistic features, (ii) hierarchical semantic alignment performing multi-aspect semantic alignment, and (iii) language debiasing contrastive learning to capture language-specific variations in the linguistic subspace. multilingual dense retrieval on low-resource languages or out-of-domain datasets. To achieve a retrieval-oriented disentanglement objec-tive, we propose a disentangled contrastive learning (DCL) framework to jointly promote cross-lingual semantic align-ment and semantic-linguistic feature separation for multi-lingual dense retrieval. In the two disentangled spaces, the method learns multi-granular retrieval-relevant representa-tions in the semantic space and language-specific representa-tions in the linguistic space. The framework consists of three stages. The first stage is to disentangle the sentence repre-sentation into semantic and linguistic features through two projection matrices. Then, we design the disentangled opti-mization objectives, including hierarchical semantic align-ment and language debiasing contrastive learning. The for-mer uses sentence-level hard negatives to preserve retrieval distinctions, token-level alignment to capture fine-grained cross-lingual correspondences, and consistency constraints to transfer the aligned structure to languages without parallel data. In this way, the semantic subspace learns language-invariant yet ranking-sensitive semantic structures that sup-port fine-grained cross-lingual relevance matching. The latter directs language-specific patterns to the linguistic subspace by pulling same-language representations together and push-ing different-language ones apart. Together with the orthog-onal constraint, they reduce language leakage and focus the semantic subspace on language-invariant relevance signals. Finally, we jointly optimize the multilingual dense retrieval and disentanglement objectives to facilitate stable zero-shot transfer from English supervision to multilingual dense re-trieval. Experimental results on the multilingual retrieval datasets mMARCO and MIRACL demonstrate the effective-ness of our method. Further analysis quantifies the contri-bution of each key component and provides representation visualizations to examine whether the learned semantic and linguistic subspaces exhibit the expected language-invariant and language-aware properties. Our contributions are summarized as follows: 1) We propose a disentangled contrastive learning (DCL) frame-work for multilingual dense retrieval, which successfully achieves retrieval-oriented semantic-linguistic disentangle-ment. 2) We design two complementary disentangled opti-mization components: hierarchical semantic alignment pro-motes sentence-level and token-level cross-lingual alignment of retrieval-relevant semantic features, while language debi-asing contrastive learning encourages the linguistic subspace to capture language-specific variations. 3) Experimental re-sults show that our approach outperforms strong baselines in terms of effectiveness and generalization for multilingual re-trieval in-domain and out-of-domain, without requiring any multilingual retrieval data, obtaining consistent gains across resource levels and language families. 
+
+## Related Work 
+
+Zero-shot Multilingual Information Retrieval 
+
+Zero-shot multilingual information retrieval aims to trans-fer the retrieval capability learned from English supervision to low-resource languages (Litschko, Artemova, and Plank 2023; Lin, Ahmad, and Lin 2023). To achieve this goal, a series of methods have been proposed to improve the zero-shot cross-lingual retrieval ability of multilingual retrievers, which can be roughly divided into two categories. First, some studies develop embedding models to fine-tune multilingual retrievers (Devlin et al. 2019; Conneau and Lample 2019; Chi et al. 2021; Feng et al. 2022; Wang, Wu, and Neubig 2022). They aim to leverage multilingual pre-trained language mod-els to enable zero-shot transfer in multilingual dense retrieval. Second, other studies introduce language-specific modules into multilingual retrievers to improve cross-lingual transfer by adapting the retriever to different languages (Zhang et al. 2023a; Louis et al. 2025). Different from existing studies that focus on learning language-agnostic semantic features under the entanglement of semantic and linguistic informa-tion, our method explores how to use the separated semantic features to facilitate zero-shot cross-lingual transfer from the perspective of disentangled optimization. 
+
+Disentangling for Cross-lingual Alignment 
+
+Cross-lingual semantic alignment (Cao, Kitaev, and Klein 2020; Ouyang et al. 2021) is one of the core goals of multi-lingual sentence representation learning, which makes sen-tences with similar semantics in different languages closer to each other in a shared vector space. Although multilingual pre-trained models have achieved strong cross-lingual capa-bilities during the pre-training or further fine-tuning stage, the entangled semantic and linguistic features may impair the model performance. Recent studies (Huang, Huang, and Chang 2021; Wu et al. 2022; Zhang, Carvalho, and Freitas 2024) attempt to perform cross-lingual semantic alignment from the perspective of disentanglement, such as using au-toencoders or SVD to extract linguistic features, and leverag-ing language-agnostic semantic information for task-specific training. However, their disentanglement objectives are rela-tively simple and mostly applied to natural language under-standing and generation tasks. Different from them, we aim to design a disentangled optimization objective and adapt it to multilingual dense retrieval. 
+
+## Methodology 
+
+As shown in Figure 1, we propose a disentangled contrastive learning framework with hierarchical semantic and linguis-tic alignment to facilitate effective zero-shot cross-lingual transfer in multilingual dense retrieval, which consists of three main components: i) a language-semantic disentangler for separating the entangled representation into semantic and language-specific subspaces, ii) hierarchical semantic align-ment by performing cross-lingual alignment at both sentence and token levels with parallel and non-parallel corpora and iii) capturing language-specific variations in the linguistic subspace by language debiasing contrastive learning. 
+
+Language-semantic Disentangler 
+
+For multilingual dense retrieval, the encoder representa-tion usually entangles task-related semantic information and language-specific features, such as grammatical patterns and word-order variations. Such entanglement may introduce language-dependent bias into the shared retrieval space and hinder cross-lingual semantic alignment. To alleviate this is-sue, we introduce a language-semantic disentangler, which projects the original sentence representation z into a seman-tic component zs and a language-specific component zl:
+
+zs = Wsz, zl = Wlz (1) where Ws and Wl are trainable parameters of the semantic and language projection heads, respectively. The semantic component zs is used to capture retrieval-relevant semantic information, while zl preserves language-specific features. To reduce the correlation between semantic and language-specific subspaces, we impose an orthogonal constraint on the batch-level projected representations. Given a mini-batch, we stack the semantic and language-specific representations as Zs, Zl ∈ RB×d′
+
+, where B is the batch size. The orthogo-nal loss is defined as 
+
+Lorth = 1
+
+B Z⊤ 
+
+> s
+
+Zl
+
+> 2
+> F
+
+(2) where ∥ · ∥ F denotes the Frobenius norm. 
+
+Hierarchical Semantic Alignment 
+
+In practice, parallel corpora are often unavailable for many low-resource languages. To enable cross-lingual transfer un-der limited supervision, we use the available parallel corpus 
+
+P for direct semantic alignment and the non-parallel cor-pus Q for indirect consistency constraints. Specifically, we perform hierarchical semantic alignment on the language-agnostic component zs at both sentence and token levels. For parallel data, we align semantically equivalent sentence pairs and their aligned tokens, yielding LP 
+
+> sentCL
+
+and LP
+
+> tokenCL
+
+. For non-parallel data, we encourage monolingual representations to maintain consistent semantic distances to parallel sentence pairs, yielding LQ 
+
+> sentCL
+
+and LQ
+
+> tokenCL
+
+. We further mine in-batch hard negatives for parallel sentence-level alignment to improve fine-grained semantic discrimination. 
+
+Sentence-level Cross-lingual Alignment . For semantically equivalent sentences in different languages, we aim to learn a consistent semantic representation. Given a parallel sen-tence pair (xi, x j ), we obtain their semantic representations through the encoder f (·) and the semantic projection layer as 
+
+si = Wsf (xi), sj = Wsf (xj ) (3) To provide more challenging negatives, we mine the top-
+
+K most similar samples in the batch, excluding the cur-rent parallel pair, as their hard negative sets, denoted as 
+
+Ni = TopK( {sk | k̸ = i, j }, sim( si, sk), K ) and Nj =TopK( {sk | k̸ = i, j }, sim( sj , sk), K ), respectively. For compactness, we first define δ(u, v) =exp(sim( u, v)/τ ) as the temperature-scaled exponen-tial similarity between two representation vectors u and 
+
+v. Based on this, the contrastive loss for an anchor x, its positive sample x+, and a negative set N is defined as 
+
+ℓ(x, x+, N ) = − log δ(x, x+)
+
+δ(x, x+) + P 
+
+> x−∈N
+
+δ(x, x−)
+
+(4) Based on the selected hard negative samples, for N pairs of parallel sentences within a batch, we construct the sentence-level contrastive loss LP 
+
+> sentCL
+
+as 
+
+LP 
+
+> sentCL
+
+= 12N
+
+X
+
+> (i,j )∈P
+
+[ℓ(si, sj , Ni) + ℓ(sj , si, Nj )] 
+
+(5) 
+
+Token-level Cross-lingual Alignment. Sentence-level cross-lingual alignment alone may be insufficient to capture fine-grained semantic correspondence, especially for low-resource languages with substantial variations in word order and morphology. To address this issue, we further intro-duce token-level cross-lingual alignment. Given a parallel sentence pair (xi, x j ), we denote their tokenized forms as 
+
+xi = {u1, u 2, · · · , u m} and xj = {v1, v 2, · · · , v n}. Then, we use awesome-align (Dou and Neubig 2021) to obtain token-level alignment indices, denoted as Tij = {(a, b ) |
+
+ua ↔ vb, 1 ≤ a ≤ m, 1 ≤ b ≤ n}.For all parallel sentence pairs in the batch, we merge their alignment indices as T = S  
+
+> (xi,x j)∈B P
+
+Tij , with |T | = T .For each aligned index pair (at, b t) ∈ T , we take the corre-sponding contextualized token representations from the en-coder outputs, denoted as wut and wvt .We denote all aligned token representations in the batch as 
+
+WP = {wut , wvt }Tt=1 , and define the token-level negative set as N wt = WP \ { wut , wvt }. The token-level contrastive loss is defined as 
+
+LP 
+
+> tokenCL
+
+= 12T
+
+> T
+
+X
+
+> t=1
+
+h
+
+ℓ(wut , wvt , N wt )+ ℓ(wvt , wut , N wt )
+
+i (6) Finally, the hierarchical semantic contrastive loss for parallel data is defined as 
+
+LP 
+
+> HsemaCL
+
+= LP 
+
+> sentCL
+
++ λtLP 
+
+> tokenCL
+
+(7) where λt is the weight hyperparameter for the token-level loss. Similarly, for low-resource languages without parallel cor-pora, we construct indirect semantic consistency constraints based on the available parallel sentence pairs. Given a mono-lingual sentence xk ∈ Q, we obtain its semantic repre-sentation sk through the encoder and the semantic projec-tion layer. Since xk has no explicit parallel counterpart, we encourage it to have comparable semantic distances to the two sides of a parallel sentence pair (xi, x j ), i.e., 
+
+sim( si, sk) ≈ sim( sj , sk).For compactness, we define ρ(x; a, b) =
+
+δ(x, a)/(δ(x, a) + δ(x, b)) as the normalized pair-wise similarity between an anchor x and two reference representations a and b. Within the same batch, we control the number of parallel sentence pairs and low-resource monolingual sentences to be N , and construct the sentence-level consistency loss LQ 
+
+> sentCL
+
+as 
+
+LQ 
+
+> sentCL
+
+= − 1
+
+N 2
+
+X
+
+> (i,j )∈P
+
+X
+
+> k∈Q
+
+h
+
+log ρ(sk; si, sj )+ log ρ(sk; sj , si)
+
+i (8) At the token level, we apply the same consistency con-straint to the token representations of non-parallel sentences. Let WQ = {wqk }Kk=1 denote the token representations from non-parallel data, and (wut , wvt ) ∈ W P denote an aligned token pair from parallel data. The token-level consistency loss is LQ 
+
+> tokenCL
+
+defined as 
+
+LQ 
+
+> tokenCL
+
+= − 1
+
+T K 
+
+> T
+
+X
+
+> t=1
+> K
+
+X
+
+> k=1
+
+h
+
+log ρ(wqk ; wut , wvt )+ log ρ(wqk ; wvt , wut )
+
+i (9) Finally, the hierarchical semantic contrastive loss for non-parallel corpus is defined as 
+
+LQ 
+
+> HsemaCL
+
+= LQ 
+
+> sentCL
+
++ λtLQ 
+
+> tokenCL
+
+(10) where λt is the weight hyperparameter for the token-level loss. Based on the supervision signals provided by the above parallel and non-parallel corpora, we define the hierarchical semantic contrastive loss as 
+
+LHsemaCL = LP 
+
+> HsemaCL
+
++ λq LQ 
+
+> HsemaCL
+
+(11) 
+
+Language Debiasing Contrastive Learning 
+
+Sentences in the same language may express different seman-tics, but they often share similar lexical and syntactic pat-terns. In contrast, sentences from different languages should be distinguishable in the language-specific space. Therefore, we introduce a language debiasing contrastive loss to encour-age the language component zl to capture language-related information by pulling same-language representations closer and pushing different-language representations apart. Specif-ically, for each sample xk ∈ B , where B consists of samples from P and Q, we denote its language as lang( xk) and obtain its language-specific representation as 
+
+lk = Wlf (xk). (12) For the anchor sample xk, samples satisfying lang( xp) = lang( xk) are treated as positives, while the negative represen-tation set is defined as N l(xk) = {lr | xr ∈ B , lang( xr )̸ =lang( xk)}. Based on these positive and negative samples, the language debiasing contrastive loss is formulated as 
+
+LlangCL = 1
+
+|B| 
+
+X 
+
+> xk∈B
+
+ℓ(lk, lp, N l(xk)) (13) 
+
+Joint Training 
+
+To optimize the disentangler, we combine hierarchical se-mantic contrastive learning, language debiasing contrastive learning, and the orthogonal constraint. The disentangled objective is defined as 
+
+Ldec = LHsemaCL + LlangCL + λoLorth (14) where λo controls the contribution of the orthogonal con-straint. Overall, we jointly optimize the retrieval objective and the disentanglement objective. Given a query ql, its pos-itive document d+ 
+
+> q
+
+, and the negative document set D− 
+
+> q
+
+, we define the retrieval representation as r(x) = Wsf (x). The overall training objective is formulated as 
+
+L = ℓ
+
+
+
+r
+
+
+
+q(ℓ)
+
+, r  d+
+
+> q
+
+ , r(d) : d ∈ D−
+
+> q
+
+
+
++ λdLdec 
+
+(15) where λd controls the contribution of Ldec . The whole pro-cedure is described in the supplementary materials E. Model Avg ar de en es fr hi id it ja nl pt ru vi zh Lexical Retrieval                                                                                                                                                                                     
+
+> BM25 14.2 11.1 13.6 18.4 15.8 15.5 13.4 14.9 15.3 14.1 14.0 15.2 12.4 13.6 11.6
+> English Supervision
+> mDPR 15.8 12.4 15.7 31.4 16.7 16.0 13.2 12.3 15.6 15.2 15.1 15.8 13.7 12.3 15.4 mContriever 17.7 16.1 23.2 29.5 15.9 15.8 14.6 17.7 16.2 14.7 19.7 18.4 18.1 13.7 14.4 mColBERT 18.3 16.8 24.9 30.4 16.1 14.6 17.2 14.9 18.7 17.1 20.2 19.2 17.7 13.9 14.2 ColBERT-XM 26.2 19.5 27.0 37.2 28.5 26.9 23.8 26.3 26.5 24.1 27.5 27.6 25.1 22.6 24.6
+> mBERT AGG 24.9 18.2 25.3 33.6 27.9 26.5 22.6 25.7 26.9 22.2 25.8 26.7 24.3 19.4 23.1
+> XLM -RAGG 26.3 19.1 25.9 35.2 29.1 28.3 24.4 27.3 28.8 23.8 27.1 28.3 25.4 21.2 24.8
+> Multilingual Supervision
+> mE5 BASE 26.5 20.5 27.1 35.0 28.9 30.0 24.2 26.1 28.0 25.0 27.3 27.5 24.5 23.9 22.9 BGE 27.1 20.8 27.7 36.5 29.2 30.1 25.1 27.4 28.8 25.3 27.9 27.8 24.4 24.5 23.4
+> BGE HN 27.4 20.9 27.9 37.2 29.3 29.9 25.2 28.5 29.1 25.8 27.4 27.7 25.7 24.5 25.1
+> Ours
+> Ours mBERT 26.8 †19.3 †27.3 †36.7 †29.2 †28.3 †24.6 †27.8 †28.4 †24.5 †27.8 †28.2 †24.9 †22.9 †25.1 †
+> Ours XLM -R27.8 †‡ 21.1 †‡ 28.2 †‡ 37.4 †‡ 29.8 †‡ 29.7 †25.3 †‡ 28.3 †29.6 †‡ 25.5 †28.7 †‡ 28.6 †‡ 26.2 †‡ 24.1 †26.3 †‡
+
+Table 1: In-domain zero-shot results on mMARCO using MRR@10. † denotes significant improvements with paired t-test at 
+
+p < 0.05 over the baseline method using the same backbone model, and ‡ denotes significant improvements over the strongest baseline in the same column. Bold and underline indicate the best and second-best results, respectively. 
+
+## Experiments 
+
+Experimental Setup 
+
+Datasets and Metrics. For multilingual dense retrieval, we use only the English (MS MARCO (Bajaj et al. 2016)) pas-sage ranking dataset as retrieval supervision for model train-ing. For cross-lingual semantic alignment, we use the Wiki-Matrix (Schwenk et al. 2021) dataset. Specifically, we select parallel sentences between English and the 13 non-English languages covered by mMARCO (Bonifacio et al. 2021). To evaluate zero-shot multilingual retrieval performance, we use the mMARCO development set for in-domain evaluation and the MIRACL development set for out-of-domain eval-uation. Following previous studies (Bonifacio et al. 2021; Zhang et al. 2023b), we report MRR@10 and Recall@1k on mMARCO, and nDCG@10 and Recall@100 on MIRACL. 
+
+Implementation Details. We implement the multilingual dense retriever based on Tevatron (Gao et al. 2022). For mul-tilingual dense retriever training, we set the learning rate to 3e-6 and use the Adam optimizer for 4 epochs, correspond-ing to 60K steps. The batch size is set to 24. For each query, we sample one positive sample and seven negative samples, while other passages in the same batch are used as in-batch negatives. The maximum input lengths for queries and pas-sages are set to 64 and 256, respectively. During inference, the maximum input lengths for queries and passages are set to 64 and 256 on mMARCO, and 128 and 256 on MIRACL. The loss weights λd, λo, λq , and λt are set to 0.05, 0.2, 0.1, and 0.2, respectively, based on a simple grid search. 
+
+Baseline Methods. To provide a comprehensive compari-son, we consider three types of baselines: lexical retrieval, English-supervised retrieval, and multilingual-supervised retrieval. The lexical baseline is BM25 (Robertson and Zaragoza 2009). The English-supervised baselines include mDPR (Zhang et al. 2023b), mContriever (Izacard et al. 2021), mColBERT (Khattab and Zaharia 2020), ColBERT-XM (Louis et al. 2025), mBERT AGG (Lin, Ahmad, and Lin 2023), and XLM-R AGG (Lin, Ahmad, and Lin 2023). The multilingual-supervised baselines include mE5 BASE (Wang et al. 2022a), BGE (Chen et al. 2024), and BGE HN (Huang et al. 2025). Notably, the multilingual-supervised base-lines are trained with much larger multilingual retrieval data and are included as reference systems. For MIRACL, multilingual-supervised models using MIRACL training data are excluded to maintain the out-of-domain zero-shot evalu-ation setting. 
+
+Overall Performance 
+
+In-domain Performance. As shown in Table 1, our method outperforms the baselines on the mMARCO dataset with 14 languages. Specifically, our method achieves absolute gains of 1.5 and 0.4 MRR@10 points over the strongest English-supervised and multilingual-supervised baselines in terms of average scores, respectively. The superior performance can be attributed to two aspects: (1) the disentangler separates retrieval-relevant semantic features from linguistic informa-tion, enabling the model to perform semantic matching in a cleaner semantic space. (2) hierarchical semantic align-ment improves fine-grained cross-lingual semantic matching. Furthermore, the consistent gains across different backbone models demonstrate the effectiveness and generalization abil-ity of our method for zero-shot multilingual retrieval. 
+
+Out-of-domain Performance. As shown in Table 2, we eval-uate the out-of-domain zero-shot cross-lingual retrieval ca-pability of the model on the MIRACL dataset. Compared to baseline methods, our method achieves optimal performance on most languages. Specifically, our method surpasses the strongest baseline XLM-R AGG by 2.7 nDCG@10 points on average, demonstrating its robustness under out-of-domain Model Avg With Parallel Data Without Parallel Data ar de en es fr hi id ja ru zh Avg p bn fa fi ko sw te th yo Avg np                                                                                                                                                                                              
+
+> Lexical Retrieval
+> BM25 38.5 48.1 22.6 35.1 31.9 18.3 45.8 44.9 36.9 33.4 18.0 33.5 50.8 33.3 55.1 41.9 38.3 49.4 48.4 40.6 44.7
+> English Supervision
+> mDPR 41.8 49.9 49.0 39.4 47.8 43.5 38.3 27.2 43.9 40.7 51.2 43.1 44.3 48.0 47.2 41.9 29.9 35.6 35.8 39.6 40.3 mContriever 43.1 52.5 40.8 36.4 41.8 31.4 28.6 39.2 42.4 39.1 41.0 39.3 50.1 21.5 60.2 48.3 56.0 52.8 51.7 41.5 47.8 mColBERT 44.1 57.1 33.4 38.8 42.6 26.7 47.0 29.8 49.6 47.7 39.8 41.3 54.6 46.0 46.5 48.7 35.8 46.2 48.1 56.1 47.8 ColBERT-XM 52.0 60.4 53.1 37.9 44.1 43.3 49.1 45.5 54.6 47.7 45.6 48.1 59.7 46.9 63.8 58.8 50.6 58.4 65.5 51.2 56.9
+> mBERT AGG 47.0 59.4 50.4 38.6 44.6 43.6 37.4 42.1 50.2 46.3 44.3 45.7 51.0 44.5 65.3 47.8 48.5 48.0 31.1 52.6 48.6
+> XLM -RAGG 52.3 61.4 52.6 38.4 42.9 41.3 46.2 48.4 53.9 46.5 41.0 47.3 61.4 46.5 66.2 57.9 47.5 71.2 66.8 51.2 58.6
+> Ours
+> Ours mBERT 53.8 †61.3 53.1 38.8 45.4 44.3 †49.4 †46.9 54.2 47.4 46.3 48.7 †61.6 †47.5 66.6 †59.8 †53.9 68.9 67.6 †54.7 60.1 †
+> Ours XLM -R55.0 †62.1 †53.6 †39.5 †46.7 45.1 †50.2 †47.8 55.4 †48.6 †48.8 49.8 †62.5 †48.3 †67.7 †60.6 †56.2 †71.4 †68.4 †57.5 †61.6 †
+
+Table 2: Out-of-domain zero-shot results on MIRACL using nDCG@10. Languages are grouped according to whether their corresponding English–X parallel data are used during training. † denotes significant improvements with paired t-test at p < 0.05 
+
+over the strongest baseline in the same column. Bold and underline indicate the best and second-best results. 
+
+Model MRR@10 ∆ Recall@1k ∆
+
+XLM-R 22.6 – 80.9 –w/ Dis. 24.9 +2 .3 84.1 +3 .2
+
+w/ HSA 23.1 +0 .5 81.3 +0 .4
+
+w/ LDCL 22.9 +0 .3 81.2 +0 .3
+
+w/ Dis. + HSA 26.7 +4 .1 86.2 +5 .3
+
+w/ Dis. + LDCL 25.4 +2 .8 85.5 +4 .6
+
+w/ HSA + LDCL 23.5 +0 .9 81.6 +0 .7
+
+Full Model 27.8 +5 .2 87.1 +6 .2
+
+Table 3: Ablation on three components of the disentangle-ment method on mMARCO. i) Dis.: Language-semantic Dis-entangler, ii) HSA: Hierarchical Semantic Alignment, and iii) LDCL: Language Debiasing Contrastive Learning. 
+
+Setting Configuration MRR@10 Recall@1k S1 Random language pairs 27.4 86.7 
+
+S2 English-centric pairs 27.8 87.1 
+
+S3 Hindi-centric pairs 27.1 86.3 
+
+S4 Intra-family pairs 27.6 86.9 
+
+S5 High–low-resource pairs 27.4 86.6 Table 4: Experimental results of different parallel sentence pair construction strategies with average scores. retrieval settings. It also achieves the best average perfor-mance on both languages with and without parallel cor-pora. The larger improvement on languages without parallel corpora suggests that the proposed disentanglement and se-mantic consistency objectives facilitate indirect cross-lingual transfer, enabling the model to learn more stable language-agnostic retrieval representations. 
+
+Ablation Studies 
+
+As shown in Table 3, we investigate the effectiveness of each component within our method on mMARCO. Performance 10k 20k 30k 40k 50k 60k 
+
+Parallel corpus size N        
+
+> 40
+> 44
+> 48
+> 52
+> 56
+> 60
+> 64
+> Avg.\ nDCG@10 (\%)
+> 51.5
+> 55.3
+> 59.6
+> 61.6 61.4 61.7
+> 47.3
+> 50.0
+> 53.3
+> 55.0 55.2 55.4
+> 43.9
+> 45.7
+> 48.3
+> 49.8 50.3 50.4
+> Avg np
+> Avg
+> Avg p
+> N= 0 baseline
+
+Figure 2: Performance on MIRACL with average nDCG@10 under different parallel-corpus sizes N . Solid lines indicate the averages over all languages (Avg), languages with parallel data ( Avg p), and without ( Avg np ). Dashed lines indicate the corresponding N =0 baselines. 
+
+Resource Group Language XLM-R AGG Ours 
+
+High-resource es, fr, pt, ru, de 27.4 28.5 Medium-resource vi, id, ar, ja 22.9 24.8 Low-resource nl, zh, hi, it 26.3 27.5 
+
+Table 5: Resource-level performance comparison on mMARCO in terms of average MRR@10. Resource here refers to the number of EN–X parallel pairs in WikiMatrix, not the general resource level of the language. gains are observed when each component is used indepen-dently or in combination, indicating that each component makes a positive contribution to the multilingual dense re-triever. In particular, the language-semantic disentangler im--80 0 80 
+
+> -60
+> 0
+> 60
+
+(a) XLM-R Encoder   
+
+> -80 080
+> -60
+> 0
+> 60
+
+(b) XLM-R AGG Encoder   
+
+> -80 080
+> -60
+> 0
+> 60
+
+(c) Semantic Projection   
+
+> -80 080
+> -60
+> 0
+> 60
+
+(d) Language Projection 
+
+en fr zh ko sw yo Figure 3: t-SNE visualization of different representation spaces. The subfigure titles identify the model modules, whose outputs are visualized after dimensionality reduction. Languages mix in (c) but separate in (d), indicating successful disentanglement.             
+
+> Language Family Language XLM-R AGG Ours
+> Germanic en, de, nl 29.4 31.4 Romance es, fr, it, pt 28.6 29.4 Indo-Iranian hi 24.4 25.3
+
+Table 6: Model performance comparison with average MRR@10 across different language families on mMARCO. proves MRR@10 by 2.3 points over the base model, and further combination with other components achieves con-sistent performance gains, showing that separating semantic features from linguistic information effectively alleviates lan-guage bias. On top of the disentangler, hierarchical semantic alignment (HSA) and language debiasing contrastive learn-ing (LDCL) can improve MRR@10 by 1.8 and 0.5 points, respectively. The larger gain from HSA confirms that ex-plicit cross-lingual semantic alignment contributes most di-rectly to retrieval, while LDCL plays a complementary role by constraining the language component to absorb linguistic features and indirectly purifying the semantic space. 
+
+## Analysis and Discussion 
+
+Impact of Parallel Supervision 
+
+Connection Patterns. As shown in Table 4, we first examine the cross-lingual alignment with different parallel-pair con-struction strategies. The results show that the English-centric pairs ( S2 ) perform best, followed by intra-family pairs ( S4 ), while random, Hindi-centric, and high–low-resource pairs lead to slightly lower results. The overall gaps are minor, suggesting that our framework is relatively robust to the con-nection pattern of parallel pairs. The advantage of English-centric pairs is expected, since retrieval supervision is learned from English and can be transferred more directly through English-centered alignment. 
+
+Supervision Scale. As shown in Figure 2, we further vary the number of sampled parallel sentence pairs to study the effect of supervision scale. The results show that the performance improves steadily from 10K to 60K parallel pairs, with larger gains before 40K and only marginal improvements afterward. This indicates that parallel supervision helps build a shared semantic space, but its benefit saturates after a moderate data scale. Similar trends across languages with and without direct parallel data suggest that the learned alignment signals also benefit indirectly connected languages. 
+
+Impact of Language Families and Resource Levels 
+
+To examine whether our method generalizes across diverse languages, we further analyze its performance from two per-spectives: resource level and language family. Table 5 shows consistent improvements over XLM-R AGG across all lan-guage groups. This indicates that our method remains effec-tive under varying amounts of parallel alignment resources, rather than relying only on resource-rich languages. More-over, Table 6 shows that our method consistently outperforms XLM-R AGG across selected language families, indicating that our method can generalize well across different language families. Further details are provided in the supplementary materials G. 
+
+Visualization 
+
+To examine the encoder representation space, we visual-ize sentence embeddings via t-SNE in Figure 3(a)-(d). The XLM-R encoder still exhibits visible language-wise sepa-ration, indicating that semantic and linguistic information remain entangled in the original multilingual representa-tions. XLM-R AGG partially mitigates this, increasing cross-lingual overlap but failing to fully eliminate the language-induced distribution shift. In contrast, our semantic projec-tions collapse cross-lingual texts into a unified, highly over-lapping cluster, while the language projections retain distinct language-specific patterns, confirming the effectiveness of our disentanglement. 
+
+## Conclusion 
+
+In this work, we propose a method to boost cross-lingual transfer for multilingual dense retrieval. By separating se-mantic and linguistic features and jointly optimizing disen-tangled objectives with the retrieval objective, our method learns more transferable semantic representations. Extensive results on multilingual retrieval benchmarks show that our method consistently outperforms strong baselines, demon-strating its effectiveness in cross-lingual transfer. References 
+
+Bajaj, P.; Campos, D.; Craswell, N.; Deng, L.; Gao, J.; Liu, X.; Majumder, R.; McNamara, A.; Mitra, B.; Nguyen, T.; et al. 2016. MS MARCO: A human generated ma-chine reading comprehension dataset. arXiv preprint arXiv:1611.09268 .Bonifacio, L.; Jeronymo, V.; Abonizio, H. Q.; Campiotti, I.; Fadaee, M.; Lotufo, R.; and Nogueira, R. 2021. mmarco: A multilingual version of the ms marco passage ranking dataset. 
+
+arXiv preprint arXiv:2108.13897 .Cao, S.; Kitaev, N.; and Klein, D. 2020. Multilingual align-ment of contextual word representations. arXiv preprint arXiv:2002.03518 .Chen, J.; Xiao, S.; Zhang, P.; Luo, K.; Lian, D.; and Liu, Z. 2024. Bge m3-embedding: Multi-lingual, multi-functionality, multi-granularity text embed-dings through self-knowledge distillation. arXiv preprint arXiv:2402.03216 , 4(5). Chen, M.; Tang, Q.; Wiseman, S.; and Gimpel, K. 2019. A multi-task approach for disentangling syntax and semantics in sentence representations. In Proceedings of the 2019 Con-ference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers) , 2453–2464. Chi, Z.; Dong, L.; Wei, F.; Yang, N.; Singhal, S.; Wang, W.; Song, X.; Mao, X.-L.; Huang, H.-Y.; and Zhou, M. 2021. InfoXLM: An information-theoretic framework for cross-lingual language model pre-training. In Proceedings of the 2021 Conference of the North American Chapter of the As-sociation for Computational Linguistics: Human Language Technologies , 3576–3588. Conneau, A.; and Lample, G. 2019. Cross-lingual language model pretraining. Advances in neural information process-ing systems , 32. Devlin, J.; Chang, M.-W.; Lee, K.; and Toutanova, K. 2019. Bert: Pre-training of deep bidirectional transformers for lan-guage understanding. In Proceedings of the 2019 conference of the North American chapter of the association for compu-tational linguistics: human language technologies, volume 1 (long and short papers) , 4171–4186. Dou, Z.-Y.; and Neubig, G. 2021. Word alignment by fine-tuning embeddings on parallel corpora. In Proceedings of the 16th Conference of the European Chapter of the Association for Computational Linguistics: Main Volume , 2112–2128. Feng, F.; Yang, Y.; Cer, D.; Arivazhagan, N.; and Wang, W. 2022. Language-agnostic BERT sentence embedding. In 
+
+Proceedings of the 60th annual meeting of the association for computational linguistics (volume 1: Long papers) , 878– 891. Gao, L.; Ma, X.; Lin, J.; and Callan, J. 2022. Tevatron: An efficient and flexible toolkit for dense retrieval. arXiv preprint arXiv:2203.05765 .Hämmerl, K.; Libovick` y, J.; and Fraser, A. 2024. Under-standing cross-lingual Alignment—A survey. In Findings of the Association for Computational Linguistics: ACL 2024 ,10922–10943. Huang, C.; Mo, F.; Chen, Y.; Guan, C.; Yue, Z.; Wang, X.; Xu, J.; and Huang, K. 2025. Boosting data utilization for mul-tilingual dense retrieval. In Proceedings of the 2025 Confer-ence on Empirical Methods in Natural Language Processing ,12373–12389. Huang, J. Y.; Huang, K.-H.; and Chang, K.-W. 2021. Dis-entangling semantics and syntax in sentence embeddings with pre-trained language models. In Proceedings of the 2021 Conference of the North American Chapter of the As-sociation for Computational Linguistics: Human Language Technologies , 1372–1379. Huang, Z.; Zeng, H.; Zamani, H.; and Allan, J. 2023. Soft prompt decoding for multilingual dense retrieval. In Pro-ceedings of the 46th international ACM SIGIR conference on research and development in information retrieval , 1208– 1218. Izacard, G.; Caron, M.; Hosseini, L.; Riedel, S.; Bojanowski, P.; Joulin, A.; and Grave, E. 2021. Unsupervised dense in-formation retrieval with contrastive learning. arXiv preprint arXiv:2112.09118 .Jian, Y.; Gao, C.; and Vosoughi, S. 2022. Non-linguistic su-pervision for contrastive learning of sentence embeddings. 
+
+Advances in Neural Information Processing Systems , 35: 35533–35548. Khattab, O.; and Zaharia, M. 2020. Colbert: Efficient and effective passage search via contextualized late interaction over bert. In Proceedings of the 43rd International ACM SI-GIR conference on research and development in Information Retrieval , 39–48. Lin, S.-C.; Ahmad, A.; and Lin, J. 2023. mAggretriever: A simple yet effective approach to zero-shot multilingual dense retrieval. In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing , 11688– 11696. Litschko, R.; Artemova, E.; and Plank, B. 2023. Boosting zero-shot cross-lingual retrieval by training on artificially code-switched data. In Findings of the Association for Com-putational Linguistics: ACL 2023 , 3096–3108. Louis, A.; Saxena, V. K.; Van Dijck, G.; and Spanakis, G. 2025. Colbert-xm: A modular multi-vector representation model for zero-shot multilingual information retrieval. In 
+
+Proceedings of the 31st International Conference on Com-putational Linguistics , 4370–4383. MacAvaney, S.; Soldaini, L.; and Goharian, N. 2020. Teach-ing a new dog old tricks: Resurrecting multilingual retrieval using zero-shot learning. In European Conference on Infor-mation Retrieval , 246–254. Springer. Nie, J.-Y. 2010. Cross-language information retrieval . Mor-gan & Claypool Publishers. Ouyang, X.; Wang, S.; Pang, C.; Sun, Y.; Tian, H.; Wu, H.; and Wang, H. 2021. ERNIE-M: Enhanced multilingual rep-resentation by aligning cross-lingual semantics with mono-lingual corpora. In Proceedings of the 2021 conference on empirical methods in natural language processing , 27–38. Paszke, A. 2019. Pytorch: An imperative style, high-performance deep learning library. arXiv preprint arXiv:1912.01703 .Robertson, S.; and Zaragoza, H. 2009. The probabilistic relevance framework: BM25 and beyond , volume 4. Now Publishers Inc. Schuster, T.; Ram, O.; Barzilay, R.; and Globerson, A. 2019. Cross-lingual alignment of contextual word embeddings, with applications to zero-shot dependency parsing. In Pro-ceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers) , 1599–1613. Schwenk, H.; Chaudhary, V.; Sun, S.; Gong, H.; and Guzmán, F. 2021. Wikimatrix: Mining 135m parallel sentences in 1620 language pairs from wikipedia. In Proceedings of the 16th conference of the European Chapter of the Association for Computational Linguistics: Main volume , 1351–1361. Tanwar, E.; Dutta, S.; Borthakur, M.; and Chakraborty, T. 2023. Multilingual LLMs are better cross-lingual in-context learners with alignment. In Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , 6292–6307. Thakur, N.; Ni, J.; Ábrego, G. H.; Wieting, J.; Lin, J.; and Cer, D. 2024. Leveraging LLMs for synthesizing training data across many languages in multilingual dense retrieval. In 
+
+Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers) ,7699–7724. Wang, L.; Yang, N.; Huang, X.; Jiao, B.; Yang, L.; Jiang, D.; Majumder, R.; and Wei, F. 2022a. Text embeddings by weakly-supervised contrastive pre-training. arXiv preprint arXiv:2212.03533 .Wang, X.; Li, Q.; Yu, D.; Cui, P.; Wang, Z.; and Xu, G. 2022b. Causal disentanglement for semantic-aware intent learning in recommendation. IEEE Transactions on Knowledge and Data Engineering , 35(10): 9836–9849. Wang, Y.; Wu, A.; and Neubig, G. 2022. English contrastive learning can learn universal cross-lingual sentence embed-dings. In Proceedings of the 2022 conference on empirical methods in natural language processing , 9122–9133. Wang, Z.; Xu, X.; Wei, J.; Xie, N.; Yang, Y.; and Shen, H. T. 2024. Semantics disentangling for cross-modal retrieval. 
+
+IEEE Transactions on image processing , 33: 2226–2237. Wolf, T.; Debut, L.; Sanh, V.; Chaumond, J.; Delangue, C.; Moi, A.; Cistac, P.; Rault, T.; Louf, R.; Funtowicz, M.; et al. 2019. Huggingface’s transformers: State-of-the-art natural language processing. arXiv preprint arXiv:1910.03771 .Wu, L.; Wu, S.; Zhang, X.; Xiong, D.; Chen, S.; Zhuang, Z.; and Feng, Z. 2022. Learning disentangled semantic repre-sentations for zero-shot cross-lingual transfer in multilingual machine reading comprehension. In Proceedings of the 60th Annual Meeting of the Association for Computational Lin-guistics (Volume 1: Long Papers) , 991–1000. Zhang, X.; Ogueji, K.; Ma, X.; and Lin, J. 2023a. Toward best practices for training multilingual dense retrieval models. 
+
+ACM Transactions on Information Systems , 42(2): 1–33. Zhang, X.; Thakur, N.; Ogundepo, O.; Kamalloo, E.; Alfonso-Hermelo, D.; Li, X.; Liu, Q.; Rezagholizadeh, M.; and Lin, J. 2023b. Miracl: A multilingual retrieval dataset covering 18 diverse languages. Transactions of the Associa-tion for Computational Linguistics , 11: 1114–1131. Zhang, Y.; Carvalho, D.; and Freitas, A. 2024. Learning disentangled semantic spaces of explanations via invertible neural networks. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) , 2113–2134. Appendix Dataset Statistics 
+
+We use the mMARCO, WikiMatrix, and MIRACL datasets in our experiments. Their detailed information is provided as follows: 
+
+• mMARCO (Bonifacio et al. 2021): a translated version of the MS MARCO dataset covering 14 languages, with each language containing approximately 8.8M passages and 500K training queries. 
+
+• WikiMatrix (Schwenk et al. 2021): a large-scale multi-lingual parallel sentence dataset mined from Wikipedia across many language pairs, providing parallel sentence pairs for 85 languages. We sample parallel sentences be-tween English and the other 13 languages in mMARCO, and the statistics of the parallel sentences are shown in Figure 4. 
+
+• MIRACL (Zhang et al. 2023b): a multilingual retrieval benchmark dataset covering 18 languages, with 726k manual relevance judgments and a collection size of over 100 million documents. Each query is provided with an average of 10 manually verified relevance labels. The statistics of the MIRACL dataset are shown in Table 7. 
+
+## Implementation Details 
+
+We implement all models by Pytorch (Paszke 2019) and Hug-gingface’s Transformers library (Wolf et al. 2019). All ex-periments are conducted on an Nvidia A100 80G GPU. Note that for languages included in mMARCO, the number of par-allel sentence pairs with English in WikiMatrix ranges from 157,000 to 3,377,000. During training, we sample 40,000 parallel sentence pairs for each language. Moreover, we con-struct Q from Wikipedia monolingual texts in the MIRACL languages that are not covered by the parallel alignment data, including Bengali, Persian, Finnish, Korean, Swahili, Telugu, Thai, and Yoruba. These sentences are used without paral-lel counterparts, retrieval labels, or relevance judgments. In each batch, we sample N parallel sentence pairs from P and 
+
+N monolingual sentences from Q. This design enables the model to learn direct cross-lingual alignment from P and indirect semantic consistency from Q, without using any target-language retrieval supervision. Each reported result is averaged over three independent runs. 
+
+## Baseline Details 
+
+We provide a more detailed introduction to the following baselines used for comparison: 
+
+• BM25 (Robertson and Zaragoza 2009): a retrieval model based on lexical matching. 
+
+• mDPR (Zhang et al. 2023b): a single-vector dense re-trieval model initialized by mBERT and fine-tuned on MS MARCO using contrastive learning. 
+
+• mColBERT (Khattab and Zaharia 2020): a multi-vector dense retrieval model implemented similarly to mDPR, but using multiple word-level vectors for fine-grained similarity matching. 
+
+• mContriever (Izacard et al. 2021): a single-vector dense retrieval model initialized from mBERT and further fine-tuned on MS MARCO. 
+
+• ColBERT-XM (Louis et al. 2025): a modular multi-vector dense retrieval model fine-tuned on MS MARCO based on the XMOD framework. 
+
+• mBERT AGG (Lin, Ahmad, and Lin 2023): a dense retrieval model using semantic and lexical features in mBERT to achieve zero-shot transfer. 
+
+• XLM-R AGG (Lin, Ahmad, and Lin 2023): Unlike mBERT AGG , this baseline uses XLM-R as the backbone model for fine-tuning on MS MARCO. 
+
+• mE5 BASE (Wang et al. 2022a): a multilingual embed-ding model designed for retrieval and semantic matching, which leverages large-scale corpora for weakly super-vised contrastive pre-training and large-scale retrieval-labeled data for supervised fine-tuning. 
+
+• BGE (Chen et al. 2024): a multilingual embedding model for multilingual and cross-lingual retrieval, pre-trained on large-scale multilingual unsupervised data and fine-tuned on retrieval-labeled data. 
+
+• BGE HN (Huang et al. 2025): a multilingual dense re-triever initialized with BGE and further optimized using the constructed hard negative set and an efficient mini-batch sampling strategy. 
+
+## Sensitivity Analysis of Loss Weight Hyperparameters 
+
+Table 8 reports the retrieval performance under different loss weight settings. To analyze the sensitivity of our model to key loss weights, we vary λd, λo, λq , and λt from their default values and compare the corresponding nDCG@10 scores. We observe that individually increasing λd or λo, or decreasing λq or λt, leads to performance drops of 0.5, 0.7, 0.4, and 0.5 percentage points, respectively. This suggests that overly strong disentanglement or orthogonal constraints may interfere with the optimization of the original retrieval objective. Meanwhile, weakening the non-parallel semantic consistency loss or the token-level semantic alignment loss reduces the model’s ability to handle languages without par-allel data and fine-grained semantic units. The performance degradation becomes more pronounced when multiple hy-perparameters deviate from their default values simultane-ously, e.g., λd = 0 .1, λo = 0 .1, λq = 0 .2, and λt = 0 .3.This indicates that different loss terms impose mutual con-straints on each other, and overemphasizing a certain type of training signal may disrupt the balance among retrieval optimization, semantic alignment, and disentanglement reg-ularization. 
+
+## Algorithm Details 
+
+Algorithm 1 summarizes the training procedure of our method. At each step, the model jointly optimizes the re-trieval loss and the disentanglement loss. The latter consists of hierarchical semantic alignment over parallel and non-parallel data, language debiasing contrastive learning, and 0.0 0.5 1.0 1.5 2.0 2.5 3.0 3.5 
+
+## Number of EN--X parallel sentence pairs (millions) 
+
+Italian (it) 
+
+Hindi (hi) 
+
+Chinese (zh) 
+
+Dutch (nl) 
+
+Japanese (ja) 
+
+Arabic (ar) 
+
+Indonesian (id) 
+
+Vietnamese (vi) 
+
+German (de) 
+
+Russian (ru) 
+
+Portuguese (pt) 
+
+French (fr) 
+
+Spanish (es) 
+
+0.16M 
+
+0.23M 
+
+0.79M 
+
+0.80M 
+
+0.85M 
+
+1.00M 
+
+1.02M 
+
+1.07M 
+
+1.57M 
+
+1.66M 
+
+2.46M 
+
+2.76M 
+
+3.38M Figure 4: Number of EN–X parallel sentence pairs in WikiMatrix across the 13 non-English languages used for cross-lingual alignment training. 
+
+Lang All Arabic Bengali English Finnish Indonesian Japanese Korean Russian Swahili ISO ar bn en fi id ja ko ru sw Train #Q 40,203 3,495 1,631 2,863 2,897 4,071 3,477 868 4,683 1,901 #J 343,177 25,382 16,754 29,416 20,350 41,358 34,387 12,767 33,921 9,359 
+
+Test #Q 13,495 2,896 411 799 1,271 960 860 213 1,252 482 #J 130,408 29,197 4,206 8,350 12,008 9,668 8,354 3,057 13,100 5,092 
+
+Passages 106,332,152 2,061,414 297,265 32,893,221 1,883,509 1,446,315 6,953,614 1,486,752 9,543,918 131,924 
+
+Lang All Telugu Thai Spanish Persian French Hindi Chinese German Yoruba ISO te th es fa fr hi zh de yo Train #Q 40,203 3,452 2,972 2,162 2,107 1,143 1,169 1,312 – –#J 343,177 18,608 21,293 21,531 21,844 11,426 11,668 13,113 – –
+
+Test #Q 13,495 828 733 648 632 343 350 393 305 119 #J 130,408 1,606 7,573 6,443 6,571 3,429 3,494 3,928 3,144 1,188 
+
+Passages 106,332,152 518,079 542,166 10,373,953 2,207,172 14,636,953 506,264 4,934,368 15,866,222 49,043 
+
+Table 7: Statistics of MIRACL. The #Q and #J denote the numbers of queries and relevance judgments, respectively. λd λo λq λt nDCG@10 ∆
+
+0.05 0.20 0.10 0.20 55.0 –0.10 0.20 0.10 0.20 54.5 −0.5
+
+0.05 0.30 0.10 0.20 54.3 −0.7
+
+0.05 0.20 0.05 0.20 54.6 −0.4
+
+0.05 0.20 0.10 0.10 54.5 −0.5
+
+0.03 0.10 0.10 0.20 54.1 −0.9
+
+0.05 0.20 0.20 0.10 54.6 −0.4
+
+0.10 0.10 0.20 0.30 53.8 −1.2
+
+Table 8: Sensitivity analysis of loss weights on MIRACL. The first row denotes the default configuration. ∆ denotes the absolute change in nDCG@10 compared with the default setting. 
+
+Model MRR@10 Recall@1k 
+
+Full Model 27.8 87.1 w/o sentCL 26.6 85.9 w/o tokenCL 27.1 86.4 
+
+Table 9: Ablation on hierarchical semantic alignment with average scores on mMARCO. 
+
+Language Family Language XLM-R AGG Ours 
+
+Germanic en, de, nl 29.4 31.4 Romance es, fr, it, pt 28.6 29.4 Indo-Iranian hi 24.4 25.3 Slavic ru 25.4 26.2 Semitic ar 19.1 21.1 Sino-Tibetan zh 24.8 26.3 Japonic ja 23.8 25.5 Austronesian id 27.3 28.3 Austroasiatic vi 21.2 24.1 
+
+Table 10: Model performance comparison with average MRR@10 across language families on mMARCO. the orthogonal constraint between semantic and language projection heads. 
+
+## Effect of Alignment Granularity 
+
+Table 9 reports the effect of alignment granularity. Removing sentence-level and token-level alignment leads to MRR@10 drops of 1.2 and 0.7 points, respectively, showing that both granularities contribute and that sentence-level alignment plays a more dominant role. Nevertheless, token-level align-ment remains valuable: by aligning keywords, entities, and local semantic units at a finer granularity, it compensates for the limitations of sentence-level alignment in fine-grained semantic modeling. Algorithm 1: Disentangled Contrastive Learning 
+
+Input: Retrieval data DIR , parallel corpus P, non-parallel corpus 
+
+Q, encoder fθ , semantic projector Ws, and language projector Wl.
+
+Output: Optimized multilingual dense retriever fθ .1: while not converged do 
+
+2: Sample batches BIR , BP, and BQ
+
+3: for each (qi, d + 
+
+> i
+
+) ∈ B IR do 
+
+4: Encode qi, d+ 
+
+> i
+
+and in-batch negatives 5: end for 
+
+6: Compute retrieval loss LIR 
+
+7: Perform hierarchical semantic alignment. 
+
+8: for each sampled sentence instance do 
+
+9: if parallel pair (xi, x j ) exists then 
+
+10: si = Wsfθ (xi), sj = Wsfθ (xj )
+
+11: Contrast sentence pair and aligned tokens 12: Accumulate LP 
+
+> sentCL
+
+and LP
+
+> tokenCL
+
+13: else 
+
+14: Apply sentence- and token-level consistency 15: Accumulate LQ 
+
+> sentCL
+
+and LQ
+
+> tokenCL
+
+16: end if 
+
+17: end for 
+
+18: LP 
+
+> HsemaCL
+
+← L P 
+
+> sentCL
+
++ λtLP
+
+> tokenCL
+
+19: LQ 
+
+> HsemaCL
+
+← L Q 
+
+> sentCL
+
++ λtLQ
+
+> tokenCL
+
+20: Perform language debiasing contrastive learning 
+
+21: for each xk ∈ B P ∪ B Q do 
+
+22: lk = Wlfθ (xk )
+
+23: Contrast lk with same-language positives and different-language negatives 24: end for 
+
+25: Compute LlangCL 
+
+26: Construct disentangled objective 
+
+27: for each sentence representation zk in the batch B do 
+
+28: zs,k ← Wszk , zl,k ← Wlzk
+
+29: end for 
+
+30: Stack {zs,k }|B|  
+
+> k=1
+
+and {zl,k }|B|  
+
+> k=1
+
+into Zs and Zl
+
+31: Lorth ← ∥ 1 
+
+> |B|
+
+Z⊤ 
+
+> s
+
+Zl∥2
+
+> F
+
+32: Ldec ← L HsemaCL + LlangCL + λoLorth 
+
+33: Perform joint optimization. 
+
+34: L ← L IR + λdLdec 
+
+35: Update θ, Ws, and Wl by minimizing L
+
+36: end while 
+
+## Additional Analysis across Language Families and Resource Levels 
+
+We use XLM-R AGG as the main baseline and report absolute MRR@10 gains. For resource-level analysis, we exclude En-glish and group the remaining 13 languages by the number of available EN–X parallel sentence pairs in WikiMatrix, whose statistics are shown in Figure 4. The languages are sorted by this number and split into three roughly equal groups. We can observe that our method consistently outperforms XLM-R AGG across all resource groups in Table 5. Specifi-cally, for high-resource languages, our method improves the average MRR@10 by 1.1 points, from 27.4 to 28.5. This indicates that even when sufficient parallel data is available, separating semantic and linguistic information can still fur-ther enhance cross-lingual semantic matching. Moreover, the medium-resource group obtains the largest gain of 1.9 points, suggesting that our method can further improve the shared semantic space when moderate parallel supervision is avail-able. For low-resource languages, the stable gain of 1.2 points indicates that the model does not simply rely on large-scale parallel data, but can learn transferable language-agnostic representations through hierarchical semantic alignment and language-semantic disentanglement. To investigate model performance across different lan-guage families, we categorize the languages in mMARCO according to Glottolog’s language-family classification. Ta-ble 10 reports the results across different language families. Our method consistently outperforms XLM-R AGG across all language groups, indicating that the proposed framework generalizes beyond a specific language family. Notably, clear gains are observed on typologically diverse languages such as Arabic, Chinese, Japanese, and Vietnamese, suggesting that disentangled semantic learning can reduce language-specific interference caused by differences in scripts, word order, and lexical forms. These results further support the effective-ness of separating language-agnostic semantic features from language-specific information for cross-lingual retrieval. 
+
+## Additional Experimental Results 
+
+We present additional experimental results in this section. For the main comparison with existing multilingual retrieval methods, Recall@1k results are reported in Table 11, where our method still outperforms most baselines. For out-of-domain evaluation, Recall@100 results are shown in Ta-ble 12. We observe consistently better performance from our method compared with other methods, demonstrating that our method generalizes well to out-of-distribution multilin-gual retrieval scenarios. Model Avg ar de en es fr hi id it ja nl pt ru vi zh Lexical Retrieval 
+
+BM25 72.6 63.8 67.4 85.7 77.0 76.9 71.1 76.7 75.3 71.4 69.4 74.4 68.5 71.4 67.8 
+
+English Supervision 
+
+mDPR 74.5 65.2 70.4 92.9 77.9 77.6 71.1 79.5 76.5 73.1 70.6 75.0 70.3 69.8 72.7 mContriever 76.6 70.1 80.5 92.1 77.3 77.2 72.4 79.6 76.8 72.7 76.6 77.4 76.2 71.5 71.9 mColBERT 77.1 70.9 83.3 92.8 77.5 76.2 75.4 76.8 79.1 74.4 76.5 77.8 76.3 71.6 71.3 ColBERT-XM 85.5 74.8 86.0 96.5 88.4 87.3 82.2 86.7 86.1 83.6 86.8 87.1 85.7 81.6 84.8 
+
+mBERT AGG 83.9 72.9 83.6 94.1 87.9 86.7 81.2 85.8 86.3 80.5 84.4 86.2 84.5 78.0 82.5 
+
+XLM -RAGG 85.7 74.1 84.7 95.3 89.0 88.7 83.1 87.6 88.5 82.7 86.8 87.5 86.1 80.2 84.8 
+
+Multilingual Supervision 
+
+mE5 BASE 85.6 75.8 86.3 95.2 88.8 90.1 82.2 86.4 87.6 83.8 86.3 86.0 84.1 83.2 82.4 BGE 86.2 76.1 87.0 95.6 88.4 90.3 83.1 87.7 88.1 84.7 87.4 86.8 84.9 83.8 83.3 
+
+BGE HN 86.7 76.6 87.3 96.0 88.9 89.7 83.6 88.5 88.9 85.1 87.2 87.3 86.4 84.2 84.1 
+
+Ours 
+
+Ours mBERT 85.8 † 74.6 † 86.4 † 95.3 † 89.1 †‡ 88.5 † 82.8 † 87.4 † 87.7 † 84.0 † 86.6 † 86.5 † 84.7 † 82.1 † 84.8 †
+
+Ours XLM -R 87.1 †‡ 76.9 †‡ 87.7 †‡ 95.8 † 89.7 †‡ 90.1 † 83.8 †‡ 89.3 †‡ 88.7 † 84.8 † 88.1 †‡ 87.9 †‡ 87.2 †‡ 83.6 † 85.5 †‡ 
+
+Table 11: In-domain zero-shot multilingual retrieval performance on the mMARCO dataset across 14 languages, measured by Recall@1k. † denotes significant improvements with paired t-test at p < 0.05 over the baseline method using the same backbone model, and ‡ denotes significant improvements over the strongest baseline in the same column. Bold and underline indicate the best and second-best results, respectively. 
+
+Model Avg With Parallel Data Without Parallel Data ar de en es fr hi id ja ru zh Avg p bn fa fi ko sw te th yo Avg np 
+
+Lexical Retrieval 
+
+BM25 67.3 78.7 42.8 63.6 25.4 50.2 73.8 71.8 73.6 56.4 55.1 59.1 90.0 68.1 81.2 70.1 69.9 73.3 87.5 80.1 77.5 
+
+English Supervision 
+
+mDPR 79.0 84.1 89.8 76.8 86.4 91.5 77.6 57.3 82.5 79.7 94.4 82.0 81.9 89.8 78.8 73.7 61.6 76.2 67.8 71.5 75.2 mContriever 84.9 92.5 84.1 79.7 84.1 82.4 64.6 80.2 87.8 85.0 90.3 83.1 92.1 65.4 95.3 87.5 91.1 96.1 93.6 77.0 87.3 mColBERT 83.2 90.8 80.3 80.1 84.2 73.0 88.4 66.9 89.5 86.6 90.8 83.1 91.3 91.0 83.2 72.2 69.2 83.0 84.5 91.7 83.3 ColBERT-XM 84.9 89.9 87.1 75.2 74.2 84.4 84.7 80.3 89.0 78.9 86.3 83.0 91.7 84.7 90.8 87.2 80.2 88.0 92.2 83.4 87.3 
+
+mBERT AGG 82.0 88.7 85.3 75.8 80.1 86.5 77.6 80.2 85.5 82.0 84.5 82.6 85.1 82.4 92.1 78.4 81.5 83.4 65.9 81.3 81.3 
+
+XLM -RAGG 86.0 90.2 88.4 75.4 78.2 88.7 82.5 87.6 89.8 86.1 79.0 83.0 92.8 84.5 93.1 88.3 79.4 95.5 94.5 89.7 89.7 Ours 
+
+Ours mBERT 86.4 † 90.3 94.1 † 75.9 76.9 85.3 85.0 81.6 88.8 78.7 86.8 84.3 † 92.4 85.2 92.3 88.0 82.5 92.9 93.5 84.2 88.9 
+
+Ours XLM -R 87.3 † 90.7 94.8 † 76.5 79.6 86.0 85.7 82.5 89.4 79.3 88.9 85.3 † 92.8 85.8 93.0 88.7 † 84.1 93.8 93.9 85.8 89.7 
+
+Table 12: Out-of-domain zero-shot multilingual retrieval performance on the MIRACL dataset across 18 languages, measured by Recall@100. Languages are grouped according to whether their corresponding English–X parallel data are used during training. † denotes significant improvements with paired t-test at p < 0.05 over the strongest baseline in the same column. Bold 
+
+and underline indicate the best and second-best results.
