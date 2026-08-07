@@ -7,34 +7,31 @@
 
 ## 每次日报
 - 最新运行日期：2026-08-07
-- 运行时间：2026-08-07 02:16:46 UTC
+- 运行时间：2026-08-07 20:52:37 UTC
 - 运行状态：成功
 - 本次总论文数：4
-- 精读区：0
-- 速读区：4
+- 精读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 0 篇，速读 4 篇）
-- 速读：《HyPASE: Hyperbolic Geometry for Parameter-Efficient Speech Emotion Fine-Tuning Framework for Large Audio-Language Models》（7.0/10）, 《Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding》（6.0/10）, 《Multimodal Alignment Through Joint Kernel Entropic Gromov--Wasserstein Optimal Transport》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+今日共处理4篇多模态相关论文，其中精读2篇、速读1篇。最值得关注的是《GAUGE》提出的粒度自适应反事实门控方法（9.0分）与《OneEmo》统一情感多模态推理模型（8.0分）。建议优先精读这两篇，并留意速读中的原型超图学习用于多模态意图理解。
 - 详情：[/202608/07/README](/202608/07/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [GAUGE: Granularity-Adaptive Counterfactual Gating of Evidence for Incomplete Multimodal Classification](/202608/07/2608.05608v1-gauge-granularity-adaptive-counterfactual-gating-of-evidence-for-incomplete-multimodal-classification)  
+   标签：评分：9.0/10、query:mm
+   evidence：直接处理不完整多模态分类，使用插补与细粒度反事实门控
+2. [OneEmo: A Unified Multimodal Reasoning Model for Emotion Perception, Understanding, and Interaction](/202608/07/2608.06013v1-oneemo-a-unified-multimodal-reasoning-model-for-emotion-perception-understanding-and-interaction)  
+   标签：评分：8.0/10、query:mm
+   evidence：面向情感感知、理解与交互的统一多模态推理模型
+3. [BioKD: Selective Physiology-to-Video Knowledge Distillation via Reliability Gate for Emotion Recognition](/202608/07/2608.06023v1-biokd-selective-physiology-to-video-knowledge-distillation-via-reliability-gate-for-emotion-recognition)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于知识蒸馏的生理信号引导视频情感识别
 
 ### 速读区论文标签
-1. [HyPASE: Hyperbolic Geometry for Parameter-Efficient Speech Emotion Fine-Tuning Framework for Large Audio-Language Models](/202608/07/2608.04351v1-hypase-hyperbolic-geometry-for-parameter-efficient-speech-emotion-fine-tuning-framework-for-large-audio-language-models)  
-   标签：评分：7.0/10、query:mm
-   evidence：基于双曲几何对大音频语言模型进行语音情感识别微调
-2. [Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding](/202608/07/2608.04054v1-modality-agreement--and-conflict-aware-prototype-hypergraph-learning-for-multimodal-intent-understanding)  
+1. [Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding](/202608/07/2608.04054v1-modality-agreement--and-conflict-aware-prototype-hypergraph-learning-for-multimodal-intent-understanding)  
    标签：评分：6.0/10、query:mm
-   evidence：面向鲁棒多模态融合的协议与冲突感知原型超图学习
-3. [Multimodal Alignment Through Joint Kernel Entropic Gromov--Wasserstein Optimal Transport](/202608/07/2608.04234v1-multimodal-alignment-through-joint-kernel-entropic-gromov--wasserstein-optimal-transport)  
-   标签：评分：6.0/10、query:mm
-   evidence：配对数据稀缺下的多模态对齐，结构保持
-4. [SmartMage: Dynamic Modality Orchestration for 3D Scene Understanding](/202608/07/2608.05137v1-smartmage-dynamic-modality-orchestration-for-3d-scene-understanding)  
-   标签：评分：6.0/10、query:mm
-   evidence：动态模态编排以避免无关模态噪声，与鲁棒多模态学习相关
+   evidence：模态一致与冲突建模用于鲁棒多模态融合，可用于处理不可靠模态但未涉及缺失
 
 
 <div class="dpr-home-promo-card">

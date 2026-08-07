@@ -1,23 +1,20 @@
 # 日报 · 2026-08-07
 
-- 生成时间：2026-08-07 02:16:46 UTC
+- 生成时间：2026-08-07 20:52:37 UTC
 - 当次推荐总数：4
-- 精读区：0
-- 速读区：4
+- 精读区：3
+- 速读区：1
 
 ## 今日简报（AI）
-今日完成4篇论文速读，无精读，重点覆盖语音情感微调与多模态理解方向。  
-最值得关注的是《HyPASE》将双曲几何引入大音频模型高效微调（7.0分），以及《Modality Agreement-...》用原型超图建模多模态意图（6.0分）。  
-下一步可深入对比双曲空间与现有欧氏微调方法的性能差异，同时留意最优传输在多模态对齐中的实际效果。
+今日精读3篇、速读1篇共4篇多模态研究，核心聚焦不完整多模态分类与情感推理。最值得关注GAUGE（9.0分）通过粒度自适应反事实门控解决数据缺失问题，以及OneEmo（8.0分）统一情感感知与交互推理。下一步可优先复现GAUGE在真实缺失场景的效果，并关注OneEmo的多模态情感理解能力。
 
 ## 精读区
-- 本次无精读推荐。
+1. [GAUGE: Granularity-Adaptive Counterfactual Gating of Evidence for Incomplete Multimodal Classification](/202608/07/2608.05608v1-gauge-granularity-adaptive-counterfactual-gating-of-evidence-for-incomplete-multimodal-classification) （9.0/10）
+2. [OneEmo: A Unified Multimodal Reasoning Model for Emotion Perception, Understanding, and Interaction](/202608/07/2608.06013v1-oneemo-a-unified-multimodal-reasoning-model-for-emotion-perception-understanding-and-interaction) （8.0/10）
+3. [BioKD: Selective Physiology-to-Video Knowledge Distillation via Reliability Gate for Emotion Recognition](/202608/07/2608.06023v1-biokd-selective-physiology-to-video-knowledge-distillation-via-reliability-gate-for-emotion-recognition) （8.0/10）
 
 ## 速读区
-1. [HyPASE: Hyperbolic Geometry for Parameter-Efficient Speech Emotion Fine-Tuning Framework for Large Audio-Language Models](/202608/07/2608.04351v1-hypase-hyperbolic-geometry-for-parameter-efficient-speech-emotion-fine-tuning-framework-for-large-audio-language-models) （7.0/10）
-2. [Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding](/202608/07/2608.04054v1-modality-agreement--and-conflict-aware-prototype-hypergraph-learning-for-multimodal-intent-understanding) （6.0/10）
-3. [Multimodal Alignment Through Joint Kernel Entropic Gromov--Wasserstein Optimal Transport](/202608/07/2608.04234v1-multimodal-alignment-through-joint-kernel-entropic-gromov--wasserstein-optimal-transport) （6.0/10）
-4. [SmartMage: Dynamic Modality Orchestration for 3D Scene Understanding](/202608/07/2608.05137v1-smartmage-dynamic-modality-orchestration-for-3d-scene-understanding) （6.0/10）
+1. [Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding](/202608/07/2608.04054v1-modality-agreement--and-conflict-aware-prototype-hypergraph-learning-for-multimodal-intent-understanding) （6.0/10）
 
 ---
 使用键盘方向键可在日报/论文之间快速切换。
