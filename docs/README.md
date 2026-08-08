@@ -6,32 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-07
-- 运行时间：2026-08-07 20:52:37 UTC
+- 最新运行日期：2026-08-08
+- 运行时间：2026-08-08 19:37:46 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：3
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日共处理4篇多模态相关论文，其中精读2篇、速读1篇。最值得关注的是《GAUGE》提出的粒度自适应反事实门控方法（9.0分）与《OneEmo》统一情感多模态推理模型（8.0分）。建议优先精读这两篇，并留意速读中的原型超图学习用于多模态意图理解。
-- 详情：[/202608/07/README](/202608/07/README)
+今日仅速读1篇论文，聚焦多模态大模型中的文化条件视觉情绪理解。
+最值得关注的是 ArtECulture 基准，探讨文化背景如何影响模型对视觉情绪的识别（7.0/10）。
+建议后续可精读该文，重点关注其数据集构建与跨文化情绪标注差异。
+- 详情：[/202608/08/README](/202608/08/README)
 
 ### 精读区论文标签
-1. [GAUGE: Granularity-Adaptive Counterfactual Gating of Evidence for Incomplete Multimodal Classification](/202608/07/2608.05608v1-gauge-granularity-adaptive-counterfactual-gating-of-evidence-for-incomplete-multimodal-classification)  
-   标签：评分：9.0/10、query:mm
-   evidence：直接处理不完整多模态分类，使用插补与细粒度反事实门控
-2. [OneEmo: A Unified Multimodal Reasoning Model for Emotion Perception, Understanding, and Interaction](/202608/07/2608.06013v1-oneemo-a-unified-multimodal-reasoning-model-for-emotion-perception-understanding-and-interaction)  
-   标签：评分：8.0/10、query:mm
-   evidence：面向情感感知、理解与交互的统一多模态推理模型
-3. [BioKD: Selective Physiology-to-Video Knowledge Distillation via Reliability Gate for Emotion Recognition](/202608/07/2608.06023v1-biokd-selective-physiology-to-video-knowledge-distillation-via-reliability-gate-for-emotion-recognition)  
-   标签：评分：8.0/10、query:mm
-   evidence：基于知识蒸馏的生理信号引导视频情感识别
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Modality Agreement- and Conflict-Aware Prototype Hypergraph Learning for Multimodal Intent Understanding](/202608/07/2608.04054v1-modality-agreement--and-conflict-aware-prototype-hypergraph-learning-for-multimodal-intent-understanding)  
-   标签：评分：6.0/10、query:mm
-   evidence：模态一致与冲突建模用于鲁棒多模态融合，可用于处理不可靠模态但未涉及缺失
+1. [ArtECulture: Benchmarking Culture-Conditioned Visual Emotion Understanding in Multimodal Large Language Models](/202608/08/2608.03358v1-arteculture-benchmarking-culture-conditioned-visual-emotion-understanding-in-multimodal-large-language-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：面向多模态大模型的文化条件视觉情感理解基准
 
 
 <div class="dpr-home-promo-card">
