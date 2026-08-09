@@ -1,0 +1,133 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-09T19:46:50.485698+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.05381v1",
+      "source": "arxiv",
+      "title": "C$^3$PO: Evaluating Cross-Modal Composition and Counterfactual Performance in Omnimodal Models",
+      "abstract": "Current Multimodal Large Language Models (MLLMs) can process diverse sensory inputs, yet their reasoning remains heavily biased toward a dominant modality, resulting in brittle cross-modal reasoning. We introduce C$^3$PO, a benchmark of 3,404 samples spanning video, audio, image, and text, evaluating two abilities: information composition (fusing dispersed evidence) and counterfactual conflict (resolving deliberate contradictions). C$^3$PO's paired IC/CC structure and four-tier design enable targeted diagnosis of when and why cross-modal reasoning fails. Built through a fully automatic pipeline using 25 logically grounded templates, C$^3$PO reveals that while humans achieve 88.64% accuracy, the best model (Gemini-3.1-Pro) reaches only 73.17%, with open-source models collapsing under conflict. Through attention probes, we find 86-95% of failures stem from modality dominance: models commit to one modality while ignoring contradictory evidence, concentrating 87-95% of attention on text. Mid-layer attention entropy predicts correctness-sustained exploration succeeds, premature collapse fails. The 56-point accuracy gap between equally complex templates reveals that performance depends on modalities' structural roles in conflict resolution, not combinations. These findings show multimodal perception does not guarantee robust reasoning; architectures must enable sustained cross-modal attention to avoid premature",
+      "authors": [
+        "Swapnanil Mukherjee",
+        "Agyeya Negi",
+        "Tanuja Ganu",
+        "Ponnurangam Kumaraguru"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-05T20:04:05+00:00",
+      "link": "https://arxiv.org/pdf/2608.05381v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "benchmark to diagnose cross-modal reasoning failures, addressing modality dominance and robustness in multimodal learning",
+      "llm_evidence_cn": "提出评估跨模态组合与反事实冲突的基准，针对多模态推理脆弱性，属于稳健多模态学习工具",
+      "llm_evidence": "提出评估跨模态组合与反事实冲突的基准，针对多模态推理脆弱性，属于稳健多模态学习工具",
+      "canonical_evidence": "提出评估跨模态组合与反事实冲突的基准，针对多模态推理脆弱性，属于稳健多模态学习工具",
+      "llm_tldr_en": "C^3PO is a 3,404-sample benchmark for multimodal LLMs, evaluating information composition and counterfactual conflict via paired IC/CC structure to diagnose cross-modal reasoning failures. It shows the best model lags far behind humans (88.64%), highlighting dominant-modality bias.",
+      "llm_tldr_cn": "多模态大语言模型在跨模态组合与反事实冲突场景中仍存在主导模态偏差，导致推理脆弱，但缺少系统化诊断工具。为此提出C³PO基准，包含3404个样本，通过配对的信息组合与反事实冲突结构，以及四层设计，定位跨模态推理失败的环节。结果显示人类准确率达到88.64%，最佳模型仍有显著差距，证明该基准能有效评估与指导多模态模型的稳健性。尽管不涉及情感或缺失模态，但其诊断方法对稳健多模态学习有重要价值。",
+      "llm_tldr": "多模态大语言模型在跨模态组合与反事实冲突场景中仍存在主导模态偏差，导致推理脆弱，但缺少系统化诊断工具。为此提出C³PO基准，包含3404个样本，通过配对的信息组合与反事实冲突结构，以及四层设计，定位跨模态推理失败的环节。结果显示人类准确率达到88.64%，最佳模型仍有显著差距，证明该基准能有效评估与指导多模态模型的稳健性。尽管不涉及情感或缺失模态，但其诊断方法对稳健多模态学习有重要价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.02216v1",
+      "source": "arxiv",
+      "title": "Local Margin Restoration for Test-Time Adaptation of Vision-Language Models",
+      "abstract": "Vision-language models (VLMs) such as CLIP exhibit remarkable zero-shot capabilities, yet their performance frequently degrades sharply under unexpected test-time distribution shifts. While Test-Time Adaptation (TTA) offers a promising solution, continuously adapting VLMs over an unlabeled test stream presents fundamental challenges. Conventional top-1-centric updates often reinforce errors by corrupting the local semantic geometry among related classes, while iterative adaptation exacerbates progressive bias accumulation, ultimately driving the model toward mode collapse. To overcome these coupled vulnerabilities, we propose Local Margin Restoration (LMR), a lightweight, one-step TTA framework. At the sample level, our Protected Margin Restoration (PMR) objective recovers local semantic geometry by shielding plausible near-top candidates from external hard negatives. Concurrently, to combat stream-level degradation, we introduce a dual-stage stabilization mechanism, featuring an Adaptive Margin (AM) controller and Bias Correction (BC), to dynamically disrupt progressive bias accumulation and prevent mode collapse. Extensive experiments on CIFAR-C, ImageNet-C, and ImageNet variants demonstrate that LMR consistently outperforms state-of-the-art TTA baselines, proving exceptionally robust and efficient even in challenging low-batch test-time regimes. Our code is available at https://github.com/DennisHuangYan/LMR.",
+      "authors": [
+        "Yan Huang",
+        "Guowei Wang",
+        "Xu Wang",
+        "Kangjun Liu",
+        "Xin Lin"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-03T13:38:11+00:00",
+      "link": "https://arxiv.org/pdf/2608.02216v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Robust test-time adaptation for vision-language models",
+      "llm_evidence_cn": "面向视觉语言模型的鲁棒测试时自适应",
+      "llm_evidence": "面向视觉语言模型的鲁棒测试时自适应",
+      "canonical_evidence": "面向视觉语言模型的鲁棒测试时自适应",
+      "llm_tldr_en": "Proposes Local Margin Restoration (LMR), a lightweight one-step test-time adaptation method that protects local semantic geometry to prevent mode collapse in vision-language models under distribution shift.",
+      "llm_tldr_cn": "视觉语言模型在测试时分布偏移下性能会大幅下降，现有时序自适应方法易放大错误并最终导致模式坍塌。本文提出局部边距恢复（LMR），一种轻量单步测试时自适应框架，通过保护相关类别的局部语义几何并抑制累积偏差，在不需标签的情况下逐步恢复模型鲁棒性。实验表明该方法能有效缓解错误积累与模式坍塌，并显著提升分布偏移下的零样本性能。",
+      "llm_tldr": "视觉语言模型在测试时分布偏移下性能会大幅下降，现有时序自适应方法易放大错误并最终导致模式坍塌。本文提出局部边距恢复（LMR），一种轻量单步测试时自适应框架，通过保护相关类别的局部语义几何并抑制累积偏差，在不需标签的情况下逐步恢复模型鲁棒性。实验表明该方法能有效缓解错误积累与模式坍塌，并显著提升分布偏移下的零样本性能。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.04234v1",
+      "source": "arxiv",
+      "title": "Multimodal Alignment Through Joint Kernel Entropic Gromov--Wasserstein Optimal Transport",
+      "abstract": "We study the problem of aligning data from multiple modalities into a shared representation space, focusing on settings where strong pretrained unimodal encoders are available but cross-modal paired data are scarce. We propose a structure-preserving alignment framework, joint kernel entropic Gromov--Wasserstein Optimal Transport (JK-EGW), which maps multiple modalities into a common latent space by minimizing a quadratic optimal transport objective. JK-EGW leverages fine-grained similarity relationships within and across modalities to construct a global affinity kernel instead of relying on raw feature-space distances. Our framework naturally provides explicit control over the geometry and distribution of the latent embedding. On the theory side, we establish parametric sample complexity rate of $n^{-1/2}$, matching the corresponding rates for standard, entropic and Gromov--Wasserstein optimal transport. On the algorithmic side, we derive a scalable alternating procedure to solve JK-EGW with entropic optimal transport (EOT) updates through a low-rank kernel approximation and a variational lifting. This lifting scheme effectively relieves the burden of a quadratic objective, and allowing us to take the advantage of existing EOT solvers. Empirically, we focus on post-hoc alignment of embeddings from pretrained encoders in data-scarce regimes, and show that our proposed method achieves improved multimodal retrieval performance compared to existing alignment baselines.",
+      "authors": [
+        "Yixuan Florence Wu",
+        "Yilun Zhu",
+        "Naichen Shi"
+      ],
+      "primary_category": "math.ST",
+      "categories": [
+        "math.ST",
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-08-04T21:21:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.04234v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Structure-preserving multimodal alignment into shared latent space, useful for robust fusion under scarce paired data.",
+      "llm_evidence_cn": "面向共享潜在空间的结构保持多模态对齐，在配对数据稀缺时为鲁棒融合提供方法支持。",
+      "llm_evidence": "面向共享潜在空间的结构保持多模态对齐，在配对数据稀缺时为鲁棒融合提供方法支持。",
+      "canonical_evidence": "面向共享潜在空间的结构保持多模态对齐，在配对数据稀缺时为鲁棒融合提供方法支持。",
+      "llm_tldr_en": "JK-EGW aligns multiple modalities into a shared latent space via kernel entropic Gromov-Wasserstein optimal transport, preserving fine-grained structure with scarce paired data.",
+      "llm_tldr_cn": "多模态对齐常面临强预训练单模态编码器可用但跨模态配对数据稀缺的问题。本文提出JK-EGW，通过联合核熵Gromov-Wasserstein最优传输，在最小化二次最优传输目标的同时利用细粒度相似性构造整体亲和核，将多模态映射到共同潜在空间。该方法能显式控制嵌入的几何与分布，在少量配对数据下实现结构保持的对齐，为多模态特征融合提供了通用可迁移框架。",
+      "llm_tldr": "多模态对齐常面临强预训练单模态编码器可用但跨模态配对数据稀缺的问题。本文提出JK-EGW，通过联合核熵Gromov-Wasserstein最优传输，在最小化二次最优传输目标的同时利用细粒度相似性构造整体亲和核，将多模态映射到共同潜在空间。该方法能显式控制嵌入的几何与分布，在少量配对数据下实现结构保持的对齐，为多模态特征融合提供了通用可迁移框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
