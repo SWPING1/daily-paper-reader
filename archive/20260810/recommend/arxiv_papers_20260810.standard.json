@@ -1,0 +1,254 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-10T20:57:32.764108+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.07183v1",
+      "source": "arxiv",
+      "title": "Conformal Fusion Under Missing Modalities",
+      "abstract": "Multimodal fusion architectures typically assume all modalities are available at inference, yet sensor failures, acquisition variability, and cost constraints routinely produce incomplete observations. Existing work treats modality absence as a prediction-accuracy problem, leaving a more basic question unanswered: whether a model's confidence estimates remain calibrated when an entire input stream is removed. We argue that missing-modality robustness and calibrated uncertainty are a single coupled property, and introduce Modality-Conditioned Conformal Fusion (MCCF), an architecture that addresses both at once. MCCF combines a multimodal bottleneck fusion backbone trained with modality dropout, per-modality evidential heads producing modality-decomposed Dirichlet distributions, and a Dempster-Shafer combination rule that fuses the per-modality evidence into a joint predictive distribution; an absent modality contributes vacuous evidence that is structurally ignored, so the fused uncertainty automatically reflects the reduced information without test-time imputation. A Mondrian conformal calibration module keyed on the modality-presence mask then provides finite-sample group-conditional coverage for every non-empty modality subset. MCCF is, to our knowledge, the first method with formal coverage guarantees under arbitrary modality availability through architectural integration rather than post-hoc recalibration, and the evidential decomposition yields per-modality vacuity scores that localise uncertainty to the absent modality responsible. Across a synthetic problem and three real multimodal benchmarks, MCCF holds its target coverage on every modality-presence subset, substantially narrows the coverage gap between full and partial modalities relative to a marginal split-conformal baseline, and imposes no measurable accuracy cost relative to temperature-scaled and evidential baselines.",
+      "authors": [
+        "Alireza Moayedikia"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-07T12:57:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.07183v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly tackles missing modalities at inference; proposes calibrated multimodal fusion with modality dropout and evidential heads.",
+      "llm_evidence_cn": "直接处理推理时缺失模态问题；提出带模态丢弃与证据头的校准融合方法。",
+      "llm_evidence": "直接处理推理时缺失模态问题；提出带模态丢弃与证据头的校准融合方法。",
+      "canonical_evidence": "直接处理推理时缺失模态问题；提出带模态丢弃与证据头的校准融合方法。",
+      "llm_tldr_en": "Proposes Modality-Conditioned Conformal Fusion (MCCF) to jointly handle missing-modality robustness and calibrated uncertainty. It combines a bottleneck fusion backbone trained with modality dropout, per-modality evidential heads, and conformal prediction to ensure valid confidence sets when entire input streams are missing.",
+      "llm_tldr_cn": "该论文提出MCCF架构，旨在同时解决缺失模态鲁棒性与置信度校准问题。方法在瓶颈融合骨架上采用模态丢弃训练，并引入逐模态证据头生成分解的狄利克雷分布，结合共形预测提供有效置信集合。实验表明即使在整条输入流缺失时，模型仍能保持校准的置信估计，为缺失模态下的可靠融合提供了新框架。",
+      "llm_tldr": "该论文提出MCCF架构，旨在同时解决缺失模态鲁棒性与置信度校准问题。方法在瓶颈融合骨架上采用模态丢弃训练，并引入逐模态证据头生成分解的狄利克雷分布，结合共形预测提供有效置信集合。实验表明即使在整条输入流缺失时，模型仍能保持校准的置信估计，为缺失模态下的可靠融合提供了新框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.06467v1",
+      "source": "arxiv",
+      "title": "Test-Time Adaptation with Online Personalized Energy-Based Cache for Fine-Grained Video Expression Recognition",
+      "abstract": "Facial expression recognition (FER) in videos is challenging because models must identify subtle, temporally evolving affective states that vary across individuals. Although vision-language models provide transferable visual-semantic representations, models trained on subject-independent data often degrade under subject-specific distribution shifts at inference time. Existing test-time adaptation (TTA) methods commonly update model parameters during inference, increasing computational cost and latency. Cache-based methods avoid parameter updates, but they usually require enough target samples to form reliable class prototypes, which is difficult early in adaptation and for rarely observed classes. We introduce Energy-Based Cache Personalization (EB-CaP), a subject-based online TTA method for video FER that generates class-specific prototypes personalized to each target video. EB-CaP uses a lightweight energy-based model to sample prototypes from the current unlabeled video and populate a personalized cache online, without accumulating large amounts of target data or storing diverse source prototypes. Its energy function relies only on pretrained CLIP: similarities between the target video embedding and class text embeddings guide prototype sampling. In parallel, positive and negative caches store reliable and uncertain target embeddings. An adaptive entropy gate controls cache updates according to the evolving confidence distribution, while a diversity gate limits redundant samples. Final predictions combine cache-derived scores with the current CLIP scores. Experiments on BioVid, StressID, and BAH show that EB-CaP outperforms state-of-the-art TTA methods while maintaining low computational and memory overhead. Code is available at https://github.com/MasoumehSharafi/EB-CaP.",
+      "authors": [
+        "Masoumeh Sharafi",
+        "Muhammad Osama Zeeshan",
+        "Soufiane Belharbi",
+        "Alessandro Lameiras Koerich",
+        "Marco Pedersoli",
+        "Eric Granger"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T18:02:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.06467v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly addresses video facial expression recognition with test-time adaptation",
+      "llm_evidence_cn": "直接面向视频面部表情识别并进行测试时自适应",
+      "llm_evidence": "直接面向视频面部表情识别并进行测试时自适应",
+      "canonical_evidence": "直接面向视频面部表情识别并进行测试时自适应",
+      "llm_tldr_en": "This paper introduces an online personalized energy-based cache for test-time adaptation in fine-grained video expression recognition, avoiding parameter updates and improving subject-specific inference.",
+      "llm_tldr_cn": "视频面部表情识别需要捕捉细微且随时间演变的情感状态，这些状态因人而异，导致基于主体无关数据训练的模型在推理时会遇到主体特定分布偏移。常见的测试时自适应方法要更新模型参数，增加计算开销和延迟；缓存类方法又依赖足够的目标样本来形成可靠的类别原型，在早期和稀有类别上效果差。本文提出基于能量的在线个性化缓存，无需更新参数，在推理时逐步构建个人化能量分布，从而适配个体差异，实验表明它在细粒度视频表情识别上显著提升性能并降低延迟。",
+      "llm_tldr": "视频面部表情识别需要捕捉细微且随时间演变的情感状态，这些状态因人而异，导致基于主体无关数据训练的模型在推理时会遇到主体特定分布偏移。常见的测试时自适应方法要更新模型参数，增加计算开销和延迟；缓存类方法又依赖足够的目标样本来形成可靠的类别原型，在早期和稀有类别上效果差。本文提出基于能量的在线个性化缓存，无需更新参数，在推理时逐步构建个人化能量分布，从而适配个体差异，实验表明它在细粒度视频表情识别上显著提升性能并降低延迟。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.07385v1",
+      "source": "arxiv",
+      "title": "Omni-modal decomposition autoencoders learn full-stack wearable disentangled representations",
+      "abstract": "Learning disentangled representations is a key requirement for developing versatile, general-purpose, and sustainable models in multi-modal wearable computing. However, existing approaches do not operate as full-stack wearable processors, i.e., they do not simultaneously address task-specific classification performance, disentangled and interpretable representation learning, fusion, and generative modeling of highly heterogeneous multi-modal time series. To address this gap, we introduce Omni-modal Variational Decomposition Autoencoders (OmniDecVAEs), a framework that efficiently learns multi-purpose representations in a unified and scalable manner from arbitrarily many modalities. OmniDecVAEs extend DecVAEs by learning modality-conditioned time-frequency latent subspaces through a multi-view self-supervised decomposition loss and a shared asymmetric autoencoder (AE) architecture. Results on a challenging omni-modal human activity recognition (HAR) setting with up to thirty modalities, demonstrate the ability of OmniDecVAEs to learn full-stack wearable representations. When compared to transformer-based and VAE-based methods, OmniDecVAEs full-stack disentangled representation properties lead to accuracy improvements of 1.01% and 6.75% in activity and identity recognition, respectively. Furthermore, OmniDecVAEs synthesize realistic omni-modal time-frequency data that manifest with enhanced reconstructions (mean absolute error improves by 76.84%) and distributional similarity between real and synthetic data (maximum mean discrepancy improves by 13.85%). Our results highlight OmniDecVAEs potential as a lightweight model suitable for intelligent edge wearables and clinical healthcare, unifying processing requirements and abilities in a single model, through its enhanced representational capacity, modality-invariant spatial complexity (4.1M parameters), and real-time latency.",
+      "authors": [
+        "Ioannis Ziogas",
+        "Ensieh Khazaei",
+        "Bilal Taha",
+        "Aamna Al Shehhi",
+        "Ahsan H. Khandoker",
+        "Leontios J. Hadjileontiadis",
+        "Dimitrios Hatzinakos"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "eess.AS",
+        "eess.SP",
+        "stat.ML"
+      ],
+      "published": "2026-08-07T16:32:17+00:00",
+      "link": "https://arxiv.org/pdf/2608.07385v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Omni-modal decomposition autoencoders for disentangled and generative multimodal representations",
+      "llm_evidence_cn": "利用全模态分解自编码器学习解耦且可生成的多模态表示",
+      "llm_evidence": "利用全模态分解自编码器学习解耦且可生成的多模态表示",
+      "canonical_evidence": "利用全模态分解自编码器学习解耦且可生成的多模态表示",
+      "llm_tldr_en": "OmniDecVAEs extend DecVAEs to learn disentangled, interpretable, and generative representations from arbitrarily many modalities in wearable computing.",
+      "llm_tldr_cn": "多模态可穿戴计算需要同时具备分类性能、可解释解耦表示、融合与生成能力，现有方法难以在同框架内满足所有需求。该工作提出全模态变分分解自编码器OmniDecVAEs，将DecVAEs扩展到任意数量的模态，以统一可扩展方式学习多用途表示。该框架支持解耦表示学习、融合与生成建模，为可穿戴传感器数据分析提供了全面解决方案。",
+      "llm_tldr": "多模态可穿戴计算需要同时具备分类性能、可解释解耦表示、融合与生成能力，现有方法难以在同框架内满足所有需求。该工作提出全模态变分分解自编码器OmniDecVAEs，将DecVAEs扩展到任意数量的模态，以统一可扩展方式学习多用途表示。该框架支持解耦表示学习、融合与生成建模，为可穿戴传感器数据分析提供了全面解决方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.04351v1",
+      "source": "arxiv",
+      "title": "HyPASE: Hyperbolic Geometry for Parameter-Efficient Speech Emotion Fine-Tuning Framework for Large Audio-Language Models",
+      "abstract": "Large Audio-Language Models (LALMs) excel at general speech understanding; however, adapting them to fine-grained tasks like Speech Emotion Recognition (SER) remains a significant bottleneck. Current Parameter-Efficient Fine-Tuning (PEFT) methods typically operate in flat Euclidean space, and this geometry fails to capture the multi-granularity nature of emotion cues, which range from low-level prosody to high-level semantics. To address this, we propose HyPASE, a hyperbolic PEFT framework for LALM-based SER. HyPASE leverages the Poincare ball model, using the hyperbolic radius as an explicit proxy for representational granularity. The framework consists of two core components: a Hyperbolic Geometric Adapter (HGA) for layer-adaptive weight modulation, and an Emotion-aware Multi-capacity Cross-modal Aggregator (EMCA) that compresses multi-scale features into compact audio prefixes. Empirical results on standard benchmarks show that HyPASE outperforms Euclidean PEFT baselines across all metrics on MELD and achieves a notable Unweighted Accuracy gain on IEMOCAP, particularly in class-imbalanced emotion recognition, with the accompanying slight Weighted Accuracy trade-off reflecting hyperbolic space's geometric prioritization of minority-class representations; furthermore, HyPASE achieves robust zero-shot cross-dataset generalization within a constrained parameter budget. By grounding the adaptation process in hyperbolic geometry, HyPASE offers a highly efficient path for LALM fine-tuning.",
+      "authors": [
+        "Tian Jin",
+        "Ruikang Zhang",
+        "Zefeng Zhao",
+        "Ding Luo",
+        "Jin Zeng"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI"
+      ],
+      "published": "2026-08-05T01:50:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.04351v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Speech emotion recognition with large audio-language models, using hyperbolic geometry for parameter-efficient fine-tuning.",
+      "llm_evidence_cn": "面向大型音频语言模型的语音情感识别，使用双曲几何进行参数高效微调。",
+      "llm_evidence": "面向大型音频语言模型的语音情感识别，使用双曲几何进行参数高效微调。",
+      "canonical_evidence": "面向大型音频语言模型的语音情感识别，使用双曲几何进行参数高效微调。",
+      "llm_tldr_en": "HyPASE proposes a hyperbolic parameter-efficient fine-tuning framework for speech emotion recognition in large audio-language models, using Poincare radius to capture multi-granularity emotion cues.",
+      "llm_tldr_cn": "大型音频语言模型在通用语音理解上表现出色，但面向语音情感识别这类细粒度任务时微调仍受限。现有参数高效微调在欧氏空间中难以表达情感线索的多粒度特性。HyPASE利用庞加莱球模型，将双曲半径作为表征粒度的显式代理，构建双曲几何适配模块，以参数高效方式为LALM注入情感感知能力。在语音情感识别任务上验证了其有效性，提示几何先验可改善情感表征。",
+      "llm_tldr": "大型音频语言模型在通用语音理解上表现出色，但面向语音情感识别这类细粒度任务时微调仍受限。现有参数高效微调在欧氏空间中难以表达情感线索的多粒度特性。HyPASE利用庞加莱球模型，将双曲半径作为表征粒度的显式代理，构建双曲几何适配模块，以参数高效方式为LALM注入情感感知能力。在语音情感识别任务上验证了其有效性，提示几何先验可改善情感表征。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.04348v1",
+      "source": "arxiv",
+      "title": "iStructTab: Structured Feature Sequencing for Multimodal Learning of Image and Tabular Data",
+      "abstract": "Multimodal learning of images and tabular data is often impaired by ineffective representations, resulting in redundancy, dispersion, and generalization problems. To tackle this challenge, we introduce Graph-Enhanced Descriptor Sequencing (GEDS), a structured feature sequencing algorithm grounded in principles from the Column Permutation Problem (CPP). GEDS refines statistical descriptors of the features through similarity graph-based computations, systematically determining an effective feature sequencing. We incorporate GEDS within an order-aware efficient transformer framework, utilizing order-aware memory tokens that explicitly adhere to the derived feature sequencing via a dedicated loss function. Experimental results across multimodal benchmarks demonstrate that iStructTab effectively minimizes feature dispersion, improving predictive performance and robustness, and highlighting the significance of structured feature sequencing in multimodal learning.",
+      "authors": [
+        "Al Zadid Sultan Bin Habib",
+        "Md Younus Ahamed",
+        "Prashnna Gyawali",
+        "Gianfranco Doretto",
+        "Donald A. Adjeroh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-08-05T01:47:34+00:00",
+      "link": "https://arxiv.org/pdf/2608.04348v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "structured feature sequencing to improve multimodal representation quality",
+      "llm_evidence_cn": "结构化特征排序提升多模态表示质量与泛化能力",
+      "llm_evidence": "结构化特征排序提升多模态表示质量与泛化能力",
+      "canonical_evidence": "结构化特征排序提升多模态表示质量与泛化能力",
+      "llm_tldr_en": "iStructTab proposes Graph-Enhanced Descriptor Sequencing for structured feature ordering in image-tabular multimodal learning, improving representation quality and generalization.",
+      "llm_tldr_cn": "图像与表格数据的多模态学习常因表示不够有效而产生冗余、离散和泛化能力差的问题。针对这一挑战，作者受列排列问题启发，提出图增强描述符排序算法GEDS，利用相似图计算细化特征的统计描述符，并系统确定有效的特征排序。将该排序融入顺序感知的高效Transformer，通过专门损失函数让顺序感知记忆Token严格遵循特征顺序。多组实验表明该方法能提升多模态学习性能，为异构数据融合提供了一种通用排序策略。",
+      "llm_tldr": "图像与表格数据的多模态学习常因表示不够有效而产生冗余、离散和泛化能力差的问题。针对这一挑战，作者受列排列问题启发，提出图增强描述符排序算法GEDS，利用相似图计算细化特征的统计描述符，并系统确定有效的特征排序。将该排序融入顺序感知的高效Transformer，通过专门损失函数让顺序感知记忆Token严格遵循特征顺序。多组实验表明该方法能提升多模态学习性能，为异构数据融合提供了一种通用排序策略。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.04623v1",
+      "source": "arxiv",
+      "title": "Visual Anchoring in Diffusion: Multimodal Zero-Shot Skeleton Action Recognition",
+      "abstract": "Zero-shot Skeleton Action Recognition (ZSAR) remains ambiguous when unseen actions share similar skeleton joint dynamics but differ in objects or scene context. RGB provides these missing cues, yet existing multimodal methods typically maintain independent skeleton and RGB scoring branches and fuse their outputs. Without using unlabeled test data for adaptation or fusion calibration, a fixed fusion weight cannot capture class-pair-dependent modality reliability, while an adaptive rule lacks target-side feedback for deciding which branch should dominate. We bypass this weight-selection problem via the classify-by-generation paradigm, where each class is scored by how accurately a text-conditioned denoiser predicts the noise added to the skeleton feature. This formulation separates the progressively corrupted skeleton from fixed conditioning, allowing RGB and text to jointly condition a single class-scoring function rather than produce independent scores. We instantiate this idea as Multimodal Triplet Diffusion for Skeleton-Text Matching (TDSM-MM), augmenting a text-conditioned denoising Transformer with a non-diffused RGB condition token that serves as a stable visual anchor during skeleton data reconstruction. Our proposed TDSM-MM has been ablated via extensive experiments and achieved the best inductive accuracy on three of four NTU-60/120 splits and surpasses the transductive state-of-the-art on NTU-120 96/24 (i.e., 71.3% vs. 69.1%), without test-time adaptation, suggesting that diffusion-based methods can be a promising direction for zero-shot learning.",
+      "authors": [
+        "Zehao Bao",
+        "Shujun Guo",
+        "Bruce X. B. Yu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T09:28:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.04623v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Class-pair-dependent modality reliability in multimodal skeleton+RGB recognition; robust fusion via classify-by-generation.",
+      "llm_evidence_cn": "在骨架+RGB多模态识别中处理依赖类别的模态可靠性；通过按类生成实现稳健融合。",
+      "llm_evidence": "在骨架+RGB多模态识别中处理依赖类别的模态可靠性；通过按类生成实现稳健融合。",
+      "canonical_evidence": "在骨架+RGB多模态识别中处理依赖类别的模态可靠性；通过按类生成实现稳健融合。",
+      "llm_tldr_en": "Proposes diffusion-based classify-by-generation for zero-shot skeleton action recognition, where class scores come from noise prediction accuracy, avoiding fixed fusion weights and improving unseen-class recognition despite class-pair-dependent modality reliability.",
+      "llm_tldr_cn": "该论文针对零样本骨架动作识别中相似动作难以区分的问题，提出基于扩散的按类生成范式。骨架与RGB两个模态的可靠性随类别对而变化，固定融合权重无法适应。方法以文本条件去噪器预测噪声的准确性作为类别得分，绕开融合权重选择，提升未见类识别能力，为稳健多模态学习提供了新思路。",
+      "llm_tldr": "该论文针对零样本骨架动作识别中相似动作难以区分的问题，提出基于扩散的按类生成范式。骨架与RGB两个模态的可靠性随类别对而变化，固定融合权重无法适应。方法以文本条件去噪器预测噪声的准确性作为类别得分，绕开融合权重选择，提升未见类识别能力，为稳健多模态学习提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
