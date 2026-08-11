@@ -1,0 +1,369 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-11T21:27:21.427127+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 5,
+    "deep_cap": 6,
+    "deep_selected": 5,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2608.07867v1",
+      "source": "arxiv",
+      "title": "CONFER: Conflict-Aware Evidence Negotiation for Regime-Calibrated Weak Supervision in Multimodal Emotion Recognition",
+      "abstract": "Multimodal emotion recognition often treats self-reported labels as reliable supervision while overlooking self-report unreliability and cross-modal conflict. We propose \\textbf{CONFER}, a graph-based conflict-aware evidence negotiation framework for weakly supervised multimodal emotion recognition. CONFER represents each modality expert as a node with a predictive belief, boundary-based uncertainty, and runtime reliability estimated from historical out-of-fold performance and current-sample uncertainty. Uncertainty-aware compatibility and reliability-directed asymmetric edge weights govern iterative message-passing negotiation, followed by peer-supported prediction readout. Conflict reduction, residual disagreement, and mean modality uncertainty further characterize three regimes---Consensus, Dissent, and Ambiguity---for sample-specific weak-label calibration. We evaluate CONFER on AMIGOS, MAHNOB-HCI, and DEAP under subject-dependent 10-fold and strict leave-one-subject-out (LOSO) protocols. CONFER achieves competitive performance, reaching \\textbf{0.873} accuracy on AMIGOS-V and \\textbf{0.854} accuracy on MAHNOB-V under strict LOSO evaluation. Further analyses show larger negotiation gains on high-conflict samples and improved robustness to weak-label corruption, indicating that cross-modal conflict provides useful information for both directional modality coordination and supervision-reliability estimation.",
+      "authors": [
+        "Bojing Hou",
+        "Ruohao Li",
+        "Yitong Zhu",
+        "Luwen Yu",
+        "Yuyang Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-08T02:42:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.07867v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "directly addresses multimodal emotion recognition with graph-based conflict-aware weak supervision; robust to unreliable self-report labels and cross-modal conflict",
+      "llm_evidence_cn": "直接面向多模态情感识别，用图基冲突感知弱监督处理不可靠自报告标签与跨模态冲突",
+      "llm_evidence": "直接面向多模态情感识别，用图基冲突感知弱监督处理不可靠自报告标签与跨模态冲突",
+      "canonical_evidence": "直接面向多模态情感识别，用图基冲突感知弱监督处理不可靠自报告标签与跨模态冲突",
+      "llm_tldr_en": "Proposes CONFER for weakly supervised multimodal emotion recognition, modeling modality experts as nodes with uncertainty and reliability to negotiate evidence and reduce cross-modal conflict under unreliable self-report labels.",
+      "llm_tldr_cn": "多模态情感识别常将自报告标签视为可靠监督，但自报告可能不可靠且模态间存在冲突。本文提出CONFER，一个基于图的冲突感知证据协商框架，将每个模态专家建模为节点，结合预测信念、边界不确定性和运行期可靠性进行迭代消息传递协商，并利用同伴支持的预测读出。该方法降低了标签噪声和跨模态冲突的影响，在情感识别任务上提高了弱监督鲁棒性。该框架对面向缺失模态的情感识别中的证据融合也具有参考价值。",
+      "llm_tldr": "多模态情感识别常将自报告标签视为可靠监督，但自报告可能不可靠且模态间存在冲突。本文提出CONFER，一个基于图的冲突感知证据协商框架，将每个模态专家建模为节点，结合预测信念、边界不确定性和运行期可靠性进行迭代消息传递协商，并利用同伴支持的预测读出。该方法降低了标签噪声和跨模态冲突的影响，在情感识别任务上提高了弱监督鲁棒性。该框架对面向缺失模态的情感识别中的证据融合也具有参考价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.07795v1",
+      "source": "arxiv",
+      "title": "Conformal Calibration for Multi-Modal Regression with Missing Modalities",
+      "abstract": "Prediction intervals for multi-modal regression with tabular variables, text, images, or other input sources are difficult to calibrate when those sources disagree or one is missing. A single global quantile averages these regimes together instead of calibrating to the modality pattern observed at test time. We address this through a modality-aware conformal calibration layer. The layer trains or reuses one predictor per modality, computes a disagreement score from their predictions, and uses that score in split conformal calibration under a strict split protocol. We use the score in two complementary ways. First, a continuous disagreement-scaled method reallocates interval width across examples while preserving the usual marginal split-conformal guarantee. Second, a Mondrian (stratified) method calibrates within groups defined by disagreement or modality availability fixed before calibration, giving group guarantees under joint exchangeability of the calibration and test examples. Across four multi-modal datasets, the disagreement-scaled layer matches or improves the marginal conformal baseline in 59 of 60 paired runs for interval continuous ranked probability score (CRPS) and in 52 of 60 for interval width, while keeping empirical coverage near the 95% target. In stress tests with missing modalities, mask-matched recalibration recovers up to 19.5 percentage points of coverage in the hardest fixed-mask regime. The result is a simple, model-agnostic reliability layer for multi-modal regression systems. A project page is available at https://unco3892.github.io/modality-aware-conformal.",
+      "authors": [
+        "Ilia Azizi"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG",
+        "stat.ME"
+      ],
+      "published": "2026-08-07T22:38:35+00:00",
+      "link": "https://arxiv.org/pdf/2608.07795v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Develops modality-aware conformal calibration for multimodal regression with missing modalities",
+      "llm_evidence_cn": "针对缺失模态下的多模态回归，提出模态感知保形校准",
+      "llm_evidence": "针对缺失模态下的多模态回归，提出模态感知保形校准",
+      "canonical_evidence": "针对缺失模态下的多模态回归，提出模态感知保形校准",
+      "llm_tldr_en": "Proposes a modality-aware conformal calibration layer for multi-modal regression with missing modalities, using predictor disagreement scores to calibrate prediction intervals while preserving marginal guarantees; directly targets missing-modality robustness.",
+      "llm_tldr_cn": "多模态回归中，输入来源不一致或缺失时，全局分位数校准无法适应测试时的模态模式。论文提出模态感知的保形校准层，为每个模态训练或复用预测器，计算不一致得分并在严格分裂协议下用于保形校准。该方法以连续的不一致缩放重新分配区间宽度，同时保持边缘覆盖保证，直接处理缺失模态带来的不确定性问题。",
+      "llm_tldr": "多模态回归中，输入来源不一致或缺失时，全局分位数校准无法适应测试时的模态模式。论文提出模态感知的保形校准层，为每个模态训练或复用预测器，计算不一致得分并在严格分裂协议下用于保形校准。该方法以连续的不一致缩放重新分配区间宽度，同时保持边缘覆盖保证，直接处理缺失模态带来的不确定性问题。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08772v1",
+      "source": "arxiv",
+      "title": "Multilingual Emotion Neurons in Large Audio-Language Models",
+      "abstract": "Emotion is central to human communication, and its expression varies across languages. Large audio-language models (LALMs) achieve strong performance on multilingual speech tasks, yet it remains unclear whether they encode emotion through language-specific correlations or language-agnostic representations. We present the first neuron-level interpretability study of this question. We define Multilingual Emotion Neurons (MLENs) as functional units exhibiting stable emotional selectivity and aligned causal effects across languages, and introduce Consistency-Regularized Fusion (CR-Fusion) to identify them. Across four modern LALMs and 12 typologically diverse languages, emotion-sensitive neurons identified independently per language show minimal overlap, and additional monolingual identification data saturates quickly without isolating more transferable units, motivating identification from pooled cross-lingual evidence. Causal interventions demonstrate that MLENs identified by CR-Fusion provide more precise and transferable affective control than monolingual neuron sets in both zero-shot and low-resource settings. Leave-one-out ablations further reveal asymmetric transfer: individual identification languages, including low-resource ones, contribute non-redundant evidence, while several low-resource languages benefit most from the resulting cross-lingual transfer. Together, our findings provide the first causal, neuron-level account of how LALMs encode emotion across languages, and establish multilingual neuron identification as an effective mechanism for understanding cross-lingual affective behavior.",
+      "authors": [
+        "Xiutian Zhao",
+        "Philipp Koehn",
+        "Björn Schuller",
+        "Berrak Sisman"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "eess.AS"
+      ],
+      "published": "2026-08-09T15:42:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.08772v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Studies emotion representation in multilingual audio-language models at neuron level",
+      "llm_evidence_cn": "研究多语言音频语言模型中的情感表征（神经元层面）",
+      "llm_evidence": "研究多语言音频语言模型中的情感表征（神经元层面）",
+      "canonical_evidence": "研究多语言音频语言模型中的情感表征（神经元层面）",
+      "llm_tldr_en": "First neuron-level interpretability study of multilingual emotion encoding in audio-language models, introducing CR-Fusion to identify cross-language consistent emotion neurons.",
+      "llm_tldr_cn": "针对大型音频语言模型在多语言情感任务中表现优异但情感编码机制不明的问题，本文首次从神经元层面研究多语言情感表征。作者定义了跨语言稳定的多语言情感神经元（MLEN），并提出一致性正则融合（CR-Fusion）方法进行识别。在四个现代模型和12种语言上的实验显示，不同语言的情感敏感神经元重叠度很低，表明模型可能依赖语言特定的相关特征。该研究为多语言多模态情感理解提供了可解释性视角。",
+      "llm_tldr": "针对大型音频语言模型在多语言情感任务中表现优异但情感编码机制不明的问题，本文首次从神经元层面研究多语言情感表征。作者定义了跨语言稳定的多语言情感神经元（MLEN），并提出一致性正则融合（CR-Fusion）方法进行识别。在四个现代模型和12种语言上的实验显示，不同语言的情感敏感神经元重叠度很低，表明模型可能依赖语言特定的相关特征。该研究为多语言多模态情感理解提供了可解释性视角。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.09030v1",
+      "source": "arxiv",
+      "title": "Closing the loop in learning with missing data",
+      "abstract": "What should a machine learning model learn when data is missing during training? We look at the learning process from a dynamical systems perspective, cast data missingness as a structured loss of actuation that limits controllability of the parameter error dynamics, and ultimately derive adaptation mechanisms with Lyapunov stability characteristics that throttle model updates in ways that preserve learning coherence under partial, intermittent observability. Under recurrent excitation, our analysis provides ISS-type residual-to-state bounds with respect to a bounded closed-loop mismatch between the loss residual and the preconditioned update geometry. We evaluate the efficacy of our directional observability-aware adaptive learning approach on multimodal contexts, reinforcing its premise in promoting learning coherence and stability even in pathologically sparse domains and problems.",
+      "authors": [
+        "Dimitrios Pylorof",
+        "Humberto E. Garcia"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "cs.LG",
+        "math.OC"
+      ],
+      "published": "2026-08-10T02:30:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.09030v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Provides a general learning framework for missing data and validates on multimodal contexts",
+      "llm_evidence_cn": "提出面向缺失数据的通用学习框架，并在多模态情境下验证",
+      "llm_evidence": "提出面向缺失数据的通用学习框架，并在多模态情境下验证",
+      "canonical_evidence": "提出面向缺失数据的通用学习框架，并在多模态情境下验证",
+      "llm_tldr_en": "Models training-time missingness as loss of actuation in parameter error dynamics, derives Lyapunov-stable adaptation that throttles updates under partial observability, and evaluates on multimodal contexts; directly relevant to missing-modality learning.",
+      "llm_tldr_cn": "论文从动力系统视角看待训练数据缺失问题，将缺失建模为驱动力的结构性缺失，并指出这会限制参数误差动态的可控性。作者推导了具有Lyapunov稳定特性的自适应更新机制，在部分可观测时抑制模型更新，以维护学习一致性，并给出ISS型残差-状态界。在多模态情境下验证了该方向感知自适应方法的有效性。",
+      "llm_tldr": "论文从动力系统视角看待训练数据缺失问题，将缺失建模为驱动力的结构性缺失，并指出这会限制参数误差动态的可控性。作者推导了具有Lyapunov稳定特性的自适应更新机制，在部分可观测时抑制模型更新，以维护学习一致性，并给出ISS型残差-状态界。在多模态情境下验证了该方向感知自适应方法的有效性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.09240v1",
+      "source": "arxiv",
+      "title": "Multimodal Federated Learning under Dual-Axis Modality Missingness",
+      "abstract": "Multimodal federated learning (FL) supports collaborative modeling in privacy-sensitive health-sensing and medical settings, but realistic deployments often exhibit dual-axis modality missingness: clients have different modality sets, and individual samples may contain only subsets of the modalities available locally. Existing methods typically address these two axes separately. We propose Flux, a multimodal federated learning framework built around two complementary components. First, modality-aware confidence tempering learns sample-specific confidence for each modality through mask-aware unimodal supervision and fuses the confidence estimates from observed modalities into a sample-adaptive temperature that adjusts predictive sharpness according to evidence quality and completeness. Second, gradient-decoupled private adaptation applies this temperature only to a client-private prediction pathway, while training the shared federated model with a standard, untempered objective. This enables sample-specific, client-local confidence adaptation without allowing confidence-dependent gradients to perturb shared representation learning. Across four multimodal datasets, Flux achieves the highest average macro-F1 on every dataset, outperforming the strongest dataset-specific baseline by 0.8~2.2 points and by 1.6 points on average. Additional analyses demonstrate favorable calibration, temperature sensitivity to both modality missingness and input corruption, and more stable shared optimization under private-only tempering. Our code is available at https://github.com/AdibaOrz/Flux.",
+      "authors": [
+        "Adiba Orzikulova",
+        "Jaehyun Kwak",
+        "Jaemin Shin",
+        "Yunqi Guo",
+        "Xiaomin Ouyang",
+        "Guoliang Xing",
+        "Steven Euijong Whang",
+        "Sung-Ju Lee"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-10T08:05:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.09240v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "explicitly handles dual-axis missing modality (client-level and sample-level) in multimodal learning",
+      "llm_evidence_cn": "显式处理多模态学习中客户端级与样本级双轴模态缺失",
+      "llm_evidence": "显式处理多模态学习中客户端级与样本级双轴模态缺失",
+      "canonical_evidence": "显式处理多模态学习中客户端级与样本级双轴模态缺失",
+      "llm_tldr_en": "Federated multimodal learning often faces dual-axis modality missingness: clients and samples have different modality subsets. Flux learns sample-specific modality confidence with mask-aware unimodal supervision and uses it to adjust predictive sharpness, robustly handling both client- and sample-level missingness in privacy-sensitive settings.",
+      "llm_tldr_cn": "多模态联邦学习在健康感知和医疗等隐私敏感场景中常面临双轴模态缺失：客户端之间模态集合不同，单个样本也只包含部分模态。现有方法通常只处理其中一种缺失。本文提出Flux框架，通过掩码感知的单模态监督学习估计样本级置信度，并将其融合为样本自适应温度调节预测锐度。实验结果验证了同时处理客户端级与样本级缺失的有效性，增强了联邦场景下多模态建模的鲁棒性。",
+      "llm_tldr": "多模态联邦学习在健康感知和医疗等隐私敏感场景中常面临双轴模态缺失：客户端之间模态集合不同，单个样本也只包含部分模态。现有方法通常只处理其中一种缺失。本文提出Flux框架，通过掩码感知的单模态监督学习估计样本级置信度，并将其融合为样本自适应温度调节预测锐度。实验结果验证了同时处理客户端级与样本级缺失的有效性，增强了联邦场景下多模态建模的鲁棒性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.01560v1",
+      "source": "arxiv",
+      "title": "Discriminative Axis, Not Data Volume: What a Contrastive Corpus Teaches an Audio Embedding",
+      "abstract": "Scaling the corpus is the default remedy when a contrastive representation lacks an attribute. We report a case where it does nothing, and identify what does: adding a lexical-speech round to a frozen-base multimodal embedding model raises zero-shot keyword spotting by 76 points while reducing speech-emotion recognition by 14. The loss is not a capacity limit: fine-tuning on 7,442 clips from a prosody-controlled corpus recovers emotion past its pre-speech level at a five-point keyword cost. Nor is it data volume: 29,428 mined clips whose captions explicitly name emotions, at matched exposure, move emotion by -0.0007. The difference is structural: a contrastive objective encodes an attribute only when the in-batch negatives cannot be separated without it; the controlled corpus holds sentence content fixed, so prosody is the only separating signal, whereas mined captions name emotion yet remain separable by scene content. Intervention on the same audio confirms causality: raising caption similarity does not recover emotion, but collapsing caption diversity so that emotion becomes the only separating axis recovers it by 8.9 points across three seeds, with a smaller, same-signed gain on a non-acted corpus, while keyword accuracy trades back. Corpus structure, not size or caption vocabulary, controls what a contrastive audio embedding encodes.",
+      "authors": [
+        "Abdul Basit Tonmoy"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.SD"
+      ],
+      "published": "2026-08-03T00:34:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.01560v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Empirical analysis of multimodal contrastive embeddings for speech emotion recognition",
+      "llm_evidence_cn": "对语音情感识别多模态对比嵌入的经验分析",
+      "llm_evidence": "对语音情感识别多模态对比嵌入的经验分析",
+      "canonical_evidence": "对语音情感识别多模态对比嵌入的经验分析",
+      "llm_tldr_en": "This paper shows scaling a contrastive corpus fails to improve speech emotion recognition while boosting keyword spotting. Adding lexical-speech round improves keyword spotting 76 points but reduces emotion 14; structural contrastive objectives, not data volume, determine attribute encoding.",
+      "llm_tldr_cn": "针对扩大对比语料无法改善语音情感识别的问题，通过实证发现添加词汇-语音对比回合使关键词识别提升76点但情感识别下降14点，且这不是容量限制，也不是数据量不足。结构性的对比目标决定属性编码的判别轴，该工作为设计面向情感的多模态对比表征提供了重要经验。",
+      "llm_tldr": "针对扩大对比语料无法改善语音情感识别的问题，通过实证发现添加词汇-语音对比回合使关键词识别提升76点但情感识别下降14点，且这不是容量限制，也不是数据量不足。结构性的对比目标决定属性编码的判别轴，该工作为设计面向情感的多模态对比表征提供了重要经验。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.04949v1",
+      "source": "arxiv",
+      "title": "UG-UMRE: Uncertainty-Guided Modality Augmentation and Distributional Calibration for Unified Multimodal Relation Extraction",
+      "abstract": "Unified Multimodal Relation Extraction (UMRE) aims to identify intra-modal and cross-modal relations between textual entities and visual objects. However, existing UMRE studies still encounter two critical issues: ignoring inherent aleatoric uncertainty causes noise propagation, and deep-seated heterogeneity between distinct modal distributions hinders alignment. To address these issues, we propose the Uncertainty-Guided UMRE Network (UG-UMRE). Specifically, we design an Uncertainty-Driven Unimodal Augmentation (UDUA) module, which models features as Gaussian distributions based on the Variational Information Bottleneck. By incorporating an uncertainty-aware self-supervised contrastive learning mechanism, UDUA effectively filters out noise while maintaining semantic consistency. Furthermore, we introduce the Joint Aleatoric Uncertainty Alignment (JAUA) module as a global semantic pre-calibration mechanism. JAUA leverages probabilistic distribution consistency to construct a shared latent space, eliminating the distributional gap by synchronizing cross-modal statistical properties, thereby laying a robust foundation for fine-grained interaction. Experiments on three benchmark datasets (UMRE, MORE, and MNRE) demonstrate that UG-UMRE achieves state-of-the-art performance. Further analysis validates the pluggable and effective performance of the proposed UDUA and JAUA modules.",
+      "authors": [
+        "Bo Kong",
+        "Liruiz Jia",
+        "Yi Liang",
+        "Chao Liu",
+        "Dongfang Han",
+        "Tianwei Yan",
+        "Yuan Liu",
+        "Shengquan Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.CL",
+        "cs.IT",
+        "cs.MM"
+      ],
+      "published": "2026-08-05T15:18:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.04949v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uncertainty-guided modality augmentation and distributional calibration for robust multimodal learning, though task is relation extraction",
+      "llm_evidence_cn": "通过不确定性引导的模态增强与分布校准实现鲁棒多模态学习，但任务是关系抽取",
+      "llm_evidence": "通过不确定性引导的模态增强与分布校准实现鲁棒多模态学习，但任务是关系抽取",
+      "canonical_evidence": "通过不确定性引导的模态增强与分布校准实现鲁棒多模态学习，但任务是关系抽取",
+      "llm_tldr_en": "UG-UMRE improves robust multimodal learning by modeling features as Gaussian distributions with a variational information bottleneck, designing uncertainty-driven unimodal augmentation and uncertainty-aware self-supervised contrastive learning, and calibrating cross-modal distributions for unified multimodal relation extraction.",
+      "llm_tldr_cn": "统一多模态关系抽取中，偶然不确定性会造成噪声传播，模态分布异质性也阻碍跨模态对齐。论文提出UG-UMRE，基于变分信息瓶颈将特征建模为高斯分布，设计不确定性驱动的单模态增强模块，并结合不确定性感知的自监督对比学习与多模态分布校准，降低噪声影响并缓解模态鸿沟。在公开数据集上的实验验证了该方法能有效提升多模态关系抽取的鲁棒性。",
+      "llm_tldr": "统一多模态关系抽取中，偶然不确定性会造成噪声传播，模态分布异质性也阻碍跨模态对齐。论文提出UG-UMRE，基于变分信息瓶颈将特征建模为高斯分布，设计不确定性驱动的单模态增强模块，并结合不确定性感知的自监督对比学习与多模态分布校准，降低噪声影响并缓解模态鸿沟。在公开数据集上的实验验证了该方法能有效提升多模态关系抽取的鲁棒性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.05137v2",
+      "source": "arxiv",
+      "title": "SmartMage: Dynamic Modality Orchestration for 3D Scene Understanding",
+      "abstract": "Understanding 3D scenes is fundamental to embodied intelligence, requiring joint reasoning over heterogeneous information from multiple modalities, including visual and geometric cues. However, the relevance of these modalities often varies across queries. Existing Multimodal Large Language Models (MLLMs) typically rely on fixed modality combinations, overlooking query-dependent modality needs. Such a rigid design can introduce semantic noise from irrelevant modalities while underutilizing more informative ones, leading to wasted computation and diluted reasoning. To address these challenges, this paper proposes SmartMage, a unified MLLM that dynamically orchestrates heterogeneous modalities for semantic-aware 3D scene understanding. Specifically, SmartMage incorporates: (1) a Semantic-guided Modality Adaptive RouTng (SMART) module that selects task-relevant modalities using semantic priors, text-modality alignment, and modality quality; and (2) a Modality-Aware Gating Expert (MAGE) module that leverages modality priors to guide expert activation, fostering adaptive specialization in multimodal reasoning. Empirically, SmartMage achieves state-of-the-art performance across five 3D scene understanding benchmarks, and attains competitive results on RGB-only video understanding benchmarks. In our diagnostic benchmark ScanFacet, tasks are divided into fine-grained semantic categories, enabling analysis of modality combinations preferred by each semantic type. The observed modality-semantic patterns provide further evidence of SmartMage's effectiveness. Project page: https://yuecheong.github.io/SmartMage/.",
+      "authors": [
+        "Yue Zhang",
+        "Yingzhao Jian",
+        "Yunqiu Xu",
+        "Xiaoxiao Sun",
+        "Hehe Fan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-05T17:56:35+00:00",
+      "link": "https://arxiv.org/pdf/2608.05137v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "dynamic modality orchestration to avoid semantic noise from irrelevant modalities and exploit informative ones; applicable to robust multimodal learning",
+      "llm_evidence_cn": "动态编排模态以避免无关模态的语义噪声并利用信息量大的模态；适用于鲁棒多模态学习",
+      "llm_evidence": "动态编排模态以避免无关模态的语义噪声并利用信息量大的模态；适用于鲁棒多模态学习",
+      "canonical_evidence": "动态编排模态以避免无关模态的语义噪声并利用信息量大的模态；适用于鲁棒多模态学习",
+      "llm_tldr_en": "Proposes SmartMage, a unified MLLM that dynamically selects and weighs visual and geometric modalities per query for 3D scene understanding, reducing semantic noise and improving reasoning efficiency.",
+      "llm_tldr_cn": "现有3D场景理解的多模态大模型通常使用固定模态组合，忽视查询对模态的差异化需求，导致无关模态引入语义噪声且有效模态利用不足。本文提出SmartMage，一个统一的MLLM，根据查询动态编排视觉与几何等异构模态，实现语义感知的3D场景理解。该方法降低了计算浪费并提升了推理准确性。动态模态编排机制对鲁棒多模态学习具有借鉴意义，尤其在模态可靠性变化的场景中。",
+      "llm_tldr": "现有3D场景理解的多模态大模型通常使用固定模态组合，忽视查询对模态的差异化需求，导致无关模态引入语义噪声且有效模态利用不足。本文提出SmartMage，一个统一的MLLM，根据查询动态编排视觉与几何等异构模态，实现语义感知的3D场景理解。该方法降低了计算浪费并提升了推理准确性。动态模态编排机制对鲁棒多模态学习具有借鉴意义，尤其在模态可靠性变化的场景中。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.08135v1",
+      "source": "arxiv",
+      "title": "Compositional Cross-Modality Translation via Whole-Volume Multitask Latent Flow Matching",
+      "abstract": "Cross-modality medical image translation can reduce the burden of multi-modal acquisitions, yet the field remains constrained by two coupled limitations: methods operate on 2D slices or 3D patches rather than whole volumes, and train a separate model for each translation task. Both stem from a single cause, the absence of a sufficiently strong volumetric prior, which forces generative models to learn anatomical appearance and cross-modality mapping simultaneously, an ill-posed problem at the scale of available paired datasets. We propose to decouple these objectives. A large-scale pretrained 3D variational autoencoder provides a compact latent representation of volumetric appearance, reducing translation to a conditional flow-matching problem. This compression makes whole-volume processing tractable, while a resolution-aware sampling strategy preserves native anatomical scale. We train a single model jointly across inter-modality (MRI$\\to$CT, CBCT$\\to$CT) and intra-modality (MRI$\\to$MRI) tasks over three multi-center datasets. Across all tasks, whole-volume processing outperforms its patch-based counterpart, and the multi-task model matches task-specific baselines while replacing $N$ networks with one. Crucially, joint training unlocks capabilities inaccessible to task-specific approaches: zero-shot generalization to anatomical regions unseen during training, within 0.15 SSIM of the fully supervised model, and compositional cross-dataset translation along paths never directly supervised. These results suggest that combining a strong volumetric prior with multitask training is a scalable route toward synthesis systems that generalize beyond their training distribution. Code is available at https://github.com/arco-group/Whole-Volume-Latent-FM.",
+      "authors": [
+        "Daniele Molino",
+        "Alessio Zoboli",
+        "Camillo Maria Caruso",
+        "Valerio Guarrasi",
+        "Paolo Soda"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-08T13:43:23+00:00",
+      "link": "https://arxiv.org/pdf/2608.08135v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Generative latent flow matching for cross-modality translation, applicable to missing modality imputation",
+      "llm_evidence_cn": "基于潜空间流匹配的跨模态生成式翻译，可用于缺失模态填补",
+      "llm_evidence": "基于潜空间流匹配的跨模态生成式翻译，可用于缺失模态填补",
+      "canonical_evidence": "基于潜空间流匹配的跨模态生成式翻译，可用于缺失模态填补",
+      "llm_tldr_en": "Compositional cross-modality translation using whole-volume multitask latent flow matching with a pretrained 3D VAE, decoupling appearance and mapping for scalable multimodal translation.",
+      "llm_tldr_cn": "该论文针对跨模态医学图像翻译受限于2D切片/3D块以及单任务模型的问题，提出利用大规模预训练3D变分自编码器提供体积先验，将翻译简化为条件流匹配。通过解耦解剖外观与跨模态映射，能够进行整卷多任务生成。该方法可扩展至缺失模态的生成填补，为鲁棒多模态学习提供了生成式思路。",
+      "llm_tldr": "该论文针对跨模态医学图像翻译受限于2D切片/3D块以及单任务模型的问题，提出利用大规模预训练3D变分自编码器提供体积先验，将翻译简化为条件流匹配。通过解耦解剖外观与跨模态映射，能够进行整卷多任务生成。该方法可扩展至缺失模态的生成填补，为鲁棒多模态学习提供了生成式思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
