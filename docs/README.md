@@ -6,51 +6,38 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-11
-- 运行时间：2026-08-11 21:33:54 UTC
+- 最新运行日期：2026-08-12
+- 运行时间：2026-08-12 21:19:51 UTC
 - 运行状态：成功
-- 本次总论文数：9
+- 本次总论文数：6
 - 精读区：5
-- 速读区：4
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读聚焦多模态情感识别与回归校准，9分论文引入冲突感知证据协商机制，8分论文用共形校准处理缺失模态。
-
-最值得关注的是多模态融合中的不确定性建模与证据协商，以及缺失模态下的可靠预测保障。
-
-下一步可顺藤摸瓜，对比这两篇方法的适用场景，并延伸浏览速读中的多模态关系抽取与3D场景理解工作。
-- 详情：[/202608/11/README](/202608/11/README)
+今日精读6篇论文，聚焦多模态情感分析中不完整数据的互信息解耦与不确定性融合，以及多模态序列推荐的模态随机丢弃方法。最值得关注的是满分论文《MIDAS》，其针对缺失模态的鲁棒建模思路直击现实痛点，推荐系统韧性研究同样亮眼。若想快速上手，可从模仿MIDAS的模态融合策略入手，验证其在不完整输入场景下的效果。
+- 详情：[/202608/12/README](/202608/12/README)
 
 ### 精读区论文标签
-1. [CONFER: Conflict-Aware Evidence Negotiation for Regime-Calibrated Weak Supervision in Multimodal Emotion Recognition](/202608/11/2608.07867v1-confer-conflict-aware-evidence-negotiation-for-regime-calibrated-weak-supervision-in-multimodal-emotion-recognition)  
+1. [MIDAS: Mutual Information Disentanglement with Uncertainty-Aware Fusion for Incomplete Multimodal Sentiment Analysis](/202608/12/2608.09986v1-midas-mutual-information-disentanglement-with-uncertainty-aware-fusion-for-incomplete-multimodal-sentiment-analysis)  
+   标签：评分：10.0/10、query:mm
+   evidence：直接处理不完整多模态情感分析，采用互信息解缠与不确定性感知融合
+2. [Sequential Modality Dropout for Robust Multi-Modal Sequential Recommendation](/202608/12/2608.10240v1-sequential-modality-dropout-for-robust-multi-modal-sequential-recommendation)  
    标签：评分：9.0/10、query:mm
-   evidence：直接面向多模态情感识别，用图基冲突感知弱监督处理不可靠自报告标签与跨模态冲突
-2. [Conformal Calibration for Multi-Modal Regression with Missing Modalities](/202608/11/2608.07795v1-conformal-calibration-for-multi-modal-regression-with-missing-modalities)  
+   evidence：通过训练时模态丢弃直接应对测试时模态缺失，与缺失模态鲁棒学习高度匹配
+3. [Rationale-Guided Learning for Multimodal Emotion Recognition](/202608/12/2608.10448v1-rationale-guided-learning-for-multimodal-emotion-recognition)  
+   标签：评分：9.0/10、query:mm
+   evidence：直接面向对话多模态情感识别，提出理由引导学习框架
+4. [E$^3$mo-Bench: A Scalable Benchmark for Multimodal Evoked and Expressed Emotion Understanding via Bayesian Pairwise Alignment](/202608/12/2608.10796v1-e3mo-bench-a-scalable-benchmark-for-multimodal-evoked-and-expressed-emotion-understanding-via-bayesian-pairwise-alignment)  
    标签：评分：8.0/10、query:mm
-   evidence：针对缺失模态下的多模态回归，提出模态感知保形校准
-3. [Multilingual Emotion Neurons in Large Audio-Language Models](/202608/11/2608.08772v1-multilingual-emotion-neurons-in-large-audio-language-models)  
+   evidence：多模态诱发与表达情感理解基准
+5. [FiGuRO: Intrinsic Dimension Estimation for Multi-Modal Data](/202608/12/2608.10857v1-figuro-intrinsic-dimension-estimation-for-multi-modal-data)  
    标签：评分：8.0/10、query:mm
-   evidence：研究多语言音频语言模型中的情感表征（神经元层面）
-4. [Closing the loop in learning with missing data](/202608/11/2608.09030v1-closing-the-loop-in-learning-with-missing-data)  
-   标签：评分：8.0/10、query:mm
-   evidence：提出面向缺失数据的通用学习框架，并在多模态情境下验证
-5. [Multimodal Federated Learning under Dual-Axis Modality Missingness](/202608/11/2608.09240v1-multimodal-federated-learning-under-dual-axis-modality-missingness)  
-   标签：评分：8.0/10、query:mm
-   evidence：显式处理多模态学习中客户端级与样本级双轴模态缺失
+   evidence：面向多模态数据的内在维度估计，支持共享与私有信息的解耦表示学习
 
 ### 速读区论文标签
-1. [Discriminative Axis, Not Data Volume: What a Contrastive Corpus Teaches an Audio Embedding](/202608/11/2608.01560v1-discriminative-axis-not-data-volume-what-a-contrastive-corpus-teaches-an-audio-embedding)  
-   标签：评分：6.0/10、query:mm
-   evidence：对语音情感识别多模态对比嵌入的经验分析
-2. [UG-UMRE: Uncertainty-Guided Modality Augmentation and Distributional Calibration for Unified Multimodal Relation Extraction](/202608/11/2608.04949v1-ug-umre-uncertainty-guided-modality-augmentation-and-distributional-calibration-for-unified-multimodal-relation-extraction)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过不确定性引导的模态增强与分布校准实现鲁棒多模态学习，但任务是关系抽取
-3. [SmartMage: Dynamic Modality Orchestration for 3D Scene Understanding](/202608/11/2608.05137v2-smartmage-dynamic-modality-orchestration-for-3d-scene-understanding)  
-   标签：评分：6.0/10、query:mm
-   evidence：动态编排模态以避免无关模态的语义噪声并利用信息量大的模态；适用于鲁棒多模态学习
-4. [Compositional Cross-Modality Translation via Whole-Volume Multitask Latent Flow Matching](/202608/11/2608.08135v1-compositional-cross-modality-translation-via-whole-volume-multitask-latent-flow-matching)  
-   标签：评分：6.0/10、query:mm
-   evidence：基于潜空间流匹配的跨模态生成式翻译，可用于缺失模态填补
+1. [SC-Diff: Semantically Calibrated Diffusion for Visible-to-Infrared Image Translation](/202608/12/2608.08555v1-sc-diff-semantically-calibrated-diffusion-for-visible-to-infrared-image-translation)  
+   标签：评分：7.0/10、query:mm
+   evidence：用扩散模型从可见图像生成缺失的红外模态，与缺失模态补全相关
 
 
 <div class="dpr-home-promo-card">
