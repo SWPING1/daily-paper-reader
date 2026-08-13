@@ -1,0 +1,391 @@
+Title: Watching Synthetic Videos: Aligning Cross-modal Representations with Visual Synthesis for Zero-shot Video Captioning
+
+URL Source: https://arxiv.org/pdf/2608.11013v1
+
+Published Time: Wed, 12 Aug 2026 01:15:24 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+> JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 1
+
+# Watching Synthetic Videos: Aligning Cross-modal Representations with Visual Synthesis for Zero-shot Video Captioning 
+
+Liangyu Fu ∗, Junbo Wang ∗, Yuke Li †, Ya Jing, Xuecheng Wu, Zhiyong Wang 
+
+Abstract —Text-only training is a popular paradigm in zero-shot video captioning, where the video distribution is not avail-able to the model during training, leading to a cross-modal gap between the training (text-only) and the inference (video-only). Previous works attempt to bridge the gap through simple linear transformations. However, the inherent gap between text and video makes cross-modal representation space alignment insufficient, resulting in inaccurate sentences. To address this issue, we propose a novel zero-shot video captioning framework (WSV) consisting of two training stages, which first generates corresponding synthetic video latent representations via a pre-trained text-to-video generation model. To strengthen the fidelity of the latent representations, we propose a polisher capable of bridging the gap between real and synthetic video distributions. Subsequently, we design a prompter that conditions GPT-2 on the polished latent representations to generate the captions in the second training stage. During inference, an input video is encoded by a pretrained 3D Causal VAE and then fed directly into the prompter, which in turn guides GPT-2 to produce the final caption. Experimental results conducted on MSVD, MSR-VTT, and VATEX datasets demonstrate that our proposed method achieves scores of 52 and 95.7 on the B@4 and CIDEr metrics, respectively. 
+
+Index Terms —Zero-shot video captioning, Vision and language, Generative model 
+
+I. I NTRODUCTION 
+
+# VIDEO captioning aims to describe the video in one sentence. Traditional methods rely on strict ‘video-text pairs’ for strongly supervised learning, which not only has extremely high requirements for the scale and quality of the data, but also make it difficult for the model to describe out-of-domain activities that have not appeared during the training process. Therefore, [1] proposed the zero-shot video caption-ing task to overcome the constraints of data and domain. The key to this task is to ensure that the model is effectively trained when out-of-domain data is not available. Previous works [2]–[7], including zero-shot image caption-ing, have generally adopted the text-only training paradigm, utilizing text data exclusively during training. These methods performed a series of processing or transformations on the text 
+
+† Corresponding author: Yuke Li. 
+
+∗ Both authors contributed equally to this work. Liangyu Fu, Junbo Wang, and Yuke Li are with the School of Soft-ware, Northwestern Polytechnical University, Xi’an 710129, China (e-mail: lyfu@mail.nwpu.edu.cn; jbwang@nwpu.edu.cn; liyuke@nwpu.edu.cn). Ya Jing is with the School of Information Science and Technol-ogy, Beijing University of Technology, Beijing 100124, China (email: jingya004@126.com). Xuecheng Wu is with the School of Computer Science and Technology, Xi’an Jiaotong University, Xi’an 710049, China (e-mail: wuxc3@stu.xjtu.edu.cn). Zhiyong Wang is with the School of Computer Science, The University of Sydney, NSW 2006, Australia (e-mail: zhiyong.wang@sydney.edu.au). Video 
+
+Video 
+
+Text 
+
+Text 
+
+(a) Previous Zero -shot Captioning Method 
+
+(b) Our WSV 
+
+Encoder 
+
+for 
+
+Training 
+
+Encoder 
+
+for 
+
+Inference 
+
+T2V 
+
+with 
+
+Polisher 
+
+Encoder 
+
+for 
+
+Inference 
+
+# : Modality Gap 
+
+Fig. 1. The comparison between (a) Previous Zero-shot Captioning Method and (b) Our WSV. ‘T2V’ denotes the text-to-video model. The t-SNE is calculated based on the representations of real videos and text. 
+
+data during training (such as MLP, Gaussian mapping, and Transformers) to make the latent representation obtained from the text conform as closely as possible to the visual distribution in latent space, allowing the text generation component to utilize the visual representations during inference directly. However, as shown in Fig. 1 (a), textual distribution and visual distribution are inherently very different. The latent representation obtained from text can not align well with the visual distribution in latent space via simple linear transfor-mation. This modality gap between vision and language leads to the loss/misalignment of semantic information (especially temporal semantic information) between training (text-only) and inference (video), preventing the subsequent text genera-tion component from receiving complete semantic information and ultimately affecting the quality of the textual descriptions. To address this issue, as shown in Fig. 1 (b), we propose a zero-shot video captioning method that enables model to 
+
+Watch Synthetic Videos (WSV) under the text-only training paradigm, thereby bridging the modality gap between training and inference. Specifically, during training, we follow the text-arXiv:2608.11013v1 [cs.CV] 11 Aug 2026 JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 2
+
+only training paradigm, and leverage the powerful capabilities of current text-to-video models to synthesis video latent rep-resentations from text corpus. To ensure the fidelity of the synthetic video latent representations, we design a distribution aligner that bridges the distribution of real and synthetic videos. Next, we design a prompter to make prompts based on the latent representations. Finally, to maintain consistency with previous work [6] settings and ensure the fairness of the evaluation, we use GPT-2 to generate the captions. During inference, we directly encode the video and input it into the prompter. GPT-2 then generates captions based on the prompts. The WSV align the modality and avoids the loss of visual semantics during training, thereby improving caption quality. In summary, our contributions are as follows:  
+
+> •
+
+We propose a novel zero-shot video captioning frame-work that leverages state-of-the-art text-to-video gen-eration models to synthesize visual content from text corpus, thereby bridging the modal gap between visual and textual latent representations and reducing the loss of semantic information.  
+
+> •
+
+We propose a distribution aligner that conforms the generated video content to the distribution of real-world videos, thus improving the quality of visual information.  
+
+> •
+
+We propose a prompter that makes high-quality prompts for the GPT-2 based on the visual representation.  
+
+> •
+
+Extensive experiments on MSVD, MSR-VTT and VA-TEX demonstrate that our method achieves state-of-the-art zero-shot video captioning performance, reaching 52 and 95.7 on the B@4 and CIDEr metrics, respectively. II. R ELATED WORK 
+
+A. Video Captioning 
+
+Video captioning aims to generate the textual description of a video in one sentence. Compared to image captioning, it needs to handle additional temporal and spatially complex information. Early work [8]–[13] focused on techniques for visual encoding and text decoding within an encoder-decoder framework. Since the emergence of Transformer [14], nu-merous research [15], [16] efforts have utilized it to study more advanced visual modeling and text generation, greatly improving model performance. Recently, works such as Video-LLaMA [17] and MA-LMM [18] have begun to utilize large language models (LLMs) as subtitle generators to describe video, fully leveraging the powerful generalization capabilities. 
+
+B. Zero-shot Image and Video Captioning 
+
+Zero-shot image captioning aims to address the domain gen-eralization limitation of models. Previous methods typically generated textual descriptions autoregressively according to an encoder-decoder architecture [19]–[21]. The encoder part was basically implemented by CLIP [22], and the decoder part was usually implemented by a Transformer-based language model. They calculate visual and text similarity once after each time step, which disrupts the coherence of the text and the overall semantic alignment between image and text. Furthermore, they still require data in the form of image-text pairs during training, which is quite difficult for zero-shot tasks. To address the issues, [2] and [23] proposed the text-only training paradigm that uses only text as training data during the training process. This overcomes the lack of data and promotes the overall semantic alignment of sentences with images. Subsequent methods [3]–[5] followed the text-only training paradigm, but the modality gap between vision and language remained unresolved. Meanwhile, these zero-shot methods are designed for image captioning. The approach of using pooled video frames for zero-shot video captioning has been proven to be ineffective. This often results in the loss of important information in the video, including temporal infor-mation, which seriously damages the quality of the generated captions. Similar to the challenges faced by image captioning, the video captioning methods described above rely on training with large-scale video-text pairs and lack the ability to gen-eralize to out domains. However, there is little research in zero-shot video captioning. [1] propose a principled Topic-Aware Mixture of Experts (TAMoE) model for zero-shot video captioning, which learns to compose different experts based on different topic embeddings, implicitly transferring the knowledge learned from seen activities to unseen ones. [6] propose a novel zero-shot video captioning framework named Retrieval-Enhanced Test-Time Adaptation (RETTA), which takes advantage of existing pre-trained large-scale vision and language models to directly generate captions with test-time adaptation. Due to the relatively strict limitations on the training data, the performance of these methods is generally poor. However, if the text-only training paradigm is applied to zero-shot video captioning to address the data demand, the modality gap between training and inference is a key issue that must be addressed. III. M ETHODOLOGY 
+
+To align the modality between training (text-only) and infer-ence (video), we propose a novel zero-shot video captioning framework that trains a video captioner by Watching Synthetic 
+
+Videos (WSV). The overall framework is illustrated in Fig. 2. Specifically, WSV is comprised of three distinct stages: (1) Visual Latent Synthesis and Polishing, (2) Captioner Training, and (3) Inference. In stage 1, we leverage a pre-trained Text-to-Video (T2V) model as a powerful generative prior, syn-thesizing visual latent representations directly from the text-only corpus. Furthermore, we designed a polisher implemented by a 3D convolutional neural network to improve the quality of the latent representations and reduce potential errors. In stage 2, our captioner is trained on these synthesis visual latent representations, ensuring the model learns from an inherently visual data distribution, thereby eliminating the modality gap in inference. For the inference, we replace the T2V model and polisher with the pre-trained video encoder from the T2V model, it encodes the video and inputs the latent representations to the prompter. Finally, GPT-2 generates the caption based on the prompts. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 3Training  Stage  1: A man  is  riding  a surfboard 
+
+through  a very  large  wave  and 
+
+he  bails  out .
+
+T2V  Model  (CogVideoX )
+
+Video  Polisher 
+
+Polished Latent Representation  𝑉 𝑝 
+
+> 3D Conv Block
+> LayerNorm
+> ReLu
+> 3D Conv Block
+> LayerNorm
+> ReLu
+
+⨁
+
+ℒ𝑐𝑜𝑛 
+
+> Text
+> Encoder
+> Visual
+> Encoder
+
+Visual Latent Representation  𝑉 𝑔 
+
+## Training  Stage  2:  
+
+> Polished Latent
+> Representation 𝑉
+> Cross -attention
+> Query
+> Key Value
+> Self -attention
+> Feed -forward
+> Network
+
+×4
+
+> Prompt
+
+Video  Polisher 
+
+Polished Latent Representation  𝑉 𝑝 
+
+Visual Latent Representation  𝑉 𝑔 
+
+Prompter 
+
+Language Model (GPT -2) 
+
+A man  is  riding  a surfboard 
+
+through  a very  large  wave  and 
+
+he  bails  out .
+
+3D 
+
+Causal 
+
+VAE 
+
+Prompter  GPT -2 A man  jumped  off  the  surfboard  while 
+
+surfing .
+
+## Inference : Trainable Module  Frozen  Module  
+
+> Fig. 2. The overall framework of WSV. Regular text denotes annotated textual descriptions from the corpus, while italic text denotes generated textual descriptions. The Text Encoder and Video Encoder in Training Stage 1 are pre-trained CLIP4Clip [24]. The 3D Causal VAE is the pre-trained video encoder from CogVideoX [25].
+
+A. Stage 1: Visual Latent Synthesis and Polishing 
+
+The key challenge of the text-only training paradigm lies in aligning the text distribution in the latent space with the visual distribution. Previous projection-based methods were insufficient to ensure that the text representation during training conformed to the visual distribution. Therefore, the visual distribution was invisible during training, leading to model unfamiliarity with it during inference—a phenomenon known as modality gap. With the development of text-to-video models, converting the text distribution to the visual distribution has become feasible. We leverage this advantage to enable the zero-shot model to learn the true visual distribution during training, thereby eliminating the modality gap. Specifically, given a large text-only corpus T = {ti}Ni=1 
+
+(e.g., from MSVD, MSR-VTT, and VATEX), we feed each caption ti into CogVideoX [25], GT 2V . Crucially, instead of decoding the full, pixel-space video, which is computationally prohibitive, we intercept the generation process to extract the final latent representation Vg ∈ RC×F ×H×W . This process can be expressed as: 
+
+V ig = GT 2V (ti). (1) This latent V ig is the output of the CogVideoX before it enters the final VAE decoder. It is a compact representation of the synthesized video, capturing rich spatio-temporal structure. This process results in a new pseudo-dataset DL =
+
+{(V ig , t i)}Ni=1 , where V ig serves as the generative visual surro-gate for the caption ti.As shown in Fig. 4, Due to the latent Vg from Stage 1 is synthesized by the CogVideoX, this distribution may not perfectly match the distribution of latents produced by the encoder of the same VAE when processing real videos. To mitigate this potential mismatch and refine the visual quality of our surrogates, we introduce a polisher Aϕ, parameterized by ϕ. It is a lightweight 3D Residual Convolutional Network that transforms Vg into an high-fidelity latent Vp, while strictly preserving its 4D spatio-temporal dimensions, the structure of polisher is shown in Fig. 2. This process can be expressed as: 
+
+V = Aϕ(Vg ). (2) To train the polisher, we introduce the contrastive objective. The role of Aϕ is to produce a latent Vp that, when decoded, is semantically aligned with the original source text ti. We feed the latent Vp through the CogVideoX’s VAE decoder (DV AE ) to get a pixel-space video ˆv. This video ˆv is then passed through a pre-trained, frozen video-text model (e.g., CLIP4Clip [24]’s video encoder, ECLIP V ) to obtain a visual embedding fv . The corresponding caption ti is encoded via the text encoder ECLIP T to get ft. The process can be expressed as: 
+
+fv = ECLIP V (DV AE (Vp)) , (3) 
+
+ft = ECLIP T (ti). (4) The polisher’s parameters ϕ (and those of the temporal modeler within ECLIP V ) are optimized using a symmet-ric cross-entropy loss Lcon over a batch of B pairs. Let JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 4
+
+s(fv , f t) = sim (fv , f t)/τ denote the scaled cosine similarity with a temperature τ :
+
+Lcon = − 12B
+
+> B
+
+X
+
+> i=1
+
+log exp( s(fv,i , f t,i )) 
+
+PBj=1 exp( s(fv,i , f t,j )) + log exp( s(ft,i , f v,i )) 
+
+PBj=1 exp( s(ft,i , f v,j )) 
+
+! (5) The video-text encoder (CLIP) is used only as a supervisory signal in this stage to ‘teach’ the polisher Aϕ how to produce semantically coherent latent videos. As shown in Fig. 5, compared to direct synthesis, the representations processed by the polisher have a better alignment with the real video representations. 
+
+B. Stage 2: Captioner Training 
+
+With the frozen, pre-trained polisher Aϕ in hand, we now train our primary video captioning model. This model consists of two components: a novel prompter Pθ , parameterized by 
+
+θ, and a pre-trained language model Lψ (e.g., GPT-2 [26]), parameterized by ψ. This stage operates without any CLIP encoders or VAE decoders. The entire pipeline is trained in the latent space. We use our pseudo-dataset DL again. For each pair (Vg , t i),the generative latent Vg is passed through the frozen polisher. Then the resulting high-fidelity latent Vp is fed into the prompter Pθ to produce prompt embeddings Pv , the overall process can be expressed as: 
+
+Pv = Pθ (Vp) (6) As illustrated in Fig. 2, the prompter Pθ is designed to map the 4D spatio-temporal latent Vp into a sequence of soft prompt embeddings. It first uses a 3D CNN to encode Vp into a 1D sequence of features Fv ∈ RL×DLM .
+
+Fv = Flatten (CNN 3D (Vp)) (7) These features (as Key and Value) are then fused with a set of learnable queries Qp (as Query) using a block which combines cross-attention and self-attention. 
+
+Pv = SelfAttn (CrossAttn (Qp, F v )) (8) The output is a fixed-length sequence of prompt embeddings 
+
+Pv ∈ RNp×DLM , where Np is the number of prompt tokens and DLM is the LM’s embedding dimension. These prompt embeddings Pv are prepended to the word embeddings Eti
+
+(from the LM’s embedding layer ELM ) of the ground-truth caption ti.
+
+Ein = [ Pv ; Eti ] = [ Pv ; ELM (ti)] (9) The full sequence Ein is fed into the LM Lψ . The model is trained to predict the next token in the caption ti using a standard auto-regressive cross-entropy loss: 
+
+LCE = −
+
+> |ti|
+
+X
+
+> j=1
+
+log P (ti,j |Ein,<j , ψ ) (10) During this stage, we update the parameters of both the prompter, θ, and the GPT-2, ψ, to minimize this loss: 
+
+θ∗, ψ ∗ = arg min  
+
+> θ,ψ
+
+LCE (11) 
+
+C. Inference 
+
+Given a real video vreal , we first pass it through the frozen VAE Encoder EV AE (from the CogVideoX) to obtain its real latent representation. The real latent Vg−real is then processed by the prompter The entire visual-to-prompt encoding can be expressed as: 
+
+Pv−real = Pθ (EV AE (vreal )) (12) LM Generation: The LM Lψ receives only the prompt embeddings Pv−real as input and auto-regressively generates the final caption token by token: 
+
+tcaption = Lgenerate  
+
+> ψ
+
+(Pv−real ) (13) By training our captioner on generated visual surrogates that have passed through the prompter, we ensure it is perfectly prepared to handle real visual latents from the VAE encoder at test time. This unified pipeline, trained on a synthetic visual domain, successfully bridges the modality gap. IV. E XPERIMENTS 
+
+A. Datasets 
+
+Following state-of-the-art zero-shot video captioning work, we conducted experiments on the MSR-VTT, MSVD, and VATEX datasets. MSR-VTT [33] contains 10,000 video clips covering 20 categories. Each clip has 20 English annotations. The standard split includes 6513 training videos, 497 validation videos, and 2990 test videos. MSVD [34] contains 1970 video clips. Each clip has roughly 40 ground-truth captions. The standard split includes 1200 training videos, 100 validation videos, and 670 test videos. VATEX [35] contains 34,991 videos with 10 English annotations. The standard split includes 25,910 training videos, 3000 validation videos, and 6000 test videos. For WSV, text from these three datasets was mixed to form the training text corpus. The experimental results were derived from the model’s cross-domain inference on the test sets of each dataset. 
+
+B. Metrics 
+
+We employ multiple standard metrics in video captioning tasks, including BLEU (B) [36], METEOR (M) [37], ROUGE-L (R) [38] and CIDEr (C) [39]. BLEU@4 measures n-gram precision and reflects whether the generated caption contains locally accurate phrase patterns. METEOR evaluates word-level matching with stronger consideration of recall, making it useful for measuring semantic adequacy. ROUGE-L focuses JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 5                                                                                                                                                                                             
+
+> TABLE I SUPERVISED AND ZERO -SHOT VIDEO CAPTIONING MODEL PERFORMANCE ON MSR-VTT, MSVD, AND VATEX DATASETS . -DENOTES THAT THE DATA IS NOT GIVEN IN THE CORRESPONDING LITERATURE . T HE BOLD NUMBER DENOTES THE BEST RESULTS AMONG ALL ZERO -SHOT METHODS .Method MSR-VTT MSVD VATEX B@4 MRCB@4 MRCB@4 MRC
+> Supervised
+> VNS-GRU [27] 45.3 29.9 63.4 53.0 66.5 42.1 79.7 121.5 ----SemSynAN [28] 46.4 30.4 64.7 51.9 64.4 41.9 79.5 111.5 ----HMN [15] 43.5 29.0 62.7 51.5 59.2 37.7 75.1 104.0 33.2 22.7 49.3 51.6
+> Zero-shot
+> ZeroCap [21] 2.3 12.9 30.4 5.8 2.9 16.3 35.4 9.6 ----MAGIC [20] 5.5 13.3 35.4 7.4 6.6 16.1 40.1 14.0 ----EPT [29] 3.0 14.6 27.7 11.3 3.0 17.8 31.4 17.4 ----Video-LLaMA [17] 4.9 16.8 25.3 2.3 4.0 15.1 21.6 1.3 4.3 16.3 21.8 3.8 ZS-CapCLIP [22] 4.0 15.0 31.0 5.0 --------MultiCapCLIP [30] 13.3 19.5 43.3 15.5 --------DeCap-COCO [2] 14.7 20.4 -18.6 ----13.1 15.3 -18.7 LLaVa [31] ---16.9 ----4.3 16.3 21.8 3.8 AuroraCap-7B [32] 21.0 23.9 49.5 33.1 ----18.4 19.0 40.8 33.8 RETTA [6] 14.0 19.3 42.2 24.3 23.3 28.5 56.4 49.8 11.4 16.3 32.6 23.8
+> WSV (Ours) 33.9 27.7 55.7 45.5 52 38.7 72.3 95.7 26.1 18.6 40.2 35.5
+
+GT: A man is riding a surfboard through a very large wave and he 
+
+bails out .
+
+RETTA: A man is  swimming  in the water. 
+
+WSV: A man  jumped off  the surfboard while surfing. 
+
+GT: a  judge  talks to the performer on the stage. 
+
+RETTA: A boy is playing the guitar on the stage. 
+
+WSV: A boy with guitar is talking to the  judge  on the stage. 
+
+GT: A former promoter talking about  boxing matches .
+
+RETTA: A person is discussing an  action .
+
+WSV: A man is talking about a  boxing match .
+
+(1 )
+
+(2)
+
+(3)
+
+> Fig. 3. Three case studies from the MSR-VTT dataset. Each sample contains textual descriptions from two video captioning models and one labeled description. Red indicates incorrect content, and green indicates content that matches the labeled caption.
+
+on the longest common subsequence between generated and reference captions, which reflects sentence-level structural consistency. CIDEr measures consensus with human anno-tations and is particularly important for captioning because it rewards visually specific and informative descriptions. We report all four metrics to provide a comprehensive evaluation of generation quality. 
+
+C. Implementation Details 
+
+For CogVideoX, we use the CogVideoX-5B model on Hugging Face. Following prior works [2], [4], [6], we choose the standard version of GPT-2 [26]. We optimize all trainable parameters with the AdamW [40] optimizer. We use distinct learning rates for the two stages: 1e-4 for Stage 1 and a smaller 2e-5 for Stage 2 (Prompter + GPT-2). We implement our framework with PyTorch 2.0.0. All experiments are conducted on 8 NVIDIA Tesla V100 GPUs. 
+
+D. Performance Comparison 
+
+Quantitative Analysis : As shown in Table I, we compare WSV with representative supervised and zero-shot video cap-tioning methods on MSR-VTT, MSVD, and VATEX. Although supervised models are trained with paired video-text data, WSV achieves highly competitive performance under the more challenging zero-shot setting. On MSR-VTT, WSV obtains 33.9 on B@4, 27.7 on METEOR, 55.7 on ROUGE-L, and 45.5 on CIDEr. These results are substantially higher than pre-vious zero-shot methods. Compared with the best previously reported zero-shot results on MSR-VTT, WSV improves B@4 from 21.0 to 33.9, METEOR from 23.9 to 27.7, ROUGE-L from 49.5 to 55.7, and CIDEr from 33.1 to 45.5. The 12.4-point gain on CIDEr indicates that WSV generates captions that better match human reference descriptions and contain more discriminative visual content. On MSVD, WSV reaches 52.0 on B@4, 38.7 on METEOR, 72.3 on ROUGE-L, and 95.7 on CIDEr. Compared with RETTA, which reports results on all three datasets, WSV JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 6                                                                     
+
+> TABLE II ABLATION STUDY FOR VIDEO CAPTIONING ON MSR-VTT, MSVD, AND VATEX DATASETS . T HE BOLD NUMBER DENOTES THE BEST RESULTS AMONG ALL METHODS .Method MSR-VTT MSVD VATEX B@4 MRCB@4 MRCB@4 MRCWSV 33.9 27.7 55.7 45.5 52.0 38.7 72.3 95.7 26.1 18.6 40.2 35.5
+> w/o Synthetic Visual 31 25.4 49.2 39 49.5 34.3 62.1 82.4 22.8 15.4 31.5 27
+> w/o Polisher 33.1 25.7 50.4 40.4 50.7 32.4 68.9 91.6 25 16.1 35.7 29.9
+> w/o Prompter 31.5 22.3 49.2 39.7 49.9 36.7 68.4 82.7 23.1 15.7 37.8 29.1
+
+improves B@4 by 28.7, METEOR by 10.2, ROUGE-L by 15.9, and CIDEr by 45.9. This large margin shows that the proposed synthetic visual training pipeline is especially effective on datasets with dense annotations, where the model must produce semantically precise and human-consistent de-scriptions. On VATEX, WSV obtains 26.1 on B@4, 18.6 on METEOR, 40.2 on ROUGE-L, and 35.5 on CIDEr. It achieves the highest B@4 and CIDEr among the listed zero-shot methods, improving the previous best scores by 7.7 and 1.7, respectively. These results demonstrate that WSV con-sistently narrows the modality gap between text-only training and real-video inference. Instead of relying only on text-space projection or test-time prompt optimization, WSV exposes the captioner to visual latent distributions during training, leading to stronger cross-dataset captioning performance. 
+
+Qualitative Analysis : We present three test samples of WSV and previous zero-shot methods on MSR-VTT, and the results are shown in Fig. 3. Specifically, the video se-mantics of Sample 1 mainly consist of ‘man, surfboard, and bails out. RETTA’s caption incorrectly interprets ‘surfing’ as ‘swimming’ and omits the element of ‘bails out’. On the other hand, WSV successfully understood all three key semantics. In Sample 2, ‘talking to the judge’ is a key semantic element in the video. RETTA only understood the boy and ignored the content related to the ‘judges’. In Sample 3, RETTA broadly interprets ‘boxing matches’ as ‘action movies’, while WSV accurately points out the key content of ‘boxing matches’ by combining the context. In general, sample 1 and 3 demonstrate WSV’s more accurate generation capability, while sample 2 demonstrates WSV’s more comprehensive understanding capability. 
+
+E. Ablation Study 
+
+To further analyze the contribution of each component, we conduct ablation experiments on the visual synthesis module, the polisher, the prompter, the number of CNN blocks in the polisher, the number of attention blocks in the prompter, and the CLIP encoder used for Stage 1 supervision. Unless other-wise stated, each ablation changes only the target component and keeps the remaining WSV configuration unchanged. 
+
+The Impact of Polisher. Table II shows the ablation experiment results for the polisher. ‘ w/o Polisher’ indicates that the polisher was not used in the Stage 1, and the synthesized video latent representation was directly input into the Prompter for the second stage training. The experimental results show that the polisher improves the quality of the video latent representation generated by the T2V model, and this quality 6 4 2 0 2 4 6 
+
+> x
+> 6
+> 4
+> 2
+> 0246
+> yReal Videos Synthetic Videos
+> Fig. 4. The t-SNE of the real video representation and the synthetic video representation from MSR-VTT [33]. Although these two distributions have achieved a certain degree of alignment, the visible distribution gap (e.g., real videos leaning upper-right vs. synthetic videos leaning lower-left) highlights the mismatch, which motivates the design of our Polisher module.
+
+improvement also affects the final text generation. Fig. 6 shows the changes in the video before and after the Polisher processing. Before the processing, the objects in the video lacked a sense of reality. After the processing, the contours and details of the objects became clearer and more realistic. Furthermore, Fig. 4 and Fig. 5 illustrate the changes in the distribution alignment between the real and synthetic video representations. We can observe that, compared to before Polisher processing (Fig. 4), the distribution of the synthetic video representation after Polisher processing (Fig. 5) has a higher alignment with the real video representation. 
+
+The Impact of Synthetic Visual. Table II presents the ablation experiment results for synthetic visual content. ‘ w/o 
+
+Synthetic Visual’ indicates that the T2V model in WSV was replaced with the CLIP text encoder, without using Polisher. The Prompter was used during the Stage 2 training, and the CLIP video encoder was used during inference. Experimental results show that synthetic visual content significantly en-hances the performance of zero-shot video captioning through modality alignment in the latent space, demonstrating im-proved quality across multiple metrics on all three datasets. 
+
+The Impact of Prompter. Table II shows the ablation experiment results for the Prompter. ‘ w/o Prompter’ indicates that the same configuration as WSV was maintained in the first JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 74 2 0 2 4    
+
+> x
+> 4
+> 2
+> 024
+> yReal Videos Synthetic Videos
+> Fig. 5. The t-SNE of the real video representation and the synthetic video representation optimized by polisher from MSR-VTT [33]. Video Before Polisher
+> Video After Polisher
+> Fig. 6. Comparison of a video sample before and after the Polisher.
+
+training phase, but the Prompter was not used in the second training phase; instead, the latent representation produced in the first phase was directly input into GPT-2 as a cue. The experimental results show that the Prompter is necessary for improving the quality of text generation, effectively helping GPT-2 to better understand the latent representation. 
+
+The Impact of the Number of CNN Blocks in Polisher. 
+
+Table III shows the impact of CNN blocks’ number in the pol-isher on the final generated quality. Each CNN block contains a 3D CNN block, a layernorm, and a ReLu. Experimental results show that WSV achieves significantly better results when the number of CNN blocks is 2. As the number of CNN blocks increases, the final generated quality of the model tends to decrease. Therefore, we use a configuration of 2 CNN blocks in the polisher. 
+
+The Impact of the Number of Attention Block. Table IV shows the impact of the number of attention blocks in the prompter on the final generation performance of the model. Each attention block contains a cross-attention layer, a self-attention layer, and a feed-forward network. Experimental re-sults show that WSV achieves significantly better results when                                          
+
+> TABLE III ABLATION STUDY OF THE CNN BLOCK ’S NUMBER FOR VIDEO CAPTIONING ON MSR-VTT D ATASETS . T HE BOLD NUMBER DENOTES THE BEST RESULTS AMONG ALL METHODS .Num. of CNN Blocks MSR-VTT B@4 MRC133 22.6 51.1 42.2 233.9 27.7 55.7 45.5
+> 333.4 25.8 55.1 39 431 21.5 52.3 40.7 TABLE IV ABLATION STUDY OF THE ATTENTION BLOCK ’S NUMBER FOR VIDEO CAPTIONING ON MSR-VTT D ATASETS . T HE BOLD NUMBER DENOTES THE BEST RESULTS AMONG ALL METHODS .Num. of Attention Blocks MSR-VTT B@4 MRC128.2 18.7 40.5 30.0 433.9 27.7 55.7 45.5
+> 833.9 28.2 55.5 40.3
+
+the number of blocks is 4 or 8. Considering computational costs, we chose to deploy 4 attention blocks in the prompter. 
+
+The Impact of the CLIP Encoder. To investigate the impact of the CLIP encoder on model performance during training stage I, we conducted ablation experiments as shown in Table V. We used two CLIP encoders capable of encoding video representations: XCLIP [41] and CLIP4Clip [24]. The two groups maintained the same configuration except for the CLIP encoder used in the training stage I. Experimental results show that the performance achieved by the two different en-coders is essentially the same, demonstrating that the choice of CLIP encoder does not significantly affect model performance. 
+
+The Impact of Language Model’s Status. Table VI inves-tigates whether the language model should remain frozen or be fine-tuned during the captioner training stage. When GPT-2 is frozen, the prompter must project all visual information into a fixed language embedding space. This setting preserves the original language prior of GPT-2, but it also restricts the model’s ability to adapt to the distribution of prompts produced from synthetic visual latents. As a result, the frozen setting obtains 31.5 on B@4, 24.9 on METEOR, 53.4 on ROUGE-L, and 41.8 on CIDEr. Fine-tuning the language model consistently improves all four metrics. Compared with the frozen setting, the fine-tuned model improves B@4 from 31.5 to 33.9, METEOR from 24.9 to 27.7, ROUGE-L from 53.4 to 55.7, and CIDEr from 41.8 to 45.5. The gains are especially clear on METEOR and CIDEr, with absolute improvements of 2.8 and 3.7, respectively. This indicates that the language model needs to adapt not only to the textual style of the target captions, but also to the soft prompt distribution generated by the prompter. In WSV, the input received by GPT-2 is no longer a conventional discrete text prefix, but a sequence of visual prompt embeddings derived from polished video latents. Therefore, updating GPT-2 helps the decoder better interpret these prompts and convert them into more accurate captions. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 8                               
+
+> TABLE V ABLATION STUDY ON CLIP E NCODER FOR ZERO -SHOT VIDEO CAPTIONING ON MSR-VTT D ATASETS . T HE BOLD NUMBER DENOTES THE BEST RESULTS AMONG ALL METHODS .Method MSR-VTT B@4 MRCCLIP4clip 33.9 27.7 55.7 45.5 XCLIP 33.2 28 54.9 47.4
+> TABLE VI ABLATION STUDY OF LANGUAGE MODEL ’SSTATUS ON MSR-VTT DATASET
+> Method MSR-VTT B@4 MRCFrozen 31.5 24.9 53.4 41.8 Fine-tune 33.9 27.7 55.7 45.5
+
+The improvement on CIDEr further suggests that fine-tuning strengthens the generation of content words that are more consistent with human annotations, while the gains on B@4 and ROUGE-L show better n-gram precision and sentence-level overlap. These results demonstrate that the language model is not merely a passive text generator in WSV. Instead, it is an important part of the visual-to-language alignment process. Therefore, we fine-tune GPT-2 together with the prompter in the final configuration. 
+
+The Impact of Different T2V Model. Table VII compares the effect of using different text-to-video models for visual latent synthesis. Since the T2V model provides the synthetic visual distribution used in the first training stage, its gener-ated latent quality directly affects the subsequent polisher, prompter, and language model. The results show that both Wan2.2-T2V [42] and CogVideoX can provide effective syn-thetic visual representations for WSV. Wan2.2-T2V achieves 33.6 on B@4, 27.9 on METEOR, 56.0 on ROUGE-L, and 44.8 on CIDEr, while CogVideoX achieves 33.9, 27.7, 55.7, and 45.5 on the same metrics. The two T2V models show very close overall performance, but their advantages appear on different metrics. Wan2.2-T2V obtains slightly higher METEOR and ROUGE-L scores, ex-ceeding CogVideoX by 0.2 and 0.3, respectively. This suggests that the captions generated from Wan2.2-T2V latents have competitive word-level semantic matching and sentence-level overlap. In contrast, CogVideoX achieves the best B@4 and CIDEr scores, with gains of 0.3 and 0.7 over Wan2.2-T2V. Since CIDEr is highly related to the consistency between gen-erated captions and human reference descriptions, the higher CIDEr score indicates that CogVideoX provides visual latents that are slightly more favorable for generating discriminative and reference-consistent descriptions. These results demonstrate that WSV is not tied to a single T2V backbone. As long as the T2V model can synthesize semantically meaningful and temporally coherent latent rep-resentations, the proposed framework can use them as visual surrogates for text-only training. At the same time, the small but consistent advantage of CogVideoX on B@4 and CIDEr                                 
+
+> TABLE VII ABLATION STUDY OF POLISHER STRUCTURE ON MSR-VTT D ATASET
+> Method MSR-VTT B@4 MRCWan2.2-T2V 33.6 27.9 56.0 44.8 CogVideoX 33.9 27.7 55.7 45.5
+> TABLE VIII ABLATION STUDY OF POLISHER STRUCTURE ON MSR-VTT D ATASET
+> Method MSR-VTT B@4 MRCTransformer 32.2 27.0 54.7 42.9 3D CNN 33.9 27.7 55.7 45.5
+
+shows that the compatibility between the generated latent space, the VAE encoder used at inference, and the polisher re-mains important. Therefore, we use CogVideoX as the default T2V model in WSV, while the comparison with Wan2.2-T2V further verifies the generality of the proposed visual synthesis strategy. 
+
+The Impact of Polisher Structure. Table VIII studies the influence of different polisher architectures. The polisher is responsible for refining synthetic video latents and reducing the distribution mismatch between generated videos and real videos. Therefore, its structure should preserve spatio-temporal information while correcting local artifacts in the synthesized latent representation. We compare a Transformer-based pol-isher with the 3D CNN structure used in WSV. The 3D CNN polisher achieves better results on all metrics. Compared with the Transformer structure, it improves B@4 from 32.2 to 33.9, METEOR from 27.0 to 27.7, ROUGE-L from 54.7 to 55.7, and CIDEr from 42.9 to 45.5. The improvement of 2.6 on CIDEr is the most significant, indi-cating that the 3D CNN structure produces refined latents that help the captioner generate more informative and reference-consistent descriptions. The gains on B@4, METEOR, and ROUGE-L further show that the improvement is not limited to a single metric, but appears across lexical precision, semantic matching, and sentence-level overlap. The superiority of the 3D CNN structure is consistent with the role of the polisher in WSV. The synthetic latent representation has a natural spatio-temporal organization, and 3D convolution can directly model local correlations across channels, frames, height, and width. This inductive bias is well suited for removing local noise and enhancing motion-related visual patterns while preserving the original latent layout. By contrast, a Transformer-based structure usually needs to flatten or tokenize the latent representation, which may weaken local continuity and make the refinement process less stable for dense video latents. Therefore, the 3D CNN polisher provides a more appropriate structure for latent-level video refinement, and we adopt it as the final polisher architecture. JOURNAL OF L ATEX CLASS FILES, VOL. 14, NO. 8, AUGUST 2021 9
+
+V. C ONCLUSION 
+
+In this paper, we propose WSV to address the modality gap between training (text-only) and inference (video) in zero-shot video captioning. Previous methods align modalities using simple linear transformations in the latent space, resulting in insufficient alignment and a persistent, non-negligible gap between modalities. In contrast, we propose using a state-of-the-art text-to-video generation model and a polisher during training to conform text representations to a fundamental vi-sual distribution directly, making the video distribution visible during training, thus fundamentally addressing the modality gap between vision and language. Furthermore, we propose a prompter to generate prompts for GPT-2 based on the visual latent representation, and finally utilize GPT-2 to generate the caption. Extensive experiments on MSVD, MSR-VTT and VATEX demonstrate that our method achieves excellent zero-shot video captioning performance. Future work will explore more powerful generation models and lightweight versions to enhance efficiency. REFERENCES [1] X. Wang, J. Wu, D. Zhang, Y. Su, and W. Y. Wang, “Learning to compose topic-aware mixture of experts for zero-shot video captioning,” in AAAI , vol. 33, no. 01, 2019, pp. 8965–8972. [2] W. Li, L. Zhu, L. Wen, and Y. Yang, “Decap: Decoding clip la-tents for zero-shot captioning via text-only training,” arXiv preprint arXiv:2303.03032 , 2023. [3] Y. Zhang, E. Sui, and S. Yeung-Levy, “Connect, collapse, corrupt: Learning cross-modal tasks with uni-modal data,” arXiv preprint arXiv:2401.08567 , 2024. [4] S. Lee, S.-W. Kim, T. Kim, and D.-J. Kim, “Ifcap: Image-like retrieval and frequency-based entity filtering for zero-shot captioning,” arXiv preprint arXiv:2409.18046 , 2024. [5] Z. Liu, J. Liu, and F. Ma, “Improving cross-modal alignment with synthetic pairs for text-only image captioning,” in AAAI , vol. 38, no. 4, 2024, pp. 3864–3872. [6] Y. Ma, L. Qing, G. Li, Y. Qi, A. Beheshti, Q. Z. Sheng, and Q. Huang, “Retta: Retrieval-enhanced test-time adaptation for zero-shot video cap-tioning,” PR , p. 112170, 2025. [7] D. Nukrai, R. Mokady, and A. Globerson, “Text-only training for image captioning using noise-injected CLIP,” in EMNLP . Association for Computational Linguistics, 2022, pp. 4055–4063. [8] S. Venugopalan, M. Rohrbach, J. Donahue, R. Mooney, T. Darrell, and K. Saenko, “Sequence to sequence-video to text,” in ICCV , 2015, pp. 4534–4542. [9] Y. Bin, Y. Yang, F. Shen, X. Xu, and H. T. Shen, “Bidirectional long-short term memory for video description,” in ACM MM , 2016, pp. 436– 440. [10] P. Li, P. Zhang, and X. Xu, “Graph convolutional network meta-learning with multi-granularity pos guidance for video captioning,” 
+
+Neurocomputing , vol. 472, pp. 294–305, 2022. [11] L. Yao, A. Torabi, K. Cho, N. Ballas, C. Pal, H. Larochelle, and A. Courville, “Describing videos by exploiting temporal structure,” in 
+
+ICCV , 2015, pp. 4507–4515. [12] Y. Liang, L. Zhu, X. Wang, and Y. Yang, “Icocap: Improving video captioning by compounding images,” IEEE TMM , vol. 26, pp. 4389– 4400, 2024. [13] S. Jing, H. Zhang, P. Zeng, L. Gao, J. Song, and H. T. Shen, “Memory-based augmentation network for video captioning,” IEEE Transactions on Multimedia , vol. 26, pp. 2367–2379, 2024. [14] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin, “Attention is all you need,” NIPS , vol. 30, 2017. [15] H. Ye, G. Li, Y. Qi, S. Wang, Q. Huang, and M.-H. Yang, “Hierarchical modular network for video captioning,” in CVPR , 2022, pp. 17 939– 17 948. [16] K. Lin, L. Li, C.-C. Lin, F. Ahmed, Z. Gan, Z. Liu, Y. Lu, and L. Wang, “Swinbert: End-to-end transformers with sparse attention for video captioning,” in CVPR , 2022, pp. 17 949–17 958. [17] H. Zhang, X. Li, and L. Bing, “Video-llama: An instruction-tuned audio-visual language model for video understanding,” arXiv preprint arXiv:2306.02858 , 2023. [18] B. He, H. Li, Y. K. Jang, M. Jia, X. Cao, A. Shah, A. Shrivastava, and S.-N. Lim, “Ma-lmm: Memory-augmented large multimodal model for long-term video understanding,” in CVPR , 2024, pp. 13 504–13 514. [19] D. Nukrai, R. Mokady, and A. Globerson, “Text-only training for image captioning using noise-injected clip,” arXiv preprint arXiv:2211.00575 ,2022. [20] Y. Su, T. Lan, Y. Liu, F. Liu, D. Yogatama, Y. Wang, L. Kong, and N. Collier, “Language models can see: Plugging visual controls in text generation,” arXiv preprint arXiv:2205.02655 , 2022. [21] Y. Tewel, Y. Shalev, I. Schwartz, and L. Wolf, “Zerocap: Zero-shot image-to-text generation for visual-semantic arithmetic,” in CVPR , 2022, pp. 17 918–17 928. [22] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark et al. , “Learning transferable visual models from natural language supervision,” in ICML . PmLR, 2021, pp. 8748–8763. [23] J. Wang, M. Yan, Y. Zhang, and J. Sang, “From association to genera-tion: Text-only captioning by unsupervised cross-modal mapping,” arXiv preprint arXiv:2304.13273 , 2023. [24] H. Luo, L. Ji, M. Zhong, Y. Chen, W. Lei, N. Duan, and T. Li, “Clip4clip: An empirical study of clip for end to end video clip retrieval and captioning,” Neurocomputing , vol. 508, pp. 293–304, 2022. [25] Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng et al. , “Cogvideox: Text-to-video diffusion models with an expert transformer,” arXiv preprint arXiv:2408.06072 ,2024. [26] A. Radford, J. Wu, R. Child, D. Luan, D. Amodei, I. Sutskever et al. ,“Language models are unsupervised multitask learners,” OpenAI blog ,vol. 1, no. 8, p. 9, 2019. [27] H. Chen, J. Li, and X. Hu, “Delving deeper into the decoder for video captioning,” arXiv preprint arXiv:2001.05614 , 2020. [28] J. Perez-Martin, B. Bustos, and J. P´ erez, “Improving video captioning with temporal composition of a visual-syntactic embedding,” in Proceed-ings of the IEEE/CVF winter conference on applications of computer vision , 2021, pp. 3039–3049. [29] Y. Tewel, Y. Shalev, R. Nadler, I. Schwartz, and L. Wolf, “Zero-shot video captioning with evolving pseudo-tokens,” arXiv preprint arXiv:2207.11100 , 2022. [30] B. Yang, F. Liu, X. Wu, Y. Wang, X. Sun, and Y. Zou, “MultiCapCLIP: Auto-encoding prompts for zero-shot multilingual visual captioning,” in 
+
+ACL , Jul. 2023, pp. 11 908–11 922. [31] H. Liu, C. Li, Q. Wu, and Y. J. Lee, “Visual instruction tuning,” NIPS ,vol. 36, pp. 34 892–34 916, 2023. [32] W. Chai, E. Song, Y. Du, C. Meng, V. Madhavan, O. Bar-Tal, J.-N. Hwang, S. Xie, and C. D. Manning, “Auroracap: Efficient, perfor-mant video detailed captioning and a new benchmark,” arXiv preprint arXiv:2410.03051 , 2024. [33] J. Xu, T. Mei, T. Yao, and Y. Rui, “Msr-vtt: A large video description dataset for bridging video and language,” in CVPR , 2016, pp. 5288– 5296. [34] D. Chen and W. B. Dolan, “Collecting highly parallel data for paraphrase evaluation,” in ACL , 2011, pp. 190–200. [35] X. Wang, J. Wu, J. Chen, L. Li, Y.-F. Wang, and W. Y. Wang, “Vatex: A large-scale, high-quality multilingual dataset for video-and-language research,” in ICCV , 2019, pp. 4581–4591. [36] K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “Bleu: a method for automatic evaluation of machine translation,” in ACL , 2002, pp. 311– 318. [37] M. Denkowski and A. Lavie, “Meteor universal: Language specific translation evaluation for any target language,” in Proceedings of the ninth workshop on statistical machine translation , 2014, pp. 376–380. [38] C.-Y. Lin, “Rouge: A package for automatic evaluation of summaries,” in Text summarization branches out , 2004, pp. 74–81. [39] R. Vedantam, C. Lawrence Zitnick, and D. Parikh, “Cider: Consensus-based image description evaluation,” in CVPR , 2015, pp. 4566–4575. [40] I. Loshchilov and F. Hutter, “Decoupled weight decay regularization,” 
+
+arXiv preprint arXiv:1711.05101 , 2017. [41] B. Ni, H. Peng, M. Chen, S. Zhang, G. Meng, J. Fu, S. Xiang, and H. Ling, “Expanding language-image pretrained models for general video recognition,” in ECCV . Springer, 2022, pp. 1–18. [42] T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C.-W. Xie, D. Chen, F. Yu, H. Zhao, J. Yang et al. , “Wan: Open and advanced large-scale video generative models,” arXiv preprint arXiv:2503.20314 , 2025.

@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-13",
+  "date": "2026-08-13",
+  "generated_at": "2026-08-13T21:12:29",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/13/2608.11013v1-watching-synthetic-videos-aligning-cross-modal-representations-with-visual-synthesis-for-zero-shot-video-captioning",
+      "section": "quick",
+      "title_en": "Watching Synthetic Videos: Aligning Cross-modal Representations with Visual Synthesis for Zero-shot Video Captioning",
+      "authors": "Liangyu Fu, Junbo Wang, Yuke Li, Ya Jing, Xuecheng Wu, Zhiyong Wang",
+      "date": "2026-08-11",
+      "pdf": "https://arxiv.org/pdf/2608.11013v1",
+      "score": "6.0",
+      "evidence": "利用文本到视频生成模型合成视频潜在表示，补偿仅文本训练时缺失的视频模态，是可迁移的生成式补全策略。",
+      "tldr": "零样本视频字幕因训练缺视频，跨模态差距大，线性对齐不足。本文提出WSV框架，先由文本到视频生成合成潜在表示，经抛光器增强保真，再用提示器引导GPT-2生成字幕。在MSVD、MSR-VTT、VATEX上，B@4达52，CIDEr达95.7，超先前方法。该框架缩小跨模态差距，提供可靠特征，提升生成准确性。",
+      "tags": "query:mm",
+      "abstract_en": "Text-only training is a popular paradigm in zero-shot video captioning, where the video distribution is not available to the model during training, leading to a cross-modal gap between the training (text-only) and the inference (video-only). Previous works attempt to bridge the gap through simple linear transformations. However, the inherent gap between text and video makes cross-modal representation space alignment insufficient, resulting in inaccurate sentences. To address this issue, we propose a novel zero-shot video captioning framework (WSV) consisting of two training stages, which first generates corresponding synthetic video latent representations via a pretrained text-to-video generation model. To strengthen the fidelity of the latent representations, we propose a polisher capable of bridging the gap between real and synthetic video distributions. Subsequently, we design a prompter that conditions GPT-2 on the polished latent representations to generate the captions in the second training stage. During inference, an input video is encoded by a pretrained 3D Causal VAE and then fed directly into the prompter, which in turn guides GPT-2 to produce the final caption. Experimental results conducted on MSVD, MSR-VTT, and VATEX datasets demonstrate that our proposed method achieves scores of 52 and 95.7 on the B@4 and CIDEr metrics, respectively.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
