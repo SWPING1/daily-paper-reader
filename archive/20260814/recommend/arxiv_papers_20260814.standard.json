@@ -1,0 +1,172 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-14T19:58:33.278807+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.05683v1",
+      "source": "arxiv",
+      "title": "DistMedVL: Distributional Vision-Language Alignment for Uncertainty-Aware Medical Image Segmentation",
+      "abstract": "Cross-modal alignment of visual and textual representations is fundamental to multimodal medical image understanding, yet remains hindered by uncertainty in both modalities under real-world clinical conditions. Existing vision-language segmentation methods rely on deterministic cross-modal matching, which overlooks aleatoric uncertainty from ambiguous boundaries and epistemic uncertainty from limited training data, leading to fragile performance under domain shift. To address this issue, we propose DistMedVL, a probabilistic vision-language framework that introduces a lightweight Probabilistic Cross-Modal Adapter (PCM-Adapter) upon frozen encoders to explicitly model representational uncertainty. Specifically, the PCM-Adapter comprises two sequential modules for progressive probabilistic alignment. We first devise a Mahalanobis Alignment Module (MAM) that models textual tokens as Gaussian distributions and computes patch-text compatibility via Mahalanobis distance, yielding variance-conditioned matching that downweights unreliable feature dimensions. Moreover, we devise a Distribution Flow Module (DFM) that estimates modality-wise confidence parameters and performs vision-guided refinement of textual distributions, accommodating distributional variation across imaging modalities. Extensive experiments across eight medical segmentation benchmarks demonstrate that DistMedVL outperforms state-of-the-art methods with only 6.3M trainable parameters, exhibiting superior data efficiency, perturbation robustness and cross-dataset generalization.",
+      "authors": [
+        "Jiaxuan Li",
+        "Qing Xu",
+        "Xiangjian He",
+        "Yue Li",
+        "Daokun Zhang",
+        "Fiseha B. Tesema",
+        "Rong Qu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.MM"
+      ],
+      "published": "2026-08-06T07:17:14+00:00",
+      "link": "https://arxiv.org/pdf/2608.05683v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "robust vision-language alignment via uncertainty modeling; transferable to robust multimodal learning",
+      "llm_evidence_cn": "通过不确定性建模实现鲁棒的视觉-语言对齐，可迁移至鲁棒多模态学习",
+      "llm_evidence": "通过不确定性建模实现鲁棒的视觉-语言对齐，可迁移至鲁棒多模态学习",
+      "canonical_evidence": "通过不确定性建模实现鲁棒的视觉-语言对齐，可迁移至鲁棒多模态学习",
+      "llm_tldr_en": "DistMedVL introduces a probabilistic cross-modal adapter to model representational uncertainty in vision-language medical segmentation, improving robustness under domain shift and uncertainty awareness.",
+      "llm_tldr_cn": "针对医学图像分割中视觉-语言跨模态匹配忽视不确定性问题，本文提出DistMedVL概率框架，在冻结编码器上引入轻量概率跨模态适配器显式建模表征不确定性。实验表明该方法改善了不确定性感知能力，并在领域偏移下更具鲁棒性。该工作为鲁棒多模态医学图像理解提供了分布对齐的新思路。",
+      "llm_tldr": "针对医学图像分割中视觉-语言跨模态匹配忽视不确定性问题，本文提出DistMedVL概率框架，在冻结编码器上引入轻量概率跨模态适配器显式建模表征不确定性。实验表明该方法改善了不确定性感知能力，并在领域偏移下更具鲁棒性。该工作为鲁棒多模态医学图像理解提供了分布对齐的新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.06231v1",
+      "source": "arxiv",
+      "title": "EmoWorld: A Decoupled Affective Field for Controllable Emotional Video Generation",
+      "abstract": "Emotion shapes how viewers interpret a scene, yet existing video generators entangle global atmosphere, affect-bearing semantic cues, and temporal progression within a single text condition. We present EmoWorld, a framework that decouples these factors within a frozen flow-matching video diffusion transformer (Video DiT). A one-time preparation stage extracts layer-specific affect directions and a reusable cue library from geometry-preserving neutral and emotion-edited panoramas. At inference, Visual Atmosphere Steering (VAS) injects atmosphere directions into hidden states, Semantic Affective Steering (SAS) isolates a separately scalable prompt residual for semantic cues, and Temporal Affective Steering (TAS) interpolates endpoint residual fields across denoising and video time. On Wan2.2, VAS improves target-emotion alignment by 19% while reducing a temporal-fluctuation proxy by 48%; SAS improves target-emotion alignment by 37% and increases detected affect-bearing cues by 36%; and TAS improves transition monotonicity by 15% over the strongest baseline. EmoWorld is evaluated across 27 emotion categories in text-to-video and image-to-video settings, demonstrates portability across multiple Video-DiT backbones, and supports camera-conditioned composition without updating generator parameters.",
+      "authors": [
+        "Bingyuan Wang",
+        "Baistan Zhyldyzbekov",
+        "Kunyu Feng",
+        "Zeyu Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-06T16:20:23+00:00",
+      "link": "https://arxiv.org/pdf/2608.06231v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decouples atmosphere, affect semantics and temporal progression in an affective field; relevant to disentangled representation for emotion-related generation",
+      "llm_evidence_cn": "在情感场中解耦氛围、情感语义与时间进程，涉及解耦表示与情感相关生成",
+      "llm_evidence": "在情感场中解耦氛围、情感语义与时间进程，涉及解耦表示与情感相关生成",
+      "canonical_evidence": "在情感场中解耦氛围、情感语义与时间进程，涉及解耦表示与情感相关生成",
+      "llm_tldr_en": "Existing video generators entangle atmosphere, affective cues and temporal progression; EmoWorld decouples them in a frozen video diffusion transformer via visual, semantic and temporal steering, enabling controllable emotional video generation.",
+      "llm_tldr_cn": "针对现有视频生成器将全局氛围、情感语义与时间进程捆绑在单一文本条件中的问题，EmoWorld在冻结的视频扩散Transformer中解耦这些因素。它通过视觉氛围引导、语义情感引导和时间情感引导分别注入不同层级的控制信号。实验表明该方法能实现更可控的情感化视频生成，为情感计算中的解耦表示提供了新思路。",
+      "llm_tldr": "针对现有视频生成器将全局氛围、情感语义与时间进程捆绑在单一文本条件中的问题，EmoWorld在冻结的视频扩散Transformer中解耦这些因素。它通过视觉氛围引导、语义情感引导和时间情感引导分别注入不同层级的控制信号。实验表明该方法能实现更可控的情感化视频生成，为情感计算中的解耦表示提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.08702v1",
+      "source": "arxiv",
+      "title": "SRE-FER: Regional residual evidence learning for mitigating local evidence dilution in fine-grained facial expression recognition",
+      "abstract": "Fine-grained facial expression recognition (FER) hinges on capturing subtle muscular cues that distinguish adjacent emotions. Yet capturing these cues presents a dilemma. Detector-based methods depend on fragile landmark pipelines, whereas we find that directly transferring foundation models such as DINOv3 under conventional global readouts can cause local evidence dilution: early global aggregation washes out sparse muscular signals and leaves persistent confusion between categories such as fear/surprise and sad/neutral. To recover this evidence, we propose SRE-FER, a readout-level regional residual evidence learning framework. Its core module, RERA, adds zero-initialized residual logits that refine class boundaries while preserving the backbone's global prediction. Training-time action unit (AU) guidance steers regional features toward expression-relevant areas using Facial Action Coding System (FACS)-based anatomical priors, without requiring an external facial pipeline at inference. An optional Full setting further routes sample-specific non-redundant tokens. On three benchmarks, SRE-FER attains 92.76% on RAF-DB, 91.32% on FERPlus, and 67.78% on AffectNet-7, demonstrating highly competitive performance compared to existing FER methods.",
+      "authors": [
+        "Jiaye Song",
+        "Ruochen Zhang",
+        "Yuliang Wang",
+        "Jiaqi Wu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-09T13:33:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.08702v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "fine-grained facial expression recognition; transferable regional residual evidence learning useful for multimodal emotion recognition",
+      "llm_evidence_cn": "细粒度面部表情识别，区域残差证据学习可迁移至多模态情感识别",
+      "llm_evidence": "细粒度面部表情识别，区域残差证据学习可迁移至多模态情感识别",
+      "canonical_evidence": "细粒度面部表情识别，区域残差证据学习可迁移至多模态情感识别",
+      "llm_tldr_en": "Fine-grained facial expression recognition suffers local evidence dilution when using foundation models with global readouts; SRE-FER uses zero-initialized regional residual logits to recover subtle muscular evidence for confusable emotions.",
+      "llm_tldr_cn": "针对细粒度面部表情识别中全局读出导致局部证据稀释、恐惧/惊讶等邻近表情易混淆的问题，提出SRE-FER。其核心模块RERA以零初始化残差逻辑量在读出层恢复被早期全局聚合洗掉的稀疏肌肉信号。该方法避免了脆弱的关键点检测管线，可直接迁移基础模型。实验表明它有效削减类别混淆，推动细粒度表情识别性能提升。",
+      "llm_tldr": "针对细粒度面部表情识别中全局读出导致局部证据稀释、恐惧/惊讶等邻近表情易混淆的问题，提出SRE-FER。其核心模块RERA以零初始化残差逻辑量在读出层恢复被早期全局聚合洗掉的稀疏肌肉信号。该方法避免了脆弱的关键点检测管线，可直接迁移基础模型。实验表明它有效削减类别混淆，推动细粒度表情识别性能提升。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.10398v1",
+      "source": "arxiv",
+      "title": "ELVAE: Evidential Learning-Based Variational Autoencoder for Uncertainty-Aware Generation",
+      "abstract": "Variational autoencoders generate samples from probabilistic latent representations but do not distinguish uncertainty about the latent location from variability around it. We formulate ELVAE, an evidential learning-based VAE in which each latent coordinate is governed by an input-dependent normal-inverse-gamma posterior. This hierarchy yields an explicit latent-location uncertainty that can be used during generation, not merely reported after inference: low-uncertainty anchors support more reliable synthetic samples, while high-uncertainty anchors can be deliberately exploited for stress testing. The objective is an exact evidence lower bound, and we show that direct regularization of the full hierarchy is required, since the marginalized latent law alone cannot identify the uncertainty decomposition. In an MNIST generation pilot with a frozen external classifier, this uncertainty clearly stratified the semantic reliability of generated digits. A zero-displacement control revealed that most of the effect reflects how reliably an anchor can be re-generated, while a smaller but distinct component is attributable to uncertainty-scaled perturbation itself. The effect holds only under within-class uncertainty ranking, and its magnitude varies across seeds. These findings support the learned latent-location uncertainty as a practical control variable for uncertainty-aware generation, separating anchor reliability from perturbation-induced failure.",
+      "authors": [
+        "Ge Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-11T02:45:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.10398v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uncertainty-aware generative VAE with latent-location uncertainty; transferable to generative imputation for missing modality robustness",
+      "llm_evidence_cn": "带潜在位置不确定性的生成式VAE，可迁移至缺失模态的生成式插补",
+      "llm_evidence": "带潜在位置不确定性的生成式VAE，可迁移至缺失模态的生成式插补",
+      "canonical_evidence": "带潜在位置不确定性的生成式VAE，可迁移至缺失模态的生成式插补",
+      "llm_tldr_en": "Standard VAEs conflate latent-location uncertainty with variational variability; ELVAE models each latent coordinate with an input-dependent normal-inverse-gamma posterior, enabling uncertainty-aware generation with an exact ELBO.",
+      "llm_tldr_cn": "针对变分自编码器无法区分潜在位置不确定性与围绕潜在点的变异性的问题，ELVAE为每个潜在坐标引入输入相关的正态逆伽马后验。该层次结构在生成阶段即可显式提供潜在位置不确定性，低不确定性锚点用于可靠合成，高不确定性锚点可用于压力测试。其目标为精确的证据下界，并需对完整层次进行正则化。这种不确定性感知生成可服务于缺失模态的可靠插补。",
+      "llm_tldr": "针对变分自编码器无法区分潜在位置不确定性与围绕潜在点的变异性的问题，ELVAE为每个潜在坐标引入输入相关的正态逆伽马后验。该层次结构在生成阶段即可显式提供潜在位置不确定性，低不确定性锚点用于可靠合成，高不确定性锚点可用于压力测试。其目标为精确的证据下界，并需对完整层次进行正则化。这种不确定性感知生成可服务于缺失模态的可靠插补。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
