@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-08-15 <!--dpr-date:20260815-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/15/2608.09288v1-dave-a-decoupled-audio-visual-enhancement-framework-for-real-world-speech-separation" data-sidebar-item="{&quot;title&quot;: &quot;DAVE: A Decoupled Audio-Visual Enhancement Framework for Real-World Speech Separation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.09288v1-dave-a-decoupled-audio-visual-enhancement-framework-for-real-world-speech-separation&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;解耦音视频增强提升多模态语音分离中对视觉退化的鲁棒性&quot;}">DAVE: A Decoupled Audio-Visual Enhancement Framework for Real-World Speech Separation</a>
   * 2026-08-14 <!--dpr-date:20260814-->
     * 速读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202608/14/2608.05683v1-distmedvl-distributional-vision-language-alignment-for-uncertainty-aware-medical-image-segmentation" data-sidebar-item="{&quot;title&quot;: &quot;DistMedVL: Distributional Vision-Language Alignment for Uncertainty-Aware Medical Image Segmentation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2608.05683v1-distmedvl-distributional-vision-language-alignment-for-uncertainty-aware-medical-image-segmentation&quot;, &quot;score&quot;: &quot;7.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;通过不确定性建模实现鲁棒的视觉-语言对齐，可迁移至鲁棒多模态学习&quot;}">DistMedVL: Distributional Vision-Language Alignment for Uncertainty-Aware Medical Image Segmentation</a>

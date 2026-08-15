@@ -6,35 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-14
-- 运行时间：2026-08-14 20:00:12 UTC
+- 最新运行日期：2026-08-15
+- 运行时间：2026-08-15 19:43:49 UTC
 - 运行状态：成功
-- 本次总论文数：4
+- 本次总论文数：1
 - 精读区：0
-- 速读区：4
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读4篇论文，其中精读0篇，重点覆盖医学影像分割与情感计算领域。  
-最值得关注的是《DistMedVL》（7.0分），提出不确定性感知的视觉-语言对齐用于医学图像分割；同时可留意《EmoWorld》的情感视频可控生成方法。  
-下一步建议优先精读医学影像与多模态对齐相关论文，并追踪情感生成方向的后续改进。
-- 详情：[/202608/14/README](/202608/14/README)
+今日速读 1 篇论文《DAVE》，聚焦真实场景中的音视频解耦语音分离，评分 7.0。  
+值得关注的是其通过解耦音频与视觉增强来提升语音分离鲁棒性，适合对多模态语音处理感兴趣的读者。  
+下一步建议从该文的方法对比入手，快速浏览其框架设计即可把握核心思路。
+- 详情：[/202608/15/README](/202608/15/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [DistMedVL: Distributional Vision-Language Alignment for Uncertainty-Aware Medical Image Segmentation](/202608/14/2608.05683v1-distmedvl-distributional-vision-language-alignment-for-uncertainty-aware-medical-image-segmentation)  
+1. [DAVE: A Decoupled Audio-Visual Enhancement Framework for Real-World Speech Separation](/202608/15/2608.09288v1-dave-a-decoupled-audio-visual-enhancement-framework-for-real-world-speech-separation)  
    标签：评分：7.0/10、query:mm
-   evidence：通过不确定性建模实现鲁棒的视觉-语言对齐，可迁移至鲁棒多模态学习
-2. [EmoWorld: A Decoupled Affective Field for Controllable Emotional Video Generation](/202608/14/2608.06231v1-emoworld-a-decoupled-affective-field-for-controllable-emotional-video-generation)  
-   标签：评分：6.0/10、query:mm
-   evidence：在情感场中解耦氛围、情感语义与时间进程，涉及解耦表示与情感相关生成
-3. [SRE-FER: Regional residual evidence learning for mitigating local evidence dilution in fine-grained facial expression recognition](/202608/14/2608.08702v1-sre-fer-regional-residual-evidence-learning-for-mitigating-local-evidence-dilution-in-fine-grained-facial-expression-recognition)  
-   标签：评分：6.0/10、query:mm
-   evidence：细粒度面部表情识别，区域残差证据学习可迁移至多模态情感识别
-4. [ELVAE: Evidential Learning-Based Variational Autoencoder for Uncertainty-Aware Generation](/202608/14/2608.10398v1-elvae-evidential-learning-based-variational-autoencoder-for-uncertainty-aware-generation)  
-   标签：评分：6.0/10、query:mm
-   evidence：带潜在位置不确定性的生成式VAE，可迁移至缺失模态的生成式插补
+   evidence：解耦音视频增强提升多模态语音分离中对视觉退化的鲁棒性
 
 
 <div class="dpr-home-promo-card">
