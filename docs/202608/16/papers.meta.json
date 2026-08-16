@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-16",
+  "date": "2026-08-16",
+  "generated_at": "2026-08-16T19:25:40",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/16/2608.08561v1-deep-probabilistic-logic-programming-for-diagnostic-reasoning-from-incomplete-information-a-case-study-in-stroke-detection",
+      "section": "quick",
+      "title_en": "Deep probabilistic logic programming for diagnostic reasoning from incomplete information: A case study in stroke detection",
+      "authors": "Felix Weitkämper, Monchito Avila, Elizabeth Nanjala, Siska, Grace Zawadi",
+      "date": "2026-08-09",
+      "pdf": "https://arxiv.org/pdf/2608.08561v1",
+      "score": "6.0",
+      "evidence": "基于不完整信息和多模态数据进行诊断推理",
+      "tldr": "医疗领域原始数据隐私敏感，通常依赖文献中的汇总统计。深度学习的感知能力与概率逻辑编程的透明推理可结合，但构建此类系统面临数据不完整问题。本文以卒中检测为案例，利用最大熵补全概率信息，通过ProbLog 2训练判别式神经符号模型，并在DeepProbLog中表达。实验分析了数据完整度对性能的影响，并用ProbFOIL 2压缩模型，展示神经符号诊断推理的潜力。",
+      "tags": "query:mm",
+      "abstract_en": "In medical applications, raw data is frequently associated with significant privacy concerns, lending particular importance to the encoding of summary statistics from the literature. On the other hand, deep learning has become an invaluable tool for assessing symptoms based on visual or auditory sensor data. DeepProbLog allows for an extensible neuro-symbolic approach that accommodates connectionist components to analyse patient images within a transparent and rigorous probabilistic framework, namely probabilistic logic programming under the distribution semantics. Framed as a case study in stroke detection from multimodal data, this contribution explores the pathway from summary statistics available in the literature to a DeepProbLog-based diagnostic system. It suggests a workflow using established maximum entropy techniques to complete available probabilistic information and the probabilistic logic programming system ProbLog 2 to move from the entropy-maximising causal model to a discriminative neuro-symbolic model expressible within DeepProbLog. The relative performance of models derived from less complete data is analysed alongside the potential of the probabilistic inductive logic programming system ProbFOIL 2 for compressing large discriminative models, and the perspectives and implications of using DeepProbLog for diagnostic reasoning are discussed.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/16/2608.10316v1-unimod-enhancing-multi-modal-medical-diagnosis-through-cross-modality-and-within-modality-alignment",
+      "section": "quick",
+      "title_en": "UniMod: Enhancing Multi-Modal Medical Diagnosis through Cross-Modality and Within-Modality Alignment",
+      "authors": "Zijian Gu, Weikai Lin, Shuang Zhou, Zihan Chen, Song Wang",
+      "date": "2026-08-10",
+      "pdf": "https://arxiv.org/pdf/2608.10316v1",
+      "score": "6.0",
+      "evidence": "UniMod通过独立监督每个模态来缓解捷径学习，直接支持鲁棒多模态学习并部分支持缺失模态场景",
+      "tldr": "多模态医疗诊断中，标准联合训练易引发捷径学习，模型偏好文本等易学模态而忽略图像细节。UniMod通过同时监督单模态与多模态预测，迫使各模态独立提取诊断特征，并结合跨模态与同类对比对齐。在青光眼和胸片数据集上，AUC分别达0.850和0.966，显著优于现有方法，且无需改动架构即可扩展多标签诊断。",
+      "tags": "query:mm",
+      "abstract_en": "Multi-modal learning combining medical images and clinical text is promising for disease diagnosis. However, standard multi-modal training leads to shortcut learning: models exploit the easier modality (e.g., diagnostic cues in text) while neglecting harder-to-learn features (e.g., subtle visual patterns). We propose UniMod, a framework that mitigates shortcut learning by requiring each modality to predict the diagnosis on its own. It supervises image-only, text-only, and multi-modal classification simultaneously, so each modality must extract diagnostic features. We add cross-modality alignment for knowledge transfer and within-modality supervised contrastive alignment over same-diagnosis patients. On Harvard-Glaucoma, UniMod reaches 0.850 AUC, outperforming OGM-GE and Gradient Blending by 1.6-1.8%; on CheXpert Plus, it reaches 0.966 AUC, surpassing them by over 5%. UniMod also extends to 5-class multi-label diagnosis without architectural change, improving mean AUC by 0.097 over CGGM.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
