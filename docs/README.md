@@ -6,29 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-16
-- 运行时间：2026-08-16 19:25:36 UTC
+- 最新运行日期：2026-08-17
+- 运行时间：2026-08-17 20:47:27 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读2篇医学诊断AI论文，聚焦不完整信息推理与多模态对齐。  
-值得关注中风检测的概率逻辑编程，以及UniMod的跨模态/内模态对齐方法。  
-建议下一步深入对比两方法在真实临床数据上的鲁棒性与可解释性。
-- 详情：[/202608/16/README](/202608/16/README)
+今日精读3篇论文，聚焦多模态抑郁风险评估与联邦学习稀疏MoE，另速读一篇多模态RLVR泛化研究。  
+最值得关注的是《DepressionAgent》融合读、听、看多模态证据提升抑郁评估，以及《MedMix》解决模态异质性下的联邦稀疏专家混合。  
+建议优先精读上述两篇高分论文，并关注多模态模型在医疗与强化学习中的鲁棒性延伸测试。
+- 详情：[/202608/17/README](/202608/17/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [DepressionAgent: Reading, Listening, Seeing, and Deliberating Multimodal Evidence for Depression Risk Assessment](/202608/17/2608.13891v1-depressionagent-reading-listening-seeing-and-deliberating-multimodal-evidence-for-depression-risk-assessment)  
+   标签：评分：8.0/10、query:mm
+   evidence：面向抑郁风险评估的多模态文本-音频-视觉证据，直接针对多模态情绪分析
+2. [MedMix: Specialization-Consistent Federated Sparse MoEs under Modality Heterogeneity](/202608/17/2608.13911v1-medmix-specialization-consistent-federated-sparse-moes-under-modality-heterogeneity)  
+   标签：评分：8.0/10、query:mm
+   evidence：直接处理联邦多模态医学AI中的模态缺失配置
 
 ### 速读区论文标签
-1. [Deep probabilistic logic programming for diagnostic reasoning from incomplete information: A case study in stroke detection](/202608/16/2608.08561v1-deep-probabilistic-logic-programming-for-diagnostic-reasoning-from-incomplete-information-a-case-study-in-stroke-detection)  
+1. [Improving Generalization Robustness of Multimodal RLVR](/202608/17/2608.08802v1-improving-generalization-robustness-of-multimodal-rlvr)  
    标签：评分：6.0/10、query:mm
-   evidence：基于不完整信息和多模态数据进行诊断推理
-2. [UniMod: Enhancing Multi-Modal Medical Diagnosis through Cross-Modality and Within-Modality Alignment](/202608/16/2608.10316v1-unimod-enhancing-multi-modal-medical-diagnosis-through-cross-modality-and-within-modality-alignment)  
-   标签：评分：6.0/10、query:mm
-   evidence：UniMod通过独立监督每个模态来缓解捷径学习，直接支持鲁棒多模态学习并部分支持缺失模态场景
+   evidence：提升多模态RLVR泛化鲁棒性，属于鲁棒多模态学习且可迁移至下游任务
 
 
 <div class="dpr-home-promo-card">
