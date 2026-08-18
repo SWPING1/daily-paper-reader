@@ -6,31 +6,44 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-17
-- 运行时间：2026-08-17 20:47:27 UTC
+- 最新运行日期：2026-08-18
+- 运行时间：2026-08-18 19:47:58 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：8
+- 精读区：4
+- 速读区：4
 
 ### 今日简报（AI）
-今日精读3篇论文，聚焦多模态抑郁风险评估与联邦学习稀疏MoE，另速读一篇多模态RLVR泛化研究。  
-最值得关注的是《DepressionAgent》融合读、听、看多模态证据提升抑郁评估，以及《MedMix》解决模态异质性下的联邦稀疏专家混合。  
-建议优先精读上述两篇高分论文，并关注多模态模型在医疗与强化学习中的鲁棒性延伸测试。
-- 详情：[/202608/17/README](/202608/17/README)
+今日共推荐8篇论文，精读4篇、速读4篇；精读最高分为9.0的《MUPA$^{2}$E》与8.0的《Disentangled Shared Representations》。最值得关注多模态情感评估的注意力机制创新，以及形态-转录组数据整合的表征解耦方法。建议优先精读这两篇高分工作，并顺带浏览速读中声学域漂移去噪与概念擦除的相关进展。
+- 详情：[/202608/18/README](/202608/18/README)
 
 ### 精读区论文标签
-1. [DepressionAgent: Reading, Listening, Seeing, and Deliberating Multimodal Evidence for Depression Risk Assessment](/202608/17/2608.13891v1-depressionagent-reading-listening-seeing-and-deliberating-multimodal-evidence-for-depression-risk-assessment)  
+1. [MUPA$^{2}$E: Multimodal Unified Perception with Asymmetric Attention for Emotion Assessment](/202608/18/2608.15999v1-mupa2e-multimodal-unified-perception-with-asymmetric-attention-for-emotion-assessment)  
+   标签：评分：9.0/10、query:mm
+   evidence：直接以统一主干融合面部视频与脑电进行多模态情感评估
+2. [Disentangled Shared Representations Improve Morpho-Transcriptomic Integration](/202608/18/2608.14355v1-disentangled-shared-representations-improve-morpho-transcriptomic-integration)  
    标签：评分：8.0/10、query:mm
-   evidence：面向抑郁风险评估的多模态文本-音频-视觉证据，直接针对多模态情绪分析
-2. [MedMix: Specialization-Consistent Federated Sparse MoEs under Modality Heterogeneity](/202608/17/2608.13911v1-medmix-specialization-consistent-federated-sparse-moes-under-modality-heterogeneity)  
+   evidence：明确研究多模态整合中共享与私有表示的显式解耦
+3. [MODAL: Multi-Modal Object Re-ID via Model-Driven Sparse Decoupling and Text-Image Differential Filtering](/202608/18/2608.15096v1-modal-multi-modal-object-re-id-via-model-driven-sparse-decoupling-and-text-image-differential-filtering)  
    标签：评分：8.0/10、query:mm
-   evidence：直接处理联邦多模态医学AI中的模态缺失配置
+   evidence：多模态目标重识别通过稀疏解耦显式应对模态缺失条件。
+4. [Multi-Granularity Sentiment Integration for LLM-Based Multimodal Sentiment Analysis](/202608/18/2608.16201v1-multi-granularity-sentiment-integration-for-llm-based-multimodal-sentiment-analysis)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于LLM的多模态情感分析，多粒度音频视觉信息集成
 
 ### 速读区论文标签
-1. [Improving Generalization Robustness of Multimodal RLVR](/202608/17/2608.08802v1-improving-generalization-robustness-of-multimodal-rlvr)  
+1. [Prototype-Rectified Iterative Self-supervised Manifold Denoising under Severe Acoustic Shift](/202608/18/2608.15037v1-prototype-rectified-iterative-self-supervised-manifold-denoising-under-severe-acoustic-shift)  
+   标签：评分：7.0/10、query:mm
+   evidence：自监督流形去噪直接提升音频-文本多模态模型的鲁棒性
+2. [PEAK: Precise and Persistent Concept Erasure via k-Sparse Autoencoders](/202608/18/2608.10985v1-peak-precise-and-persistent-concept-erasure-via-k-sparse-autoencoders)  
    标签：评分：6.0/10、query:mm
-   evidence：提升多模态RLVR泛化鲁棒性，属于鲁棒多模态学习且可迁移至下游任务
+   evidence：k稀疏自编码器将稠密表示分解为可解释组件
+3. [Paths: Prompt-aware Spatio-temporal Transformer with Hierarchical Multi-modal Fusion for RGB-Event Video Person Re-Identification](/202608/18/2608.13092v1-paths-prompt-aware-spatio-temporal-transformer-with-hierarchical-multi-modal-fusion-for-rgb-event-video-person-re-identification)  
+   标签：评分：6.0/10、query:mm
+   evidence：模态专属身份原型与层次化融合体现解耦式表征学习
+4. [GALA: Generation-Aware Cross-Modal Alignment for Text-to-Time-Series Synthesis](/202608/18/2608.13741v2-gala-generation-aware-cross-modal-alignment-for-text-to-time-series-synthesis)  
+   标签：评分：6.0/10、query:mm
+   evidence：生成感知的跨模态对齐是模态条件生成方法，与插补相关
 
 
 <div class="dpr-home-promo-card">
