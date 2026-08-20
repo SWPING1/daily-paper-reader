@@ -1,0 +1,294 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-20T20:43:20.578812+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2608.18386v1",
+      "source": "arxiv",
+      "title": "TTSD-FAR: Test-Time Self-Distillation with Fisher-Anchored Restoration for Missing-Modality Emotion Recognition in LVLMs",
+      "abstract": "Large video-language models (LVLMs) have shown remarkable performance on multimodal tasks like multimodal emotion recognition (ER) in the wild. ER is inherently multimodal, requiring a joint understanding of facial expressions, vocalizations, language, biosignals, and gestures. However, real-world deployment remains challenging: modalities may be missing or noisy at test time. Partial observations can be viewed as a distribution shift relative to the complete-modality distribution. SOTA TTA methods based on entropy minimization or perplexity reduction do not transfer to autoregressive LVLMs, while retrieval augmented generation (RAG) degrades when the observed modality is weak. Because no ground-truth supervision exists to verify individual updates, adaptation across this stream risks accumulating drift and degrading once the model departs from a reliable solution. An effective solution must therefore adapt to arbitrary missing-modality patterns and remain effective during continual adaptation. We address both jointly with Test-Time Self-Distillation (TTSD), a parameter-efficient framework in which a frozen teacher, trained on complete modalities, guides an adaptive low-rank student via self-distillation, updating only a negligible number of parameters. Stability is built into this same loop through Fisher-Anchored Restoration (FAR), which monitors Fisher information stability to detect convergence versus drift and restores the student toward the teacher's anchor when distributional shifts are identified. Our experiments on MELD, DFEW, and BAH under 0%-50% missing modalities show that this unified adaptation-restoration design consistently outperforms entropy-based adaptation, RAG, and perplexity-based generation over long adaptation horizons, where baselines without restoration progressively degrade while TTSD-FAR remains consistent.",
+      "authors": [
+        "Muhammad Haseeb Aslam",
+        "Alessandro Koerich",
+        "Marco Pedersoli",
+        "Ali Etemad",
+        "Eric Granger"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-18T23:40:28+00:00",
+      "link": "https://arxiv.org/pdf/2608.18386v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "missing-modality emotion recognition in LVLMs with test-time restoration",
+      "llm_evidence_cn": "面向LVLM的缺模态情感识别，测试时恢复缺失模态",
+      "llm_evidence": "面向LVLM的缺模态情感识别，测试时恢复缺失模态",
+      "canonical_evidence": "面向LVLM的缺模态情感识别，测试时恢复缺失模态",
+      "llm_tldr_en": "Real-world LVLM deployment faces missing/noisy modalities; standard TTA fails for autoregressive models. TTSD-FAR performs test-time self-distillation with Fisher-anchored restoration to reconstruct missing modalities, improving emotion recognition under partial observation.",
+      "llm_tldr_cn": "大型视频语言模型在实际部署中常面临模态缺失或噪声，现有测试时适应和检索增强方法在弱观测下效果不佳。本文提出TTSD-FAR，结合测试时自蒸馏与Fisher锚定恢复来重建缺失模态并稳定预测，面向缺模态情感识别。实验显示该方法优于SOTA测试时自适应与RAG方法。该工作为LVLM在部分观测下的情感识别提供了可靠的缺失模态处理范式。",
+      "llm_tldr": "大型视频语言模型在实际部署中常面临模态缺失或噪声，现有测试时适应和检索增强方法在弱观测下效果不佳。本文提出TTSD-FAR，结合测试时自蒸馏与Fisher锚定恢复来重建缺失模态并稳定预测，面向缺模态情感识别。实验显示该方法优于SOTA测试时自适应与RAG方法。该工作为LVLM在部分观测下的情感识别提供了可靠的缺失模态处理范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.16245v1",
+      "source": "arxiv",
+      "title": "The Trade-off Between Covariate Dependence and Latent Structure in Representation Learning",
+      "abstract": "Disentangled representation learning seeks latent representations whose indicidual dimensions each align with a distinct covariate. Unsupervised approaches typically target latent dimension independence, yet this gives no guarantee that the resulting dimensions align with semantically meaningful covariates. Supervised approaches structure the latent space using observed covariates, but under correlated covariates they cannot simultaneously control one-to-one latent-covariate alignment and latent independence. We introduce a unified, supervised framework that couples latent dimension-covariate dependence with constraints on the latent structure. Within this framework, we show an inherent trade-off, where enforcing latent independence or exclusive one-to-one latent-covariate dependence comes at a provable cost in latent-covariate alignment. We prove that the resulting disentanglement regimes are ordered by the strength of that alignment. Each regime admits a closed-form transformation of the latent space. We apply these transformations post-hoc to realign the representations of pretrained models such as CLIP, DINOv2, and ViT, and we fold them into the inference of informed factor analysis (iFA), a probabilistic model with covariate-informed factors. On simulated and real multi-omics data, we show that both post-hoc alignment and iFA enable controllability of structured latent representations.",
+      "authors": [
+        "Małgorzata Łazęcka",
+        "Ewa Szczurek"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-17T08:20:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.16245v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Disentangled representation trade-off between covariate dependence and latent structure",
+      "llm_evidence_cn": "解耦表示中协变量依赖与隐结构的权衡",
+      "llm_evidence": "解耦表示中协变量依赖与隐结构的权衡",
+      "canonical_evidence": "解耦表示中协变量依赖与隐结构的权衡",
+      "llm_tldr_en": "Proposes a unified supervised framework for disentangled representation learning, revealing an inherent trade-off between latent-covariate alignment and latent independence.",
+      "llm_tldr_cn": "现有解耦表示学习方法在协变量相关时难以同时保证潜在维度与协变量的一一对应以及潜在独立性。本文提出一个统一的监督框架，将维度-协变量依赖与潜在结构约束结合，并证明两者存在固有权衡。实验表明该框架能够系统分析并控制解耦质量。该工作为多模态场景下利用解耦表示应对缺失数据提供了理论基础。",
+      "llm_tldr": "现有解耦表示学习方法在协变量相关时难以同时保证潜在维度与协变量的一一对应以及潜在独立性。本文提出一个统一的监督框架，将维度-协变量依赖与潜在结构约束结合，并证明两者存在固有权衡。实验表明该框架能够系统分析并控制解耦质量。该工作为多模态场景下利用解耦表示应对缺失数据提供了理论基础。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.19115v1",
+      "source": "arxiv",
+      "title": "Pretraining Reusable Inference Across Views with Synthetic Task Priors",
+      "abstract": "Modern pretrained encoders make representations from heterogeneous views increasingly reusable, but the procedure that determines view utility and combines evidence is still relearned for each downstream task. Consequently, knowledge about view relevance, complementarity, reliability, and missingness is repeatedly discarded rather than transferred across tasks. We therefore reformulate multi-view learning as learning a reusable, task-conditioned inference procedure rather than a fixed fusion function. Based on this perspective, we propose SIMPLE, a prior-fitted multi-view in-context learner that predicts query labels by conditioning on a small labeled support set. Since existing real-world datasets cover only a limited range of view configurations and task structures, we construct a controllable synthetic task prior in embedding space. It generates diverse support-query episodes with varying class structures, shared and view-specific factors, representation geometries, cross-view dependencies, reliability levels, missingness patterns, and distribution shifts. A hierarchical inference architecture then performs reasoning within views, across views, and across support and query samples. Experiments on multi-view and multi-omics benchmarks demonstrate that the frozen variant of SIMPLE achieves competitive performance without updating the inference backbone, while lightweight adapter calibration attains leading performance on most evaluated datasets. Together, the results under frozen, one-shot, and missing-view settings support the central hypothesis that multi-view reasoning itself can be pretrained and reused, while lightweight adapter calibration provides task-specific alignment when needed.",
+      "authors": [
+        "Jielong Lu",
+        "Zhihao Wu",
+        "Jiajun Yu",
+        "Zhaoliang Chen",
+        "Haishuai Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.MM"
+      ],
+      "published": "2026-08-19T17:10:03+00:00",
+      "link": "https://arxiv.org/pdf/2608.19115v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multi-view learning handling view missingness and reliability with reusable inference",
+      "llm_evidence_cn": "多视图学习，处理视图缺失与可靠性，提出可复用推理",
+      "llm_evidence": "多视图学习，处理视图缺失与可靠性，提出可复用推理",
+      "canonical_evidence": "多视图学习，处理视图缺失与可靠性，提出可复用推理",
+      "llm_tldr_en": "Multi-view learning discards knowledge about view relevance, reliability, and missingness. SIMPLE learns a reusable, task-conditioned inference procedure with small support sets and synthetic priors, improving robustness to missing views.",
+      "llm_tldr_cn": "多视图学习中视图相关性、缺失性和可靠性等知识往往被重复学习而浪费。本文将多视图学习重构为学习可复用且任务条件化的推理过程，提出SIMPLE模型，通过小样本支持集预测查询标签，并利用合成任务先验覆盖更广的视图配置。实验表明该方法能在不同任务间迁移视图使用策略，提升对缺失视图的鲁棒性。该思路可推广到不完整多模态学习场景。",
+      "llm_tldr": "多视图学习中视图相关性、缺失性和可靠性等知识往往被重复学习而浪费。本文将多视图学习重构为学习可复用且任务条件化的推理过程，提出SIMPLE模型，通过小样本支持集预测查询标签，并利用合成任务先验覆盖更广的视图配置。实验表明该方法能在不同任务间迁移视图使用策略，提升对缺失视图的鲁棒性。该思路可推广到不完整多模态学习场景。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.12570v1",
+      "source": "arxiv",
+      "title": "Attribute-Conditioned Multimodal Slot Factorization for Controllable Fashion Retrieval",
+      "abstract": "Fashion retrieval often requires satisfying multiple attributes at once, such as category, color, pattern, and demographic. Monolithic embeddings mix these signals into a single vector, making attribute-specific control difficult at retrieval time. Many existing semantic-ID methods provide discrete item codes, but these codes are typically optimized as item-level or residual addresses and do not expose named, independently controllable attribute slots.   We introduce MM-slotgate, a multimodal slot encoder that factorizes Fashion-CLIP text and image embeddings into four named attribute slots. Each slot learns its own text-image gate, so visually grounded attributes such as color and pattern can rely more on image evidence, while taxonomy-oriented attributes such as category and demographic can remain more text-driven.   On H&M, using a combined slot-similarity and slot-logit retrieval score, MM-slotgate achieves 0.7566 macro ConstraintSatisfied@10, outperforming equal-weight multimodal fusion (0.7142) and fCLIP text-only retrieval (0.4755). The largest gain is on color, which improves from 0.321 to 0.889 (+0.568 absolute), as the learned color gate assigns 57.4% weight to image evidence. The learned gates are interpretable without modality supervision: color is image-leaning, category is text-leaning, and pattern and demographic lie near the middle.   The resulting slots also remain controllable: linear probes show no measured excess leakage beyond the label-correlation baseline, and quantized slot codes support targeted intervention, including a 15.3x lift for color. These results suggest that controllable fashion retrieval benefits from typed, attribute-conditioned multimodal slots rather than either a single global embedding or opaque item-level semantic IDs.",
+      "authors": [
+        "Najmeh Forouzandehmehr",
+        "Topojoy Biswas",
+        "Evren Korpeoglu",
+        "Kannan Achan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.IR"
+      ],
+      "published": "2026-08-12T20:28:14+00:00",
+      "link": "https://arxiv.org/pdf/2608.12570v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal slot factorization for disentangled attribute representation",
+      "llm_evidence_cn": "多模态槽分解实现属性解耦表示",
+      "llm_evidence": "多模态槽分解实现属性解耦表示",
+      "canonical_evidence": "多模态槽分解实现属性解耦表示",
+      "llm_tldr_en": "Fashion retrieval requires attribute-level control, but monolithic embeddings mix signals. MM-slotgate factorizes CLIP embeddings into named attribute slots with per-slot gates, enabling fine-grained, interpretable multimodal retrieval control.",
+      "llm_tldr_cn": "时尚检索需要同时控制多个属性，但整体嵌入难以实现属性级控制。本文提出MM-slotgate多模态槽编码器，将CLIP嵌入分解为多个具名属性槽，并为每个槽学习独立的文本-图像门控，使颜色、图案等视觉属性更多依赖图像证据。实验表明该分解方法在可控时尚检索中实现了更精细的属性控制。该方法展示了属性级解耦在多模态检索中的价值。",
+      "llm_tldr": "时尚检索需要同时控制多个属性，但整体嵌入难以实现属性级控制。本文提出MM-slotgate多模态槽编码器，将CLIP嵌入分解为多个具名属性槽，并为每个槽学习独立的文本-图像门控，使颜色、图案等视觉属性更多依赖图像证据。实验表明该分解方法在可控时尚检索中实现了更精细的属性控制。该方法展示了属性级解耦在多模态检索中的价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.13973v1",
+      "source": "arxiv",
+      "title": "Rethinking Auxiliary Modalities in Multimodal Zero-shot Anomaly Detection: From Semantic Fusion to Conditional Modulation",
+      "abstract": "Recent foundation model-based methods have endowed RGB images with strong zero-shot anomaly detection (ZSAD) through vision-language pretraining. However, RGB observations alone remain limited in perceiving anomalies dominated by geometric deformation, depth variation, or subtle surface changes. Auxiliary modalities can provide complementary structural information, but existing multimodal methods typically fuse them directly into a shared semantic space, which may disturb the text-aligned anomaly semantics established by RGB foundation models and often requires modality-specific architectures. To address this issue, we propose a plug-and-play auxiliary-conditioned enhancement framework for zero-shot anomaly detection. Instead of reconstructing a joint multimodal anomaly semantic space, our framework preserves the original RGB image-text anomaly matching pathway and uses auxiliary observations as conditional signals for RGB feature refinement, allowing auxiliary modalities to seamlessly enhance existing RGB-based zero-shot anomaly detectors. Specifically, a lightweight meta-learning module takes global RGB and auxiliary representations as input and generates sample-adaptive low-rank residual updates to determine how RGB features should be refined. We further construct uncertainty-aware spatial modulation from the initial RGB anomaly response and auxiliary reliability, which determines where local residual updates are strengthened or suppressed. This global-to-local conditional modulation enables selective multimodal enhancement while preserving the original RGB anomaly semantics. Extensive experiments on MVTec 3D-AD and Eyecandies demonstrate that our framework consistently improves multiple popular RGB-based zero-shot anomaly detectors, achieving state-of-the-art performance for multimodal zero-shot anomaly detection.",
+      "authors": [
+        "Peng Wu",
+        "Xin Ge",
+        "Yujia Sun",
+        "Guansong Pang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-14T05:33:45+00:00",
+      "link": "https://arxiv.org/pdf/2608.13973v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Proposes conditional modulation instead of semantic fusion to combine auxiliary modalities with RGB, a transferable strategy for robust multimodal learning under missing or unreliable modalities",
+      "llm_evidence_cn": "提出基于条件调制而非语义融合的辅助模态融合策略，可迁移用于缺失或不稳定模态下的鲁棒多模态学习",
+      "llm_evidence": "提出基于条件调制而非语义融合的辅助模态融合策略，可迁移用于缺失或不稳定模态下的鲁棒多模态学习",
+      "canonical_evidence": "提出基于条件调制而非语义融合的辅助模态融合策略，可迁移用于缺失或不稳定模态下的鲁棒多模态学习",
+      "llm_tldr_en": "The paper proposes a plug-and-play auxiliary-conditioned conditional modulation framework for zero-shot anomaly detection, replacing direct semantic fusion to avoid disturbing text-aligned RGB semantics and improve robustness across auxiliary modalities.",
+      "llm_tldr_cn": "现有零样本异常检测中，辅助模态（如深度）通常被直接融合进共享语义空间，可能干扰RGB基础模型建立的文本对齐语义，并需要专用架构。作者提出即插即用的辅助条件调制增强框架，以条件调制代替直接融合，保留原有语义同时利用辅助结构信息。该方法适用于多种辅助模态，无需改用专门的结构，提升了零样本异常检测的鲁棒性和泛化性能。对多模态融合策略的设计具有启示意义。",
+      "llm_tldr": "现有零样本异常检测中，辅助模态（如深度）通常被直接融合进共享语义空间，可能干扰RGB基础模型建立的文本对齐语义，并需要专用架构。作者提出即插即用的辅助条件调制增强框架，以条件调制代替直接融合，保留原有语义同时利用辅助结构信息。该方法适用于多种辅助模态，无需改用专门的结构，提升了零样本异常检测的鲁棒性和泛化性能。对多模态融合策略的设计具有启示意义。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.14854v1",
+      "source": "arxiv",
+      "title": "Zero-MELO: Test-Time Evidence Calibration with Multimodal LLMs for Zero-Shot Micro-Gesture Recognition",
+      "abstract": "While Multimodal Large Language Models (MLLMs) excel in general video understanding, their capability in fine-grained and motion-centric tasks remains limited. This limitation is particularly critical in micro-gesture recognition (MGR), where micro-gestures (MGs) - subtle, short-duration, and spatially localized human movements - serve as key discriminative signals for implicit affective analysis, yet are easily neglected following common prompting practices. Although MGR has been intensively studied by many discriminative approaches, the use of MLLMs for MGR is underexplored, with notably poor performance. We hypothesize that the motion-sensitive representation ability of MLLMs is constrained by their inherent single-pass forward inference, which can be substantially enhanced through carefully designed test-time guidance. Motivated by this, building on our prior findings regarding temporal insensitivity in Video LLMs, we diagnose zero-shot MGR errors in the Negative Log-Likelihood (NLL) space. We observe that MLLMs suffer from two bottlenecks: 1) insufficient localized evidence and 2) severe score biases driven by language and motion-agnostic appearances. Thus, we propose a novel test-time evidence calibration framework that improves both reasoning details and prediction reliability. Specifically, we introduce a tree search mechanism to progressively acquire localized, fine-grained visual evidence, coupled with a test-time calibration module to mitigate score biases. The multi-cue fusion module then integrates evidence from multiple cues without relying on a single cue for final prediction. Our framework achieves mean-class accuracies of 26.84\\% on iMiGUE and 22.10\\% on MA-52, significantly outperforming the Qwen2.5-VL baseline, which produces 16.15\\% and 10.20\\%, respectively. The code will be available at https://zero-melo.github.io/Zero-MELO.",
+      "authors": [
+        "Chengyan Wang",
+        "Hanliang Xie",
+        "Yueyi Yang",
+        "Haoyu Chen"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-14T19:50:31+00:00",
+      "link": "https://arxiv.org/pdf/2608.14854v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multimodal LLM zero-shot micro-gesture recognition for implicit affective analysis",
+      "llm_evidence_cn": "多模态大模型零样本微手势识别，面向隐含情感分析",
+      "llm_evidence": "多模态大模型零样本微手势识别，面向隐含情感分析",
+      "canonical_evidence": "多模态大模型零样本微手势识别，面向隐含情感分析",
+      "llm_tldr_en": "Proposes Zero-MELO, a test-time evidence calibration method with multimodal LLMs for zero-shot micro-gesture recognition, addressing motion-sensitive representation limitations.",
+      "llm_tldr_cn": "微手势是隐含情感分析的关键信号，但多模态大模型对细粒度运动感知能力有限。本文提出Zero-MELO，在测试时利用多模态大模型进行证据校准，提升零样本微手势识别性能。实验显示该方法显著优于常见提示策略。这为利用大模型进行细粒度情感相关识别提供了新思路。",
+      "llm_tldr": "微手势是隐含情感分析的关键信号，但多模态大模型对细粒度运动感知能力有限。本文提出Zero-MELO，在测试时利用多模态大模型进行证据校准，提升零样本微手势识别性能。实验显示该方法显著优于常见提示策略。这为利用大模型进行细粒度情感相关识别提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.18339v1",
+      "source": "arxiv",
+      "title": "From Inference to Adaptation: A Unified Optimal Transport View of Vision Language Model",
+      "abstract": "Vision-language models (VLMs) have demonstrated remarkable zero-shot capabilities yet remain sensitive to real-world distribution shifts during inference. Although significant efforts are devoted to adapting VLMs at test time, they rely heavily on noisy pseudo-labels predicted directly from raw embedding similarities during inference, which are unreliable under distribution shift and mislead the adaptation. To avoid noise amplification, existing works craft coarse-grained surrogate objectives during adaptation, which fail to explicitly model sample-level relationships across different modalities, creating objective mismatch with inference, thus leading to marginal performance improvement. In this work, we aim to bridge the detached objectives of inference and adaptation for VLMs, and propose a principled VLM TTA method called \\algname. For VLM inference, we formulate the zero-shot image classification task as a cross-modal alignment problem encoded via a Wasserstein OT formulation, providing robust pseudo-labels at the sample-level to effectively adapt VLMs. For VLM adaptation, we adopt a soft-label InfoNCE loss to adapt VLMs based on the OT-induced pseudo-labels, leveraging fine-grained supervisions to explicitly model relationships of individual image-text pairs via contrastive learning, which empowers accurate inference at the same granularity. Moreover, we theoretically reveal that the InfoNCE loss can be neatly reformulated as a Wasserstein OT formulation, thereby unifying the objectives of the inference and adaptation of VLMs to achieve their mutual benefits. Extensive experiments demonstrate the effectiveness and efficiency of our methods, outperforming the best-performing methods by up to 7% with state-of-the-art efficiency.",
+      "authors": [
+        "Qi Yu",
+        "Zhichen Zeng",
+        "Katherine Tieu",
+        "Xiyuan Yang",
+        "Ruizhong Qiu",
+        "Yuchen Yan",
+        "Lihui Liu",
+        "Yanjun Zhao",
+        "Lingjie Chen",
+        "Jingrui He",
+        "Hanghang Tong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-08-18T21:44:32+00:00",
+      "link": "https://arxiv.org/pdf/2608.18339v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Test-time adaptation of vision-language models under distribution shift via optimal transport",
+      "llm_evidence_cn": "基于最优传输的视觉语言模型分布偏移测试时自适应",
+      "llm_evidence": "基于最优传输的视觉语言模型分布偏移测试时自适应",
+      "canonical_evidence": "基于最优传输的视觉语言模型分布偏移测试时自适应",
+      "llm_tldr_en": "Bridges objective mismatch in VLM test-time adaptation by explicitly modeling sample-level cross-modal relationships with optimal transport, improving robustness under distribution shift.",
+      "llm_tldr_cn": "视觉语言模型在推理时对分布偏移敏感，现有测试时自适应依赖噪声伪标签且目标不匹配。本文以最优传输视角统一推理与自适应，显式建模跨模态样本关系。实验证明该方法在分布偏移下比粗粒度替代目标更有效。这为鲁棒多模态学习提供了新的自适应框架。",
+      "llm_tldr": "视觉语言模型在推理时对分布偏移敏感，现有测试时自适应依赖噪声伪标签且目标不匹配。本文以最优传输视角统一推理与自适应，显式建模跨模态样本关系。实验证明该方法在分布偏移下比粗粒度替代目标更有效。这为鲁棒多模态学习提供了新的自适应框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
