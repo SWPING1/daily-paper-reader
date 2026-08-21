@@ -1,0 +1,177 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-21T20:35:48.235595+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2608.19788v1",
+      "source": "arxiv",
+      "title": "MOSAIC: Modality-agnostic Spectral Alignment for Federated Image-level Weakly Supervised Tumor Segmentation under Client-specific Missing Modalities",
+      "abstract": "Trustworthy multimodal fusion in clinical settings requires handling incomplete and heterogeneous modality subsets across institutions, where privacy constraints prohibit centralized data sharing. Federated learning (FL) mitigates data-sharing constraints but suffers from client-specific missing modalities, where institutions possess incomplete multimodal subsets, degrading fusion quality and segmentation performance. While FL and weak supervision have been studied separately, their joint use with image-level labels under heterogeneous missing modalities remains unaddressed. We propose \\textbf{MOSAIC}, the first modality-agnostic federated framework for weakly supervised binary tumor segmentation under client-specific missing modalities. We introduce a client-specific modality-alignment module that fuses available channels into a shared latent space without prior knowledge of modality identity, a spectral prototype alignment loss that reconciles cross-client distribution shift using compact non-invertible frequency-domain statistics, and a dedicated federated refinement network that denoises the resulting CAM pseudo-labels into accurate masks, breaking the accuracy ceiling of weak supervision. Experiments on three multi-institutional brain tumor benchmarks (FeTS2022, BraTS-MEN, and BraTS-SSA) demonstrate significant improvements over all image, box, and point-supervised baselines, approaching fully supervised accuracy using only image-level labels and reaching 0.84 Dice on FeTS2022. Dynamic new client addition enables previously unseen institutions to join an already-trained federation within 0.01-0.04 Dice without retraining. Code is available at https://github.com/Tarun2201/MOSAIC.",
+      "authors": [
+        "Tarun Kumar Garg",
+        "Vaanathi Sundaresan"
+      ],
+      "primary_category": "eess.IV",
+      "categories": [
+        "eess.IV",
+        "cs.CV"
+      ],
+      "published": "2026-08-20T08:33:00+00:00",
+      "link": "https://arxiv.org/pdf/2608.19788v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "client-specific missing modalities, modality-agnostic robust federated segmentation",
+      "llm_evidence_cn": "客户端特定缺失模态，模态无关的鲁棒联邦分割",
+      "llm_evidence": "客户端特定缺失模态，模态无关的鲁棒联邦分割",
+      "canonical_evidence": "客户端特定缺失模态，模态无关的鲁棒联邦分割",
+      "llm_tldr_en": "MOSAIC addresses client-specific missing modalities in federated multimodal segmentation via modality-agnostic spectral alignment, enabling robust fusion and weakly supervised tumor segmentation under incomplete modality subsets.",
+      "llm_tldr_cn": "该论文提出MOSAIC框架，解决联邦学习中客户端特定模态缺失导致的融合质量下降问题。针对跨机构隐私约束下无法集中共享数据的场景，设计了模态无关的谱对齐机制，在图像级弱监督下统一不同模态子集的特征分布。该方法在脑肿瘤分割任务上验证了对多种缺失模态组合的鲁棒性和泛化性。这项研究为缺失模态下的多模态鲁棒学习提供了通用思路，虽面向医学图像分割，但对情感识别中的缺失模态处理具有方法论参考价值。",
+      "llm_tldr": "该论文提出MOSAIC框架，解决联邦学习中客户端特定模态缺失导致的融合质量下降问题。针对跨机构隐私约束下无法集中共享数据的场景，设计了模态无关的谱对齐机制，在图像级弱监督下统一不同模态子集的特征分布。该方法在脑肿瘤分割任务上验证了对多种缺失模态组合的鲁棒性和泛化性。这项研究为缺失模态下的多模态鲁棒学习提供了通用思路，虽面向医学图像分割，但对情感识别中的缺失模态处理具有方法论参考价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.19971v1",
+      "source": "arxiv",
+      "title": "Robust Incomplete Multimodal Sentiment Analysis via Iterative Proxy Correction",
+      "abstract": "Multimodal sentiment analysis aims to infer affective states by integrating language, visual, and acoustic cues. However, real-world multimodal inputs are often incomplete or corrupted, which can weaken cross-modal complementarity and introduce misleading information into downstream fusion. Existing proxy-based methods for incomplete MSA commonly rely on one-shot proxy construction to compensate for degraded language information, but the generated proxy may be coarse or unreliable at initialization. Prematurely injecting such a proxy into multimodal reasoning can propagate initial errors and compromise sentiment prediction. To address this limitation, we propose an iterative proxy correction framework for robust incomplete MSA. Our method constructs a language-oriented proxy from non-language modalities and progressively refines it under multimodal context through gated residual correction. The corrected proxy is then adaptively fused with the observed language representation according to an estimated language reliability score, allowing the model to balance proxy-based compensation and trustworthy linguistic evidence. In addition, we introduce a stage-wise latent correction objective that uses the complete language representation as a training-time semantic anchor to stabilize the proxy refinement trajectory. Extensive experiments on MOSI, MOSEI, and SIMS under diverse missing-modality settings demonstrate that the proposed framework consistently outperforms competitive baselines and achieves robust sentiment prediction under incomplete inputs.",
+      "authors": [
+        "Zhifa Geng",
+        "Subin Huang",
+        "Hao Guo",
+        "Junjie Chen",
+        "Sanmin Liu",
+        "Chao Kong"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-08-20T12:45:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.19971v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "robust incomplete multimodal sentiment analysis via iterative proxy correction for degraded language modality",
+      "llm_evidence_cn": "通过迭代代理校正实现缺失模态下的鲁棒多模态情感分析",
+      "llm_evidence": "通过迭代代理校正实现缺失模态下的鲁棒多模态情感分析",
+      "canonical_evidence": "通过迭代代理校正实现缺失模态下的鲁棒多模态情感分析",
+      "llm_tldr_en": "Proposes an iterative proxy correction framework for incomplete multimodal sentiment analysis, repeatedly refining the proxy for degraded language input to reduce error propagation and improve robustness.",
+      "llm_tldr_cn": "针对不完整多模态情感分析中一次性代理构造不可靠、早期注入会传播误差的问题，本文提出迭代代理校正框架，通过反复修正代理来补偿受损语言信息，并在融合中抑制误导性跨模态信号。在公开基准上的实验表明，该方法相比一次性代理方法显著提升情感预测的鲁棒性和准确性。该工作为缺失模态下的多模态情感分析提供了新的迭代修正范式。",
+      "llm_tldr": "针对不完整多模态情感分析中一次性代理构造不可靠、早期注入会传播误差的问题，本文提出迭代代理校正框架，通过反复修正代理来补偿受损语言信息，并在融合中抑制误导性跨模态信号。在公开基准上的实验表明，该方法相比一次性代理方法显著提升情感预测的鲁棒性和准确性。该工作为缺失模态下的多模态情感分析提供了新的迭代修正范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.20019v1",
+      "source": "arxiv",
+      "title": "Contrastive Mixed Prompt Learning for Incomplete Multimodal Sentiment Analysis with Unseen Modality Combination",
+      "abstract": "Incomplete multimodal sentiment analysis has garnered significant attention in recent years. Existing approaches typically assume that data is missing at random or are designed specifically for certain missing patterns, ignoring the modality combination inconsistency between training and testing phases. However, in real-world scenarios, the testing phase often encounters modal combinations that were not present during the training phase, which leads to insufficient generalization capabilities and unstable performance. In this paper, we introduce the problem of Incomplete Multimodal Sentiment Analysis with Unseen Modality Combinations (IMSAUMC), aiming to enhance model generalization for unseen modality combinations. To address this challenge, we propose the model named $\\textbf{C}$ontrastive $\\textbf{M}$ixed $\\textbf{P}$rompt $\\textbf{L}$earning ($\\textsf{CMPL}$) for IMSAUMC. It introduces a label-guided contrastive feature learning mechanism to learn robust and discriminative cross-modal representations. Additionally, we design modality-combination prompts with a soft router to facilitate better learning of various modality combinations. Furthermore, we introduce three prompt contrastive learning strategies, which enable effective learning of prompts corresponding to unseen modality combinations, thereby significantly strengthening the model's generalization capabilities in diverse testing scenarios. Extensive experiments on three widely used datasets demonstrate that $\\textsf{CMPL}$ achieves more than a 5% improvement in accuracy compared to state-of-the-art approaches.",
+      "authors": [
+        "Kaixin Xu",
+        "NaiJin Liu",
+        "Yulin Kang",
+        "Tangyue Jin",
+        "Zixuan Yu",
+        "Wenxi Zhao",
+        "Yibei Liu",
+        "Qianle Zhang",
+        "Yangyang Wu",
+        "Mengying Zhu",
+        "Meng Xi"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-20T13:29:49+00:00",
+      "link": "https://arxiv.org/pdf/2608.20019v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "incomplete multimodal sentiment analysis with unseen modality combinations, contrastive mixed prompt learning",
+      "llm_evidence_cn": "面向未知模态组合的不完整多模态情感分析，采用对比混合提示学习增强泛化",
+      "llm_evidence": "面向未知模态组合的不完整多模态情感分析，采用对比混合提示学习增强泛化",
+      "canonical_evidence": "面向未知模态组合的不完整多模态情感分析，采用对比混合提示学习增强泛化",
+      "llm_tldr_en": "Introduces incomplete multimodal sentiment analysis with unseen modality combinations and proposes contrastive mixed prompt learning to enhance generalization across missing-modality patterns.",
+      "llm_tldr_cn": "针对现实场景中测试阶段出现训练未见过的模态组合、导致不完整多模态情感分析泛化不足的问题，本文提出IMSAUMC问题设定，并设计对比混合提示学习方法，通过混合提示和对比学习增强模型对未知模态组合的适应能力。实验表明，该方法在未见模态组合上比仅针对特定缺失模式的现有方法更稳定、更准确。该工作为缺失模态下的鲁棒情感分析提供了重要补充。",
+      "llm_tldr": "针对现实场景中测试阶段出现训练未见过的模态组合、导致不完整多模态情感分析泛化不足的问题，本文提出IMSAUMC问题设定，并设计对比混合提示学习方法，通过混合提示和对比学习增强模型对未知模态组合的适应能力。实验表明，该方法在未见模态组合上比仅针对特定缺失模式的现有方法更稳定、更准确。该工作为缺失模态下的鲁棒情感分析提供了重要补充。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.19942v1",
+      "source": "arxiv",
+      "title": "Dynamic Gated Cross-Modal Fusion with Sarcastic-aware Contrastive Regularization for Multimodal Sarcasm Detection",
+      "abstract": "Multimodal sarcasm detection aims to identify sarcastic intent from multimodal content, where inconsistencies between literal meaning and contextual cues often signal irony. This task has attracted increasing research attention. However, accurate detection remains challenging due to instance-dependent modality contributions and misleading semantic consistency, where surface-level alignment masks underlying contradictory intent. Existing methods often rely on fixed fusion strategies and treat sarcasm as generic cross-modal mismatch, limiting their ability to capture subtle sarcasm cues and instance-specific modality interactions. To address these challenges, we propose a novel MSD framework that integrates Dynamic Gated Cross-Modal Fusion with Sarcastic-aware Contrastive Regularization (SaCR). Specifically, a bidirectional gated interaction module performs cross-modal feature filtering and adaptively calibrates textual and visual contributions at the instance level. A dynamic fusion gate further balances modality importance to generate more robust multimodal representations. Furthermore, SaCR is introduced as a label-aware contrastive regularization objective that encourages semantic consistency for non-sarcastic samples while suppressing misleading consistency in sarcastic cases. The proposed framework is trained end-to-end with a multi-objective learning strategy that jointly optimizes multimodal classification and auxiliary unimodal supervision. Extensive experiments on MMSD and MMSD2.0 demonstrate that the proposed method consistently outperforms strong baselines.",
+      "authors": [
+        "Hao Guo",
+        "Subin Huang",
+        "Junjie Chen",
+        "Zhifa Geng",
+        "Sanmin Liu",
+        "Chao Kong"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-08-20T12:02:06+00:00",
+      "link": "https://arxiv.org/pdf/2608.19942v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multimodal sarcasm detection with dynamic gated cross-modal fusion",
+      "llm_evidence_cn": "动态门控跨模态融合的多模态讽刺检测",
+      "llm_evidence": "动态门控跨模态融合的多模态讽刺检测",
+      "canonical_evidence": "动态门控跨模态融合的多模态讽刺检测",
+      "llm_tldr_en": "Multimodal sarcasm detection suffers from fixed fusion strategies and misleading semantic consistency. The proposed framework integrates dynamic gated cross-modal fusion with sarcasm-aware contrastive regularization, allowing instance-specific modality interactions and better detection of contradictory intent.",
+      "llm_tldr_cn": "多模态讽刺检测受制于固定的融合策略和误导性的表面语义一致性，难以捕捉细微讽刺线索。该文提出一种新框架，集成动态门控跨模态融合与讽刺感知对比正则化，按实例调整模态贡献并显式建模深层矛盾。实验在讽刺检测任务上验证了方法的有效性。该研究为多模态情感计算中处理语义不一致提供了动态融合的新思路。",
+      "llm_tldr": "多模态讽刺检测受制于固定的融合策略和误导性的表面语义一致性，难以捕捉细微讽刺线索。该文提出一种新框架，集成动态门控跨模态融合与讽刺感知对比正则化，按实例调整模态贡献并显式建模深层矛盾。实验在讽刺检测任务上验证了方法的有效性。该研究为多模态情感计算中处理语义不一致提供了动态融合的新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
