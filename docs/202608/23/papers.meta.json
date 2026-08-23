@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-23",
+  "date": "2026-08-23",
+  "generated_at": "2026-08-23T20:05:47",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/23/2608.15085v1-why-vision-fails-as-a-universal-bridge-rectifying-modality-asynchrony-in-multilingual-mllms",
+      "section": "quick",
+      "title_en": "Why Vision Fails as a Universal Bridge: Rectifying Modality Asynchrony in Multilingual MLLMs",
+      "authors": "Yihang Du, Juhao Liang, Zhengzhao Lai, Siyu Li, Yan Hu",
+      "date": "2026-08-15",
+      "pdf": "https://arxiv.org/pdf/2608.15085v1",
+      "score": "7.0",
+      "evidence": "纠正多语言多模态大模型中的模态异步，属于鲁棒多模态学习",
+      "tldr": "多语言多模态大模型即使具备强大的多语言文本能力，在非英语视觉推理上依然明显退化。机制分析揭示幽灵锚现象：语言输入向英语语义流形的翻译在早期层已完成，而视觉语义化相对滞后，导致视觉信号物理存在但功能上不可见。本文提出ANCHOR训练框架，以主动视觉锚定加速视觉语义早期涌现，让视觉表示主动引导语言翻译。在XMMMU、MaXM和CVQA上的实验显示，ANCHOR持续超过基线，恢复视觉因果影响，显著提升多语言视觉推理鲁棒性。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal large language models (MLLMs) exhibit substantial performance degradation in non-English visual reasoning, despite the strong multilingual competence of their text-only backbones. While mechanistic evidence from text-only models suggests that non-English inputs are routed through an English-centric latent space, the multimodal implications of this phenomenon remain unexplored. Through rigorous mechanistic analysis, we identify the \\textbf{Ghost Anchor} phenomenon: a temporal modality asynchrony where linguistic translation to the English semantic manifold completes in early layers, while visual semanticization remains immature. Consequently, visual signals are physically present yet functionally invisible during the early alignment window. To rectify this, we propose \\textbf{ANCHOR}, a training framework employing Proactive Visual Anchoring (PVA) to accelerate early visual semantic emergence, ensuring visual representations proactively guide linguistic translation. Mechanistic interventions confirm that ANCHOR successfully restores the causal influence of visual signals during early translation. Furthermore, extensive experiments on XMMMU, MaXM, and CVQA demonstrate that ANCHOR consistently outperforms standard baselines, achieving robust visual reasoning across both fine-tuned and zero-shot languages.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/23/2608.17084v1-uncertainty-aware-decision-making-in-multimodal-large-language-models",
+      "section": "quick",
+      "title_en": "Uncertainty-Aware Decision Making in Multimodal Large Language Models",
+      "authors": "Abderrahmene Boudiaf, Irfan Hussain, Sajid Javed",
+      "date": "2026-08-17",
+      "pdf": "https://arxiv.org/pdf/2608.17084v1",
+      "score": "7.0",
+      "evidence": "面向多模态大语言模型的不确定性感知决策，直接涉及鲁棒多模态学习",
+      "tldr": "多模态大语言模型在视觉、文本、时序、音频、图表等混合证据下决策，失败不仅是语言问题，更可能源于感知错误、弱grounding或模态冲突。本文提出以决策为中心的综述框架，将不确定性来源、可观测信号、风险校准与系统行为串连，系统梳理token/logit不确定性、语义分歧、扰动稳定性、grounding分数、口头置信、验证器等研究。核心论点是：不确定性应通过能否改善在证据不足、冲突或高风险场景下的行为来评判，而非仅看置信数字。该框架为多模态不确定性研究提供新视角，并指出源分解、行动感知基准、分布偏移校准、黑盒估计、扩展模态覆盖等开放问题。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal large language models (MLLMs) increasingly answer questions whose correctness depends on visual, textual, temporal, acoustic, document, chart, or embodied evidence. Their failures are therefore not only linguistic. A fluent answer may conceal poor input quality, a perceptual error, weak grounding, conflict between modalities, unstable reasoning, distribution shift, or a question that is not answerable from the supplied evidence. This survey organizes the literature on uncertainty-aware MLLMs around a decision-centered framework: uncertainty sources give rise to observable signals, signals must be calibrated or controlled for risk, and calibrated uncertainty should determine the system action. We review work on token and logit uncertainty, semantic disagreement, perturbation instability, grounding and attribution scores, verbalized confidence, verifier and judge scores, conformal prediction, selective answering, abstention, clarification, retrieval, self-checking, and escalation. The central argument is that uncertainty should not be evaluated only as a confidence number; it should be evaluated by whether it improves behavior under insufficient, conflicting, shifted, or high-risk multimodal evidence. We position this survey against text-only uncertainty and abstention surveys, broad MLLM surveys, MLLM hallucination surveys, and safety-oriented reviews. We conclude with open problems in source-aware decomposition, action-aware benchmarks, calibration under shift, black-box uncertainty estimation, broader modality coverage, reproducible reporting, and human-centered uncertainty communication.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/23/2608.16015v1-multi-scale-decomposed-convolution-refinement-network-for-visible-infrared-person-re-identification",
+      "section": "quick",
+      "title_en": "Multi-scale Decomposed Convolution Refinement Network for Visible-Infrared Person Re-Identification",
+      "authors": "Mingsheng Zheng, Zirui Jiang, Bo Liu, Yupeng Chen, Jun Zhang, Kai Zhao",
+      "date": "2026-08-17",
+      "pdf": "https://arxiv.org/pdf/2608.16015v1",
+      "score": "6.0",
+      "evidence": "跨模态差异与特征学习，面向鲁棒多模态识别",
+      "tldr": "可见光-红外行人重识别面临跨模态差异大、判别特征不足等挑战，现有方法在语义挖掘、跨模态融合及特征约束方面仍存在明显局限。为此，本文提出MDCRNet多尺度分解卷积细化网络，其核心是层级学习模块，由四个层级分解卷积注意力子模块构成，每个子模块结合轻量通道注意力与多尺度空间感知块，有效捕获多尺度空间依赖。同时设计联合判别度量损失，引入粒度判别损失来同时增强类内紧凑性与类间可分离性。在SYSU-MM01和RegDB两个基准上均取得最优结果，证明了该方法在跨模态行人重识别任务上的有效性和先进性。",
+      "tags": "query:mm",
+      "abstract_en": "Visible-infrared person re-identification (VI-ReID) suffers from cross-modal discrepancies and limited discriminative capabilities, leading to suboptimal recognition performance. Current approaches exhibit limitations in semantic mining, cross-modal fusion and feature constraints. To tackle these challenges, we propose MDCRNet, a Multi-scale Decomposed Convolution Refinement Network that enhances cross-modal feature learning and discriminative metric learning. Specifically, we introduce a Hierarchical Learning Module (HLM) containing four Hierarchical Decomposed Convolution Attention (HDCA) modules, each equipped with lightweight channel attention and multi-scale spatial perception blocks to capture multi-scale spatial dependencies. Moreover, we develop a Joint Discriminative Metric Loss (JDML) incorporating a novel Granularity Discriminative Loss (GDL) that simultaneously optimizes intra-identity compactness and inter-identity separability across modalities. Extensive experiments on SYSU-MM01 and RegDB datasets demonstrate that MDCRNet achieves state-of-the-art performance on both benchmarks. Code is available at https://github.com/Kevin-zms/MDCRNet.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

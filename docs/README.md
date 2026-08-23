@@ -6,24 +6,30 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-22
-- 运行时间：2026-08-22 20:31:11 UTC
+- 最新运行日期：2026-08-23
+- 运行时间：2026-08-23 20:05:42 UTC
 - 运行状态：成功
-- 本次总论文数：1
+- 本次总论文数：3
 - 精读区：0
-- 速读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-今日速读点云补全新框架ProjFormer，以几何投影Transformer结合跨模态语义约束，拿下6分关注度。最值得看的是其如何利用投影几何与语义信息提升补全精度，适合对3D视觉感兴趣者入门。建议普通读者聚焦其方法对比结论，不必深究实现细节。
-- 详情：[/202608/22/README](/202608/22/README)
+今日速读3篇论文，聚焦多模态大模型与可见光-红外行人再识别。最值得关注两篇7分工作：多模态LLM的模态异步修正策略与不确定性感知决策机制。下一步可优先精读这两篇，探索多模态模型的可靠性与跨模态对齐。
+- 详情：[/202608/23/README](/202608/23/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [ProjFormer: Point Cloud Completion via Geometric-Projective Transformer and Cross-Modal Semantic Constraints](/202608/22/2608.15104v1-projformer-point-cloud-completion-via-geometric-projective-transformer-and-cross-modal-semantic-constraints)  
+1. [Why Vision Fails as a Universal Bridge: Rectifying Modality Asynchrony in Multilingual MLLMs](/202608/23/2608.15085v1-why-vision-fails-as-a-universal-bridge-rectifying-modality-asynchrony-in-multilingual-mllms)  
+   标签：评分：7.0/10、query:mm
+   evidence：纠正多语言多模态大模型中的模态异步，属于鲁棒多模态学习
+2. [Uncertainty-Aware Decision Making in Multimodal Large Language Models](/202608/23/2608.17084v1-uncertainty-aware-decision-making-in-multimodal-large-language-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：面向多模态大语言模型的不确定性感知决策，直接涉及鲁棒多模态学习
+3. [Multi-scale Decomposed Convolution Refinement Network for Visible-Infrared Person Re-Identification](/202608/23/2608.16015v1-multi-scale-decomposed-convolution-refinement-network-for-visible-infrared-person-re-identification)  
    标签：评分：6.0/10、query:mm
-   evidence：利用跨模态语义约束对局部观测点云进行补全，属于面向缺失数据的生成/填补方法
+   evidence：跨模态差异与特征学习，面向鲁棒多模态识别
 
 
 <div class="dpr-home-promo-card">
