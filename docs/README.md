@@ -6,30 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-23
-- 运行时间：2026-08-23 20:05:42 UTC
+- 最新运行日期：2026-08-24
+- 运行时间：2026-08-24 20:42:20 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：0
+- 本次总论文数：4
+- 精读区：1
 - 速读区：3
 
 ### 今日简报（AI）
-今日速读3篇论文，聚焦多模态大模型与可见光-红外行人再识别。最值得关注两篇7分工作：多模态LLM的模态异步修正策略与不确定性感知决策机制。下一步可优先精读这两篇，探索多模态模型的可靠性与跨模态对齐。
-- 详情：[/202608/23/README](/202608/23/README)
+今日精选4篇多模态研究，精读1篇高分中文情感对话数据集，另有2篇聚焦多模态目标检测。  
+最值得关注的是《EmotionDialogCN》构建的自发式中文情感对话数据集（9.0分），及《A2DINOv3》提出的多模态社交协作检测思路。  
+下一步可优先精读情感对话数据集，或结合两篇检测文章对比其特征校准与协作策略。
+- 详情：[/202608/24/README](/202608/24/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [EmotionDialogCN: A Spontaneous Multimodal Dataset for Mandarin Emotional Dialogue](/202608/24/2608.20905v1-emotiondialogcn-a-spontaneous-multimodal-dataset-for-mandarin-emotional-dialogue)  
+   标签：评分：9.0/10、query:mm
+   evidence：面向普通话情感对话的多模态情绪识别数据集
 
 ### 速读区论文标签
-1. [Why Vision Fails as a Universal Bridge: Rectifying Modality Asynchrony in Multilingual MLLMs](/202608/23/2608.15085v1-why-vision-fails-as-a-universal-bridge-rectifying-modality-asynchrony-in-multilingual-mllms)  
+1. [SuppreSensing: Expert-Guided Feature Recalibration and Discrepancy Augmentation for Multimodal Object Detection](/202608/24/2608.20944v1-suppresensing-expert-guided-feature-recalibration-and-discrepancy-augmentation-for-multimodal-object-detection)  
    标签：评分：7.0/10、query:mm
-   evidence：纠正多语言多模态大模型中的模态异步，属于鲁棒多模态学习
-2. [Uncertainty-Aware Decision Making in Multimodal Large Language Models](/202608/23/2608.17084v1-uncertainty-aware-decision-making-in-multimodal-large-language-models)  
+   evidence：解耦共享共识与模态专属线索以增强多模态融合鲁棒性
+2. [A2DINOv3: Rethinking Multi-Modal Object Detection via Socialized Collaboration](/202608/24/2608.21099v1-a2dinov3-rethinking-multi-modal-object-detection-via-socialized-collaboration)  
    标签：评分：7.0/10、query:mm
-   evidence：面向多模态大语言模型的不确定性感知决策，直接涉及鲁棒多模态学习
-3. [Multi-scale Decomposed Convolution Refinement Network for Visible-Infrared Person Re-Identification](/202608/23/2608.16015v1-multi-scale-decomposed-convolution-refinement-network-for-visible-infrared-person-re-identification)  
+   evidence：通过多专家协作与适配器增强多模态目标检测鲁棒性
+3. [VT-MUSE: Multimodal Unified Sequential Visuotactile Representation Learning for Manipulation](/202608/24/2608.21290v1-vt-muse-multimodal-unified-sequential-visuotactile-representation-learning-for-manipulation)  
    标签：评分：6.0/10、query:mm
-   evidence：跨模态差异与特征学习，面向鲁棒多模态识别
+   evidence：用条件变分生成模型处理被掩码视觉序列以提升缺失模态鲁棒性
 
 
 <div class="dpr-home-promo-card">
