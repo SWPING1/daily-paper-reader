@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-25",
+  "date": "2026-08-25",
+  "generated_at": "2026-08-25T20:57:06",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/25/2608.21941v1-multimodal-prompt-learning-with-irregular-ehrs-for-robust-monitoring-of-critical-care-patients",
+      "section": "deep",
+      "title_en": "Multimodal Prompt Learning with Irregular EHRs for Robust Monitoring of Critical Care Patients",
+      "authors": "Yixin Yang, Yueyang Sun, Weichen Liu, Xianbing Zhao, Sicen Liu",
+      "date": "2026-08-22",
+      "pdf": "https://arxiv.org/pdf/2608.21941v1",
+      "score": "8.0",
+      "evidence": "面向多种缺失模态场景的多模态提示学习框架",
+      "tldr": "ICU重症监护依赖多模态电子健康记录，但临床应用中模态常部分缺失，导致多模态模型性能大幅下降。为此提出多模态提示学习框架，设计生成提示、缺失信号提示、缺失类型提示和时间提示四类互补提示，分别构建缺失模态替代表示、区分观测与生成表示、条件化模态可用性配置、进行条件特定时序聚合，在统一架构中实现缺失感知的模态内与跨模态建模。实验表明方法在两个缺失设置上优于现有方案，消融与鲁棒性验证了各提示的互补贡献。",
+      "tags": "query:mm",
+      "abstract_en": "Accurate assessment of patients in intensive care units (ICUs) is essential for timely clinical intervention and improved patient outcomes. Multimodal electronic health records (EHRs), including structured physiological time series and longitudinal clinical notes, provide complementary information for critical care prediction. However, in real-world clinical settings, individual modalities may be partially observed or entirely unavailable, resulting in substantial performance degradation for existing multimodal models. To address this challenge, we propose a multimodal prompt-learning framework for robust clinical prediction under diverse missing-modality scenarios. The proposed framework introduces four complementary types of prompts: generative prompts, missing-signal prompts, missing-type prompts, and temporal prompts. Generative prompts construct surrogate latent representations for unavailable modalities, while missing-signal prompts distinguish observed representations from generated ones. Missing-type prompts condition the model on different modality-availability configurations, whereas temporal prompts perform condition-specific aggregation over temporally encoded clinical sequences. Together, these prompts enable the model to capture missingness-aware intramodal dependencies and cross-modal interactions within a unified architecture. Extensive experiments demonstrate that our method outperforms existing approaches across evaluation metrics on two missingness settings. Ablation and robustness analyses further verify the complementary contributions of the four prompt types and the effectiveness of the proposed framework for clinical prediction from incomplete multimodal EHR data.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/25/2608.22863v1-adaptive-hierarchical-representation-alliance-for-multimodal-learning",
+      "section": "deep",
+      "title_en": "Adaptive Hierarchical Representation Alliance for Multimodal Learning",
+      "authors": "Chunlei Meng, Pengbin Feng, Jacqueline J. Pang, Chih-Ting Liao, Rong Fu, Zhaolu Kang, Zhongxue Gan, Chun Ouyang",
+      "date": "2026-08-24",
+      "pdf": "https://arxiv.org/pdf/2608.22863v1",
+      "score": "8.0",
+      "evidence": "层次共享-私有专家框架，应对噪声、不均衡或缺失输入",
+      "tldr": "多模态模型常将各模态在最终层潜空间对齐，但CKA分析显示文本需深层抽象而视觉/音频需中浅层证据，导致语义粒度错配。为此提出AHRA层次化共享-私有专家框架，通过共享对齐、私有去相关、门控增强与层次化融合解决该问题。在六个基准上显著提升多模态分类/意图/情感任务性能，并在噪声和缺失模态下保持鲁棒。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal models often align language, vision, and audio in a single final-layer latent space, implicitly assuming that task-relevant evidence emerges at the same semantic depth across modalities. Using layer-wise CKA analysis, we observe that this assumption leads to semantic granularity mismatch: textual cues usually require deeper contextual abstraction, whereas visual and acoustic cues often provide discriminative perceptual evidence in shallow or middle layers. This mismatch can flatten fine-grained modality-private cues and reduce reliability under noisy, imbalanced, or missing inputs. To address this, we proposed Adaptive Hierarchical Representation Alliance (AHRA), a hierarchical shared--private expert framework. AHRA factorizes each modality into shared and private streams across semantic levels, regularizes them with shared alignment and private decorrelation, routes shared information through a cross-modal expert, and enhances task-relevant private tokens with modality-specific experts guided by a sparsity-controlled soft-gating mechanism (foreground exam). A hierarchical co-fusion module then performs intra-level expert coordination and inter-level semantic selection. Experiments on six benchmarks across image-text classification, multimodal intent recognition, and trimodal sentiment analysis show that AHRA consistently improves over strong baselines and remains robust under noisy and missing-modality settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/25/2608.22312v1-text-anchored-semantic-perturbations-for-transferable-jailbreak-attacks-on-multimodal-large-language-models",
+      "section": "quick",
+      "title_en": "Text-Anchored Semantic Perturbations for Transferable Jailbreak Attacks on Multimodal Large Language Models",
+      "authors": "Wenyun Li, Guiping Cao, Xiangyuan Lan, Zheng Zhang",
+      "date": "2026-08-23",
+      "pdf": "https://arxiv.org/pdf/2608.22312v1",
+      "score": "7.0",
+      "evidence": "语义分解将跨模态因子与模态特定残差分离",
+      "tldr": "多模态大语言模型的安全对齐在跨模态表征上存在迁移漏洞，易被利用潜在语义线索发起越狱攻击。为此提出文本锚定语义扰动攻击TA-SPA，通过文本锚定语义分解分离跨模态语义因子与模态特有残差，并结合语义保持增强多样化有害目标锚点，实现黑盒条件下的可迁移扰动优化。实验证明该攻击在商业模型上有效且具备一定防御鲁棒性，控制实验支持因子分解的合理性，提示需加强表征级而非仅输入级的安全对齐。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Large Language Models (MLLMs) have achieved remarkable progress in vision-language interaction, yet their safety alignment remains vulnerable to jailbreak attacks. A key challenge is that safety behavior learned in the textual space does not reliably transfer to fused cross-modal representations, leaving multimodal inputs exploitable through latent semantic cues. We propose Text-Anchored Semantic Perturbation Attack (TA-SPA), a black-box jailbreak framework that optimizes transferable perturbations in a text-anchored semantic space. TA-SPA integrates Text-Anchored Semantic Factorization (TASF), which encourages the separation of cross-modal semantic factors from modality-specific residuals, with Semantic-Preserving Augmentation (SPA), which diversifies harmful target anchors while preserving semantic consistency. Experiments show strong attack effectiveness and transfer to commercial MLLMs, with competitive performance under representative defenses. Additional controls and probing support the intended factorization without implying perfect disentanglement, motivating representation-level safety alignment beyond input-level filtering.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/25/2608.22786v1-recog-reciprocal-co-evolution-for-multimodal-graph-learning",
+      "section": "quick",
+      "title_en": "ReCoG: Reciprocal Co-Evolution for Multimodal Graph Learning",
+      "authors": "Rui Xue, Tianfu Wu",
+      "date": "2026-08-24",
+      "pdf": "https://arxiv.org/pdf/2608.22786v1",
+      "score": "6.0",
+      "evidence": "处理多模态图结构中的噪声、不完整或错位边",
+      "tldr": "多模态图学习需联合训练图结构与异质属性，但现有方法常解耦两者，导致边噪声和语义错配。ReCoG通过端到端互惠交互耦合结构学习与表示学习：多模态图精炼器用跨模态证据修正边，耦合消息传递在精炼图上联合传播。在节点分类和链接预测任务上持续超越强基线，表明拓扑与语义共进化是多模态图学习的关键。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal graph learning requires jointly training over graph structure and heterogeneous node attributes, yet existing methods largely decouple these processes: prior multimodal graph neural networks (GNNs) focus on aligning modalities in a shared embedding space while operating on fixed or weakly adapted graph structures, and graph structure learning approaches infer topology from unimodal node representations without accounting for multimodal interactions. This separation fundamentally limits the ability of GNNs to capture semantically meaningful relationships in multimodal settings, where observed edges are often noisy, incomplete, or misaligned with underlying semantics. We propose ReCoG (Reciprocal Co-Evolution for Multimodal Graph Learning), a new learning paradigm that tightly couples graph structure learning and multimodal representation learning through end-to-end reciprocal interaction. Concretely, ReCoG integrates (i) a multimodal graph refiner that infers and corrects edges using cross-modal semantic evidence, and (ii) a coupled cross-modal message passing mechanism that performs joint intra- and inter-modality propagation over the refined graph. This unified design yields greater expressiveness than decoupled or two-stage formulations and allows dynamic interaction between topology and representation learning. Across diverse benchmarks for node classification and link prediction, ReCoG consistently outperforms strong multimodal graph structure learning baselines, including graph foundation models. Our results demonstrate that reciprocal co-evolution of structure and semantics is important for effective multimodal graph learning, challenging the prevailing separation between topology and representation learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
