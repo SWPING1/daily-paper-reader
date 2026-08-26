@@ -6,32 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-25
-- 运行时间：2026-08-25 20:57:01 UTC
+- 最新运行日期：2026-08-26
+- 运行时间：2026-08-26 22:07:09 UTC
 - 运行状态：成功
 - 本次总论文数：4
 - 精读区：2
 - 速读区：2
 
 ### 今日简报（AI）
-今日精读4篇论文，聚焦多模态学习，其中医疗监测与表征对齐研究值得重点关注。最值得看的是面向重症患者的非规整EHR多模态提示学习，以及跨模态层次表征融合方案。下一步建议普通读者优先理解多模态对齐基础，再延伸至鲁棒性与安全应用。
-- 详情：[/202608/25/README](/202608/25/README)
+今日共读4篇论文，其中2篇精读、2篇速读。最值得关注的是9.0分的《LG-GER》——用语言引导与多模态证据蒸馏提升组情绪识别，以及8.0分的《FactoMap》——突破均匀局部等距与拓扑限制实现解耦表征。建议普通读者优先了解多模态蒸馏与表征解耦在情绪识别和特征学习中的应用潜力。
+- 详情：[/202608/26/README](/202608/26/README)
 
 ### 精读区论文标签
-1. [Multimodal Prompt Learning with Irregular EHRs for Robust Monitoring of Critical Care Patients](/202608/25/2608.21941v1-multimodal-prompt-learning-with-irregular-ehrs-for-robust-monitoring-of-critical-care-patients)  
+1. [LG-GER: Language-Guided Group Emotion Recognition via Multimodal Evidence Distillation](/202608/26/2608.23880v1-lg-ger-language-guided-group-emotion-recognition-via-multimodal-evidence-distillation)  
+   标签：评分：9.0/10、query:mm
+   evidence：通过语言引导的证据蒸馏进行多模态情感识别
+2. [Beyond Uniform Local Isometry and Topology: FactoMap for Disentangled Representations](/202608/26/2608.24762v1-beyond-uniform-local-isometry-and-topology-factomap-for-disentangled-representations)  
    标签：评分：8.0/10、query:mm
-   evidence：面向多种缺失模态场景的多模态提示学习框架
-2. [Adaptive Hierarchical Representation Alliance for Multimodal Learning](/202608/25/2608.22863v1-adaptive-hierarchical-representation-alliance-for-multimodal-learning)  
-   标签：评分：8.0/10、query:mm
-   evidence：层次共享-私有专家框架，应对噪声、不均衡或缺失输入
+   evidence：提出新的解耦表示学习方法FactoMap
 
 ### 速读区论文标签
-1. [Text-Anchored Semantic Perturbations for Transferable Jailbreak Attacks on Multimodal Large Language Models](/202608/25/2608.22312v1-text-anchored-semantic-perturbations-for-transferable-jailbreak-attacks-on-multimodal-large-language-models)  
+1. [Recognition-Conditioned Reasoning: A Training-Free Multimodal-LLM Pipeline for Fine-Grained Micro-Action Understanding](/202608/26/2608.21022v1-recognition-conditioned-reasoning-a-training-free-multimodal-llm-pipeline-for-fine-grained-micro-action-understanding)  
    标签：评分：7.0/10、query:mm
-   evidence：语义分解将跨模态因子与模态特定残差分离
-2. [ReCoG: Reciprocal Co-Evolution for Multimodal Graph Learning](/202608/25/2608.22786v1-recog-reciprocal-co-evolution-for-multimodal-graph-learning)  
-   标签：评分：6.0/10、query:mm
-   evidence：处理多模态图结构中的噪声、不完整或错位边
+   evidence：用多模态大模型识别泄露情感状态的微动作，属于多模态情感识别
+2. [Task-disentangled Low-Rank Adaptation for Versatile Audio-visual Multi-modal Learning Tasks within a Unified Framework](/202608/26/2608.24209v1-task-disentangled-low-rank-adaptation-for-versatile-audio-visual-multi-modal-learning-tasks-within-a-unified-framework)  
+   标签：评分：7.0/10、query:mm
+   evidence：视听多模态学习中的任务解耦低秩适配；显式解耦表示
 
 
 <div class="dpr-home-promo-card">
