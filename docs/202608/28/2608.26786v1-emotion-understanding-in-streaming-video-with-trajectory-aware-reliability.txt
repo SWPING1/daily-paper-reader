@@ -1,0 +1,685 @@
+Title: Emotion Understanding in Streaming Video with Trajectory-Aware Reliability
+
+URL Source: https://arxiv.org/pdf/2608.26786v1
+
+Published Time: Fri, 28 Aug 2026 00:49:44 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+## Emotion Understanding in Streaming Video with Trajectory-Aware Reliability 
+
+Qingsong Wang 1,2, Qigong Lei 1, Zitong Wang 2, Bohan Yu 2, Zhiang Dong 1
+
+Jian Liu 2,†, Weiqiang Wang 2, Chang Yao 1,3,†, Jingyuan Chen 1,†
+
+> 1
+
+Zhejiang University 
+
+> 2
+
+Ant Group 
+
+> 3
+
+Innovation and Management Center, School of Software Technology (Ningbo), Zhejiang University 
+
+{wqsong, changy, jingyuanchen}@zju.edu.cn, rex.lj@antgroup.com 
+
+> †
+
+Corresponding authors. 
+
+Abstract 
+
+Video emotion understanding is commonly studied as an offline classification problem, where the complete video segment is available before prediction. Real-time interaction, how-ever, requires emotion decisions from incom-plete and evolving evidence. This paper studies streaming video emotion understanding as a reliability-aware decision process over evolv-ing emotion beliefs. In this setting, a single confident prefix prediction can still be unreli-able when the underlying belief trajectory is unstable or repeatedly switches across emo-tion classes. We propose TRACE, a trajectory-aware reliability framework that forms low-latency emotion beliefs from streaming au-dio prefixes, estimates reliability from confi-dence, entropy, stability, and class-switching patterns, and selectively invokes contextual be-lief reinterpretation with visual, textual, and neighboring-utterance evidence. TRACE keeps stable cases in the low-latency online path-way while allocating stronger multimodal rea-soning to uncertain cases that remain ambigu-ous. Experiments on StreamMER, MELD, and MER2024 show that TRACE improves the accuracy-cost trade-off, retaining most full-context gains while reducing unnecessary con-textual reasoning. Our code is available at 
+
+https://github.com/APTX574/Trace .
+
+1 Introduction 
+
+Video emotion understanding is fundamental to affective computing, dialog systems, and human-computer interaction (Zenkri and Brock, 2026; Pan et al., 2023; Sun et al., 2021; Wang et al., 2026). Existing multimodal emotion recognition methods typically model facial expressions, acoustic cues, and linguistic content jointly, achieving substantial progress (Cheng et al., 2024; Huang et al., 2025; Yang et al., 2025). However, most of these meth-ods assume an offline setting where the complete video segment is available. In real-time interactive ··· ··· ··· ···     
+
+> �1�2�3�4
+> Commit Prediction Now Request Context
+> Offline Full Observation
+> Emotion Prediction
+> Offline
+> Prediction Trajectory
+> Stable Unstable
+> video text dialogue
+> TRACE: Online Stream Decision
+
+Figure 1: TRACE for streaming emotion understand-ing. Unlike offline emotion recognition, which predicts after full observation, TRACE tracks the evolving emo-tion belief during streaming inference. Stable trajec-tories support immediate online commitment, whereas unstable trajectories trigger contextual reinterpretation with video, text, and dialogue evidence. 
+
+scenarios, such as embodied intelligence, online mental health support, and remote meeting analy-sis (Zenkri and Brock, 2026; Astrin et al., 2026; Zhang et al., 2026a), a system must perceive user emotions dynamically as the interaction unfolds, rather than delaying its analysis until the full video segment concludes. Although existing streaming video understand-ing methods (Liu et al., 2026; He et al., 2026; Luo et al., 2026) can recognize actions, events, or scenes in real time, they generally wait for an event to fully conclude before making a decision (Kang et al., 2024; Eyzaguirre et al., 2024; Song et al., 2024). Furthermore, they treat predictions at differ-ent time steps as independent static outputs. These methods translate poorly to streaming emotion un-derstanding, which possesses three distinct charac-teristics. First, emotional expression is often antici-patory: even before an utterance or segment is fully observed, early audio, facial, or semantic cues may already contain sufficient evidence. Second, the prediction for the same utterance changes dynami-cally as new information arrives during streaming 1arXiv:2608.26786v1 [cs.MM] 27 Aug 2026 inference. The temporal trajectory of these changes reflects not only the current classification state, but also the process by which emotional evidence accu-mulates, beliefs stabilize, and uncertainty remains. In addition, different modalities exhibit asymmet-ric arrival patterns and decision value in streaming scenarios. Compared with vision and text, which often provide contextual supplementation and se-mantic correction, audio carries rich low-latency cues such as intonation, pauses, and rhythm. It is therefore more suitable for incremental process-ing and serves as a natural primary signal for low-latency belief tracking. Based on these observations, this paper argues that Streaming Video Emotion Understanding 
+
+should not be reduced to independent classification over multiple truncated prefixes. Instead, it should be formulated as a dynamic process in which an emotion belief is continuously formed, evaluated, and revised over time. This process requires the system to answer two core questions: whether the evidence accumulated so far is sufficient for low-latency prediction, and whether richer context is needed for joint reasoning. For samples whose beliefs converge quickly, the model should output predictions immediately to avoid unnecessary wait-ing. For samples whose beliefs keep fluctuating, re-main insufficiently confident, or contain ambiguity, the model should defer the decision and introduce additional evidence for revision when needed. Motivated by these observations, we pro-pose TRACE, a trajectory-aware reliability frame-work for streaming video emotion understanding. TRACE contains three core components. As shown in Figure 1, TRACE shifts emotion understanding from offline full-observation prediction to online stream decision-making. Online Prefix Belief For-mation continuously estimates the emotion distri-bution and confidence state of the current segment from audio prefixes, producing an evolving belief trajectory over time. Trajectory-Calibrated Reli-ability Estimation adaptively determines whether the current prediction is reliable according to the confidence, stability, and trend of this trajectory, and decides whether the system should commit to the current belief, continue accumulating evidence, or request contextual reinterpretation. Contextual Belief Reinterpretation is activated only when the reliability estimation judges the current belief to be insufficient. It performs deeper cross-modal reinterpretation of the current segment by fusing vi-sual cues, textual semantics, neighboring-segment context, and the prefix belief trajectory. Our main contributions are as follows: • We define the task of streaming video emotion un-derstanding and introduce StreamMER, a dataset designed to evaluate emotion recognition under partial and progressively revealed observations. • We propose a framework based on asymmetric evidence trajectories, which uses low-latency au-dio prefixes to model dynamic emotion belief evolution and adaptively decides when to invoke costly cross-modal reasoning. • Experiments on emotion understanding datasets show that our method reduces response latency and cross-modal reasoning calls while preserving prediction performance. 
+
+2 Related Work 
+
+Streaming video understanding. Recent video-language models (Liang et al., 2026; Luo et al., 2026) have begun to address real-time and long-form video understanding. Methods such as BOLT (Liu et al., 2025) and VLog (Lin and Shou, 2025) improve long-video understanding through frame selection or retrieval-based video representa-tion, while Flash-VStream (Zhang et al., 2025) and StreamingVLM (Xu et al., 2025) further target effi-cient understanding over continuous video streams. Dispider (Qian et al., 2025) and ViSpeak (Fu et al., 2025) study interactive streaming scenarios, where the model needs to perceive ongoing visual inputs and respond in real time. However, these works mainly focus on general video events, actions, or user instructions, and usually do not model how an emotion prediction changes under partial observa-tion. In contrast, our work studies streaming video emotion understanding, where the system tracks evolving emotion beliefs and decides whether to commit early, wait for more evidence, or request contextual reinterpretation. 
+
+Video emotion understanding. Recent mul-timodal emotion models extend large language models to emotion recognition and reasoning. Emotion-LLaMA (Cheng et al., 2024), Affect-GPT (Lian et al., 2025), EmoLLM (Yang et al., 2024), Emotion-Qwen (Huang et al., 2025), and Omni-Emotion (Yang et al., 2025) show that in-struction tuning, emotion-specific datasets, facial cues, acoustic cues, and multimodal reasoning can improve video emotion understanding. These meth-ods provide strong full-context emotion recognition ability, but they generally assume that the complete 2... ...   
+
+> Audio Prefix �1:� joy sadness anger surprise …0.13 0.25 0.16 0.28 0.21
+> �2(�)
+
+Online Prefix Belief Formation   
+
+> joy sadness anger surprise …0.23 0.07 0.16 0.12 0.14
+> �1(�) joy sadness anger surprise …0.09 0.11 0.16 0.12 0.14
+> �t(�)
+> Belief Trajectory ��,1:�
+
+Contextual Belief Reinterpretation      
+
+> Visual Frames �(�)
+> Transcript �(�)
+> Neighbor Utterances ��
+> Memory ��−1
+> Belief Trajectory ��,1:�
+> “… I just feel overwhelmed sometimes.”
+> Contextual Belief Revision
+> ��
+> Streaming Prefixes (arrive progressively Video Stream )
+
+Current Utterance ��Previous Utterance ��−� Future Utterance ��+�       
+
+> Incremental Belief Constructor
+> ��−1 ����+1
+> …
+> (dialog, history summary)
+> �2(�) �1(�) �3(�) �t(�)
+> …
+> Revised Prediction
+> y�
+> rev
+> Reason ��
+> (explanation) Updated Memory ��
+> (current utterance)
+
+�1 �2 �t: (� �, � �) Reliability Estimation      
+
+> Low High
+> Risk ��(�)
+> Gain g�(�)
+> Online Prediction
+> ��on
+> Revision Prediction
+> y�
+> rev
+> Low High Select Trigger Online
+
+Figure 2: Overview of TRACE. The framework first forms prefix-conditioned emotion beliefs from streaming audio, estimates trajectory-calibrated reliability from the evolving belief trajectory, and selectively performs contextual belief reinterpretation for uncertain samples. 
+
+video, audio, text, or dialogue context is available before prediction. This offline setting is different from real-time interaction, where emotion judg-ments must often be made before an utterance is fully observed. TRACE is complementary to these models: it first forms low-latency emotion beliefs from streaming audio prefixes, and only invokes richer visual, textual, and contextual rea-soning when the belief trajectory is unreliable. 
+
+3 Method 
+
+3.1 Problem Setup and Framework Overview 
+
+Given a video V , we apply voice activity detection to segment it into an ordered sequence of utterance-level units for streaming emotion analysis: 
+
+V = {V1, V 2, . . . , V N }, (1) where Vk denotes the k-th utterance segment and its corresponding emotion analysis unit. In the streaming setting, models needs to predict the emotion of the current utterance before observ-ing it completely. For utterance Vk, we denote the multimodal prefix observed up to time step t as: 
+
+Vk,t = {vk, 1, . . . , v k,t }, vk,t = {at, o t}, (2) where ak,t and ok,t denote the audio and visual information arriving at time step t, respectively. When predicting the emotion of Vk, the sys-tem can access the historical utterances V1: k−1 =
+
+{V1, . . . , V k−1} and the current prefix Vk,t . How-ever, it cannot access future content within Vk or any subsequent utterances Vk+1 , . . . , V N . There-fore, unlike conventional offline emotion recog-nition, streaming emotion understanding assumes that the complete utterance, transcript, and multi-modal context are unavailable at prediction time. Formally, the model continuously estimates the emotion distribution of the current utterance as: 
+
+p (yk | V 1: k−1, V k,t ) , (3) and dynamically updates its prediction as new evi-dence arrives. As shown in Figure 2, TRACE separates low-latency Online Prefix Belief Formation from selec-tive Contextual Belief Reinterpretation. It tracks emotion beliefs from audio prefixes and invokes visual, textual, and neighboring-utterance context only when the belief trajectory remains unreliable, thereby reducing overall inference latency. 
+
+3.2 Online Prefix Belief Formation 
+
+We use Qwen2.5-Omni-3B to conduct Online Pre-fix Belief Formation over streaming inputs. Au-dio prefixes serve as the primary evidence source because audio signals arrive continuously and pro-vide low-latency emotional cues, such as intona-tion, pauses, speaking rate, and energy changes. At each time step t, the model takes as input a sequence composed of the query and the current 3audio prefix, denoted as [q, a 1: t], and outputs log-its over the emotion label space. We then apply the softmax function to compute the probability of each emotion label y ∈ Y , which is defined as the emotion belief distribution at the current time step: 
+
+pk,t (y) = exp( ℓt(y)) 
+
+P 
+
+> y′∈Y
+
+exp( ℓt(y′)) , (4) where ℓt(y) denotes the output logit for label y.The online model’s predicted label at the current time step is defined as: ˆyon 
+
+> k,t
+
+.It is worth noting that although the model pre-dicts a label ˆyk,t at each time step, these predic-tions are used only to construct the belief trajectory 
+
+B1: t = {p1, p 2, . . . , p t} and are not concatenated into the input sequence of the next time step. Thus, subsequent belief updates are always driven by newly arrived audio evidence, rather than by an autoregressive accumulation of the model’s earlier predictions. This avoids repeatedly encoding the full audio history and allows the model to exploit the KV cache, meeting the efficiency requirements of online inference. During training, we apply supervision to all au-dio prefixes and use the emotion label yk of the current utterance as the training target. Since very early prefixes may contain weak emotional evi-dence, we weight different time steps according to the observation ratio. Let Tk denote the num-ber of prefix steps for the current utterance, and let rt = t/T k denote the observation ratio of the 
+
+t-th prefix. The training objective of the streaming belief estimator is defined as 
+
+LIBC (Vk, y k) = 
+
+PTk 
+
+> t=1
+
+rt CE( pk,t , y k)
+
+PTk 
+
+> t=1
+
+rt
+
+, (5) where CE( ·, ·) denotes the cross-entropy loss. This objective encourages the model to form usable emo-tion beliefs from early prefixes, while assigning higher supervision weights to prefixes closer to the complete segment. 
+
+3.3 Trajectory-Calibrated Reliability Estimation 
+
+The core of online decision making is to determine whether the current belief is already reliable. The confidence of a single prefix only describes the sharpness of the current distribution, but it does not indicate whether the distribution is gradually formed from stable evidence or induced by short-term fluctuations. Hence, we extract a trajectory state zk,t =
+
+ϕ(Bk, 1: t) from the belief trajectory, and use it to estimate both the risk of directly committing the current prediction and the potential gain of con-textual reinterpretation. The state zk,t includes the current distribution, confidence changes, entropy changes, class switching patterns, distributional sta-bility, and the observation ratio t/T k. More details and analyses are reported in the Appendix F. Based on zk,t , we train a two-head reliability model. The risk head qψ(zk,t ) estimates the prob-ability that the current belief prediction is incor-rect, while the gain head gω(zk,t ) estimates whether Contextual Belief Reinterpretation, whose output 
+
+ˆyrev  
+
+> k
+
+is described in Section 3.4, can correct the current error. The risk label is defined as: 
+
+ek,t = I(ˆ yon 
+
+> k,t
+
+̸ = yk), (6) with I(·) denoting the indicator function, and the gain label is defined as: 
+
+bk,t = I(ˆ yon 
+
+> k,t
+
+̸ = yk ∧ ˆyrev  
+
+> k
+
+= yk). (7) The heads estimate whether the belief is wrong and whether additional context can correct it. The two-head model shares an MLP encoder and uses two sigmoid heads to output qψ and gω,respectively. The training objective is the sum of two binary cross-entropy losses: 
+
+Lrel = X
+
+> k,t
+
+wk,t 
+
+h
+
+BCE( qψ(zk,t ), e k,t )+ BCE( gω(zk,t ), b k,t )
+
+i
+
+,
+
+(8) where wk,t emphasizes samples that truly benefit from reinterpretation, reduces the influence of sam-ples where reinterpretation instead causes errors. The reliability estimates are then used as part of a learned online decision policy. We feed the trajectory state zk,t , the risk estimate qψ(zk,t ), and the gain estimate gω(zk,t ) into a lightweight policy head fθ, which predicts the action distribution at the current time step: 
+
+sk,t = softmax ( fθ (zk,t , q ψ(zk,t ), g ω(zk,t ))) ,
+
+(9) where sk,t is the action distribution over commit-ting the current prediction, waiting for more evi-dence, and requesting contextual reinterpretation. During online inference, the selected action is: 
+
+ak,t = arg max  
+
+> a∈{ commit ,wait ,reinterpret }
+
+sk,t (a). (10) 4Table 1: Overall emotion recognition results on three datasets. Values are percentages. F1 denotes Weighted-F1. TRACE achieves performance close to full contextual reinterpretation while invoking reinterpretation for only 55.58%, 54.63%, and 58.21% of samples on StreamMER, MELD, and MER2024, respectively.                                                                                             
+
+> Method StreamMER MELD MER2024 Acc. F1 UAR Acc. F1 UAR Acc. F1 UAR Gemini-3-Flash 57.98 56.68 58.59 50.46 50.34 36.75 77.07 78.17 75.71 Gemini-3-Pro 63.08 62.84 66.91 61.34 62.27 45.62 86.82 86.95 84.68 Emotion-Llama 31.26 29.18 27.18 28.85 24.10 33.61 43.28 45.73 50.99 AffectGPT 53.66 49.86 48.51 55.65 51.33 56.67 78.80 82.46 75.74 Emotion-Qwen 59.51 58.39 48.45 51.76 52.04 38.51 82.12 82.50 80.77 ViDEmo 55.46 58.10 32.25 57.13 59.20 46.05 66.55 66.92 66.98 Online belief formation only 59.87 54.56 52.58 58.94 56.08 38.67 81.18 80.09 75.29 Full contextual reinterpretation 70.18 70.01 66.47 70.30 68.90 51.51 87.42 87.09 85.71
+> TRACE 69.47 68.10 63.80 68.28 70.14 41.42 85.46 85.11 83.04
+
+3.4 Contextual Belief Reinterpretation 
+
+When Trajectory-Calibrated Reliability Estimation judges the current audio belief as unreliable, the system enters Contextual Belief Reinterpretation. For such cases, audio prefixes may remain unstable or ambiguous, and the correct emotion may depend on facial expressions, spoken content, or preceding context. Thus, we treat cross-modal reasoning as a selectively requested reinterpretation process rather than a default offline classification step. If the policy fθ selects reinterpretation, the sys-tem invokes the cross-modal model Gϕ. Unlike Online Prefix Belief Formation, Gϕ uses richer evi-dence at the cost of additional latency to re-evaluate high-risk utterances. For a selected utterance Vk, it receives the multimodal information of the current utterance, the preceding context, historical memory, and the formed belief trajectory: 
+
+Ck = {a(k), o (k), s (k), V k−1, M k−1, Bk, 1: t}, (11) where a(k) denotes the audio of the current utter-ance, o(k) denotes the visual observations sampled from the current video, s(k) denotes textual seman-tic information, Vk−1 denotes the available context from the preceding utterance, Mk−1 denotes the previous contextual memory, and Bk, 1: t denotes the prefix belief trajectory formed before reinter-pretation is requested. In implementation, visual observations are sampled from the original video at 2 fps and processed by the visual encoder of Qwen2.5-Omni-7B 1. We explicitly feed Bk, 1: t into the reinterpretation model because the belief trajec-tory reveals why Online Prefix Belief Formation produces an unreliable judgment, such as frequent class switching or long-term competition among 
+
+> 1https://arxiv.org/abs/2503.20215
+
+multiple classes. Therefore, the reinterpretation model does not simply reclassify the current utter-ance, but performs contextual evidence supplemen-tation and re-judgment based on the already formed dynamic belief. The output of the reinterpretation model is: 
+
+(ˆ yrev  
+
+> k
+
+, R k, M k) = Gϕ(Ck), (12) where ˆyrev  
+
+> k
+
+is the reinterpreted emotion classifica-tion result, Rk is the classification rationale, and 
+
+Mk is the structured summary of the current utter-ance together with the updated contextual memory. We further ablate the roles of rationale generation and contextual memory summary in Appendix D. Therefore, the final prediction is determined by the action selected by the online policy. If the pol-icy chooses immediate commitment, the system uses the current belief prediction ˆyon 
+
+> k,t
+
+. If the policy chooses waiting, the system continues to accumu-late new prefixes. If the policy chooses contextual reinterpretation, the system uses the reinterpreted result ˆyrev  
+
+> k
+
+. Through this design, the system keeps samples supported by stable audio trajectories in Online Prefix Belief Formation, and introduces stronger visual, textual, and contextual reasoning only for samples whose trajectories require addi-tional evidence. 
+
+4 Experiments 
+
+4.1 Experimental Setup Dataset. We construct StreamMER, a streaming-oriented video emotion dataset from the first two seasons of Friends . Unlike conventional utterance-level emotion datasets that treat each utterance as an isolated sample, StreamMER preserves local di-alogue context and scene-level interaction. We first 5Joy Sadness Anxiety Neutral 
+
+> Come on ! It's my birthday! Just hang in there, okay? Okay, I'll go out first, all right? 12 36 We're in trouble. We've only got 12 hours and 36 minutes left. Where were we? Oh. Okay. Five card draw. Uh, jacks are better. Nothing wild...
+
+Figure 3: Acoustic evidence in early audio prefixes. Spectrogram examples show that different emotion cat-egories exhibit distinguishable acoustic patterns within short prefix observations. 
+
+segment the episodes into coherent narrative units of approximately 1.5 minutes using the scripts, sub-title files, and video content. Each segment con-tains a short conversational scene with surrounding dialogue, speaker interactions, and local emotional context. For each utterance in a segment, we gen-erate an initial emotion annotation with the help of Gemini-3.1-Pro 2. The resulting StreamMER dataset contains 8,111 training utterances and 815 test utterances. We provide construction details and dataset statistics in Appendix A, and annota-tion prompts in Appendix G. In our experiments, StreamMER is evaluated under the streaming protocol: Online Prefix Be-lief Formation only observes the arrived audio prefix, while Contextual Belief Reinterpretation is requested selectively and its additional latency and inference cost are counted. We also conduct experiments on MELD (Poria et al., 2019) and MER2024 (Lian et al., 2024) as offline multimodal emotion understanding benchmarks, since their standard settings and existing baselines do not pro-vide strict streaming observations. 
+
+Metrics. We report Accuracy, Weighted-F1, and UAR for emotion recognition. For streaming eval-uation on StreamMER, we further report Average Decision Time, Normalized Decision Ratio, Rein-terpretation Rate, and real-time factor (RTF). Rein-terpretation Rate denotes the proportion of samples assigned to Contextual Belief Reinterpretation. 
+
+Baselines. We compare TRACE with open-source multimodal emotion models, including Emotion-LLaVA (Cheng et al., 2024), Affect (Lian et al., 2025), Emotion-Qwen (Huang et al., 2025), and ViDEmo (Zhang et al., 2026b), as well as closed-
+
+> 2
+
+Gemini-3.1-Pro model card 0.2 0.5 1 2 4 
+
+> Latency per sample (s, log scale)
+> Online Belief
+> TRACE
+> ViDEmo Full Reinterp. AffectGPT Emo-Qwen
+> Emo-LLaMA
+> RTF
+> 0.055
+> 0.091
+> 0.108
+> 0.127
+> 0.128
+> 0.297
+> 0.860
+> Mean Median
+
+Figure 4: Latency distribution and real-time factor (RTF) of different inference configurations. 
+
+source multimodal LLMs such as Gemini-3-Flash 3
+
+and Gemini-3-Pro. On StreamMER, we further compare streaming decision baselines, including Full-Prefix Belief Formation, Universal Contextual Reinterpretation, Rule-Based Reliability Estima-tion, Trajectory-Calibrated Reliability Estimation, and Oracle Reinterpretation Policy. Oracle Reinter-pretation Policy uses ground-truth labels to select between belief-formation and reinterpretation pre-dictions and is reported only as an upper bound. 
+
+Implementation details. Online Prefix Belief For-mation uses Qwen2.5-Omni-3B, and Contextual Belief Reinterpretation uses Qwen2.5-Omni-7B. For reinterpretation, video frames are sampled at 2 fps and resized to 448 × 448 . Trajectory-Calibrated Reliability Estimation uses trajectory features such as confidence, entropy, class margin, label switch-ing, JS divergence, top-1 persistence, and observa-tion ratio. More details are provided in Appendix F, and inference prompts are provided in Appendix G. 
+
+4.2 Overall Results 
+
+Table 1 reports the overall emotion recognition re-sults on the three datasets. Full contextual reinter-pretation achieves the best overall performance on all three datasets, suggesting that complete multi-modal information and contextual evidence provide stable value for emotion recognition. Compared with general multimodal baselines, this model in-corporates preceding conversational context on StreamMER and MELD, in addition to the com-plete audio, visual, and textual information of the current utterance. It therefore better handles emo-tion samples that depend on context. This indi-cates that contextual reinterpretation provides an effective complement for samples with insufficient information or unstable predictions in streaming 
+
+> 3
+
+Gemini-3-Flash model card 
+
+60.2 0.3 0.4 0.5 0.6 0.7 0.8 
+
+> RR
+> 0.62 0.64 0.66 0.68 0.70
+> ACC
+> Confidence Threshold Confidence Linear Confidence Reliability Trajectory Reliability
+
+Figure 5: Accuracy across contextual reinterpre-tation rates. Trajectory Reliability shows a better accuracy-cost trade-off than confidence-based policies. 
+
+emotion understanding. At the same time, online belief formation only already outperforms or approaches general multi-modal baselines in several settings. For example, on StreamMER, it achieves 59.87% Accuracy, out-performing Affect and ViDEmo and approaching Emotion-Qwen. This result suggests that streaming audio prefixes contain useful emotion cues and can support effective early belief formation. Figure 3 further supports this observation: early audio pre-fixes exhibit emotion-relevant spectral and tempo-ral patterns. As these prefix predictions evolve over time, they naturally form belief trajectories that can be used to judge prediction stability. Additional trajectory analyses are provided in Appendix B. A complete set of prefix spectrogram visualizations is provided in Appendix H. TRACE preserves most of the gains from full contextual reinterpretation while substantially re-ducing reinterpretation requests. On Stream-MER, TRACE improves Accuracy from 59.87% to 69.47% over online belief formation only, while in-voking contextual reinterpretation for only 55.58% of samples. On MER2024 and MELD, TRACE similarly uses reinterpretation for only 58.21% and 54.63% of samples, respectively, while remaining close to full contextual reinterpretation in Accuracy and F1. These results show that TRACE improves the accuracy-cost trade-off by using belief trajec-tories to decide when to commit early and when to request stronger contextual reasoning. The fol-lowing sections further analyze this trade-off from latency, routing, and ablation perspectives. 
+
+4.3 Latency and Throughput 
+
+Streaming emotion understanding requires timely prediction under real-time interaction constraints. We therefore compare the per-sample latency and real-time factor (RTF) of different model configu-
+
+Table 2: Streaming decision strategy comparison on StreamMER . NDR denotes normalized decision ratio, RR denotes contextual reinterpretation rate.                                    
+
+> Strategy Acc. ↑W-F1 ↑Avg. Time ↓NDR ↓RR ↓
+> Early Commit 57.98 57.38 1.49 50.77 -Full Commit 58.98 58.41 3.98 100.00 -Adaptive Commit 59.65 58.99 3.10 87.66 -TRACE 69.47 68.10 3.10 87.66 55.58 Always Reinterp. 70.18 70.03 4.05 100.00 100.00 Oracle Reinterp. 75.50 75.25 -100.00 16.52
+
+rations under the same hardware setting. As shown in Figure 4, Online Prefix Belief For-mation has the lowest cost, with an RTF of 0.055. Full Contextual Belief Reinterpretation introduces higher latency, with an RTF of 0.127, showing that applying contextual multimodal reasoning to every sample is inefficient for streaming deploy-ment. Larger multimodal emotion models further increase inference cost. TRACE achieves an RTF of 0.091, remaining close to Online Prefix Belief Formation while being faster than full reinterpreta-tion and larger-model baselines. This indicates that Trajectory-Calibrated Reliability Estimation limits Contextual Belief Reinterpretation to uncertain tra-jectories, preserving low latency for stable samples while allocating additional computation only when richer evidence is needed. 
+
+4.4 Contextual Belief Reinterpretation 
+
+We further evaluate whether selective contextual reinterpretation provides a better trade-off between prediction accuracy, decision time, and contextual reasoning cost. Here, a streaming decision strat-egy denotes how the system decides when to stop observing the current utterance and whether to use the online belief prediction or Contextual Belief Reinterpretation. We compare TRACE with sev-eral strategies on StreamMER. Early Commit com-mits at the first 1.5s prefix. Full Commit waits until the full utterance but does not use reinterpre-tation. Adaptive Commit follows the same waiting behavior as TRACE but disables reinterpretation. Always Reinterp. applies reinterpretation to all samples. Oracle Reinterp. uses ground-truth labels to select whether reinterpretation should be applied and is reported only as an upper bound. Table 2 shows that simply observing more audio is insufficient. Early Commit reaches only 57.98 Accuracy, while waiting for the full utterance im-proves accuracy slightly to 58.98 with Full Com-mit. Adaptive Commit reaches 59.65, indicating that many ambiguous cases cannot be resolved by audio-prefix accumulation alone. 7J J J J S S S Reinterpre tat ion  Output:  anger         
+
+> Reason: Accusatory tone, direct gaze, and confronta -
+> tional statement
+> Speaker: Eric a
+> Dialogue: Who? Sabrina. I know about you two! I saw you
+> today, kissing in the doctor's lounge.
+> joy
+> 0.46
+> joy
+> 0. 77
+> joy
+> 0. 71
+> joy
+> 0.4 5
+> surprise
+> 0. 62
+> surprise
+> 0. 55
+> surprise
+> 0. 51 New summary :Erika reveals the source of her anger:
+> she is jealous of Joey's relationship with a fictional
+> character, Sabrina.
+
+S A A A A A A Reinterpre tat ion  Output:  surprise                      
+
+> Reason: Expresses sudden shock and disbelief at un -
+> expected information .
+> Speaker: Ros s
+> Dialogue: What? Whoa, hey. I don't want my birthday to be
+> the source of any kind of negative ... There's gonna be a hoopla ?
+> surpris e
+> 0. 80
+> anxiety
+> 0. 56
+> ange r
+> 0. 32
+> anxiety
+> 0. 76
+> anxiety
+> 0. 82
+> anxiety
+> 0. 57
+> anxiety
+> 0. 92 New summary :Ross reacts with shock and indignat -
+> ion to the idea of a 'hoopla ' for his birthday , revealing
+> his strong desire for a lowkey celebration .
+> Online Trajectory :
+> Online Trajectory :
+
+Figure 6: Case study of TRACE. The prefix-level belief trajectories reveal unstable online predictions, which trigger Contextual Belief Reinterpretation. By incorporating visual, textual, and dialogue context, TRACE revises ambiguous audio-prefix beliefs into more reliable emotion predictions. Table 3: Ablation of reliability features and estimation models. Acc. and MF1 denote Accuracy and Macro-F1. RR denotes the contextual reinterpretation rate. 
+
+Reliability Method Acc. ↑ MF1 ↑ RR ↓
+
+Confidence Linear 66.87 64.30 69.33 Confidence Reliability 67.98 65.87 64.66 Trajectory Linear 68.83 65.79 60.12 Trajectory Reliability 68.83 65.40 55.71 
+
+Contextual reinterpretation brings clear gains but is costly when applied to all samples. Always Reinterp. reaches 70.18 Accuracy with 100.00 RR. In contrast, TRACE achieves 69.47 Accuracy and 68.10 W-F1 with only 55.58 RR, using the same average decision time as Adaptive Commit. This shows that TRACE improves performance mainly by selectively invoking contextual reinterpretation, rather than by waiting longer. The oracle result, 75.50 Accuracy with 16.52 RR, further suggests room for better reliability estimation. 
+
+4.5 Ablation Studies 
+
+We conduct ablation studies to evaluate Trajectory-Calibrated Reliability Estimation by comparing single-prefix confidence with belief-trajectory fea-tures, and a linear selection rule with the proposed reliability model. Table 3 shows that trajectory features are more informative than confidence alone. Under the linear rule, they improve Accuracy from 66.87 to 68.83 and reduce the reinterpretation rate from 69.33 to 60.12. Under the reliability model, they improve Accuracy from 67.98 to 68.83 and reduce the rein-terpretation rate from 64.66 to 55.71. These results indicate that belief trajectories capture reliability patterns beyond single-prefix confidence. Explicit reliability modeling further improves decision effi-ciency. With confidence features, it improves Accu-racy and Macro-F1 while reducing reinterpretation requests. With trajectory features, it matches the Accuracy of the linear rule but requires fewer con-textual reinterpretations. Overall, belief-trajectory features and reliability estimation enable more cost-effective contextual reasoning under limited rein-terpretation budgets. 
+
+4.6 Case Study 
+
+Figure 6 shows two representative cases of TRACE. In the first case, the audio-prefix belief shifts from 
+
+joy to surprise , indicating an unstable trajectory. With contextual reinterpretation, the model uses the confrontational dialogue, direct gaze, and ac-cusatory tone to revise the prediction to anger . In the second case, the belief trajectory fluctuates among surprise , anxiety , and anger . After incorpo-rating the spoken content and dialogue context, the model resolves the ambiguity and outputs surprise .These cases show that unstable belief trajectories can reveal when audio-prefix predictions are unre-liable, and that selective contextual reinterpretation helps correct ambiguous online beliefs with richer multimodal evidence. 
+
+5 Conclusion 
+
+This paper presents TRACE, a trajectory-aware framework for streaming video emotion under-standing. TRACE models emotion prediction as belief evolution under partial observation and uses belief trajectories to decide when to commit early or invoke contextual reinterpretation. Experiments on StreamMER and two public benchmarks show that TRACE improves the accuracy-cost trade-off, highlighting belief stability as an important signal for reliable real-time emotion understanding. 8Acknowledgments 
+
+This work was supported by the "Pioneer" and "Leading Goose" R&D Program of Zhejiang (Grant No. 2025C02022), the Ant Group Research Fund, the Ningbo "Yongjiang Talent Program" Youth Innovation Project (Grant No. 2024A-156-G), and the Young Scientists Fund of the National Natural Science Foundation of China (Grant No. 62507040). 
+
+Limitations 
+
+TRACE improves the accuracy-cost trade-off for streaming video emotion understanding, but sev-eral limitations remain. First, its reliability esti-mator relies on trajectory patterns from calibration data and may be less reliable under substantial do-main shifts. Second, contextual belief reinterpreta-tion still introduces extra latency and computation when invoked, making TRACE less suitable for ex-tremely strict real-time applications. Third, using audio prefixes as the primary low-latency signal may overlook early visual cues such as facial ex-pressions or actions. Finally, StreamMER is built from scripted conversational videos, so future work should evaluate TRACE on more spontaneous and diverse real-world scenarios. 
+
+Ethics Statement 
+
+StreamMER is constructed for academic research using publicly accessible video, subtitle, and script resources. We do not redistribute the original videos, subtitles, scripts, screenshots, or any copy-righted media content. The released dataset will contain only derived annotations and metadata, such as emotion labels, timestamps, speaker iden-tifiers, context summaries, rationales, and non-reconstructive features when applicable. Users who wish to reproduce the benchmark must obtain the original media through lawful channels and comply with the corresponding content providers’ terms. The annotations describe perceived emotions of fic-tional characters in scripted scenes and should not be interpreted as psychological assessment of real individuals. 
+
+References 
+
+Hagai Astrin, Ayal Swaid, Avi Segal, and Kobi Gal. 2026. Care: Counselor-aligned response en-gine for online mental-health support. Preprint ,arXiv:2604.21352. Zebang Cheng, Zhi-Qi Cheng, Jun-Yan He, Jingdong Sun, Kai Wang, Yuxiang Lin, Zheng Lian, Xiaojiang Peng, and Alexander G Hauptmann. 2024. Emotion-llama: Multimodal emotion recognition and reason-ing with instruction tuning. Advances in Neural In-formation Processing Systems , 37:110805–110853. Cristóbal Eyzaguirre, Eric Tang, Shyamal Buch, Adrien Gaidon, Jiajun Wu, and Juan C Niebles. 2024. Streaming detection of queried event start. Ad-vances in Neural Information Processing Systems ,37:100698–100733. Shenghao Fu, Qize Yang, Yuan-Ming Li, Yi-Xing Peng, Kun-Yu Lin, Xihan Wei, Jian-Fang Hu, Xiaohua Xie, and Wei-Shi Zheng. 2025. Vispeak: Visual instruc-tion feedback in streaming videos. In Proceedings of the IEEE/CVF International Conference on Com-puter Vision , pages 21778–21788. Haichen He, Jiayi Zhou, Sifeng Shang, Yihan Hu, Yuan-han Zhang, and Kaiyang Zhou. 2026. Videoodyssey: A benchmark for ultra-long-context and omni-modal video understanding. Preprint , arXiv:2605.22907. Dawei Huang, Qing Li, Chuan Yan, Zebang Cheng, Zihao Han, Yurong Huang, Xiang Li, Bin Li, Xiaohui Wang, Zheng Lian, and 1 others. 2025. Emotion-qwen: A unified framework for emotion and vision understanding. arXiv preprint arXiv:2505.06685 .Hyolim Kang, Jeongseok Hyun, Joungbin An, Youngjae Yu, and Seon Joo Kim. 2024. Actionswitch: Class-agnostic detection of simultaneous actions in stream-ing videos. In European Conference on Computer Vision , pages 383–400. Springer. Zheng Lian, Haoyu Chen, Lan Chen, Haiyang Sun, Li-cai Sun, Yong Ren, Zebang Cheng, Bin Liu, Rui Liu, Xiaojiang Peng, and 1 others. 2025. Affectgpt: A new dataset, model, and benchmark for emotion un-derstanding with multimodal large language models. 
+
+arXiv preprint arXiv:2501.16566 .Zheng Lian, Haiyang Sun, Licai Sun, Zhuofan Wen, Siyuan Zhang, Shun Chen, Hao Gu, Jinming Zhao, Ziyang Ma, Xie Chen, and 1 others. 2024. Mer 2024: Semi-supervised learning, noise robustness, and open-vocabulary multimodal emotion recogni-tion. In Proceedings of the 2nd International Work-shop on Multimodal and Responsible Affective Com-puting , pages 41–48. Yiming Liang, Yixiao Chen, Yiyang Zhou, Yixuan Wang, Shoubin Yu, Andong Deng, Fuxiao Liu, Qin Zhang, Chen Chen, Mohit Bansal, and Huaxiu Yao. 2026. Storm: Internalized modeling for spatial-temporal reasoning in video-language models. 
+
+Preprint , arXiv:2605.26014. Kevin Qinghong Lin and Mike Zheng Shou. 2025. Vlog: Video-language models by generative retrieval of nar-ration vocabulary. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recog-nition , pages 3218–3228. 
+
+9Jinming Liu, Jianguo Huang, Zhaoyang Jia, Jiahao Li, Xiaoyi Zhang, Zongyu Guo, Bin Li, Wenjun Zeng, Yan Lu, and Xin Jin. 2026. An efficient streaming video understanding framework with agentic control. 
+
+Preprint , arXiv:2605.17921. Shuming Liu, Chen Zhao, Tianqi Xu, and Bernard Ghanem. 2025. Bolt: Boost large vision-language model without training for long-form video under-standing. In Proceedings of the Computer Vision and Pattern Recognition Conference , pages 3318–3327. Bingjun Luo, Tony Wang, Chaoqi Chen, and Xinpeng Ding. 2026. St-simdiff: Balancing spatiotemporal similarity and difference for efficient video under-standing with mllms. Preprint , arXiv:2605.22158. Bei Pan, Kaoru Hirota, Zhiyang Jia, and Yaping Dai. 2023. A review of multimodal emotion recognition from datasets, preprocessing, features, and fusion methods. Neurocomputing , 561:126866. Soujanya Poria, Devamanyu Hazarika, Navonil Ma-jumder, Gautam Naik, Erik Cambria, and Rada Mi-halcea. 2019. MELD: A multimodal multi-party dataset for emotion recognition in conversations. In 
+
+Proceedings of the 57th Annual Meeting of the As-sociation for Computational Linguistics , pages 527– 536, Florence, Italy. Association for Computational Linguistics. Rui Qian, Shuangrui Ding, Xiaoyi Dong, Pan Zhang, Yuhang Zang, Yuhang Cao, Dahua Lin, and Jiaqi Wang. 2025. Dispider: Enabling video llms with ac-tive real-time interaction via disentangled perception, decision, and reaction. In Proceedings of the Com-puter Vision and Pattern Recognition Conference ,pages 24045–24055. Youngkil Song, Dongkeun Kim, Minsu Cho, and Suha Kwak. 2024. Online temporal action localization with memory-augmented transformer. In Euro-pean Conference on Computer Vision , pages 74–91. Springer. Licai Sun, Mingyu Xu, Zheng Lian, Bin Liu, Jianhua Tao, Meng Wang, and Yuan Cheng. 2021. Multi-modal emotion recognition and sentiment analysis via attention enhanced recurrent model. In Proceed-ings of the 2nd on Multimodal Sentiment Analysis Challenge , MuSe ’21, page 15–20, New York, NY, USA. Association for Computing Machinery. Zeheng Wang, Bo Zhao, Yijie Zhu, Zhishu Liu, Hui Ma, Ruixin Zhang, Shouhong Ding, Qianyu Xie, and Zitong Yu. 2026. Navigating the emotion tree: Hi-erarchical hyperbolic rag for multimodal emotion recognition. Preprint , arXiv:2605.18884. Ruyi Xu, Guangxuan Xiao, Yukang Chen, Liuning He, Kelly Peng, Yao Lu, and Song Han. 2025. Stream-ingvlm: Real-time understanding for infinite video streams. URL https://arxiv. org/abs/2510.09608 .Qize Yang, Detao Bai, Yi-Xing Peng, and Xihan Wei. 2025. Omni-emotion: Extending video mllm with de-tailed face and audio modeling for multimodal emo-tion analysis. arXiv preprint arXiv:2501.09502 .Qu Yang, Mang Ye, and Bo Du. 2024. Emollm: Multi-modal emotional understanding meets large language models. arXiv preprint arXiv:2406.16442 .Oussama Zenkri and Oliver Brock. 2026. Probing em-bodied llms: When higher observation fidelity hurts problem solving. Preprint , arXiv:2605.20072. Haoji Zhang, Yiqin Wang, Yansong Tang, Yong Liu, Ji-ashi Feng, and Xiaojie Jin. 2025. Flash-vstream: Effi-cient real-time understanding for long video streams. In Proceedings of the IEEE/CVF international con-ference on computer vision , pages 21059–21069. Manyang Zhang, Jinyang Zheng, and Zhijun Yan. 2026a. Generative ai and two-tiered online mental health communities. Preprint , arXiv:2605.16279. Zhicheng Zhang, Weicheng Wang, Yongjie Zhu, Wenyu Qin, Pengfei Wan, Di Zhang, and Jufeng Yang. 2026b. Videmo: Affective-tree reasoning for emotion-centric video foundation models. Advances in Neural Information Processing Systems , 38:80843– 80890. 
+
+A Dataset Construction and Statistics 
+
+Data source and segmentation. StreamMER is built from the first two seasons of Friends . We use the original videos together with script and subtitle files to segment each episode into coher-ent narrative units. Each unit preserves a locally complete interaction scene, including preceding di-alogue state, speaker relations, and local emotional development. This design is important for stream-ing emotion understanding because the emotion of an utterance is often shaped by the immediately preceding conversational context. 
+
+Annotation protocol. For each segmented scene, we annotate utterances at the utterance level. The annotation process uses the video segment, aligned dialogue, and local script context. For each utter-ance, the annotator records the speaker, dialogue text, timestamp, emotion label, local context sum-mary, rationale, audio evidence, and visual evi-dence. The rationale explains why the utterance is assigned to the target emotion, while the audio and visual evidence fields record cues such as prosody, pitch, speaking rate, facial expression, gaze, and body posture. 10 Human verification. The initial annotations are generated with the help of Gemini-3.1-Pro and then manually verified by three annotators. All anno-tators are graduate students in computer science with experience in multimodal machine learning or affective computing. Each annotator independently checks the initial label, timestamp, speaker, ratio-nale, and audio/visual evidence against the video, audio, subtitle, and local script context. The fi-nal emotion label is determined by majority vote among the three annotators. When all three an-notators disagree or when the evidence is judged insufficient, the case is discussed jointly and ei-ther assigned a consensus label or removed from the dataset if no reliable dominant emotion can be identified. We remove utterances that do not contain clear emotional content, are semantically incomplete, or are not useful for emotion under-standing. We also correct wrong labels and check whether the emotion rationale is supported by the video, audio, and surrounding dialogue. Approxi-mately 30% of the initial Gemini-generated labels are modified during human verification, indicating that the model-generated labels are used only as annotation drafts rather than as final ground truth. Special attention is given to ambiguous cases such as sarcasm, teasing, mild anxiety, embarrassment, and neutral utterances, since these categories are easily confused without context. 
+
+Data release and copyright. StreamMER is con-structed from copyrighted television episodes and associated subtitle/script resources. We do not redistribute the original videos, subtitles, scripts, screenshots, or any other copyrighted media con-tent. The released research artifact contains only derived annotations and metadata needed to repro-duce the benchmark, such as episode and times-tamp references, utterance-level emotion labels, speaker identifiers, local context summaries, ratio-nales, and precomputed non-reconstructive features when applicable. Users must obtain the original media through lawful channels and comply with the licenses and terms of the underlying content providers. The dataset is intended for academic research on streaming multimodal emotion under-standing, and the annotations should not be inter-preted as granting permission to redistribute or re-publish the underlying media. 
+
+Streaming evaluation split. The test split con-tains 815 utterances with available prefix-video as-sets. These samples are used for streaming-prefix                         
+
+> Table 4: Statistics of StreamMER. Duration denotes the total duration of annotated utterance videos.
+> Split Utterances Clips Episodes Duration Train 8,111 365 48 9.41 h Test 815 40 26 0.92 h
+> Table 5: Duration statistics of StreamMER. Values are measured on annotated utterance videos.
+> Split Mean Utt. Median Utt. Mean Clip Median Clip Train 4.18 s 3.23 s 92.84 s 96.24 s Test 4.06 s 3.25 s 82.68 s 87.91 s
+
+evaluation, where Online Prefix Belief Formation only observes partial audio prefixes and Contex-tual Belief Reinterpretation is requested selectively when the belief trajectory is judged unreliable. 
+
+B Additional Analysis of Belief Trajectories 
+
+Figure 7 analyzes prefix-level belief dynamics un-der increasing observation length. As more content is observed, the model’s average confidence gen-erally increases and entropy decreases, indicating that the predicted distribution becomes more con-centrated. However, accuracy is not strictly mono-tonic. At some intermediate observation lengths, confidence continues to increase while accuracy drops. This suggests that high confidence at a sin-gle prefix does not necessarily imply a reliable pre-diction; the model also needs to determine whether the confidence is formed through stable evidence accumulation or caused by short-term fluctuations. Table 8 further shows that belief trajectories con-tain dynamic reliability information beyond single-prefix predictions. When the predicted label does not switch, Online Prefix Belief Formation reaches 72.6% accuracy. In contrast, the accuracy drops to 38.3% with one switch and 24.1% with three switches. Meanwhile, Contextual Belief Reinter-pretation provides larger correction benefits for un-stable trajectories. For samples with one switch, reinterpretation produces 74 helpful corrections and only 19 harmful changes. This indicates that trajectory instability reflects not only the error risk of the current belief, but also the potential benefit of introducing additional contextual evidence. Overall, these results show that belief trajecto-ries are not merely intermediate prediction records, but useful dynamic reliability signals. Compared with relying only on single-prefix confidence, tra-11 Table 6: Emotion label distribution of StreamMER.                   
+
+> Emotion Train Test Joy 3,173 210 Anger 1,379 133 Neutral 1,114 131 Anxiety 927 146 Surprise 762 75 Sadness 379 85 Embarrassment 358 35 Unclear 19 0
+
+Table 7: Statistics of StreamMER.          
+
+> Split Utterances Clips Episodes Train 8,111 365 48 Test 815 40 26
+
+jectory information reveals whether an emotion belief is formed stably, whether competing labels remain unresolved, and whether Contextual Belief Reinterpretation is needed. 
+
+C Effect of Context Scope in Contextual Belief Reinterpretation 
+
+We evaluate how much contextual evidence should be used in Contextual Belief Reinterpretation on StreamMER. This experiment isolates the third module and directly compares three context scopes: using only the current target video, using the pre-vious video together with the current target video, and using the previous, current, and next videos. The goal is to examine whether enlarging the con-textual window consistently improves emotion rein-terpretation. The Previous + Current setting is the streaming-compatible default used by TRACE. The Previous + Current + Next setting is included only as an offline diagnostic comparison, since future utterances are not available under the online stream-ing protocol. Table 9 shows that contextual scope has a sub-stantial effect on reinterpretation quality. Using only the current target video obtains 62.53 Accu-racy, indicating that the current clip alone is of-ten insufficient for resolving ambiguous emotional expressions. When the previous video is added, performance improves markedly to 70.18 Accu-racy, 70.00 W-F1, and 58.29 UAR. This suggests that preceding dialogue context provides important cues about the speaker’s emotional state, especially when the current utterance is short, implicit, or emotionally dependent on earlier interaction. Adding the next video does not further improve 1.5s 4.5s 7.5s 10.5s   
+
+> Visible content
+> 55 65 75
+> Accuracy (%)
+> early prefix
+> Acc. Conf. Ent.
+> 0.9
+> 0.7
+> 0.5
+> Confidence / entropy
+
+Figure 7: Prefix-level belief dynamics under increasing observation length. Confidence increases and entropy decreases as more content is observed, while accuracy is not strictly monotonic. Table 8: Prediction-switch count and trajectory reliabil-ity on the matched validation subset. Accuracy values are percentages; Gain+ and Gain- denote helpful and harmful contextual reinterpretations.                          
+
+> Switches Samples Belief Acc. Reinterp. Acc. Gain+ Gain-0467 72.6 75.6 40 26 1222 38.3 63.1 74 19 272 44.4 68.1 22 5329 24.1 48.3 92
+
+performance. The Previous + Current + Next set-ting reaches 68.83 Accuracy, which is lower than the Previous + Current setting. This result suggests that more context is not always beneficial. Future context can introduce distracting evidence, speaker shifts, or emotional transitions that are not directly relevant to the target utterance. It is also incom-patible with the online streaming protocol because future information is not immediately available. Therefore, we use Previous + Current as the default context scope for Contextual Belief Reinterpreta-tion, and report Previous + Current + Next only as an offline diagnostic comparison. Table 10 reports the inference efficiency of the three context scopes. The current-only setting is the fastest because it processes only the target video. Adding the previous video increases the average latency from 0.3636s to 0.8959s, reflecting the addi-tional cost of using contextual evidence. However, the throughput remains 4.8809 video seconds per second, and the RTF is 0.2049, which is still well below 1. This means that the Previous + Current setting can process video faster than real time and is compatible with streaming deployment. The Previous + Current + Next setting has nearly the same computational cost as Previous + Current, with 0.8999s average latency and 0.2058 RTF, but it performs worse in recognition. This offline diag-nostic result shows that its limitation is not mainly 12 Table 9: Recognition performance of Contextual Be-lief Reinterpretation with different context scopes on StreamMER.             
+
+> Context Scope Acc. W-F1 UAR Current 62.53 62.08 50.26 Previous + Current 70.18 70.00 58.29
+> Previous + Current + Next 68.83 68.56 55.83
+
+Table 10: Inference efficiency of Contextual Belief Rein-terpretation with different context scopes. Avg. latency denotes the average wall-clock inference time per sam-ple. Video sec/s denotes how many seconds of video can be processed per second of computation. RTF is the real-time factor, computed as inference time divided by video duration; values below 1 indicate real-time processing.             
+
+> Context Scope Avg. Latency (s) Video sec/s RTF Current 0.3636 11.2281 0.0891 Previous + Current 0.8959 4.8809 0.2049 Previous + Current + Next 0.8999 4.8592 0.2058
+
+computational cost, but the quality and relevance of the added future context. Combining the perfor-mance and efficiency results, Previous + Current gives the best overall trade-off: it substantially im-proves recognition over Current while preserving real-time inference and avoiding the instability in-troduced by future context. 
+
+D Ablation of Rationale and Memory Summary 
+
+We further analyze the role of two output compo-nents in Contextual Belief Reinterpretation: the classification rationale and the contextual memory summary. In the default TRACE reinterpretation model, the model predicts the final emotion label, generates a brief rationale, and updates a compact memory summary for subsequent utterances. The rationale encourages the model to ground its pre-diction in observable audio-visual and dialogue evidence, while the memory summary preserves preceding conversational state for later reinterpre-tation. Table 11 shows that both rationale generation and memory summary contribute to contextual rein-terpretation. Removing the memory summary re-duces Accuracy from 70.18% to 66.01% and W-F1 from 70.00% to 65.69%, indicating that preceding conversational state helps resolve emotion ambigu-ity in the current utterance. Interestingly, this vari-ant still obtains a relatively high UAR of 61.81%, suggesting that it may preserve some minority-
+
+Table 11: Ablation of rationale generation and contex-tual memory summary in Contextual Belief Reinterpre-tation on StreamMER. Values are percentages. 
+
+Setting Acc. W-F1 UAR w/o Memory Summary 66.01 65.69 61.81 w/o Rationale 63.31 61.84 55.31 TRACE 70.18 70.00 58.29 
+
+class sensitivity but loses overall recognition re-liability. Removing rationale generation causes a larger degradation, reducing Accuracy to 63.31%, W-F1 to 61.84%, and UAR to 55.31%. This result sug-gests that requiring the model to produce an explicit rationale helps it ground the final emotion label in audio-visual cues, dialogue semantics, and contex-tual evidence. Overall, the ablation indicates that the strongest reinterpretation performance comes from jointly predicting the emotion label, explain-ing the decision, and maintaining a compact con-textual memory. 
+
+E Implementation Details 
+
+Baseline implementation. For a fair comparison, all trainable baselines are fine-tuned on the corre-sponding training split of each dataset and evalu-ated on the same held-out test split and label space. On StreamMER, we provide each baseline with the same available utterance-level evidence and con-textual scope used by TRACE whenever the model architecture supports the required modalities. For models that do not support a specific modality, we use their strongest compatible input setting follow-ing the original implementation. Closed-source models are evaluated with the same prompt for-mat, label definitions, and available evidence. No baseline is tuned on the test split. 
+
+TRACE implementation. The online prefix be-lief formation module uses Qwen2.5-Omni-3B as the backbone, while the contextual belief reinter-pretation module uses Qwen2.5-Omni-7B. Both modules are parameter-efficiently fine-tuned with LoRA for 10 epochs. The LoRA rank is set to 16, with α = 32 and a dropout rate of 0.05. LoRA is applied to the attention and feed-forward projec-tions, including q_proj , k_proj , v_proj , o_proj ,
+
+gate_proj , up_proj , and down_proj . Training is conducted with mixed precision and distributed over 8 GPUs using DeepSpeed. We use AdamW with a learning rate of 8 × 10 −6, weight decay of 13 0.01, warmup ratio of 0.05, and a maximum gradi-ent norm of 1.0. 
+
+Online prefix belief formation. Audio prefixes are constructed starting from 1.5 seconds and are extended with a stride of 1.0 second. The complete utterance is also retained as a full-prefix training sample. Audio is resampled to 16 kHz. During training, all prefix predictions are supervised by the emotion label of the current utterance, encourag-ing the model to form useful early emotion beliefs under incomplete observations. The per-device training batch size is set to 4, with gradient accu-mulation steps set to 1. 
+
+Contextual belief reinterpretation. The contex-tual belief reinterpretation module is triggered to make a revised prediction by integrating the multi-modal information of the current utterance, preced-ing contextual information, and the belief trajectory produced during the online stage. Visual frames are sampled at 2 fps, with the longer image side resized to 448. The streaming-compatible input includes the current video segment and its preceding con-textual video, which are sampled in the same way. Following contextual videos are used only in the offline diagnostic context-scope analysis, not in the default TRACE streaming protocol. The module outputs the final emotion label, an explanation, and an updated contextual summary. The per-device training batch size is 2, the gradient accumulation steps are 2, and the per-device evaluation batch size is 8. 
+
+Trajectory-calibrated reliability estimation. 
+
+The trajectory-calibrated reliability estimation mod-ule trains a trigger based on the belief trajectory generated during the online prefix stage. The trig-ger features include final confidence, entropy, inter-class margin, changes in confidence, entropy, and margin between adjacent prefixes, JS divergence, top-1 persistence, entropy AUC, the number of class switches, the number of local switches, ob-servation ratio, final probabilities for different emo-tion classes, and log-likelihood features. We adopt a two-head risk-gain model to jointly predict the risk of an incorrect online prefix prediction and the expected gain of invoking the reinterpretation module. The model uses a hidden dimension of 128, dropout of 0.3, and a batch size of 128. It is optimized with AdamW using a learning rate of 
+
+1 × 10 −3 and weight decay of 1 × 10 −3. A cosine learning-rate schedule is used. The model is trained for at most 300 epochs, with early stopping if the validation loss does not improve for 30 consecutive epochs. 
+
+Leakage control and checkpoint selection. To prevent leakage, trajectory features and risk/gain labels for reliability training are generated with K-fold out-of-fold predictions on the training split. No test example is used for fitting the reliability model, selecting thresholds, calibrating the pol-icy, or choosing hyperparameters. All experiments use the same predefined train/test split for Stream-MER and the official or predefined splits for MELD and MER2024. The online prefix belief formation and contextual belief reinterpretation modules are trained with LoRA for a fixed maximum number of epochs, and the best checkpoint is selected accord-ing to validation performance. All reported results are computed on the held-out test split using the selected checkpoint. 
+
+Inference and evaluation. For generative emo-tion prediction, we use deterministic decoding with temperature set to 0, so that model outputs are re-producible under the same checkpoint and input. For classification from label probabilities, the pre-dicted label is selected by greedy decoding or by taking the emotion label with the highest normal-ized probability within the predefined label space. Unless otherwise specified, we report the result of the selected checkpoint under deterministic in-ference rather than averaging stochastic decoding samples. For latency and throughput evaluation, all methods are measured under the same hard-ware and inference configuration, and we report per-sample latency and real-time factor using the same evaluation split. 
+
+F Feature Details 
+
+This appendix describes the trajectory features used as the input of Trajectory-Calibrated Reliability Estimation. For each utterance Vk, Online Prefix Belief Formation produces a sequence of belief distributions 
+
+Bk, 1: t = {pk, 1, p k, 2, . . . , p k,t }, (13) where pk,i ∈ R|Y| is the emotion probability distri-bution at prefix step i. The trigger feature vector 
+
+zk,t = ϕ(Bk, 1: t) is computed from the current be-lief, its temporal changes, and the stability of the predicted label sequence. 14 Current belief features. We first extract features from the current prefix distribution pk,t . The confi-dence is defined as the maximum class probability: 
+
+ct = max  
+
+> y∈Y
+
+pk,t (y). (14) The predicted label is 
+
+ˆyon  
+
+> k,t
+
+= arg max  
+
+> y∈Y
+
+pk,t (y). (15) We also compute the entropy of the current distri-bution: 
+
+Ht = − X
+
+> y∈Y
+
+pk,t (y) log pk,t (y), (16) and the inter-class margin between the largest and second-largest probabilities: 
+
+mt = p(1)  
+
+> k,t
+
+− p(2)  
+
+> k,t
+
+, (17) where p(1)  
+
+> k,t
+
+and p(2)  
+
+> k,t
+
+denote the top-1 and top-2 class probabilities. A high confidence and a large margin usually indicate a sharp belief, while high entropy indicates uncertainty. 
+
+Temporal change features. To capture whether the belief is becoming more reliable over time, we compute changes between adjacent prefixes: 
+
+∆ci = ci − ci−1,
+
+∆Hi = Hi − Hi−1,
+
+∆mi = mi − mi−1.
+
+(18) From these sequences, we use summary statistics such as the latest change, mean change, and max-imum absolute change. These features describe whether the belief is gradually stabilizing or still fluctuating. 
+
+Distributional stability features. We measure the stability of consecutive belief distributions us-ing Jensen-Shannon divergence: 
+
+JS( pk,i , p k,i −1) = 12 KL( pk,i ∥ui)+ 12 KL( pk,i −1∥ui),
+
+(19) where 
+
+ui = 12 (pk,i + pk,i −1). (20) We use summary statistics of adjacent JS diver-gence values over the observed trajectory, including the mean and maximum divergence. Larger diver-gence indicates that the belief distribution changes substantially after new evidence arrives. 
+
+Label-switching features. We also compute fea-tures from the predicted label sequence 
+
+ˆY on  
+
+> k, 1: t
+
+= {ˆyon 
+
+> k, 1
+
+, . . . , ˆyon 
+
+> k,t
+
+}. (21) The switch count is defined as 
+
+St =
+
+> t
+
+X
+
+> i=2
+
+I  ˆyon 
+
+> k,i
+
+̸ = ˆ yon 
+
+> k,i −1
+
+ . (22) We further compute top-1 persistence, namely the fraction of observed prefixes whose predicted label matches the current top-1 label: 
+
+Pt = 1
+
+t
+
+> t
+
+X
+
+> i=1
+
+I  ˆyon  
+
+> k,i
+
+= ˆ yon 
+
+> k,t
+
+ . (23) These features capture whether the current predic-tion is supported by a stable trajectory or emerges after repeated label changes. 
+
+Trajectory accumulation features. To summa-rize uncertainty over the whole observed trajectory, we compute the area under the entropy curve: 
+
+AUC H (t) = 1
+
+t
+
+> t
+
+X
+
+> i=1
+
+Hi. (24) A high entropy AUC means that the model remains uncertain for most of the observed prefixes, even if the final prefix becomes confident. 
+
+Observation progress features. Finally, we in-clude the observation ratio 
+
+rt = tTk
+
+, (25) where Tk is the total number of prefix steps for utterance Vk. This feature informs the trigger whether the current belief is formed from an early partial observation or from a nearly complete utter-ance. 
+
+Class-probability and likelihood features. In addition to the aggregated trajectory statistics above, we include the current class probability vec-tor pk,t itself. We also include log-probability fea-tures for the top predicted classes: 
+
+log pk,t (y), (26) with numerical clipping for stability. These fea-tures preserve class-specific information that may be useful for estimating whether contextual reinter-pretation is likely to help. 15 Overall, the trigger input combines current con-fidence, entropy, margin, temporal changes, JS di-vergence, label-switching statistics, top-1 persis-tence, entropy AUC, observation ratio, final class probabilities, and log-likelihood features. These features allow the reliability model to distinguish a confident and stable belief from a confident but un-stable one, which is crucial for deciding whether to commit immediately or request Contextual Belief Reinterpretation. 
+
+G Prompt Templates 
+
+This appendix provides the prompt templates used in StreamMER construction and TRACE inference. The StreamMER annotation prompts are used to generate initial utterance-level emotion annotations before manual verification. The Online Prefix Be-lief Formation prompt is used by the fast streaming belief tracker to estimate emotion beliefs from ob-served audio prefixes. The Contextual Belief Rein-terpretation prompt is used when the trajectory-calibrated policy requests additional multimodal reasoning for uncertain samples. All prompts are shown verbatim. 
+
+G.1 Online Prefix Belief Formation Prompt 
+
+You are the fast belief tracker in streaming emotion understanding. Infer the speaker's current emotion from the observed prefix only. The evidence is partial and arrives incrementally. Prioritize vocal cues such as prosody, speaking rate, pauses, tremble, breathiness, laughter, crying, and intensity. Use the single visual frame only as supporting evidence for facial expression or posture. Do not assume evidence from the unobserved future part of the clip. Observed prefix duration: {prefix_sec:.2f}s out of total clip duration {clip_duration_sec:.2f}s. Observed fraction of the clip: {observed_ratio:.2%}. Reply with exactly one emotion label from: neutral, anger , anxiety, sadness, joy, surprise, embarrassment. Current dialogue transcript: "{dialogue}". The speaker's emotion in the observed prefix is: 
+
+G.2 Contextual Belief Reinterpretation Prompt 
+
+Task: predict the target speaker's emotion in the current clip. You will receive up to three multimodal inputs in this order: 1. optional previous-context audio 2. the current target audio clip 3. the current target video clip The current target audio and current target video describe the same clip and are the primary evidence. Prioritize the current target audio when judging subtle emotions, especially prosody, speaking rate, pauses, intensity, breathiness, pitch movement, trembling, laughter, crying, sighs, and voice quality changes. Use the current target video to verify or refine the emotion from facial expression, gaze, posture, gesture, and visible interaction context. The previous-context audio is auxiliary context only. Use it only to resolve ambiguity in the current clip, never as the main basis for prediction. Never predict the emotion of the previous clip. Valid emotion labels: neutral, anger, anxiety, sadness, joy, surprise, embarrassment. Return the final emotion label for the current clip. Target speaker in the current clip: {speaker} Current dialogue: "{dialogue}" History summary before the current clip: "{history_summary}" Use the history summary as background state, not as a replacement for current audio-visual evidence. Reference belief trajectory before reinterpretation: - Fast prediction: {fast_pred} - Fast probabilities: {fast_probs} - Fast entropy: {fast_entropy} - Fast margin: {fast_margin} - Recent fast labels: {traj_last_k} The reference belief trajectory is provided only to indicate why the online belief may be uncertain or unstable. It is not a final answer. You may accept or reject it based on the current audio-visual evidence and the previous-context audio. When audio and video disagree, trust the current target audio more for affective state unless the audio is clearly off-screen, corrupted, silent, or belongs to another speaker. Focus on the target speaker's own voice rather than background music, sound effects, or other speakers. Output strict JSON with keys: - final_emotion: one label from the valid set - reason: a brief explanation grounded in current audio, current video, dialogue, or previous context - new_summary: a concise summary of the current clip for updating dialogue memory 
+
+G.3 StreamMER Annotation Prompts User prompt. 
+
+USER_PROMPT = """ Analyze the uploaded video together with the [Reference Script]. The video provides emotional evidence, including facial expression, voice, prosody, body language, gaze, and local interaction context. The [Reference Script] provides the exact timestamps, speakers, and dialogue text. Use the script as the segmentation anchor and the video as the emotional evidence. The video may contain multiple scenes. Analyze all dialogue segments in the script. For EACH dialogue segment, output one JSON object with the following fields: 
+
+16 {"timestamp": { "start": "Copy EXACTLY from [Reference Script], including brackets", "end": "Copy EXACTLY from [Reference Script], including brackets" }, "speaker": "Copy EXACTLY from [Reference Script]", "dialogue": "Copy dialogue text from [Reference Script ], or concatenate merged lines if subtitle splitting occurs", "final_emotion_label": "Choose exactly one from: Joy, Sadness, Anger, Surprise, Anxiety, Disgust, Embarrassment, Neutral", "local_summary": "A short emotion-focused summary of what is happening in this utterance and its immediate local context", "reason": "A concise explanation for the emotion label, grounded in audio, visual, dialogue, and local context evidence" }Additional requirements: - The reason must mention concrete evidence from the video when available, such as tone, pitch, speaking rate, hesitation, facial expression, gaze, posture, gesture, or body movement. - The local_summary should focus on emotion-relevant context only. Do not summarize unnecessary plot logistics. - If the speaker is off-screen or visual evidence is unavailable, rely on audio and dialogue, and state that visual evidence is limited. - If audio and visual cues conflict, choose the final label based on the stronger evidence and explain briefly in reason. - If emotional evidence is weak or ambiguous, choose Neutral conservatively. - Do not add fields beyond the specified schema. - Output the full JSON list in minified format only. [Reference Script]: {script_content} Output the JSON list now. """ 
+
+System prompt. 
+
+SYSTEM_PROMPT = """ You are a multimodal emotion annotation assistant. Use BOTH the uploaded video and the [Reference Script] to create utterance-level emotion annotations. CRITICAL RULES: - Use the video as the primary source for emotional evidence, including facial expression, tone, prosody, body language, gaze, and interaction context. - Use the [Reference Script] as the ONLY source for timestamps, speaker names, and dialogue text. - The fields timestamp.start, timestamp.end, speaker, and dialogue MUST copy the script exactly. - Timestamps must keep the original bracket format, e.g. [00:02:42:440]. - Never rewrite, normalize, or invent timestamps. - Do not use external knowledge about the TV show. SEGMENTATION RULE: Annotate each dialogue segment according to the script. Sometimes subtitles split one spoken sentence into multiple lines. You MAY merge consecutive script lines into one annotation object only if: - the speaker is the same, - the lines clearly form one continuous sentence or emotional unit, - no other speaker appears between them, - the merged segment is not too long, ideally within 10 seconds, - no more than 3 consecutive lines are merged. When merging: - timestamp.start = start timestamp of the first merged line, - timestamp.end = end timestamp of the last merged line, - dialogue = concatenation of the merged dialogue text. Do NOT merge across different speakers or conversational turns. If unsure, keep lines separate. ANNOTATION GOAL: For each utterance-level segment, identify the speaker's dominant observable core emotion and provide concise evidence-based annotation. LABEL RULE: final_emotion_label must represent the CORE emotion, not merely speaking style or social expression. Valid labels are: Joy, Sadness, Anger, Surprise, Anxiety, Disgust, Embarrassment, Neutral If sarcasm, teasing, masking, or politeness exists, infer the underlying core emotion when the video evidence supports it. Examples: - playful teasing -> Joy - sarcastic anger -> Anger - nervous politeness -> Anxiety - weak or unclear emotion -> Neutral OUTPUT FORMAT: Output ONLY a raw, minified, single-line JSON list. Do not output markdown, explanations, comments, or extra text. """ 
+
+H Complete Prefix Spectrogram Visualization 
+
+Figure 8 provides a more complete visualization of acoustic evidence in early audio prefixes across emotion categories. These spectrograms comple-ment Figure 3 in the main text by showing that short prefix observations already contain category-dependent acoustic patterns, including differences in energy distribution, spectral structure, and tem-poral rhythm. The visualization supports the use of streaming audio prefixes as the primary low-latency signal for Online Prefix Belief Formation. 17 Figure 8: Complete spectrogram visualization of early audio prefixes across emotion categories. 
+
+18

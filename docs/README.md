@@ -6,32 +6,53 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-26
-- 运行时间：2026-08-26 22:07:09 UTC
+- 最新运行日期：2026-08-28
+- 运行时间：2026-08-28 03:03:44 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：2
-- 速读区：2
+- 本次总论文数：10
+- 精读区：5
+- 速读区：5
 
 ### 今日简报（AI）
-今日共读4篇论文，其中2篇精读、2篇速读。最值得关注的是9.0分的《LG-GER》——用语言引导与多模态证据蒸馏提升组情绪识别，以及8.0分的《FactoMap》——突破均匀局部等距与拓扑限制实现解耦表征。建议普通读者优先了解多模态蒸馏与表征解耦在情绪识别和特征学习中的应用潜力。
-- 详情：[/202608/26/README](/202608/26/README)
+- 今日共生成 10 篇推荐（精读 5 篇，速读 5 篇）
+- 精读：《Adaptive Hierarchical Representation Alliance for Multimodal Learning》（9.0/10）, 《Self-Supervised Graph Representation Learning for In-The-Wild Wearable and Smartphone based Emotion Recognition》（8.0/10）
+- 速读：《Mitigating Strong-Modality Collapse in Multimodal Learning via Inverted Asymmetric Fusion》（7.0/10）, 《ENCORE: Entropy-Guided Cropping and Attention Regularization for Robust Vision--Language Understanding》（6.0/10）, 《Asymmetric Cross-Modal Fine-Grained Visual Categorization: ACF-Net and the BirdPro Benchmark》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/28/README](/202608/28/README)
 
 ### 精读区论文标签
-1. [LG-GER: Language-Guided Group Emotion Recognition via Multimodal Evidence Distillation](/202608/26/2608.23880v1-lg-ger-language-guided-group-emotion-recognition-via-multimodal-evidence-distillation)  
+1. [Adaptive Hierarchical Representation Alliance for Multimodal Learning](/202608/28/2608.22863v2-adaptive-hierarchical-representation-alliance-for-multimodal-learning)  
    标签：评分：9.0/10、query:mm
-   evidence：通过语言引导的证据蒸馏进行多模态情感识别
-2. [Beyond Uniform Local Isometry and Topology: FactoMap for Disentangled Representations](/202608/26/2608.24762v1-beyond-uniform-local-isometry-and-topology-factomap-for-disentangled-representations)  
+   evidence：层次化共享-私有专家框架在噪声、不均衡或模态缺失输入下提升多模态可靠性
+2. [Self-Supervised Graph Representation Learning for In-The-Wild Wearable and Smartphone based Emotion Recognition](/202608/28/2608.22387v1-self-supervised-graph-representation-learning-for-in-the-wild-wearable-and-smartphone-based-emotion-recognition)  
    标签：评分：8.0/10、query:mm
-   evidence：提出新的解耦表示学习方法FactoMap
+   evidence：直接使用自监督图学习处理可穿戴和智能手机数据的情感识别
+3. [Learning to Prefer Reliably: Error-Augmented Emotion Preference Optimization with Calibrated Fusion](/202608/28/2608.24730v1-learning-to-prefer-reliably-error-augmented-emotion-preference-optimization-with-calibrated-fusion)  
+   标签：评分：8.0/10、query:mm
+   evidence：论文面向多模态大语言模型的情感偏好学习，结合校准融合与错误增强优化，直接属于情感计算领域。
+4. [Drift Variation Autoencoder: Unifying Generation and Representation Learning through Conditional Posterior Flow Matching](/202608/28/2608.25138v1-drift-variation-autoencoder-unifying-generation-and-representation-learning-through-conditional-posterior-flow-matching)  
+   标签：评分：8.0/10、query:mm
+   evidence：基于条件后验流匹配的生成式方法处理随机掩蔽与模态移除，直接关联缺失模态鲁棒性。
+5. [Emotion Understanding in Streaming Video with Trajectory-Aware Reliability](/202608/28/2608.26786v1-emotion-understanding-in-streaming-video-with-trajectory-aware-reliability)  
+   标签：评分：8.0/10、query:mm
+   evidence：从不完整的流式视频证据中进行情感识别；鲁棒的可靠性感知框架
 
 ### 速读区论文标签
-1. [Recognition-Conditioned Reasoning: A Training-Free Multimodal-LLM Pipeline for Fine-Grained Micro-Action Understanding](/202608/26/2608.21022v1-recognition-conditioned-reasoning-a-training-free-multimodal-llm-pipeline-for-fine-grained-micro-action-understanding)  
+1. [Mitigating Strong-Modality Collapse in Multimodal Learning via Inverted Asymmetric Fusion](/202608/28/2608.26879v1-mitigating-strong-modality-collapse-in-multimodal-learning-via-inverted-asymmetric-fusion)  
    标签：评分：7.0/10、query:mm
-   evidence：用多模态大模型识别泄露情感状态的微动作，属于多模态情感识别
-2. [Task-disentangled Low-Rank Adaptation for Versatile Audio-visual Multi-modal Learning Tasks within a Unified Framework](/202608/26/2608.24209v1-task-disentangled-low-rank-adaptation-for-versatile-audio-visual-multi-modal-learning-tasks-within-a-unified-framework)  
-   标签：评分：7.0/10、query:mm
-   evidence：视听多模态学习中的任务解耦低秩适配；显式解耦表示
+   evidence：针对强模态坍缩问题提升多模态融合鲁棒性
+2. [ENCORE: Entropy-Guided Cropping and Attention Regularization for Robust Vision--Language Understanding](/202608/28/2608.22996v1-encore-entropy-guided-cropping-and-attention-regularization-for-robust-vision--language-understanding)  
+   标签：评分：6.0/10、query:mm
+   evidence：用熵引导的注意力正则化增强视觉语言模型的稳健性
+3. [Asymmetric Cross-Modal Fine-Grained Visual Categorization: ACF-Net and the BirdPro Benchmark](/202608/28/2608.25520v1-asymmetric-cross-modal-fine-grained-visual-categorization-acf-net-and-the-birdpro-benchmark)  
+   标签：评分：6.0/10、query:mm
+   evidence：在非对称跨模态对应下进行稳健的视听表示学习
+4. [Drift-Aware Multimodal User Representation Learning via Multi-Scale Temporal Modeling and Sparse Mixture-of-Experts](/202608/28/2608.25773v1-drift-aware-multimodal-user-representation-learning-via-multi-scale-temporal-modeling-and-sparse-mixture-of-experts)  
+   标签：评分：6.0/10、query:mm
+   evidence：通过稀疏专家混合在用户多模态表示中解耦多个潜在兴趣
+5. [AffectOmni: RL-Verifiable People-Centric Grounded Affective Reasoning for Social and Art-Related Scenes](/202608/28/2608.26193v1-affectomni-rl-verifiable-people-centric-grounded-affective-reasoning-for-social-and-art-related-scenes)  
+   标签：评分：6.0/10、query:mm
+   evidence：面向人物中心情感推理的多模态大模型框架
 
 
 <div class="dpr-home-promo-card">

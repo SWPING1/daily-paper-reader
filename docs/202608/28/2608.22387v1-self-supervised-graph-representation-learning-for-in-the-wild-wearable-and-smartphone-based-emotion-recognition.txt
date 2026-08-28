@@ -1,0 +1,163 @@
+Title: Self-Supervised Graph Representation Learning for In-The-Wild Wearable and Smartphone based Emotion Recognition
+
+URL Source: https://arxiv.org/pdf/2608.22387v1
+
+Published Time: Tue, 25 Aug 2026 01:08:31 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+# Self-Supervised Graph Representation Learning for In-The-Wild Wearable and Smartphone based Emotion Recognition 
+
+Ioannis Ziogas 
+
+Dpt. of Biomedical Eng. and Biotechnology Khalifa University of Science and Technology 
+
+Abu Dhabi, UAE ioannis.ziogas@ku.ac.ae 
+
+Leontios J. Hadjileontiadis 
+
+Dpt. of Biomedical Eng. and Biotechnology Khalifa University of Science and Technology 
+
+Abu Dhabi, UAE 
+
+Dpt. of Electrical and Computer Eng. Aristotle University of Thessaloniki 
+
+Thessaloniki, Greece leontios.hadjileontiadis@ku.ac.ae 
+
+Ahsan H. Khandoker 
+
+Dpt. of Biomedical Eng. and Biotechnology Khalifa University of Science and Technology 
+
+Abu Dhabi, UAE ahsan.khandoker@ku.ac.ae 
+
+Aamna Al Shehhi 
+
+Dpt. of Biomedical Eng. and Biotechnology Khalifa University of Science and Technology 
+
+Abu Dhabi, UAE aamna.alshehhi@ku.ac.ae 
+
+Abstract —Wearable and smartphone-based emotion recogni-tion (WER) remains a challenging setting in affective computing, due to the notorious difficulty and bias associated with in-the-wild label collection. The high inter-and intra-subject emotional variability motivates us to explore WER modeling through graph node classification in a limited resources learning scheme powered by Self-Supervised Learning (SSL) graph masking augmentation tasks. We employ a subgraph sampling approach during training, utilizing labeled and unlabeled data, along with supervised, semi-supervised, and SSL mechanisms in a multi-task inductive graph neural network architecture. Our evaluations on K-EmoPhone through leave-one-group-out cross-validation in the binary arousal and valence tasks yield average accuracy gains of 4.3% and 7.8%, compared to the full resource setting, utilizing only 20% and 25% of the labels, respectively. Our model analysis sheds light on the relation of SSL graph augmentations to emotional arousal and valence and justifies the approach of SSL-driven subgraph training for in-the-wild WER. 
+
+Index Terms —Self-Supervised Learning, Graph Neural Net-works, Wearable Emotion Recognition, Graph Masking 
+
+I. I NTRODUCTION 
+
+Accurate analysis of emotional manifestations that unfold during typical daily life interactions and experiences, has long been a challenging scenario for affective computing systems [1]. In part, the advent of ubiquitous and unobtrusive data 
+
+Code at: https://github.com/GiannisZgs/Wearable ER Graph SSL. This work is supported by Khalifa University of Science and Technology. © 2025 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works. DOI: 10.1109/ICASSP49660.2025.10888648 
+
+collection through smartphones and wearable devices along with Artificial Intelligence (AI)-powered computing, have ad-dressed this challenge by utilizing the scarce affect labels for emotion recognition (ER) [2]. Hence, in-the-wild ER presents a challenging landscape, increasingly relevant in the discussion of how to efficiently exploit the limited available resources , in terms of affect labels. Concurrently, Self-Supervised Learning (SSL) is a novel paradigm in AI that does not require labeled instances to learn [3]. Pre-text augmentation tasks, facilitate SSL by fostering a generation of self-supervisory signals from the data, through perturbations of the data structure [4]. Computer vision-inspired augmentations have been applied to time series [5], [6], yet they do not possess the capacity to model temporal dependencies, temporal ordering and the high-dimensional nature of univariate and multivariate signals [7]. In wearable ER, SSL approaches are limited in number [8], [9]; whereas, GNNs have been sparsely used for SSL in wearable affective computing [10], [11]. SSL on Graph Neural Networks (GNNs), on the other hand, faces significant challenges in effectively learning informative representations, as it has to capture both the local and global topology of the graph, as well as the node or edge attributes’ information [12]. Graph-specific augmentations, such as node masking and edge dropping, aim to perturb the structure of the adjacency matrix of the graph, altering the graph structure and connectivity [13]. To that end, the representation of the time series data as a graph structure provides a novel perspective on the inter-individual emotion analysis problem by connecting emotionally loaded data samples across multiple biosignal and arXiv:2608.22387v1 [cs.LG] 23 Aug 2026 smartphone modalities. Unlike CNN and Transformer-based approaches, the graph structure explicitly embeds labeled and unlabeled instances in a structural similarity space. In this work, we propose an SSL-based graph representation learning approach to in-the-wild ER through wearable and smartphone data, in a limited resource setting, where only a few labels are available. Motivated by the success of a similar approach in audio event modeling [14], we formulate the ER problem as an inductive graph node classification task, where we investigate the potential of SSL in enhancing performance by training on relatively small subgraphs. Our experimental results indicate that the construction of smaller graphs amelio-rates the influence of unlabeled instances, compared to using a single large graph. We demonstrate how performance increases by gradually integrating additional knowledge into our system, in the form of graph masking SSL tasks . Our results on the K-EmoPhone database [1] validate our hypothesis that limited resource settings benefit from SSL techniques, demonstrating substantial increases in performance over graph baselines on the full resource scenario. II. P ROPOSED METHOD 
+
+A. Graph Construction 
+
+We consider a feature encoder f : T → Z that performs a mapping from the input space T of time series data, to an embedding space Z. Through a sample-wise approach, time series segments in T correspond to embeddings in Z, and each segment is modeled as a vertex/node V in a graph structure, where embeddings Z serve as the node attributes. We argue that inter-subject similarities and differences can be captured through a sufficiently small graph, and hence our subgraph sampling approach during training is inspired by the proposed framework of Shirian et al. [14]. Specifically, given an initial set of time series segments S, with and without labels, we select a labeled subset L ⊆ S and an unlabeled subset U ⊆ S,so as that S = L ∪ U holds. We first connect the labeled nodes to an undirected graph 
+
+G = ( V, E ), by establishing connections between nodes based on a similarity metric criterion. Specifically, each node ui ∈ L
+
+is connected through edges eij with weight aij = 1 to its 
+
+k-nearest neighbors in L, given that nodes ui, u j have the same label. Further, each node uiinL is connected to its m-farthest neighbors in L, irrespective of the label, through edges 
+
+eij with an edge weight of aij = −1. For the unlabeled nodes,we connect every node ui ∈ U to its k-nearest and 
+
+m-farthest neighbors in S, with weighted edges aij = 1
+
+and −1, respectively. The above process yields an adjacency matrix A for the undirected graph G, where A = {aij }|S|.During training, a fixed percentage of labeled Ls ∈ L and unlabeled Us ∈ U nodes is randomly sampled from S [15], while maintaining subject integrity and class balance on the sampled segments, and at each epoch, a single subgraph Gs
+
+is constructed from (Ls, U s) as described above. 
+
+B. Multi-Task Training with Limited Labels 
+
+We adopt a multi-task learning approach to exploit the supervision from the labeled part of the data, while leveraging self-supervisory signals from the unlabeled instances (see Fig.1). In this vein, a graph encoder gθ : Z → H with parameters θ, is trained on the input graph embeddings Z from the feature encoder f , and outputs latent space embeddings H.The graph encoder is shared between two submodules; the first submodule gθ′ with parameters θ′, performs semi-supervised node classification by using the labels and an SSL pseudo-labeling task, while the second submodule gθ′′ with parameters 
+
+θ′′ , performs SSL reconstruction tasks in the embedding space. Our model, therefore, tries to solve an optimization problem that involves the simultaneous learning of parameters θ, θ ′, θ ′′ ,as formulated below: 
+
+min 
+
+> θ,θ ′,θ ′′
+
+[Lsup (θ, θ ′, G s) + λ1Lsemi (θ, θ ′, G s)+ λ2Lself (θ, θ ′′ , G s, G ′
+
+> s
+
+)] 
+
+(1) where λ1 and λ2 are the regularization parameters for the semi- and self-supervised losses, respectively. 
+
+1) Supervised Node Classification Task: For the labeled nodes Ls with labels ys of the subgraph Gs, we compute the cross-entropy loss over the softmax outputs ˆys of the emotion class logits: 
+
+Lsup = − X
+
+> ui∈Ls
+
+ys log ˆ ys (2) 
+
+2) Semi-Supervised Pseudolabeling Task: For the unlabeled set of nodes Us, we employ the network predictions ˆys to formulate an additional regularization term, that penalizes the prediction uncertainty of the network. Since the subgraph consists of both labeled and unlabeled nodes, the network has labeled information that relates to the labeled connections of unlabeled nodes. Based on that, we judge the confidence of the network in producing an output distribution that is characterized by low entropy values. We formulate this task through the below loss: 
+
+Lsemi = − X
+
+> ui∈Us
+
+ˆys log ˆ ys (3) This procedure yields pseudolabels ˆys at each training iter-ation; we store these pseudolabels and use them as additional supervision during inference (see subsection II-C). 
+
+3) Self-Supervised Reconstruction Tasks: To exploit struc-tural information from the sampled subgraphs at each epoch, we produce a perturbed version of the input subgraph ˆGs, and then attempt to bring closer the embeddings W and ˆW of the original Gs and the perturbed ˆGs, calculating an SSL loss over a set of nodes V , as follows: 
+
+Lself = 1
+
+|V | ∥ ˆW − W ∥2 (4) We employ four commonly used augmentations found in the graph SSL literature [13], [14], [16]: a) Node Masking Fig. 1: Our proposed SSL-based graph representation learning framework. 
+
+- each node is masked with a probability pm that follows an i.i.d. uniform distribution, b) Node Attribute Masking - node attributes are masked with a probability pm that follows an i.i.d. uniform distribution, c) Gaussian Noise Addition - we produce a noisy graph ˆGs with node attributes 
+
+ˆzi = zi + xi, where xi ∼ N (0 , 1) , by adding Gaussian noise with probability pn that follows an i.i.d. uniform distribution, 
+
+d) Edge Removal - we perturb the graph connectivity by randomly removing edges from the graph structure with a probability pr following an i.i.d. uniform distribution. For all tasks except node masking, the SSL loss is calculated over the whole collection of subgraph nodes Vs : ( Ls, U s), whereas for the node masking task only the set of nodes that have been masked Vm : ( Lm, U m) is used. 
+
+C. Inference 
+
+Since our approach is an inductive graph learning approach, at inference, we sample a subset of labeled and unlabeled nodes from the unseen data, to form an inference subgraph 
+
+Gis , as was done during training; for the unlabeled nodes, we assign to each node the most commonly appearing pseudo label for each instance, calculated throughout the multiple training iterations from the semi-supervised loss. III. E XPERIMENTS 
+
+A. K-EmoPhone Database 
+
+We utilize the publicly available K-EmoPhone dataset [1], that contains data collected from 77 participants over a 7-day period. Data include affective reports through the experience sampling method (ESM), pre- and post-study surveys, demo-graphics, smartphone modalities related to the connectivity, call, and internet logs, battery status, human activity, and location, to name a few, as well as physiological indicators (accelerometer, electrodermal activity, skin temperature, heart rate), with a total of 5589 ESM responses that serve as affective labels. For the current analysis, we keep a subset of 2619 ESM responses (47 participants) that fully complied with the study guidelines. We use the arousal (A) and valence (V) annotations, by binarizing the 7-point {− 3, +3 } scale ratings of A and V to obtain 1586/1063 Low (−3, 0) and 1033/1556 High (above 0) A/V ratings, respectively. 
+
+B. Data Processing 
+
+We implement the data processing procedure followed by Kang et al. [1]; we consider a window-wise analysis, where each ESM response denotes the end of a segment. We mini-mally pre-process the wearable sensors’ and smartphone data, by resampling recordings and segment-wise normalization. Since the duration of a felt emotional state is not known [1], we consider multiple window durations that span from 30 seconds to 6 hours in the past and extract low level descriptors (LLDs) for each of these segments. The final feature vector for each ESM response is of size 3356. We perform feature selection according to [1], on each subgraph by using only labeled training nodes, to reduce the feature vector dimensionality to ≈ 10% of its initial size. 
+
+C. Evaluation and Training Settings 
+
+We evaluate our proposed in-the-wild ER subgraph in-ductive learning approach through a Leave-One-Group-Out (LOGO) cross-validation scheme, i.e. a stratified w.r.t. the emotion labels 43/3/1 subject(s) train/dev/test split. For the subgraph construction during training, at each LOGO iteration, we randomly consider ≈ 20% or L = 11 participants of the training data as labeled, while the remaining training set 
+
+U = 32 is considered unlabeled. For arousal, we sample 
+
+Ls = 11 , U s = 6 subjects, whereas for valence, we sample 
+
+Ls = 9 , U s = 5 subjects from the total training set and connect them to the subgraph according to II-A with k = 2 nearest and m = 1 farthest neighbors. The shared graph encoder gθ is modeled as a Graph Convolution Network (GCN) [17] with 3 graph convolution layers with hyperbolic tangent activations and a hidden size of 96. The projectors gθ′ and gθ′′ are implemented as simple one-layered linear heads without activation. In the case of gθ′′ 
+
+an output embedding size of 96 is selected. A dropout rate of 
+
+50% [18] and a label smoothing rate of 10% [19] were used. The selection of all model hyperparameters was based only on validation data. We train all networks using a constant learning rate of 0.0055 with the Adam optimizer [20] with a weight decay of 1e-5, and keep the hyperparameters that yield the best validation loss. We choose the regularization parameters TABLE I: Leave-one-group-out CV results for the binary Arousal/Valence (A/V) classification tasks - 25% / 20% of the labels, and 11 / 9 subjects are used for A/V, respectively                                                     
+
+> GCN Model objective A/V Acc. (SD) A/V F1 (SD) Low A/V F1 (SD) High A/V F1 (SD)
+> 100% labels (fully sup.) 0.541/0.513 (0.122/0/150) 0.478 /0.436 (0.097/0.112) 0.552/ 0.353 (0.192/0.195) 0.405 /0.519 (0.192/0.195) 25% (A) / 20% (V) labels + unlabeled 0.549/0.572 (0.147/0/148) 0.458/0/455 (0.109/0.092) 0.627/0.311 (0.181/0/204) 0.289/0.598 (0.181/0/204) pseudolabeling (semi-sup.) 0.574/0.554 (0.136/0.165) 0.463/0.423 (0.091/0.095) 0.623/0.314 (0.217/0.252) 0.303/0.531 (0.217/0.252) node attribute noise 0.559/0.586 (0.118/0.145) 0.463/0.453 (0.074/0.075) 0.594/0.298 (0.200/0.234) 0.333/0.607 (0.200/0.234) node masking 0.575/ 0.591 (0.133/0.148) 0.465/0.460 (0.083/0.082) 0.624/0.311 (0.181/0.234) 0.306/0.609 (0.181/0.234) node attribute masking 0.581/0.589 (0.133/0.159) 0.462/ 0.464 (0.078/0.105) 0.631/0.309 (0.202/0.240) 0.293/ 0.620 (0.202/0.240) edge removal 0.563/0.574 (0.145/0.143) 0.458/0.454 (0.091/0.084) 0.625/0.316 (0.188/0.216) 0.291/0.592 (0.188/0.216) node attribute noise + pseudolabeling 0.580/0.558 (0.157/0.196) 0.461/0.415 (0.091/0.113) 0.621/0.281 (0.224/0.249) 0.300/0.550 (0.224/0.249) node masking + pseudolabeling 0.584 /0.557 (0.142/0.171) 0.454/0.434 (0.103/0.099) 0.644 /0.276 (0.201/0.220) 0.263/0.592 (0.201/0.220) node attribute masking + pseudolabeling 0.553/0.563 (0.146/0.180) 0.438/0.426 (0.101/0.119) 0.579/0.297 (0.244/0.254) 0.297/0.555 (0.244/0.254) edge removal + pseudolabeling 0.576/0.564 (0.143/0.187) 0.450/0.415 (0.098/0.115) 0.635/0.268 (0.212/0.254) 0.264/0.563 (0.212/0.254)
+
+Fig. 2: Impact on accuracy (y-axis) (a): percentage of labeled training data (x-axis) for arousal and valence in the without-SSL semi-supervised setting, (b,c): selection probability of an SSL task (x-axis), for (b) valence / (c) arousal, and 20% / 25% labeled data size, respectively. 
+
+λ1 = 0 .3 and λ2 = 0 .2. All networks were implemented with PyTorch on a single NVIDIA RTX6000 ADA GPU. IV. R ESULTS 
+
+Table I reports the average and standard deviation of our four evaluation metrics across the LOGO validation, for all the variants of our subgraph SSL approach. We observe that our proposed limited resources settings are performing on par or even better than the full resource setting. Compared to the fully supervised setting, increases of 4.3% in accuracy with the node masking and pseudolabeling SSL tasks for arousal, and 7.8% in accuracy and 3% increase in macro-F1 with the node masking and node attribute masking tasks, are observed. Moreover, the utilized labels have been reduced to a mere 
+
+25% for arousal and 20% for valence, in contrast to previous efforts that used 100% of the labels [1]. In general, we observe a gradual increase in performance by moving from the fully supervised to the lightly supervised setting with strong SSL regularization, as was expected by our initial hypothesis. We should note that in both cases, the fully supervised baseline performs better in predicting instances of the minority high arousal and low valence class. 
+
+A. Ablation Studies 1) Effect of Labeled Data Size: In Fig. 2a, we investigate labeled data percentage as a defining parameter of our system’s performance. The results of this investigation for the semi-supervised setting, demonstrate a considerable variance in the system performance; more labeled data does not always corre-spond to higher accuracy. This also explains the superiority of our subgraph sampling SSL approach to the fully supervised setting; a larger graph with more labels may not always be beneficial for heterogeneous tasks such as in-the-wild ER. 
+
+2) Effect of SSL Graph Augmentation Probability: We also investigate the strength of the utilized SSL augmentation tasks in the SSL setting without the pseudo labeling task in terms of the probability of perturbing nodes, edges, or node attributes in our subgraphs. In Fig.2b, for the valence case, there is a gradual increase of performance until relatively higher probability values for all tasks, except edge removal. This may be attributed to the strength of edge removal as a structural perturbation on the graph; this result indicates the significance of the graph construction technique in connecting similar and dissimilar emotions. Conversely, graph augmentations that affect node information seem to have a milder effect, implying that emotional valence information that relates to inter- and intra-subject differences is encoded in the connectivity of the graph, rather than the segments’ features. In the case of arousal (Fig.2c), node masking and noise addition seem to affect the performance more than edge removal This behavior may indicate a greater dependency of arousal prediction on the node attributes, rather than the connectivity of the graph. V. C ONCLUSION 
+
+Our work contributes a novel perspective on in-the-wild WER with limited labels through wearable and smartphone time series data, by examining an SSL graph node classifi-cation approach on the foundation of subgraph construction through sampling. Through comprehensive evaluations and ablations on the 7 days-long K-EmoPhone dataset, we validate the theoretical advantages of our subgraph SSL approach, instead of a single large graph for low-resource WER. Our method does not require modality-specific encoders, and per-forms well under limited resources in terms of labels and data, thus holding great promise for WER in longer continuous monitoring periods and more diverse populations. REFERENCES [1] Soowon Kang, Woohyeok Choi, Cheul Young Park, Narae Cha, Auk Kim, Ahsan Habib Khandoker, Leontios Hadjileontiadis, Heepyung Kim, Yong Jeong, and Uichin Lee, “K-EmoPhone: A Mobile and Wearable Dataset with In-Situ Emotion, Stress, and Attention Labels,” 
+
+Scientific Data 2023 10:1 , vol. 10, no. 1, pp. 1–21, 6 2023. [2] Bj¨ orn W. Schuller, “Speech emotion recognition,” Communications of the ACM , vol. 61, no. 5, pp. 90–99, 4 2018. [3] Randall Balestriero, Mark Ibrahim, Vlad Sobal, Ari Morcos, Shashank Shekhar, Tom Goldstein, Florian Bordes, Adrien Bardes, Gregoire Mialon, Yuandong Tian, Avi Schwarzschild, Andrew Gordon Wilson, Jonas Geiping, Quentin Garrido, Pierre Fernandez, Amir Bar, Hamed Pirsiavash, Yann LeCun, and Micah Goldblum, “A Cookbook of Self-Supervised Learning,” arXiv preprint arXiv:2304.12210 (2023) , 4 2023. [4] Dimitris Spathis, Ignacio Perez-Pozuelo, Laia Marques-Fernandez, and Cecilia Mascolo, “Breaking away from labels: The promise of self-supervised machine learning in intelligent health,” Patterns , vol. 3, no. 2, pp. 100410, 2 2022. [5] Vipula Dissanayake, Sachith Seneviratne, Hussel Suriyaarachchi, Elliott Wen, and Suranga Nanayakkara, “Self-supervised Representation Fusion for Speech and Wearable Based Emotion Recognition,” Proceedings of the Annual Conference of the International Speech Communication As-sociation, INTERSPEECH , vol. 2022-September, pp. 3598–3602, 2022. [6] Yujin Wu, Mohamed Daoudi, and Ali Amad, “Transformer-Based Self-Supervised Multimodal Representation Learning for Wearable Emotion Recognition,” IEEE Transactions on Affective Computing , 2023. [7] Kexin Zhang, Qingsong Wen, Chaoli Zhang, Rongyao Cai, Ming Jin, Yong Liu, James Zhang, Yuxuan Liang, Guansong Pang, Dongjin Song, et al., “Self-supervised learning for time series analysis: Taxonomy, progress, and prospects,” arXiv preprint arXiv:2306.10125 , 2023. [8] Vipula Dissanayake, Sachith Seneviratne, Rajib Rana, Elliott Wen, Tharindu Kaluarachchi, and Suranga Nanayakkara, “SigRep: Toward Robust Wearable Emotion Recognition with Contrastive Representation Learning,” IEEE Access , vol. 10, pp. 18105–18120, 2022. [9] Yujin Wu, Mohamed Daoudi, and Ali Amad, “Transformer-based self-supervised multimodal representation learning for wearable emotion recognition,” IEEE Transactions on Affective Computing , 2023. [10] Hao Chun Yang and Chi Chun Lee, “A Media-Guided Attentive Graphical Network for Personality Recognition Using Physiology,” 
+
+IEEE Transactions on Affective Computing , vol. 14, no. 2, pp. 931–943, 4 2023. [11] Hao Chun Yang and Chi Chun Lee, “A Siamese Content-Attentive Graph Convolutional Network for Personality Recognition Using Phys-iology,” ICASSP, IEEE International Conference on Acoustics, Speech and Signal Processing - Proceedings , vol. 2020-May, pp. 4362–4366, 5 2020. [12] Yaochen Xie, Zhao Xu, Jingtun Zhang, Zhengyang Wang, and Shuiwang Ji, “Self-Supervised Learning of Graph Neural Networks: A Unified Re-view,” IEEE Transactions on Pattern Analysis and Machine Intelligence ,vol. 45, no. 2, pp. 2412–2429, 2 2023. [13] Yuning You, Tianlong Chen, Yongduo Sui, Ting Chen, Zhangyang Wang, and Yang Shen, “Graph Contrastive Learning with Augmen-tations,” NIPS’20: Proceedings of the 34th International Conference on Neural Information Processing Systems , , no. 488, pp. 5812 – 5823, 10 2020. [14] Amir Shirian, Krishna Somandepalli, and Tanaya Guha, “Self-Supervised Graphs for Audio Representation Learning With Limited Labeled Data,” IEEE Journal on Selected Topics in Signal Processing ,vol. 16, no. 6, pp. 1391–1401, 10 2022. [15] Hanqing Zeng, Hongkuan Zhou, Ajitesh Srivastava, Rajgopal Kannan, and Viktor Prasanna, “GraphSAINT: Graph Sampling Based Inductive Learning Method,” 8th International Conference on Learning Represen-tations, ICLR 2020 , 7 2019. [16] Yanqiao Zhu, Yichen Xu, Qiang Liu, and Shu Wu, “An Empirical Study of Graph Contrastive Learning,” arXiv preprint arXiv:2109.01116v2 , 9 2021. [17] Thomas N. Kipf and Max Welling, “Semi-Supervised Classification with Graph Convolutional Networks,” 5th International Conference on Learning Representations, ICLR 2017 - Conference Track Proceedings ,9 2016. [18] Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov, “Dropout: A Simple Way to Prevent Neural Networks from Overfitting,” Journal of Machine Learning Research ,vol. 15, no. 56, pp. 1929–1958, 2014. [19] Gabriel Pereyra, George Tucker, Jan Chorowski, Łukasz Kaiser, and Geoffrey Hinton, “Regularizing Neural Networks by Penalizing Confi-dent Output Distributions,” 5th International Conference on Learning Representations, ICLR 2017 - Workshop Track Proceedings , 1 2017. [20] Diederik P. Kingma and Jimmy Lei Ba, “Adam: A Method for Stochastic Optimization,” 3rd International Conference on Learning Representations, ICLR 2015 - Conference Track Proceedings , 12 2014.
