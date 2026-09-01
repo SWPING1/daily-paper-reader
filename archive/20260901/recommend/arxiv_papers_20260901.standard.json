@@ -1,0 +1,664 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T21:54:12.774011+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 7,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 10,
+    "quick_skim_target": 11,
+    "quick_selected": 10
+  },
+  "deep_dive": [
+    {
+      "id": "2608.30563v1",
+      "source": "arxiv",
+      "title": "Modality Disentangled Learning for Incomplete Multimodal Emotion Recognition: A Primitive Memory Distillation Perspective",
+      "abstract": "Multimodal Emotion Recognition (MER) systems often suffer from missing modalities in real-world scenarios. Existing methods usually generate, align, or distill missing modalities as a whole, overlooking the heterogeneous nature of the information carried by each modality. Such holistic treatment mixes inferable shared semantics with uncertain modality-specific details, yielding unstable representations and degrading robustness. To address this issue, we propose the Primitive Memory Distillation (PriMD) framework. Unlike existing methods, PriMD takes an intra-modal perspective and focuses on how different types of information within a modality differ in recoverability within each modality. PriMD first disentangles cross-modal shared semantics from modality-specific representations, and then discretizes the latter into learnable semantic primitives to construct modality-specific memory banks. When modalities are missing, PriMD is a teacher-student framework that the student model uses the shared semantics of available modalities as queries to dynamically retrieve primitives. It compensates for missing modality-specific information within a constrained memory space and aligns with the teacher model. Extensive experiments on IEMOCAP, CMU-MOSI, and CMU-MOSEI demonstrate that PriMD achieves state-of-the-art performance and consistently stronger robustness across a wide range of missing-modality settings, while mitigating the instability caused by holistic feature inference. Our code and project website are available at https://github.com/JiaqiZhang-Sengoku/PriMD and https://jiaqizhang-sengoku.github.io/PriMD/, respectively.",
+      "authors": [
+        "Jiaqi Zhang",
+        "Zheng Pang",
+        "Mengting Li",
+        "Yiqi Wang",
+        "Guangyuan Dong",
+        "Chao Xue",
+        "Yusen Wu",
+        "Zihao Li",
+        "Huy Phan",
+        "Sicheng Zhao",
+        "Björn W. Schuller",
+        "Jiachen Luo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-31T10:38:47+00:00",
+      "link": "https://arxiv.org/pdf/2608.30563v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Exact match: modality disentangled learning for incomplete multimodal emotion recognition with missing modalities; primitive memory distillation",
+      "llm_evidence_cn": "直接针对缺失模态下的多模态情感识别，提出模态解耦表示学习与原始记忆蒸馏，完全契合需求",
+      "llm_evidence": "直接针对缺失模态下的多模态情感识别，提出模态解耦表示学习与原始记忆蒸馏，完全契合需求",
+      "canonical_evidence": "直接针对缺失模态下的多模态情感识别，提出模态解耦表示学习与原始记忆蒸馏，完全契合需求",
+      "llm_tldr_en": "PriMD addresses missing modalities in multimodal emotion recognition by disentangling recoverable shared semantics from uncertain modality-specific details via primitive memory distillation, enhancing robustness against incomplete inputs.",
+      "llm_tldr_cn": "多模态情感识别系统在实际场景中常面临模态缺失，现有方法将缺失模态整体生成或对齐，混合可推断的共享语义与不确定的模态特有细节，导致表示不稳定。为此，PriMD从模态内部视角出发，通过原始记忆蒸馏区分不同信息的可恢复性，分别建模可推断的共享知识与不确定的特定细节。实验表明该方法在多种缺失模态设置下显著提升了情感识别的鲁棒性，优于整体生成或对齐的基线。该工作为缺失模态下的表示解耦提供了一种新的记忆蒸馏范式。",
+      "llm_tldr": "多模态情感识别系统在实际场景中常面临模态缺失，现有方法将缺失模态整体生成或对齐，混合可推断的共享语义与不确定的模态特有细节，导致表示不稳定。为此，PriMD从模态内部视角出发，通过原始记忆蒸馏区分不同信息的可恢复性，分别建模可推断的共享知识与不确定的特定细节。实验表明该方法在多种缺失模态设置下显著提升了情感识别的鲁棒性，优于整体生成或对齐的基线。该工作为缺失模态下的表示解耦提供了一种新的记忆蒸馏范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled representation learning for multimodal emotion recognition with missing data",
+      "matched_requirement_id": "req-9",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.28966v1",
+      "source": "arxiv",
+      "title": "When Vocal Tone and Literal Meaning Diverge: An Acoustic-Semantic Incongruity Study for Large Audio-Language Models",
+      "abstract": "Affective cues across modalities may be incongruous (e.g., sarcasm or mocking praise), potentially leading to misinterpretation when relying on a single modality. Large Audio-Language Models (LALMs) have recently gained popularity and been applied to multimodal emotion recognition, but their ability to disentangle acoustic and semantic cues, especially in incongruent cases, remains underexplored. To address this gap, we introduce CREMA-ASIS, a dataset specifically created to investigate incongruence between acoustic emotion and semantic sentiment cues. It pairs acoustic emotion labels with semantic sentiment polarities. Using this dataset, we evaluate LALM biases within a multitask framework and conduct a layer-wise analysis to identify modality dominance across layers. Our findings reveal that LALMs struggle with semantic-acoustic incongruent cases, rarely predicting incongruity, and that LALMs are predominantly influenced by semantic information. However, supervised fine-tuning significantly improves LALM performance on our CREMA-ASIS test set while preserving transcription accuracy and joint emotion recognition. Results demonstrate potential for enhancing both acoustic and semantic understanding on out-of-domain data.",
+      "authors": [
+        "Yu-Wen Chen",
+        "William Ho",
+        "Maxim Topaz",
+        "Zoran Kostic",
+        "Julia Hirschberg"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-08-29T00:36:12+00:00",
+      "link": "https://arxiv.org/pdf/2608.28966v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Multimodal emotion recognition with acoustic and semantic cue disentanglement",
+      "llm_evidence_cn": "多模态情感识别，解耦声学与语义线索",
+      "llm_evidence": "多模态情感识别，解耦声学与语义线索",
+      "canonical_evidence": "多模态情感识别，解耦声学与语义线索",
+      "llm_tldr_en": "Introduces CREMA-ASIS dataset to study acoustic-semantic incongruity in multimodal emotion recognition; evaluates Large Audio-Language Models in a multitask framework, revealing their limitations in disentangling vocal tone and literal meaning.",
+      "llm_tldr_cn": "该论文指出多模态情感线索可能不一致（如讽刺），而大型音频-语言模型(LALM)在解耦声学与语义线索方面尚不充分。为此构建了CREMA-ASIS数据集，配对声学情感标签与语义情感极性，并在多任务框架下评估LALM的偏差。研究发现LALM在声学与语义不一致时容易产生误导性判断，揭示了其在多模态情感识别中的脆弱性。该工作为鲁棒多模态情感识别和线索解耦提供了新基准与评估方法。",
+      "llm_tldr": "该论文指出多模态情感线索可能不一致（如讽刺），而大型音频-语言模型(LALM)在解耦声学与语义线索方面尚不充分。为此构建了CREMA-ASIS数据集，配对声学情感标签与语义情感极性，并在多任务框架下评估LALM的偏差。研究发现LALM在声学与语义不一致时容易产生误导性判断，揭示了其在多模态情感识别中的脆弱性。该工作为鲁棒多模态情感识别和线索解耦提供了新基准与评估方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.24730v2",
+      "source": "arxiv",
+      "title": "Learning to Prefer Reliably: Error-Augmented Emotion Preference Optimization with Calibrated Fusion",
+      "abstract": "Emotion preference learning uses pairwise comparisons between candidate descriptions to align multimodal large language models (MLLMs) with human judgments of open-ended emotion descriptions and to train reward models that capture human emotional preferences. However, conventional pairwise supervision is often sparse, typically providing only a single negative description for each positive description, and therefore offers limited coverage of the diverse ways in which an emotion description can be incorrect. In particular, models may be insufficiently exposed to semantically fluent but emotionally inconsistent descriptions. Beyond this data-level limitation, relying on a single MLLM judge introduces a distinct model-level concern: its judgments can be affected by model-specific biases when interpreting fine-grained or ambiguous multimodal emotional cues. To address these limitations, we propose Error-Augmented Preference Optimization (EAPO), a framework for improving the reliability of MLLM-based emotion preference judgment at both the data and model levels. First, we construct an error-augmented dataset by generating multiple controlled and emotion-aware negative descriptions from each preferred description. We then adapt multiple independent MLLM judges to this richer supervision and aggregate their preference margins using margin-calibrated soft fusion, which maps heterogeneous margins to a common scale before aggregation. Experiments on the MER2026-EmoPrefer Challenge dataset and our error-augmented dataset demonstrate that EAPO improves emotion preference prediction and enhances the robustness of MLLM judges when evaluating fluent descriptions that conflict with the video's multimodal emotional evidence. Our code is available at https://github.com/slash1028/EAPO-EmoPrefer.",
+      "authors": [
+        "Zilong Huang",
+        "Junyi Peng",
+        "Junjie Li",
+        "Kai Li",
+        "Wenze Ren",
+        "Kong Aik Lee",
+        "Man-Wai Mak",
+        "Tatsuya Kawahara"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.HC"
+      ],
+      "published": "2026-08-25T15:41:01+00:00",
+      "link": "https://arxiv.org/pdf/2608.24730v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal emotion preference learning with error-augmented optimization and calibrated fusion",
+      "llm_evidence_cn": "多模态情感偏好学习，结合错误增强优化与校准融合，提升情感理解",
+      "llm_evidence": "多模态情感偏好学习，结合错误增强优化与校准融合，提升情感理解",
+      "canonical_evidence": "多模态情感偏好学习，结合错误增强优化与校准融合，提升情感理解",
+      "llm_tldr_en": "Addresses sparse pairwise supervision and unreliable single-judge issues in multimodal emotion preference learning, proposing error-augmented preference optimization with calibrated fusion to better align multimodal LLMs with human emotion judgments.",
+      "llm_tldr_cn": "针对多模态大模型情感偏好学习中成对监督稀疏且单一评判模型不可靠的问题，提出错误增强的情感偏好优化与校准融合方法，扩充语义流畅但情感不一致的负例并校准多个模型判断。实验验证了该方法在情感描述对齐和奖励模型上的效果，为多模态情感理解提供了更可靠的对齐策略。",
+      "llm_tldr": "针对多模态大模型情感偏好学习中成对监督稀疏且单一评判模型不可靠的问题，提出错误增强的情感偏好优化与校准融合方法，扩充语义流畅但情感不一致的负例并校准多个模型判断。实验验证了该方法在情感描述对齐和奖励模型上的效果，为多模态情感理解提供了更可靠的对齐策略。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.29026v1",
+      "source": "arxiv",
+      "title": "Disentangling Representation using Attributes-based Gaussian Estimation for Medical Sound Diagnosis",
+      "abstract": "Deep learning has a powerful capability of feature extraction. However, the lack of fairness and interpretability in deep neural networks poses limitations to their adoption in the medical domain. This paper proposes a disentangled representation learning (DisenRL) framework, named the Attributes-based Gaussian Estimation for Disentangled Representation (AGEDR), which incorporates Attribute Mapping Embedding (AME) modules designed to map attributes into vectors and align them with a subset of the latent vectors in a Variational AutoEncoder (VAE). This part of the latent vector will be disentangled from the remaining latent vectors by minimizing mutual information. A classifier is then trained using the mean parameters of the latent vectors from the VAE. Extensive experiments demonstrate that AGEDR outperforms both conventional classification models and existing disentangled representation learning methods. The ablation experiments also indicate the disentangling capability and fairness of AGEDR. The source code is publicly available at https://github.com/ZhaoKe1024/DisentangledRepr.",
+      "authors": [
+        "Ke Zhao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CV",
+        "eess.AS"
+      ],
+      "published": "2026-08-29T03:37:39+00:00",
+      "link": "https://arxiv.org/pdf/2608.29026v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes a disentangled representation learning framework using VAE with attribute mapping and mutual information minimization",
+      "llm_evidence_cn": "提出基于VAE、属性映射和互信息最小化的解耦表示学习框架",
+      "llm_evidence": "提出基于VAE、属性映射和互信息最小化的解耦表示学习框架",
+      "canonical_evidence": "提出基于VAE、属性映射和互信息最小化的解耦表示学习框架",
+      "llm_tldr_en": "Proposes AGEDR, a disentangled representation framework with attribute mapping and mutual information minimization in a VAE, improving interpretable medical sound diagnosis.",
+      "llm_tldr_cn": "针对深度神经网络在医学领域缺乏可解释性和公平性的问题，提出了基于属性高斯估计的解耦表示框架AGEDR。该方法在变分自编码器中引入属性映射嵌入模块，将属性向量与部分潜变量对齐，并通过最小化互信息实现解耦。实验表明该框架能提升医学声音诊断的分类性能与可解释性，为需要可解释特征的领域提供了通用解耦学习范式。",
+      "llm_tldr": "针对深度神经网络在医学领域缺乏可解释性和公平性的问题，提出了基于属性高斯估计的解耦表示框架AGEDR。该方法在变分自编码器中引入属性映射嵌入模块，将属性向量与部分潜变量对齐，并通过最小化互信息实现解耦。实验表明该框架能提升医学声音诊断的分类性能与可解释性，为需要可解释特征的领域提供了通用解耦学习范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.29220v1",
+      "source": "arxiv",
+      "title": "SGPDFuse: Semantically-Guided Physics-Disentanglement General Multi-Modal Image Fusion",
+      "abstract": "Multimodal image fusion (MMIF) aims to integrate complementary sensor data into a single representation that preserves intrinsic scene reality while eliminating environmental interferences. Most existing approaches rely on blind feature aggregation, which excels at signal accumulation but fails to distinguish essential content from physical degradations. We propose SGPDFuse, which bridges this gap by mapping inputs into a physics-disentangled structural representation via a Semantic-Physical Parametric Bridge (SPPB) built on pretrained vision foundation models, utilizing the Intrinsic-Variation principle to decouple invariant scene attributes from transient environmental factors. To guide this decomposition, we introduce a Semantic Alignment mechanism: we explicitly anchor the fused representation to salient semantic features in the same foundation model feature space via cosine similarity to preserve critical targets, while enforcing physical texture fidelity through Gram-matrix regularization to strictly eliminate unnatural artifacts. Extensive experiments demonstrate that SGPDFuse achieves state-of-the-art performance across infrared-visible, multi-focus, and multi-exposure benchmarks using a single architecture.",
+      "authors": [
+        "Haozhen Wei",
+        "Chengjun Jiang",
+        "Yutong Guo",
+        "Xinrui Ju",
+        "Xingyuan Li",
+        "Xiang Chen",
+        "Jinyuan Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-29T12:08:27+00:00",
+      "link": "https://arxiv.org/pdf/2608.29220v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "physics-disentangled structural representation decouples invariant scene attributes from transient environmental factors",
+      "llm_evidence_cn": "利用物理解耦表示，将不变场景属性与瞬态环境因素分离，属于解耦表示学习",
+      "llm_evidence": "利用物理解耦表示，将不变场景属性与瞬态环境因素分离，属于解耦表示学习",
+      "canonical_evidence": "利用物理解耦表示，将不变场景属性与瞬态环境因素分离，属于解耦表示学习",
+      "llm_tldr_en": "SGPDFuse maps multimodal inputs into a physics-disentangled representation via a Semantic-Physical Parametric Bridge and Intrinsic-Variation principle, decoupling invariant scene attributes from environmental interferences for general image fusion.",
+      "llm_tldr_cn": "多模态图像融合旨在整合互补传感器数据，但现有盲聚合方法难以区分本质内容与物理退化。作者提出SGPDFuse，利用基于预训练视觉基础模型的语义-物理参数桥，并结合内在-变化原则，将输入映射为物理解耦的结构表示，从而将不变场景属性与瞬态环境因素解耦。同时引入语义对齐引导分解过程。该方法在通用多模态图像融合中优于现有方案，为解耦表示在多模态融合中的应用提供了新思路。",
+      "llm_tldr": "多模态图像融合旨在整合互补传感器数据，但现有盲聚合方法难以区分本质内容与物理退化。作者提出SGPDFuse，利用基于预训练视觉基础模型的语义-物理参数桥，并结合内在-变化原则，将输入映射为物理解耦的结构表示，从而将不变场景属性与瞬态环境因素解耦。同时引入语义对齐引导分解过程。该方法在通用多模态图像融合中优于现有方案，为解耦表示在多模态融合中的应用提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.30388v1",
+      "source": "arxiv",
+      "title": "PRISM: Predictive Recomposition via Semantic Latent Decomposition for View-invariant Video Representation Learning",
+      "abstract": "Cross-view video representation learning aims to capture viewpoint-invariant action semantics despite substantial appearance changes across egocentric and exocentric videos. However, existing methods encode each video as a unified embedding, where view-invariant and view-variant semantics inevitably entangle under co-occurrences - a failure mode we show persists even in cross-view methods explicitly trained for view-invariance. Our key insight is that a view-invariant feature is truly disentangled when it can be sufficiently recomposed with an arbitrary view-variant feature while preserving their independent semantics. Building on this, we propose PRISM, that decomposes video into view-invariant and view-variant latents and recompose them under language supervision encouraging clean decomposition of the two streams. PRISM achieves state-of-the-art results on EgoExo4D, EgoExoLearn, AE2, even surpassing in-domain models under zero-shot setting. Code is available at https://github.com/litcoderr/prism.",
+      "authors": [
+        "Youngchae Chee",
+        "Hosu Lee",
+        "Sungjune Park",
+        "Junho Kim",
+        "Yong Man Ro"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-31T07:43:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.30388v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "decomposes video into view-invariant and view-variant semantics via latent decomposition and recomposition",
+      "llm_evidence_cn": "通过潜分解与重组合将视频分解为视角不变与视角变化语义，实现真正解耦",
+      "llm_evidence": "通过潜分解与重组合将视频分解为视角不变与视角变化语义，实现真正解耦",
+      "canonical_evidence": "通过潜分解与重组合将视频分解为视角不变与视角变化语义，实现真正解耦",
+      "llm_tldr_en": "Proposes PRISM, a disentangled representation method that decomposes video into view-invariant and view-variant latent features and recomposes them, improving cross-view action recognition.",
+      "llm_tldr_cn": "针对跨视角视频表征中视角不变与视角变化语义容易纠缠的问题，提出PRISM方法。其核心观点是当视角不变特征能与任意视角变化特征充分重组且保持独立语义时，才能真正实现解耦。PRISM将视频分解为两类潜特征，通过预测性重组合学习视角不变表征，在跨视角动作识别任务上取得改进。为解耦表征在视频理解中的应用提供了新思路。",
+      "llm_tldr": "针对跨视角视频表征中视角不变与视角变化语义容易纠缠的问题，提出PRISM方法。其核心观点是当视角不变特征能与任意视角变化特征充分重组且保持独立语义时，才能真正实现解耦。PRISM将视频分解为两类潜特征，通过预测性重组合学习视角不变表征，在跨视角动作识别任务上取得改进。为解耦表征在视频理解中的应用提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.30726v1",
+      "source": "arxiv",
+      "title": "Multimodal Adaptive Expert Selection with Text Routing and Ordinal Prototype Optimization for Sentiment Analysis",
+      "abstract": "Multimodal Sentiment Analysis (MSA) is a fundamental component of affective computing that aims to decipher complex emotional states by integrating verbal content with non-verbal cues including vocal intonation and facial micro-expressions. While recent disentanglement-based approaches have advanced the field, their potential is hindered by two methodological challenges. First, static computation graphs process all samples indiscriminately regardless of semantic complexity, which leads to suboptimal representation for diverse emotional expressions and contextual scenarios. Second, generic contrastive objectives often neglect the intrinsic ordinal hierarchy of sentiment intensities. To systematically address these limitations, we introduce Multimodal Adaptive Expert Selection with Text Routing and Ordinal prototype optimization (MAESTRO), a novel framework designed to dynamically orchestrate and refine multimodal representations. Drawing inspiration from an orchestra conductor, we design a Text-Guided Hybrid Mixture-of-Experts (MoE) mechanism. Unlike static fusion, this module utilizes linguistic context as a routing signal to dynamically activate specific audio-visual experts, thereby resolving cross-modal ambiguity through adaptive feature enhancement. Furthermore, to capture fine-grained sentiment gradations, we propose an Ordinal-aware Prototype Contrastive Learning (O-PCL). By incorporating distance-based penalties into the prototype learning objective, O-PCL enforces a structured latent space that preserves the natural order of emotion. Extensive experiments on the CMU-MOSI and CMU-MOSEI benchmarks demonstrate that MAESTRO achieves state-of-the-art performance, and qualitative analysis further confirms the interpretability of our dynamic routing paradigm.",
+      "authors": [
+        "Xiaode Chen",
+        "Jiakang Yu",
+        "Hongtao Deng",
+        "Huina Qu",
+        "Xun Zhu",
+        "Yinxia Lou"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-31T12:59:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.30726v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal sentiment analysis with disentanglement-based approaches; directly targets affective computing from text, audio, and visual cues",
+      "llm_evidence_cn": "面向多模态情感分析，采用动态计算图与序数原型优化，与多模态情感识别任务直接相关",
+      "llm_evidence": "面向多模态情感分析，采用动态计算图与序数原型优化，与多模态情感识别任务直接相关",
+      "canonical_evidence": "面向多模态情感分析，采用动态计算图与序数原型优化，与多模态情感识别任务直接相关",
+      "llm_tldr_en": "The paper tackles multimodal sentiment analysis with adaptive expert selection and ordinal prototype optimization, overcoming static computation graphs and contrastive objectives that ignore sentiment intensity hierarchy.",
+      "llm_tldr_cn": "多模态情感分析旨在融合文本、语音和面部表情等线索判别情感状态，现有解耦方法使用静态计算图处理所有样本，且对比学习目标忽略情感强度序数结构。该文提出自适应专家选择与文本路由机制，根据语义复杂度动态分配计算路径，并通过序数原型优化保持情感强度的相对顺序。实验在标准多模态情感数据集上验证了该方法对情感表征和分类性能的提升。该研究推进了多模态情感计算中动态架构与序数监督的发展。",
+      "llm_tldr": "多模态情感分析旨在融合文本、语音和面部表情等线索判别情感状态，现有解耦方法使用静态计算图处理所有样本，且对比学习目标忽略情感强度序数结构。该文提出自适应专家选择与文本路由机制，根据语义复杂度动态分配计算路径，并通过序数原型优化保持情感强度的相对顺序。实验在标准多模态情感数据集上验证了该方法对情感表征和分类性能的提升。该研究推进了多模态情感计算中动态架构与序数监督的发展。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2608.27885v1",
+      "source": "arxiv",
+      "title": "There and Back Again: Bidirectional Diffusion Bridges for Multimodality Translation",
+      "abstract": "Multimodality translation (e.g., text-to-image) is a core generative AI task. However, existing approaches (1) follow generative paths that do not directly represent the source modality, limiting the flexibility of some sampling algorithms; and (2) are unidirectional, preventing inversion (e.g., image-to-text). We propose BIT: Bidirectional Image-Text Diffusion Bridges. In contrast to previous approaches, BIT starts directly from text and interpolates into images, providing (1) a source-aware generative path that enables diverse and flexible sampling algorithms; and (2) an endpoint-conditioned process that can be traversed from image to text, providing a unified, bidirectional generative framework. BIT is derived through stochastic calculus, yielding SDE forms amenable to simulation and tractable loss functions that scale to high dimensions. Our experiments show that BIT is competitive with denoising-diffusion and deterministic-flow baselines, and outperforms them on several vision--language and natural-science evaluations.",
+      "authors": [
+        "Gabe Guo",
+        "Elon Litman",
+        "Thanawat Sornwanee",
+        "Jose Blanchet",
+        "Stefano Ermon"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-28T03:43:53+00:00",
+      "link": "https://arxiv.org/pdf/2608.27885v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "bidirectional image-text diffusion bridges enable generative reconstruction between modalities applicable to missing modality completion",
+      "llm_evidence_cn": "双向图像-文本扩散桥提供模态间生成式重建，可用于缺失模态补全",
+      "llm_evidence": "双向图像-文本扩散桥提供模态间生成式重建，可用于缺失模态补全",
+      "canonical_evidence": "双向图像-文本扩散桥提供模态间生成式重建，可用于缺失模态补全",
+      "llm_tldr_en": "Proposes BIT, a bidirectional image-text diffusion bridge that enables both text-to-image and image-to-text generation through endpoint-conditioned diffusion bridges, unifying multimodal translation with flexible sampling and inversion.",
+      "llm_tldr_cn": "针对现有文本-图像等模态翻译方法单向且不能表示源模态、限制反向生成的问题，本文提出双向图像-文本扩散桥(BIT)。BIT直接从文本出发插值到图像，同时支持端点条件过程从图像回到文本，实现统一的双向生成框架。基于随机演算推导，BIT支持多样灵活采样算法，为缺失模态的跨模态重建提供双向生成工具。",
+      "llm_tldr": "针对现有文本-图像等模态翻译方法单向且不能表示源模态、限制反向生成的问题，本文提出双向图像-文本扩散桥(BIT)。BIT直接从文本出发插值到图像，同时支持端点条件过程从图像回到文本，实现统一的双向生成框架。基于随机演算推导，BIT支持多样灵活采样算法，为缺失模态的跨模态重建提供双向生成工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.24563v1",
+      "source": "arxiv",
+      "title": "X-MULTI: VLM-based Imaging Factor Disentanglement for Factor-Aware Image Synthesis",
+      "abstract": "Imaging factor disentanglement in text-to-image generation aims to independently control image acquisition properties such as types of camera lenses, sensor types, viewpoints, and domains to enable combinatorial generalization. This should let the model synthesize novel factor combinations unobserved in the training data, such as pairing a fisheye lens with an event sensor never observed in training data. Recent work, MULTI, introduced learnable, factor-specific embeddings to disentangle imaging factors, along with the Factor Alignment Accuracy (FAA) metric to evaluate disentanglement quality. We identify and address two independent limitations. First, MULTI's pixel-level reconstruction objective supervises the model only on observed imaging factor combinations, providing no direct training signal for novel combinations. We therefore propose X-MULTI, which uses a pretrained vision-language model (VLM) to supervise novel factor combinations synthesized during training. Second, we show the FAA metric exhibits severe cross-factor correlation leakage, misrepresenting true disentanglement quality. We therefore propose Improved-FAA (I-FAA), which employs factor-specific augmentation strategies to break these correlations and enables more rigorous evaluation. Experiments demonstrate that X-MULTI achieves improved factor alignment on novel combinations compared to MULTI. Moreover, we show that correlation leakage in FAA distorts the evaluation of true factor disentanglement and I-FAA reduces this leakage and therefore provides a more robust assessment of factor alignment.",
+      "authors": [
+        "Sonali Godavarthy",
+        "Matthias Neuwirth-Trapp",
+        "Tim-Felix Faasch",
+        "Maarten Bieshaar",
+        "Michael Moeller",
+        "Kristof Van Laerhoven",
+        "Danda Pani Paudel"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-08-25T13:45:30+00:00",
+      "link": "https://arxiv.org/pdf/2608.24563v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "focuses on disentangled representation of imaging factors, transferable to disentanglement in multimodal learning",
+      "llm_evidence_cn": "聚焦成像因子的解耦表示，可迁移到多模态学习中的解耦任务",
+      "llm_evidence": "聚焦成像因子的解耦表示，可迁移到多模态学习中的解耦任务",
+      "canonical_evidence": "聚焦成像因子的解耦表示，可迁移到多模态学习中的解耦任务",
+      "llm_tldr_en": "Proposes X-MULTI, a VLM-based method for imaging factor disentanglement in text-to-image generation, addressing limitations of MULTI by improving factor alignment accuracy and combinatorial generalization.",
+      "llm_tldr_cn": "针对文本到图像合成中成像因子解耦不充分的问题，本文提出X-MULTI，利用视觉语言模型实现镜头、传感器、视角等成像因子的解耦表示，以支持未观测因子组合的组合泛化。相对已有MULTI方法，改进了像素级重建目标仅监督观测图像的局限，提升因子对齐精度(FAA)。该方法为可控图像生成中的解耦表示提供了新思路，也可为多模态解耦学习提供参考。",
+      "llm_tldr": "针对文本到图像合成中成像因子解耦不充分的问题，本文提出X-MULTI，利用视觉语言模型实现镜头、传感器、视角等成像因子的解耦表示，以支持未观测因子组合的组合泛化。相对已有MULTI方法，改进了像素级重建目标仅监督观测图像的局限，提升因子对齐精度(FAA)。该方法为可控图像生成中的解耦表示提供了新思路，也可为多模态解耦学习提供参考。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.28082v1",
+      "source": "arxiv",
+      "title": "Attribute Token Arithmetic: Disentangled and Continuous Semantic Control for Visual Autoregressive Models",
+      "abstract": "Autoregressive text-to-image generation has recently achieved remarkable progress, offering high-fidelity synthesis via a unified generative framework. However, fine-grained semantic control remains challenging due to the attribute entanglement and the misalignment between textual and fine-grained visual representations. In this paper, we introduce Attribute Token Arithmetic (ATA), a method that enables disentangled and continuous attribute control in visual autoregressive modelling. Inspired by the vector arithmetic property observed in word embeddings, ATA identifies semantic directions corresponding to visual attributes (e.g., aging, fatness, emotion) directly within the pretrained autoregressive latent space. These directions are learned from a single reference image, without model retraining or large-scale supervision. During generation, attributes can be continuously adjusted and compositionally combined through simple arithmetic operations with other attribute tokens. Extensive experiments demonstrate that ATA achieves identity-preserving, fine-grained, and multi-attribute adjustment, outperforming existing autoregressive editing baselines in controllability, generality, and computational efficiency. Our code will be available at https://github.com/Madaoer/ATA.",
+      "authors": [
+        "Xindi Yang",
+        "Yicheng Wu",
+        "Cheng Zhang",
+        "Jianfei Cai",
+        "Tien-Tsin Wong"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-28T08:51:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.28082v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Disentangled and continuous semantic control via attribute token arithmetic in visual autoregressive models",
+      "llm_evidence_cn": "利用属性令牌算术在视觉自回归模型中实现解耦连续的语义控制",
+      "llm_evidence": "利用属性令牌算术在视觉自回归模型中实现解耦连续的语义控制",
+      "canonical_evidence": "利用属性令牌算术在视觉自回归模型中实现解耦连续的语义控制",
+      "llm_tldr_en": "Proposes Attribute Token Arithmetic (ATA), which identifies semantic directions corresponding to visual attributes in a pretrained autoregressive latent space, enabling disentangled and continuous attribute control in text-to-image generation.",
+      "llm_tldr_cn": "针对自回归文本到图像生成中属性纠缠且文本与细粒度视觉表示不对齐的问题，提出属性令牌算术（ATA），在预训练自回归潜在空间中识别对应视觉属性（如年龄、情绪）的语义方向，实现解耦且连续的控制。实验表明ATA能有效操控语义属性，为解耦表示学习和可控生成提供了新方法。",
+      "llm_tldr": "针对自回归文本到图像生成中属性纠缠且文本与细粒度视觉表示不对齐的问题，提出属性令牌算术（ATA），在预训练自回归潜在空间中识别对应视觉属性（如年龄、情绪）的语义方向，实现解耦且连续的控制。实验表明ATA能有效操控语义属性，为解耦表示学习和可控生成提供了新方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.26213v1",
+      "source": "arxiv",
+      "title": "Attention-Guided Reliability Scaling for Contrastive Decoding in Robust Audio-Visual Speech Recognition",
+      "abstract": "Large language model (LLM)-based audio-visual speech recognition (AVSR) systems are robust under noise. Contrastive decoding (CD), originally introduced to stabilize LLM generation by contrasting a weaker model against a stronger one at inference time, adjusts predictions without additional training. In this work, we apply CD to AVSR by contrasting audio-only conditioning with full audio-visual conditioning within the same underlying model. However, using a fixed contrastive strength introduces a trade-off across noise levels: stronger intervention helps under severe noise but may over-correct reliable predictions in clean conditions. We propose reliability-aware scaling of CD for AVSR. Instead of using a fixed strength, we adaptively modulate the contrastive influence at each token based on reliability signals derived from attention dynamics and inter-model predictive divergence. Experiments on LRS3 show consistent improvements across clean and low-SNR conditions.",
+      "authors": [
+        "YoungChae Kim",
+        "Da-Hee Yang",
+        "Joon-Hyuk Chang"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CV",
+        "eess.AS"
+      ],
+      "published": "2026-08-26T08:25:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.26213v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Contrasts audio-only and audio-visual conditioning with reliability scaling for robust AVSR",
+      "llm_evidence_cn": "通过对比仅音频与音频-视觉条件并做可靠性缩放，提升音频-视觉语音识别的缺失模态鲁棒性",
+      "llm_evidence": "通过对比仅音频与音频-视觉条件并做可靠性缩放，提升音频-视觉语音识别的缺失模态鲁棒性",
+      "canonical_evidence": "通过对比仅音频与音频-视觉条件并做可靠性缩放，提升音频-视觉语音识别的缺失模态鲁棒性",
+      "llm_tldr_en": "Proposes attention-guided reliability scaling for contrastive decoding in audio-visual speech recognition, dynamically adjusting contrastive strength between audio-only and full audio-visual conditioning to balance performance across noise levels.",
+      "llm_tldr_cn": "音频-视觉语音识别中固定对比解码强度在噪声水平间难以权衡，恶劣噪声下需要更强干预而干净条件下会过度修正。论文提出可靠性感知的对比解码缩放，通过对比仅音频与完整音频-视觉条件动态调整强度。实验表明该方法在不同噪声条件下均优于固定强度，为模态缺失或不可靠场景提供了新的鲁棒解码思路。",
+      "llm_tldr": "音频-视觉语音识别中固定对比解码强度在噪声水平间难以权衡，恶劣噪声下需要更强干预而干净条件下会过度修正。论文提出可靠性感知的对比解码缩放，通过对比仅音频与完整音频-视觉条件动态调整强度。实验表明该方法在不同噪声条件下均优于固定强度，为模态缺失或不可靠场景提供了新的鲁棒解码思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.26737v1",
+      "source": "arxiv",
+      "title": "Generative Semantic Scene Completion",
+      "abstract": "Outdoor LiDAR semantic scene completion (SSC) recovers a dense semantic voxel grid from a scan observing 1% of the target volume, under class imbalance beyond 7,000x. We recast SSC as generative semantic scene completion (GSSC): a single discrete-diffusion formulation in three roles. First, paired sparse-dense scene synthesis (PS$^3$) generates matched sparse LiDAR observations with their dense semantic completions, addressing the long tail at its source and yielding the PS$^3$-SemanticKITTI corpus we train on alongside SemanticKITTI. Second, semantic-guided generative scene completion (SGSC) generates the scene from noise with multinomial discrete diffusion, conditioned on the sparse scan through a bird's-eye-view semantic map and a sparse 3D feature stream. Third, the same framework instead refines an existing completion in one flow-matching step: structured source discrete diffusion (S$^2$D$^2$). S$^2$D$^2$ improves the mIoU of SGSC's own output and every external SSC base tested, without base retraining or test-time adaptation. On the strongest base, one step without test-time augmentation reaches 38.8% mIoU on the SemanticKITTI hidden test. To our knowledge that is the best causal, single-sweep, single-sample result on that leaderboard, +2.1 pp over the previous best published score under the same restriction. Four correction steps with eight-view test-time augmentation reach 39.2%, outside that restriction.",
+      "authors": [
+        "Shi Chen",
+        "Weifeng Ge"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-08-27T07:29:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.26737v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "recasts scene completion as generative completion via discrete diffusion, generating dense semantics from sparse LiDAR observation, analogous to imputation of missing data",
+      "llm_evidence_cn": "将场景补全重构为基于离散扩散的生成式补全，从稀疏LiDAR观测生成稠密语义，类同于缺失数据插补",
+      "llm_evidence": "将场景补全重构为基于离散扩散的生成式补全，从稀疏LiDAR观测生成稠密语义，类同于缺失数据插补",
+      "canonical_evidence": "将场景补全重构为基于离散扩散的生成式补全，从稀疏LiDAR观测生成稠密语义，类同于缺失数据插补",
+      "llm_tldr_en": "Introduces GSSC, a discrete-diffusion framework for generative semantic scene completion that synthesizes paired sparse-dense scenes and generates complete semantic volumes from sparse LiDAR, robust to extreme sparsity.",
+      "llm_tldr_cn": "针对户外LiDAR语义场景补全中稀疏观测和极端类别不平衡问题，将场景补全重构为生成式语义场景补全（GSSC），采用统一离散扩散公式。框架通过配对稀疏-稠密场景合成并在稀疏扫描条件下生成稠密语义网格，同时缓解长尾分布。在SemanticKITTI等数据集上显示了对极稀疏输入的有效恢复能力，为生成式缺失数据补全提供了可迁移的解决思路。",
+      "llm_tldr": "针对户外LiDAR语义场景补全中稀疏观测和极端类别不平衡问题，将场景补全重构为生成式语义场景补全（GSSC），采用统一离散扩散公式。框架通过配对稀疏-稠密场景合成并在稀疏扫描条件下生成稠密语义网格，同时缓解长尾分布。在SemanticKITTI等数据集上显示了对极稀疏输入的有效恢复能力，为生成式缺失数据补全提供了可迁移的解决思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.29139v1",
+      "source": "arxiv",
+      "title": "More Perspectives, Stronger Signals: Multi-Perspective Enhancement and Progressive Fusion for Multimodal Entity Representation Learning",
+      "abstract": "Learning effective multimodal entity representations is fundamental for reasoning tasks such as multimodal knowledge graph completion (MMKGC). However, existing methods often suffer from semantic over-smoothing within modalities and ineffective noise filtration across modalities, particularly under sparse or ambiguous conditions. To overcome these limitations, we propose PrismF, a unified framework that synergizes multi-perspective enhancement with progressive fusion to extract stronger signals from diverse inputs. PrismF enhances fine-grained intra-modal semantics through a multi-perspective mechanism that decomposes each modality into complementary views and constrains them with a decoupling loss to reduce representation collapse. Furthermore, it improves cross-modal integration through a progressive fusion strategy that dynamically calibrates inter-modal interactions, enabling the model to emphasize informative signals while suppressing noisy or unreliable ones. Extensive experiments on three public benchmarks show that PrismF achieves the strongest overall performance, including relative improvements of 4.04% in MRR and 11.17% in Hits@1 on KVC16K. Our code can be found at https://github.com/HubuKG/PrismF.",
+      "authors": [
+        "Chenyi Xiong",
+        "Yan Zhang",
+        "Jing Hu",
+        "Ziyue Qin",
+        "Kui Xiao",
+        "Xiaopan Lyu",
+        "Xiaoju Hou",
+        "Zhifei Li"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-29T08:29:43+00:00",
+      "link": "https://arxiv.org/pdf/2608.29139v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Decouples modalities into complementary views for multimodal representation learning",
+      "llm_evidence_cn": "将模态解耦为互补视图进行多模态表示学习",
+      "llm_evidence": "将模态解耦为互补视图进行多模态表示学习",
+      "canonical_evidence": "将模态解耦为互补视图进行多模态表示学习",
+      "llm_tldr_en": "Proposes PrismF, a multi-perspective enhancement and progressive fusion framework for multimodal entity representation; it decomposes each modality into complementary views with decoupling constraints, improving robustness under sparse or ambiguous conditions.",
+      "llm_tldr_cn": "该论文针对多模态知识图谱补全中模态内语义过平滑和模态间噪声过滤低效的问题，提出PrismF框架。PrismF通过多视角机制将每个模态分解为互补视图，并施加解耦约束以增强细粒度语义，同时采用渐进式融合整合跨模态信号。在稀疏和模糊条件下，该方法能提取更强且更稳健的多模态实体表示。其解耦表示策略对多模态学习中的特征分离具有借鉴价值。",
+      "llm_tldr": "该论文针对多模态知识图谱补全中模态内语义过平滑和模态间噪声过滤低效的问题，提出PrismF框架。PrismF通过多视角机制将每个模态分解为互补视图，并施加解耦约束以增强细粒度语义，同时采用渐进式融合整合跨模态信号。在稀疏和模糊条件下，该方法能提取更强且更稳健的多模态实体表示。其解耦表示策略对多模态学习中的特征分离具有借鉴价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.29278v1",
+      "source": "arxiv",
+      "title": "Modality Fault Lines: Structural Corruptions Reveal Fragile Omni-Modal Reasoning",
+      "abstract": "Omni-modal large language models are increasingly evaluated on clean text--vision--audio inputs, where every channel is present, synchronized, and readily interpretable. Such scores are often taken as evidence of robust cross-modal fusion, but clean evaluation cannot tell whether success depends on stable cross-modal structure or on cues sufficient only in intact inputs. To address this gap, we define a modality fault line: a boundary at which model behavior becomes unstable when a modality remains present and human-interpretable, but its internal evidence structure is perturbed. We introduce SCEval (Structure-Corruption Evaluation) a diagnostic evaluation protocol that keeps the question, answer space, and modality channels fixed while applying controlled structural corruptions to text, vision, and audio individually and jointly. Built from $273$ human-verified tri-modal examples from Social-IQ, OmniBench, and VALOR, SCEval evaluates $15$ proprietary and open-source omni-modal systems. The results show that structural corruption lowers clean accuracy, text--vision damage forms the most stable shared fault line, and multi-modal degradation is non-additive rather than a simple function of the number of corrupted modalities. Clean omni-modal accuracy therefore does not establish that a model will remain reliable when cross-modal evidence becomes structurally unreliable.",
+      "authors": [
+        "Zhaolu Kang",
+        "Meixin Wu",
+        "Yu Xue",
+        "Yingjie He",
+        "Qiming Shi",
+        "Lei Wei",
+        "Yidi Wang",
+        "Richeng Xuan",
+        "Zhichao Hu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-08-29T14:05:42+00:00",
+      "link": "https://arxiv.org/pdf/2608.29278v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Diagnostic evaluation of omni-modal reasoning under structural modality corruptions",
+      "llm_evidence_cn": "结构模态扰动下全模态推理的鲁棒性诊断评估",
+      "llm_evidence": "结构模态扰动下全模态推理的鲁棒性诊断评估",
+      "canonical_evidence": "结构模态扰动下全模态推理的鲁棒性诊断评估",
+      "llm_tldr_en": "Introduces modality fault lines and SCEval, a structure-corruption evaluation protocol that keeps question, answer space, and modality channels fixed while perturbing internal evidence structure, exposing fragile omni-modal reasoning.",
+      "llm_tldr_cn": "针对全模态大模型在干净输入下的成功是否依赖稳定跨模态结构这一问题，定义了模态故障线并提出SCEval结构破坏评估协议，在保持问题、答案空间和模态通道不变的情况下扰动内部证据结构。实验揭示模型在模态内部结构被扰动时行为不稳定，说明现有稳健性评估不可靠，为鲁棒多模态学习提供了新的诊断工具。",
+      "llm_tldr": "针对全模态大模型在干净输入下的成功是否依赖稳定跨模态结构这一问题，定义了模态故障线并提出SCEval结构破坏评估协议，在保持问题、答案空间和模态通道不变的情况下扰动内部证据结构。实验揭示模型在模态内部结构被扰动时行为不稳定，说明现有稳健性评估不可靠，为鲁棒多模态学习提供了新的诊断工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.29607v1",
+      "source": "arxiv",
+      "title": "SnapBench: Benchmarking Snap-and-Ask Multimodal Retrieval for Mobile Interactions",
+      "abstract": "Mobile AI acts as a visual oracle, empowering users to snap a picture of something and ask for information. Snap-and-ask retrieval is now one of the most common entry points for mobile AI, yet photos are often blurry, while text questions may be short or mistyped. Existing benchmarks only test on clean inputs or do not isolate paired robustness in snap-and-ask retrieval. Therefore, we introduce SnapBench, the first paired benchmark for robust snap-and-ask multimodal retrieval, spanning 1,145 queries, 9,085 gallery items under 53 controlled corruption conditions with human annotations. We evaluate 16 multimodal retrievers, covering dual-tower encoders and embedding-based VLMs. Results show that image corruptions substantially degrade retrieval, while text corruptions mainly affect text-only retrieval and have limited impact on joint retrieval. Clean image-only retrieval often outperforms joint retrieval, indicating the coarse-text drag and the lack of cross-modal fallback under noisy inputs. SnapBench provides a controlled testbed for evaluating robust retrieval in snap-and-ask scenarios. We further propose MOOR (Modality-anchored, Outlier-aware, Optimal Reweighting), a simple adaptive fusion approach, highlighting the need for reliability-aware modality calibration in snap-and-ask retrieval.",
+      "authors": [
+        "Zirong Chen",
+        "Fuda Ye",
+        "Kuan Zhang",
+        "Enjun Du",
+        "Junfu Pu",
+        "Xinlei Wang",
+        "Xinyu Zuo",
+        "Lisheng Duan",
+        "Jin Ma",
+        "Yongqi Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.IR"
+      ],
+      "published": "2026-08-30T06:56:11+00:00",
+      "link": "https://arxiv.org/pdf/2608.29607v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "introduces paired benchmark for robust snap-and-ask multimodal retrieval under controlled corruption conditions",
+      "llm_evidence_cn": "提出在受控损坏条件下评估即拍即问多模态检索鲁棒性的配对基准",
+      "llm_evidence": "提出在受控损坏条件下评估即拍即问多模态检索鲁棒性的配对基准",
+      "canonical_evidence": "提出在受控损坏条件下评估即拍即问多模态检索鲁棒性的配对基准",
+      "llm_tldr_en": "Presents SnapBench, the first paired benchmark for robust multimodal retrieval under 53 corruption conditions, evaluating 16 retrievers and revealing substantial degradation from image corruptions.",
+      "llm_tldr_cn": "针对移动端即拍即问检索中图片模糊和文本错误等真实噪声问题，构建了首个配对鲁棒性基准SnapBench，覆盖1145个查询和9085个图库项及53种受控损坏条件。对16种多模态检索器的评测显示图像损坏显著降低检索性能，揭示了现有检索器在配对鲁棒性上的不足，为鲁棒多模态检索研究提供了标准化评测平台。",
+      "llm_tldr": "针对移动端即拍即问检索中图片模糊和文本错误等真实噪声问题，构建了首个配对鲁棒性基准SnapBench，覆盖1145个查询和9085个图库项及53种受控损坏条件。对16种多模态检索器的评测显示图像损坏显著降低检索性能，揭示了现有检索器在配对鲁棒性上的不足，为鲁棒多模态检索研究提供了标准化评测平台。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.30040v1",
+      "source": "arxiv",
+      "title": "A Deep Latent Variable Framework for Jointly Modeling Missingness, Measurement Error, and Heterogeneity",
+      "abstract": "Missing data, measurement error, and population heterogeneity are pervasive challenges in analyzing data arising from modern observational studies and machine learning applications. Although these problems frequently coexist and interact, they are often treated separately in existing works. We propose a unified probabilistic framework that jointly addresses these issues utilizing deep latent variable representation. The proposed method integrates a novel hierarchical tree-routed variational autoencoder with pattern-aware latent representations and calibration-based denoising. The framework accommodates missing data mechanisms, including MCAR, MAR, and MNAR, while simultaneously learning subgroup-specific and globally shared latent structure. The introduced reconvergent routing mechanism enables selective parameters to be shared across related subpopulations, which offers flexibility as well as improved statistical efficiency. Simulation studies demonstrate substantial improvements over existing deep generative imputation approaches under complex heterogeneous missingness and measurement-error settings. The proposed framework provides a principled approach for learning from noisy and incomplete data in modern healthcare and other high-dimensional applications.",
+      "authors": [
+        "Yasin Khadem Charvadeh",
+        "Grace Y. Yi",
+        "Mithat Gönen",
+        "Pouya Faroughi"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.LG"
+      ],
+      "published": "2026-08-30T20:56:57+00:00",
+      "link": "https://arxiv.org/pdf/2608.30040v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "deep latent variable framework for missing data mechanisms; generative imputation with pattern-aware latent representations",
+      "llm_evidence_cn": "统一概率框架联合建模缺失机制，属于生成式缺失数据填补方法，可迁移至缺失模态鲁棒性",
+      "llm_evidence": "统一概率框架联合建模缺失机制，属于生成式缺失数据填补方法，可迁移至缺失模态鲁棒性",
+      "canonical_evidence": "统一概率框架联合建模缺失机制，属于生成式缺失数据填补方法，可迁移至缺失模态鲁棒性",
+      "llm_tldr_en": "A hierarchical tree-routed VAE with pattern-aware latent representations jointly models missingness, measurement error, and heterogeneity, accommodating MCAR/MAR/MNAR missing mechanisms.",
+      "llm_tldr_cn": "缺失数据、测量误差和群体异质性常同时存在却被分开处理。作者提出统一的深度潜变量框架，以层级树路由变分自编码器为核心，结合模式感知的潜表示和基于校准的去噪，可同时处理MCAR、MAR和MNAR缺失机制，并学习子组特异与全局共享的表示。该方法为生成式缺失数据建模提供了通用工具，对缺失模态鲁棒学习具有重要借鉴意义。",
+      "llm_tldr": "缺失数据、测量误差和群体异质性常同时存在却被分开处理。作者提出统一的深度潜变量框架，以层级树路由变分自编码器为核心，结合模式感知的潜表示和基于校准的去噪，可同时处理MCAR、MAR和MNAR缺失机制，并学习子组特异与全局共享的表示。该方法为生成式缺失数据建模提供了通用工具，对缺失模态鲁棒学习具有重要借鉴意义。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

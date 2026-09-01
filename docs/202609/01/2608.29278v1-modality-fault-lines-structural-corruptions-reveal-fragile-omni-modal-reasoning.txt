@@ -1,0 +1,1241 @@
+Title: Modality Fault Lines: Structural Corruptions Reveal Fragile Omni-Modal Reasoning
+
+URL Source: https://arxiv.org/pdf/2608.29278v1
+
+Published Time: Tue, 01 Sep 2026 00:56:50 GMT
+
+Number of Pages: 34
+
+Markdown Content:
+## Modality Fault Lines: Structural Corruptions Reveal Fragile Omni-Modal Reasoning 
+
+Zhaolu Kang *1,2 , Meixin Wu *2 , Yu Xue *2 , Yingjie He *2 ,Qiming Shi 3, Lei Wei 2, Yidi Wang 2,
+
+Richeng xuan †1 , Zhichao Hu †1 1Tencent, 2Peking University, 3Zhejiang University 
+
+Abstract 
+
+Omni-modal large language models are increas-ingly evaluated on clean text–vision–audio in-puts, where every channel is present, synchro-nized, and readily interpretable. Such scores are often taken as evidence of robust cross-modal fusion, but clean evaluation cannot tell whether success depends on stable cross-modal structure or on cues sufficient only in intact in-puts. To address this gap, we define a modality fault line : a boundary at which model behav-ior becomes unstable when a modality remains present and human-interpretable, but its inter-nal evidence structure is perturbed. We intro-duce SCE VAL (Structure-Corruption Evalu-ation ), a diagnostic evaluation protocol that keeps the question, answer space, and modal-ity channels fixed while applying controlled structural corruptions to text, vision, and audio individually and jointly. Built from 273 human-verified tri-modal examples from Social-IQ, OmniBench, and VALOR, SCE VAL evaluates 
+
+15 proprietary and open-source omni-modal systems. The results show that structural cor-ruption lowers clean accuracy, text–vision dam-age forms the most stable shared fault line, and multi-modal degradation is non-additive rather than a simple function of the number of cor-rupted modalities. Clean omni-modal accuracy therefore does not establish that a model will remain reliable when cross-modal evidence be-comes structurally unreliable. 
+
+1 Introduction 
+
+Omni-modal large language models promise a sim-ple interface for multimodal reasoning: a user pro-vides a question together with visual and acous-tic evidence, and one model produces a single an-swer grounded in all available streams (Hurst et al., 2024; Team et al., 2023; Team, 2026). This promise has made clean text–vision–audio benchmarks the 
+
+*Equal contribution. 
+
+†Corresponding author. ✓ Structure intact 
+
+! Structure corrupted 
+
+■
+
+> VIDEO
+
+♪
+
+> AUDIO
+
+… 
+
+> TEXT
+> Why does the audience laugh right after the speaker points at the slide?
+> AThe speaker tells a joke. The microphone stops working. The audience notices a typo on the slide. Someone drops a glass off-screen.
+
+■
+
+> VIDEO
+
+♪
+
+> AUDIO
+
+…     
+
+> TEXT
+> Why dose the audnces laugh right after the speaker ____ at the slide?
+> AThe speaker tells a joke.
+> BThe microphone stops working.
+> CThe audience notices a typo on the slide.
+> DSomeone drops a glass off-screen.
+> Gemini
+> The laughter seems like a reaction to a joke made by the speaker.
+> Answer: A.
+> ChatGPT
+> I’m not sure; the audio issue might have caused the laughter.
+> Answer: B.
+> Qwen
+> It seems the audience noticed something on the slide, but I’m not fully confident.
+> Answer: C.
+
+!
+
+> Human
+> The slide contains a typo, and the audience laughs because they notice it.
+> Answer: C.
+> Gemini ChatGPT Qwen
+> Answer: C. The audience notices a typo on the slide.
+> Human
+> Answer: C. The audience notices a typo on the slide. Answer: C. The audience notices a typo on the slide. Answer: C. The audience notices a typo on the slide.
+> BCD
+
+Figure 1: Teaser illustration of modality fault lines. 
+
+SCE VAL keeps text, vision, and audio present while damaging their internal evidence structure, revealing failures that clean all-modality evaluation can hide. 
+
+default proof of progress—if accuracy rises when all modalities are present, the model is treated as a better cross-modal reasoner. Yet clean evaluation quietly gives the model the easiest possible version of the task: text, vision, and audio arrive simultane-ously, well-formed, and mutually redundant, so a model can be correct without actually binding the three streams into a stable reasoning structure. 
+
+Clean accuracy is not fusion ❶. Clean evalua-tion does not tell us when or how models use mul-tiple modalities: a tri-modal item can be solved through a transcript cue, an obvious visual ob-ject, an audio event, an answer prior, or a short-cut that happens to agree with the label. Missing-modality ablations go to the opposite extreme— removing a channel entirely changes the task and conflates modality reliance with distribution shift. The deployment-relevant region lies between: the modality is still present and human-interpretable, but its internal evidence structure has been dam-arXiv:2608.29278v1 [cs.CL] 29 Aug 2026 aged. We call the resulting hidden boundary a 
+
+modality fault line —the point at which apparent omni-modal competence breaks once the channel a model implicitly trusts becomes noisy, fragmented, or structurally unreliable. 
+
+The missing diagnostic ❷. A useful robustness test for omni-modal models must answer three questions that standard protocols leave entangled: • Which channel carries the answer? Clean accuracy cannot separate genuine cross-modal binding from single-channel shortcuts, because all evidence streams are simultaneously well-formed. • What happens when a channel weakens but does not disappear? Real inputs degrade internally—OCR-like text errors or shuffled phrases, occluded or blurry frames, muted or distorted audio—rather than vanish outright. • How do weakened channels interact? Single-modality studies reveal local sensitivity but can-not tell whether two damaged channels compen-sate, conflict, or trigger a new collapse mode. 
+
+SCEval: keep the modality, break the struc-ture ❸. We introduce SCE VAL (Structure-Corruption Evaluation ) to make this boundary mea-surable. The design choice is deliberately simple: do not remove a modality; keep it present and corrupt only its internal structure. From a 300 -candidate pool sampled across Social-IQ (Zadeh et al., 2019), OmniBench (Li et al., 2026b), and VALOR (Liu et al., 2024a), a third-party team veri-fies example validity, tri-modal answerability, and corrupted-input interpretability, yielding N =273 
+
+human-verified base examples. Each example is evaluated under the clean all-modality condition and under a curated family of single-, dual-, and tri-modal structural corruptions, with question, an-swer options, gold answer, and modality channels held fixed. Stochastic operators are aggregated as the mean over up to three random variants, and the worst-variant gap is logged alongside to surface seed-level fragility without making the primary metric a one-seed outlier. 
+
+Main Message We observe an asymmetric be-havioral pattern: at fixed heavy visual noise, mildly corrupted text ( t30 ) is associated with lower accu-racy than heavily corrupted text ( t70 ) for 14 of the 15 evaluated models (Table 8). This contrast does not by itself identify the underlying cross-modal mechanism. Our contributions are: 
+
+★ Phenomenon. We identify modality fault lines :latent failures that clean all-modality inputs and missing-modality ablations both miss, because the modality remains present while its internal evidence structure is damaged. 
+
+★ Protocol. We propose SCE VAL , a structure-corruption protocol that keeps the task and modality channels fixed while perturbing text, vision, and audio individually and jointly, with mean-variant aggregation and a worst-variant diagnostic. 
+
+★ Benchmark. We construct a human-verified tri-modal benchmark of 273 examples from Social-IQ, OmniBench, and VALOR, covering clean inputs and full single-, dual-, and tri-modal cor-ruption variants under a unified directory and annotation scheme. 
+
+★ Findings. We show that structural corruption reliably lowers clean performance, that text– vision damage is the most stable shared fault line, and that cross-modal degradation is non-additive and model-dependent rather than a sim-ple function of corruption count. 
+
+2 Structure-Corruption Evaluation 
+
+SCE VAL probes modality fault lines by holding the task and modality channels fixed while corrupt-ing the internal structure of one or more modali-ties. The design choice that distinguishes it from missing-modality ablations is that every channel re-mains present and human-interpretable throughout, so the resulting drops measure structural fragility rather than distribution shift; the evaluation ma-trix combines single-modality severity curves with dual- and tri-modal joint corruptions over the same base examples. 
+
+2.1 Problem setup 
+
+Each example consists of a question q, an answer space (multiple-choice options or an answer tar-get), and three evidence channels: text xt, visual input xv, and audio xa. A clean omni-modal model predicts 
+
+ˆy = f (xt, x v, x a, q ), (1) and the clean all-modality baseline accuracy is com-puted on the uncorrupted version of the 273 base examples introduced in §2.3. A structure corruption operator cs,r m (·) targets modality m ∈ { t, v, a } at severity s and random variant r when applicable. The operator preserves the channel’s container (the text string, the visual frames, or the audio waveform) and damages only its internal evidence—e.g. a text operator deletes or shuffles words rather than swapping the prompt, a visual operator adds noise or occludes regions rather than substituting the image, and an audio operator mutes or removes a segment rather than replacing the soundtrack. Combined corruption applies operators to multiple modalities of the same base example, 
+
+˜x =  ct(xt), c v(xv), c a(xa), q , (2) where one, two, or three of the corruption operators may be active while q, the answer options, and the original gold label y remain fixed. Whether the original gold answer remains defensible after corruption is assessed separately in Appendix G.7. This sample-paired design is what lets SCE VAL 
+
+compute the clean-versus-corrupted contrast at the example level. 
+
+2.2 Corruption taxonomy 
+
+Figure 2 shows the fourteen operators SCE VAL 
+
+uses, grouped into four text, seven visual, and three audio families. The taxonomy is deliberately cu-rated, not exhaustive : rather than enumerating ev-ery textbook degradation, we select operators that target the harder structural fault lines we expect a robust omni-modal model to handle, while keep-ing every modality channel present and human-interpretable. Four design rules fix what an op-erator is allowed to do and how it is scored: (i) only structural , not semantic, damage; (ii) sample-level paired comparison with the same gold answer; (iii) graded severity in {10 , 30 , 50 , 70 }; and (iv) up-to-three stochastic random variants aggregated by the mean-variant rule of §2.4. Combined ex-periments use representative high-coverage dual-and tri-modal pressure conditions (text–vision, text– audio, vision–audio, and text–vision–audio). Per-operator definitions, severity parameterisations, and rejection rules are deferred to Appendix E (Ta-ble 28). 
+
+2.3 Benchmark construction Source benchmarks. SCE VAL is built on three publicly released omni-modal benchmarks cho-sen to span different evidence styles: Social-IQ (Zadeh et al., 2019), a video QA benchmark for social reasoning that requires both speech and visual cues; OmniBench (Li et al., 2026b), de-signed to test joint text–image–audio reasoning; STRUCTURAL CORRUPTION MAP      
+
+> center: evaluation regime ·ring: modality ·edge: operator OUTER RING
+> operator legend
+> Audio (3) Vision (7) Text (4)
+> remove mute distortion noise occlusion low resolution motion blur defocus blur overexposure brightness typo OCR drop words word shuffle sentence break
+
+Figure 2: The fourteen structural corruption operators used by SCE VAL (4 text, 7 vision, 3 audio). The taxon-omy is curated rather than exhaustive: it targets cross-modal evidence assembly (word identity/order, dense visual signal, audio presence) and excludes trivially re-coverable perturbations; per-operator definitions, sever-ity parameterisations, and rejection criteria are in Ap-pendix E (Table 28). 
+
+and VALOR (Liu et al., 2024a), whose video clips contain naturally co-occurring visual and acoustic events. Mixing the three sources prevents the fault-line measurements from being driven by any single benchmark’s idiosyncrasies. 
+
+Candidate pool. We sample 100 examples per source, yielding a 300 -candidate pool. For every candidate we collect (i) the original video, (ii) the audio track extracted from the same recording, (iii) the textual question with multiple-choice options and a gold answer, and (iv) source metadata, organ-ised under a unified directory and re-encoded to a common format so that the same operators apply uniformly across sources. 
+
+Example-level verification. A third-party anno-tation team verifies, for each candidate, (a) example validity (well-formed question, single defensible gold answer, all three modalities present in the clean condition); (b) tri-modal answerability of the gold answer from the union of the three clean modalities; and (c) the absence of annotator-side issues (broken media, ambiguous answer, modal-ity leakage in text). Items failing any check, or flagged with annotator-side issues, are dropped at the original-sample level, leaving N =273 verified base examples that constitute the clean all-modality baseline used throughout the paper. 
+
+Cell-level corrupted-variant verification. The same team further judges every corrupted variant 
+
+of audio and vision: of the 19 ,944 audio + vision variants sent for verification, 16 ,049 (80 .5% ) are re-tained as perceptually interpretable and contribute to the headline numbers. Text-side corruptions are deterministic and human-readable by construction, so the four text operators are not subject to per-Source Modalities # Examples              
+
+> SRC Social-IQ video, audio, text 100 OmniBench image, audio, text 77 VALOR video, audio, text 96
+> Total —VERIFY 273
+> Table 1: Per-source composition of SCE VAL . From a 300-candidate pool (100 per source), third-party verifi-cation of example validity, tri-modal answerability, and corrupted-variant interpretability retains 273 examples as the base set.
+
+variant annotation. Per-operator pool sizes and re-tention rates are reported in Appendix D, Table 24. 
+
+Composition and release. Table 1 reports the per-source counts of the verified base set together with the modality channels each source natively provides. Fault-line analyses in §3 are reported on the pooled 273 -example set; per-source break-downs are kept in the appendix as a robustness check. The annotation manifest—per-sample va-lidity flag, tri-modal answerability flag, and per-corruption interpretability flag—is released along-side the benchmark so that other groups can re-construct the 273 -example base set and audit the filtering rule. 
+
+2.4 Evaluation protocol Mean random-variant aggregation. For stochastic corruptions, the same original sample is evaluated under up to three independently sampled random variants of the same operator at the same severity, and the reported accuracy is the mean 
+
+across these variants so that the headline number reflects typical behaviour rather than any single seed. For model f , condition c, sample i, and valid variant r ∈ Ri,c , let zi,r,c = ⊮[f (cr(xi)) = yi]
+
+be the variant-level correctness indicator. We aggregate at the (sample, variant) trial level, 
+
+Acc( c) = 1
+
+|Ic|
+
+X
+
+> i∈Ic
+
+1
+
+|Ri,c |
+
+X
+
+> r∈Ri,c
+
+zi,r,c . (3) where Ic is the set of samples with at least one valid output. When every retained sample contributes the same number of variants this re-duces to Acc( c) = |R|−1 P 
+
+> r∈R
+
+Acc r(c), match-ing the intuition of “average accuracy over three random runs”. Missing variants are excluded from 
+
+Ri,c rather than counted as correct; judged but un-parseable responses are treated as missing for ac-curacy estimation and as incorrect for significance testing. 
+
+Worst-variant diagnostic. To expose how much of the headline mean is bolstered by lucky variants, we additionally report the worst-variant accuracy 
+
+Acc worst (c) = min  
+
+> r∈R
+
+Acc r(c). (4) The gap Acc( c)−Acc worst (c) quantifies seed-level variance: a small gap means the model degrades consistently across variants; a large gap signals that a single unlucky variant dominates the apparent fault. The mean −worst gap is reported per (model, modality) at each model’s weakest single-modality cell in Table 18 (Appendix C.9). 
+
+Primary drop metrics. For any corruption con-dition c, the clean-baseline drop 
+
+∆base (c) = Acc clean − Acc( c) (5) measures how much performance is lost relative to the full clean input. For combined conditions, the 
+
+worst-single drop 
+
+∆single (c) = Acc worst single (c) − Acc( c) (6) compares against the weakest corresponding single-modality corruption: positive ∆single means the combined corruption is worse than every individ-ual component (a compounded failure beyond the weakest single-modality condition), and negative 
+
+∆single means the combined condition remains more accurate than its weakest single component. 
+
+Auxiliary diagnostics. The headline matrix is complemented by five smaller quantities, each iso-lating a different mechanism: • Fault-line score FS = Acc clean − Acc( cS ) for 
+
+S ∈ { tv, ta, va, tva }, a model-level summary of how much accuracy a given multi-modal cor-ruption block costs (reported per family in Ta-ble 20). • Misleading-modality effect Mm =Acc(missing m) − Acc(corrupted m),positive when a structurally corrupted but present modality is more harmful than removing it (Table 9). • Fragility slope Sm obtained by linearly regress-ing accuracy on severity s ∈ { 0, 10 , 30 , 50 , 70 }
+
+for each modality m (clean encoded as s=0 ); see Table 19. • Shortcut gap G = Acc(text -only) −
+
+Acc(random) , how much clean accuracy can be reproduced from the linguistic channel alone (Table 9, Text-only column). "What is she h0lding in her hand?"   
+
+> a. Letter from students. b.Letter to students. c.Wedding invitations. d.An engagement ring.
+> Missing segment
+
+structure preserved structure corrupted      
+
+> Video/Image
+> thump thump thump ... hoofbeats(running cow sounds)
+> “What’s happening?”
+> A. The person is riding a bicycle. B. The horse is running. C. The person is talking. D. The cow is running.
+> Audio Text
+> Video/Image Audio Text
+> occlusion drop char
+> Option D
+> human succeeds
+> Option A model fails
+> “What’s hapening ?”
+> A. The person is riding a bicycle. B. The horse is running. C. The person is talking. D. The cow is running.
+> Higher pitch
+
+structure preserved structure corrupted     
+
+> Video/Image
+> A woman ：”I‘m getting merried.” "What is she holding in her hand?"
+> a. Letter from students. b.Letter to students. c.Wedding invitations. d.An engagement ring.
+> Audio Text
+> Video/Image Audio Text
+> defocus blur character substitution
+> Option C
+> human succeeds
+> Option B model fails
+
+Figure 3: SCE VAL case illustration. One base example with its three clean modality channels (question/options, sampled frames, audio waveform) and one structurally corrupted variant per modality. Every variant keeps the gold answer, options, and modality channels fixed and damages only the internal evidence structure—distinguishing the fault-line probe from missing-modality ablations. 
+
+• Modality trust bias Tm, how often a model fol-lows modality m under cross-modal mismatch (Appendix G.9). We additionally report the invalid-output rate de-composed into API failures, parse failures, refusals, and empty outputs, since a model can fail either by choosing the wrong answer or by failing to produce a parseable answer under heavier structural stress. 
+
+Statistical protocol. Every reported accuracy is accompanied by a 95% confidence interval from 
+
+B=1000 sample-level bootstrap (Efron, 1992) re-samples over the |Ic| original examples, applied af-ter mean variant aggregation so that within-sample variant variance and between-sample variance are propagated into a single interval. Paired compar-isons (clean vs. corrupted, single vs. combined, two models on the same condition) use the paired boot-strap on per-sample correctness differences and the paired McNemar test (McNemar, 1947) on the cor-responding contingency table; both are reported with two-sided p-values and Holm–Bonferroni cor-rection (Holm, 1979) across the family of compar-isons inside one experimental block. Invalid out-puts are treated as incorrect for significance testing and as missing for accuracy estimation; we report both versions whenever the conclusion is sensitive to this choice. 
+
+3 Experimental Results 
+
+We evaluate SCE VAL on a 15 -model panel of seven proprietary/API systems and eight open or open-API systems (roster, interfaces, and the frame-extracted visual-input protocol in Appendix F). All headline runs use one standardised multiple-choice JSON prompt (Appendix H); accuracy on each stochastic condition is the mean over up to three random variants per operator (§2.4), reported alongside coverage, invalid-output rates, and 95% 
+
+sample-level bootstrap intervals. Section 3.1 reads the 15 ×14 severity-70 single-modality matrix and its per-model severity curves; Section 3.2 probes whether stacking corruption across two or three channels compounds the damage. 
+
+3.1 Single-modality corruption 
+
+Table 2 reports clean accuracy together with the severity-70 drop on each of the fourteen single-modality operators for all fifteen systems. Two patterns dominate the matrix, and both turn out to be largely band-invariant. Fragility concentrates in a small set of structural 
+
+operators. Five of the fourteen sit clearly above the rest at ≥ 7 pp panel-mean drop— drop_words ,
+
+word_shuffle , noise , and the two audio-segment operators remove /mute —each targeting word iden-tity, dense visual signal, or audio presence. The remaining nine stay below 5 pp; three of them (low_resolution , defocus_blur , distortion ) hover at zero or flip into small apparent gains, suggesting that cosmetic perturbations rarely reach the model’s evidence-assembly path. The two single hard-est cells in the matrix— noise on Baichuan-Omni-1.5 ( −15 .70 pp) and word_shuffle on Qwen2.5-Text Vision Audio Model Clean Typo Drop Shuffle Break Noise Occ. LowRes MBlur DBlur Expo. Bright. Remove Mute Distort 
+
+Proprietary / API omni-modal models 
+
+Gemini 3.1 Pro 84.15 79.85 ↓4.30 72.57 ↓11.58 75.54 ↓8.61 80.72 ↓3.43 73.57 ↓10.58 82.88 ↓1.27 85.07 ↑–0.92 82.29 ↓1.86 83.70 ↓0.45 85.08 ↑–0.93 84.88 ↑–0.73 78.89 ↓5.26 80.62 ↓3.53 86.17 ↑–2.02 
+
+Gemini 3 Pro 82.40 76.72 ↓5.68 71.30 ↓11.10 73.16 ↓9.24 80.27 ↓2.13 73.00 ↓9.40 80.09 ↓2.31 83.80 ↑–1.40 81.41 ↓0.99 82.89 ↑–0.49 80.49 ↓1.91 83.88 ↑–1.48 76.36 ↓6.04 75.82 ↓6.58 82.51 ↑–0.11 
+
+Gemini 3 Flash 80.95 71.06 ↓9.89 67.40 ↓13.55 70.33 ↓10.62 72.89 ↓8.06 67.79 ↓13.16 80.33 ↓0.62 80.97 ↑0.02 77.59 ↓3.36 78.95 ↓2.00 79.37 ↓1.58 80.30 ↓0.65 74.30 ↓6.65 73.24 ↓7.71 79.17 ↓1.78 
+
+Gemini 3.5 Flash 78.39 72.53 ↓5.86 67.03 ↓11.36 68.50 ↓9.89 73.63 ↓4.76 62.75 ↓15.64 75.14 ↓3.25 78.96 ↑–0.57 75.56 ↓2.83 77.47 ↓0.92 79.30 ↑–0.91 78.31 ↓0.08 73.45 ↓4.94 71.00 ↓7.39 77.83 ↓0.56 
+
+Gemini 2.5 Pro 79.12 75.32 ↓3.80 67.41 ↓11.71 68.40 ↓10.72 71.77 ↓7.35 70.26 ↓8.86 76.97 ↓2.15 79.73 ↑–0.61 77.40 ↓1.72 80.30 ↑–1.18 79.44 ↑–0.32 79.19 ↑–0.07 74.64 ↓4.48 72.90 ↓6.22 77.81 ↓1.31 
+
+GPT-4o 83.50 78.18 ↓5.32 75.01 ↓8.49 76.73 ↓6.77 79.75 ↓3.75 73.93 ↓9.57 81.18 ↓2.32 85.46 ↑–1.96 84.39 ↑–0.89 84.96 ↑–1.46 82.07 ↓1.43 83.27 ↓0.23 77.25 ↓6.25 77.99 ↓5.51 85.34 ↑–1.84 
+
+Gemini 2.5 Flash 75.40 67.31 ↓8.09 62.55 ↓12.85 65.99 ↓9.41 69.37 ↓6.03 63.55 ↓11.85 73.32 ↓2.08 73.46 ↓1.94 74.32 ↓1.08 73.48 ↓1.92 74.32 ↓1.08 72.89 ↓2.51 65.91 ↓9.49 65.86 ↓9.54 72.25 ↓3.15 
+
+Open / open-API omni-modal models 
+
+Qwen3.5-Omni-Plus 73.63 69.60 ↓4.03 64.10 ↓9.53 65.20 ↓8.43 69.60 ↓4.03 70.37 ↓3.26 70.49 ↓3.14 71.79 ↓1.84 71.02 ↓2.61 71.83 ↓1.80 71.65 ↓1.98 73.68 ↑0.05 70.95 ↓2.68 69.72 ↓3.91 75.00 ↑1.37 
+
+Qwen3-Omni-30B 71.20 63.86 ↓7.34 61.22 ↓9.98 58.59 ↓12.61 64.89 ↓6.31 61.43 ↓9.77 66.13 ↓5.07 70.07 ↓1.13 67.67 ↓3.53 67.25 ↓3.95 67.37 ↓3.83 67.77 ↓3.43 65.32 ↓5.88 61.95 ↓9.25 70.49 ↓0.71 
+
+MiniCPM-o 4.5 74.50 69.02 ↓5.48 63.14 ↓11.36 61.38 ↓13.12 67.96 ↓6.54 65.41 ↓9.09 71.47 ↓3.03 73.33 ↓1.17 73.84 ↓0.66 74.38 ↓0.12 74.95 ↑–0.45 74.05 ↓0.45 65.58 ↓8.92 69.13 ↓5.37 74.93 ↑–0.43 
+
+Qwen2.5-Omni-7B 68.40 59.89 ↓8.51 56.79 ↓11.61 53.80 ↓14.60 61.18 ↓7.22 58.76 ↓9.64 65.75 ↓2.65 67.24 ↓1.16 65.89 ↓2.51 66.99 ↓1.41 65.17 ↓3.23 66.96 ↓1.44 58.55 ↓9.85 61.30 ↓7.10 68.34 ↓0.06 
+
+OmniVinci-9B 69.10 64.17 ↓4.93 57.65 ↓11.45 55.61 ↓13.49 62.76 ↓6.34 54.22 ↓14.88 66.55 ↓2.55 65.91 ↓3.19 67.84 ↓1.26 65.89 ↓3.21 65.56 ↓3.54 67.59 ↓1.51 61.00 ↓8.10 58.90 ↓10.20 67.25 ↓1.85 
+
+OLA-7B 66.80 61.50 ↓5.30 56.18 ↓10.62 55.73 ↓11.07 59.75 ↓7.05 54.58 ↓12.22 63.34 ↓3.46 65.07 ↓1.73 62.65 ↓4.15 65.99 ↓0.81 62.88 ↓3.92 62.79 ↓4.01 57.45 ↓9.35 57.81 ↓8.99 66.29 ↓0.51 
+
+Qwen2.5-Omni-3B 64.20 55.31 ↓8.89 53.80 ↓10.40 51.01 ↓13.19 56.49 ↓7.71 48.75 ↓15.45 60.61 ↓3.59 62.98 ↓1.22 61.76 ↓2.44 62.29 ↓1.91 62.61 ↓1.59 62.38 ↓1.82 55.83 ↓8.37 55.09 ↓9.11 62.68 ↓1.52 
+
+Baichuan-Omni-1.5 65.50 56.60 ↓8.90 54.73 ↓10.77 54.09 ↓11.41 56.71 ↓8.79 49.80 ↓15.70 59.21 ↓6.29 63.52 ↓1.98 61.56 ↓3.94 65.03 ↓0.47 64.34 ↓1.16 61.55 ↓3.95 54.69 ↓10.81 55.93 ↓9.57 63.99 ↓1.51 
+
+Table 2: Severity-70 single-modality corruption matrix on the 15 -model panel (clean accuracy in the second column; subsequent columns report accuracy under each operator with the absolute drop from clean as a subscript, ↓ drop / 
+
+↑ gain). Columns are grouped by modality (4 text, 7 vision, 3 audio). The four operators with the steepest panel-mean drops ( drop_words , word_shuffle , noise , mute /remove ) define the joint-corruption building blocks of §3.2. Table 3 reports the coverage-aware operator grouping. 
+
+Omni-7B ( −14 .60 pp)—both approach or exceed the worst proprietary cell ( −15 .64 pp on Gemini 3.5 Flash), so the hard core is not a proprietary– open story. The two bands separate cleanly on clean accu-racy ( 75 –84 vs. 64 –74 ), but their relative robust-ness to those hard operators is essentially identical: 
+
+noise averages 11 .3 pp drop on the seven propri-etary systems and 11 .3 pp on the eight open sys-tems, and the largest proprietary model (Gemini 3.1 Pro) and the smallest open model (Qwen2.5-Omni-3B) both lose 8–14 pp on the two hardest text op-erators. The proprietary advantage instead concen-trates in the soft tail: Gemini 3.1 Pro posts apparent gains on five visual operators and on distortion ,while Qwen2.5-Omni-3B and Baichuan-Omni-1.5 produce no gain cells anywhere. Qwen3.5-Omni-Plus is the one cross-band outlier (only −3.26 pp on noise ), placing it closer to the proprietary band on visual robustness than to its open-tier neigh-bours. Figure 4 disaggregates the severity-70 column into the underlying decay shapes. Across all fif-teen panels the curves mirror the operator rank-ing above: text decays broadly downward and ac-celerates past severity 30 (with drop_words and 
+
+word_shuffle steepest); noise alone matches them on the vision side; and the remaining cosmetic curves hug the clean baseline within 1–3 pp. Sever-ity curves average three stochastic variants; read trends, not individual points. A coverage caveat tempers the soft tail. The severity-70 column is not a uniform N =273 slice: pooled across audio and vision operators, annotators retain only 95 .6% ,
+
+87 .1% , 75 .3% , and 63 .9% of stochastic variants at severity 10 /30 /50 /70 (Appendix D, Table 25), and 
+
+Operator group Mean drop (pp) 
+
+Primary (10 operators) ↓ 5.15 All operators (14) ↓ 5.00 High-rejection stress set (4) ↓ 4.64 
+
+Table 3: Coverage-aware severity-70 panel-mean drops by operator group (15 models). 
+
+the rejection mass concentrates on four operators (occlusion 83% pruned at sev 70 , brightness 52% ,
+
+mute 56% , remove 48% ). The other six opera-tors each stay below 12% rejection across the grid. Because rejected variants are precisely the items annotators could no longer interpret, the retained pool on these four operators at s≥50 is biased to-ward the easier base examples—the most plausible explanation for the small apparent gains on the pro-prietary side of Table 2 and for several audio-cell gains in §3.2. We therefore treat severity-70 num-bers on occlusion , brightness , mute , and remove 
+
+as a lower bound on robustness loss, and restrict any "corruption that improves the model" claim to the six confound-free operators. To make this distinction visible in the main re-sults, Table 3 separates the primary operators from the high-rejection stress set. The primary set con-tains the four deterministic text operators and six low-rejection audio/vision operators. The compari-son shows that the high-rejection operators do not drive the aggregate fragility pattern; we retain them as coverage-aware stress-test evidence. 
+
+3.2 Dual- and tri-modal corruption 
+
+Joint corruption is treated as a depth probe on four deep-dive systems—Gemini 3.1 Pro and Gem-ini 3 Flash on the proprietary side, Qwen3.5-C 10 30 50 70                                                                       
+
+> 75 80 85
+> Gemini 3.1 Pro
+> C10 30 50 70
+> 75 80
+> Gemini 3 Pro
+> C10 30 50 70
+> 70 75 80
+> Gemini 3 Flash
+> C10 30 50 70
+> 65 70 75
+> Gemini 3.5 Flash
+> C10 30 50 70
+> 70 75 80
+> Gemini 2.5 Pro
+> C10 30 50 70
+> 75 80 85
+> GPT-4o
+> C10 30 50 70
+> 65 70 75
+> Gemini 2.5 Flash
+> C10 30 50 70
+> 65 70 75
+> Qwen3.5-Omni-Plus
+> C10 30 50 70
+> 60 65 70
+> Qwen3-Omni-30B
+> C10 30 50 70
+> 65 70 75
+> MiniCPM-o 4.5
+> C10 30 50 70
+> 55 60 65
+> Qwen2.5-Omni-7B
+> C10 30 50 70
+> 55 60 65
+> OmniVinci-9B
+> C10 30 50 70
+> 55 60 65
+> OLA-7B
+> C10 30 50 70
+> 50 55 60 65
+> Qwen2.5-Omni-3B
+> C10 30 50 70
+> 50 55 60 65
+> Baichuan-Omni-1.5
+> Text typo_ocr drop_words word_shuffle sentence_break
+> Vision noise occlusion low_resolution motion_blur defocus_blur overexposure brightness
+> Audio remove mute distortion
+
+Figure 4: Per-model severity curves for all 15 systems on the fourteen single-modality operators (clean and severities 
+
+10 /30 /50 /70 ). Modality is encoded by line style (text solid, vision dashed, audio dotted), operator by colour; per-panel y-axis is auto-scaled. drop_words , word_shuffle , and noise steepen past severity 30 on every panel; the remaining operators stay within 1–3 pp of clean. 
+
+Omni-Plus and MiniCPM-o 4.5 on the open side—using as building blocks the six opera-tors with the steepest single-modality drops from Section 3.1 ( drop_words , word_shuffle ,
+
+noise , occlusion , mute , remove ). For each of the four combinations T+V, T+A, V+A, T+V+A we sweep a canonical {30 , 70 }k severity grid and add replacement-pressure cells that swap one op-erator within a modality, yielding 29 cells per model (full row-by-row enumeration in Table 5, Appendix C.1). Figure 5 plots every cell as one point: x = total corruption budget st+sv+sa, y =drop from the model’s clean baseline. Three phenomena dominate the joint-corruption scatter; cell-by-cell numerical evidence is deferred to Table 5 in Appendix C.1. (i) The worst cell is asymmetric, not symmetric. On every deep-dive model the single steepest drop is not a heavy-on-both configuration but the asymmetric 
+
+drop_words × noise cell at light text damage paired with heavy visual noise—the topmost red point in each panel of Figure 5. Inside the T+V block, severity stacking is in fact non-monotone in the text dimension: pushing the text operator from 
+
+st=30 to st=70 at fixed sv=70 recovers several percentage points on every model, so the red points trend down as the corruption budget grows along the text axis. One possible behavioral explanation is that, when text is more visibly corrupted, models rely differently on the remaining visual signal; the observed contrast is between mildly corrupted text (t30 ) and heavily corrupted vision ( v70 ), not clean text and broken vision. (ii) The trimodal staircase climbs with vision, not with corruption count. 
+
+Across the eight canonical T+V+A cells, the four with sv=70 are uniformly several pp worse than the four with sv=30 on every deep-dive model, and the diamond staircase in Figure 5 climbs almost entirely with the vision component while text and audio severities contribute little. Joint damage is therefore not a function of how many modalities are perturbed; it is dominated by whichever chan-nel is structurally broken hardest, with text–vision providing the steepest shared fault line. 
+
+(iii) Operator identity matters within text, but not within vision or audio. The replacement-pressure cells of Table 5 reveal that swapping one operator for another inside the text family pro-duces a large model-specific swing on the open side (Qwen) but a much smaller swing on the pro-prietary side (Gemini), whereas swapping audio-side or vision-side operators (remove /mute ,
+
+occlusion /noise ) shifts accuracy by at most a couple of percentage points on both models—a 60 120 180 0510           
+
+> clean 84.15
+> st+sv+sa
+> ∆clean  (pp)
+> Gemini 3.1 Pro
+> 60 120 180
+> −50510
+> clean 80.95
+> st+sv+sa
+> ∆clean  (pp)
+> Gemini 3 Flash
+> 60 120 180
+> −50510
+> clean 73.63
+> st+sv+sa
+> ∆clean  (pp)
+> Qwen3.5-Omni-Plus
+> 60 120 180 0510
+> clean 74.50
+> st+sv+sa
+> ∆clean  (pp)
+> MiniCPM-o 4.5
+
+Figure 5: Severity-stacking scatter for joint corruption (29 cells per deep-dive model). x is the total corrup-tion budget st+sv +sa, y is the drop from the model’s clean baseline; markers encode the combination: • T+V, 
+
+■ T+A, ▲ V+A, ♦ T+V+A. The worst point is asymmet-ric (mildly corrupted text t30 × heavily corrupted vision 
+
+v70 ), the trimodal staircase climbs with the vision com-ponent, and points below ∆=0 are coverage-induced apparent gains (§3.1). 
+
+text-robustness signature that the single-modality matrix of §3.1 cannot reveal. Finally, the apparent gains visible at the bottom of each scatter panel are the survivorship-bias caveat of §3.1 resurfacing under joint conditions: they cluster strictly in audio-involving cells, and only a handful of cells across the panel fall below the weakest single-modality cell that composes them (all of those in vision-at-severity-70 conditions on the open side; none on Gemini). Together these three observations con-verge on one picture: cross-modal damage is struc-tured, not additive; the worst point is the asymmet-ric t30 /v 70 text–vision contrast; and clean omni-modal accuracy tells us only that an answer can be found when all evidence is intact, not whether it survives once any trusted channel is structurally degraded. Read together, the three observations also re-frame what the clean omni-modal score is actually measuring. A clean tri-modal accuracy guaran-tees only that the model can find an answer when every channel is well-formed and mutually redun-dant; it does not certify that the model would still use the same evidence once one channel becomes structurally unreliable. The asymmetric t30 /v 70 
+
+text–vision cell is the most diagnostic instance of this gap, because it is precisely the regime that both clean evaluation and missing-modality ablation fail to surface—one assumes the channel vanishes, the other assumes it stays intact, while the observed pattern is consistent with greater reliance on the relatively less corrupted text channel. The struc-tural fault lines mapped by SCE VAL are therefore behavioral patterns observed in the evaluated omni-modal systems, visible only because the corruption keeps every channel simultaneously present and human-interpretable. 
+
+4 Related Work 
+
+Omni-modal models and clean-input bench-marks. Recent omni-modal systems extend lan-guage models with vision, video, and audio in-puts, spanning proprietary APIs (Gemini (Team et al., 2023), GPT-4o (Hurst et al., 2024)) and open releases (Qwen-Omni (Team, 2026), MiniCPM-o (OpenBMB, 2025), OmniVinci (Ye et al., 2025), Ola (Liu et al., 2025), Baichuan-Omni (Li et al., 2024)). They are typically evaluated either on clean tri-modal QA suites (Social-IQ (Zadeh et al., 2019), OmniBench (Li et al., 2026b), VALOR (Liu et al., 2024a)) or on clean-input distractor di-agnostics (MMBench (Liu et al., 2024b), Hal-lusionBench (Guan et al., 2024), MMMU (Yue et al., 2024)) that probe language priors (Agrawal et al., 2018) and answer-option shortcuts under uncorrupted inputs. Such benchmarks cannot ask whether the same model still binds evidence cor-rectly once a modality channel is degraded (Feng et al., 2025; Gao et al., 2026; He et al., 2026; Kang et al., 2026a,b,c; Li et al., 2026a,c,d, 2025; Liu and Kang, 2026; Luo et al., 2024; Shi et al., 2026; Shi et al., 2025; Wang et al., 2025; Zheng et al., 2026). 
+
+Structural corruption and our positioning. 
+
+Corruption benchmarks have measured single-modality robustness in vision and audio since ImageNet-C (Hendrycks and Dietterich, 2019), and extend to multimodal settings via MM-Robustness (Qiu et al., 2022), MMCBench (Zhang et al., 2024), and the perturbation suite distributed with MMMU (Yue et al., 2024), but they corrupt one modality at a time and never the cross-modal relation. Table 4 (Appendix B) contrasts SCE VAL 
+
+with these lines along six design axes. The combi-nation of (a) tri-modal text+vision+audio coverage, (b) operator-level structural corruption that keeps every modality present, (c) a graded severity sweep in {10 , 30 , 50 , 70 }, (d) per-variant human verifi-cation, and (e) bimodal/trimodal joint corruption with operator-replacement pressure cells is what en-ables the ∆base -vs-∆single contrast in Section 3.2 that previous benchmarks structurally cannot ask. 5 Conclusion 
+
+We introduced SCE VAL (Structure-Corruption Evaluation ), a structure-corruption evaluation pro-tocol for omni-modal models. Instead of removing modalities, SCE VAL keeps text, vision, and au-dio present while damaging their internal evidence structure. Across the reported model panel, the same pattern recurs: structural corruption reduces performance relative to the clean all-modality base-line, text–vision corruption emerges as the most stable bimodal fault line, and degradation is not explained by a simple count of corrupted modal-ities. The evidence supports a direct conclusion: omni-modal models are not equally robust to all forms of multi-modal structural degradation, and clean benchmark accuracy alone is insufficient to characterise how reliably they use evidence across modalities. 
+
+6 Limitations 
+
+SCE VAL is intended as a controlled diagnostic rather than an exhaustive robustness census. Its ver-ified base set contains 273 tri-modal examples from three English-language benchmarks, with a curated inventory of fourteen structural operators designed to test cross-modal evidence assembly. The joint-corruption analysis focuses on four deep-dive mod-els, while the remaining systems are covered by the lightweight panel in Table 31. Because vari-ants rejected as uninterpretable are concentrated in occlusion , brightness , mute , and remove , the corresponding severity-70 results should be read as conservative estimates; claims that corruptions improve performance are therefore restricted to the six confound-free operators discussed in §3.1. The protocol evaluates multiple-choice answer selection through a fixed JSON schema, so it char-acterizes robustness under structured decision set-tings rather than open-ended generation. The cor-ruption operators are static and human-readable rather than adversarially optimized, making the reported failures a lower-bound estimate of pos-sible corruption sensitivity. Finally, SCE VAL is behavioural: it identifies robust empirical patterns, including the asymmetric t30 /v 70 text–vision con-trast, vision-dominated joint damage, and model-specific text-operator sensitivity, while leaving representation-level causal explanations to future probing and controlled training studies. 
+
+Ethics Statement 
+
+This work studies model robustness under con-trolled input corruptions with the goal of identi-fying failure modes before deployment in noisy multimodal environments. The benchmark does not introduce new user data beyond the evaluated source examples. Any release of derived assets should respect the licences and privacy constraints of the underlying data. 
+
+References                   
+
+> Aishwarya Agrawal, Dhruv Batra, Devi Parikh, and Aniruddha Kembhavi. 2018. Don’t just assume; look and answer: Overcoming priors for visual question answering. In Proceedings of the IEEE conference on computer vision and pattern recognition , pages 4971–4980. Jacob Cohen. 1960. A coefficient of agreement for nominal scales. Educational and psychological mea-surement , 20(1):37–46. Bradley Efron. 1992. Bootstrap methods: another look at the jackknife. In Breakthroughs in statis-tics: Methodology and distribution , pages 569–593. Springer. Zhiyuan Feng, Zhaolu Kang, Qijie Wang, Zhiying Du, Jiongrui Yan, Shubin Shi, Chengbo Yuan, Huizhi Liang, Yu Deng, Qixiu Li, and 1 others. 2025. See-ing across views: Benchmarking spatial reasoning of vision-language models in robotic scenes. arXiv preprint arXiv:2510.19400 .Joseph L Fleiss. 1971. Measuring nominal scale agree-ment among many raters. Psychological bulletin ,76(5):378. Jian Gao, Richeng Xuan, Zhaolu Kang, Dingshi Liao, Wenxin Huang, Zongmou Huang, Yangdi Xu, Bowen Qin, Zheqi He, Xi Yang, and 1 others. 2026. Laobench: A large-scale multidimensional lao bench-mark for large language models. In Proceedings of the 64th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 23727–23743. Tianrui Guan, Fuxiao Liu, Xiyang Wu, Ruiqi Xian, Zongxia Li, Xiaoyu Liu, Xijun Wang, Lichang Chen, Furong Huang, Yaser Yacoob, and 1 others. 2024. Hallusionbench: an advanced diagnostic suite for entangled language hallucination and visual illusion in large vision-language models. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pages 14375–14385. Yingjie He, Zhaolu Kang, Kehan Jiang, Qianyuan Zhang, Jiachen Qian, Chunlei Meng, Yujie Feng, Yuan Wang, Jiabao Dou, Aming Wu, and 1 others. 2026. How order-sensitive are llms? orderprobe for deterministic structural reconstruction. arXiv preprint arXiv:2601.08626 .
+
+Dan Hendrycks and Thomas Dietterich. 2019. Bench-marking neural network robustness to common corruptions and perturbations. arXiv preprint arXiv:1903.12261 .Sture Holm. 1979. A simple sequentially rejective multi-ple test procedure. Scandinavian journal of statistics ,pages 65–70. Aaron Hurst, Adam Lerer, Adam P Goucher, Adam Perelman, Aditya Ramesh, Aidan Clark, AJ Ostrow, Akila Welihinda, Alan Hayes, Alec Radford, and 1 others. 2024. Gpt-4o system card. arXiv preprint arXiv:2410.21276 .Zhaolu Kang, Junhao Gong, Qingxi Chen, Hao Zhang, Jiaxin Liu, Rong Fu, Zhiyuan Feng, Yuan Wang, Si-mon Fong, and Kaiyue Zhou. 2026a. Multimodal multi-agent empowered legal judgment prediction. In ICASSP 2026-2026 IEEE International Confer-ence on Acoustics, Speech and Signal Processing (ICASSP) , pages 12202–12206. IEEE. Zhaolu Kang, Junhao Gong, Wenqing Hu, Shuo Yin, Kehan Jiang, Zhicheng Fang, Yingjie He, Chun-lei Meng, Rong Fu, Dongyang Chen, and 1 others. 2026b. Quanteval: A benchmark for financial quanti-tative tasks in large language models. arXiv preprint arXiv:2601.08689 .Zhaolu Kang, Junhao Gong, Jiaxu Yan, Wanke Xia, Yian Wang, Zhuo Cheng, Wenhao Cao, Ziwen Wang, ZhiYuan Feng, Huaxuan Ding, and 1 others. 2026c. Hssbench: Benchmarking humanities and social sci-ences ability for multimodal large language models. In International Conference on Learning Representa-tions , volume 2026, pages 74664–74719. Guocong Li, Jinjian Zhang, Ping Wang, Dongnan Liu, Tian Liang, Qiuyi Qi, Hao Huang, Siyan Guo, Mutian Bao, Wei Zhou, and 1 others. 2026a. Mol: Adap-tive mixture-of-length reasoning for efficient question answering with context. In The Fourteenth Interna-tional Conference on Learning Representations .Yadong Li, Haoze Sun, Mingan Lin, Tianpeng Li, Gu-osheng Dong, Tao Zhang, Bowen Ding, Wei Song, Zhenglin Cheng, Yuqi Huo, and 1 others. 2024. Baichuan-omni technical report. arXiv preprint arXiv:2410.08565 .Yizhi Li, Ge Zhang, Yinghao Ma, Ruibin Yuan, Hangyu Guo, Yiming Liang, Jiaheng Liu, Noah Wang, Jian Yang, Siwei Wu, and 1 others. 2026b. Omnibench: Towards the future of universal omni-language mod-els. Advances in Neural Information Processing Sys-tems , 38. Yuqi Li, Junhao Dong, Jiao Liu, Piotr Koniusz, Han-sheng Zeng, Chuanguang Yang, Junming Liu, Yingli Tian, Tingwen Huang, and Hao Wu. 2026c. Evolving multimodal models for physical dynamics: A multi-objective neuroevolution approach. IEEE Transac-tions on Evolutionary Computation .Yuqi Li, Siwei Meng, Chuanguang Yang, Weilun Feng, Junming Liu, Zhulin An, Yikai Wang, and Yingli Tian. 2026d. A comprehensive survey of interaction techniques in 3d scene generation. IJCAI .Yuqi Li, Chuanguang Yang, Hansheng Zeng, Zeyu Dong, Zhulin An, Yongjun Xu, Yingli Tian, and Hao Wu. 2025. Frequency-aligned knowledge distillation for lightweight spatiotemporal forecasting. In Pro-ceedings of the IEEE/CVF International Conference on Computer Vision , pages 7262–7272. Jiaxin Liu and Zhaolu Kang. 2026. Reasonact: Progres-sive training for fine-grained video reasoning in small models. In Proceedings of the AAAI Conference on Artificial Intelligence , volume 40, pages 7188–7196. Jing Liu, Sihan Chen, Xingjian He, Longteng Guo, Xinxin Zhu, Weining Wang, and Jinhui Tang. 2024a. Valor: Vision-audio-language omni-perception pre-training model and dataset. IEEE Transactions on Pattern Analysis and Machine Intelligence ,47(2):708–724. Yuan Liu, Haodong Duan, Yuanhan Zhang, Bo Li, Songyang Zhang, Wangbo Zhao, Yike Yuan, Jiaqi Wang, Conghui He, Ziwei Liu, and 1 others. 2024b. Mmbench: Is your multi-modal model an all-around player? In European conference on computer vision ,pages 216–233. Springer. Zuyan Liu, Yuhao Dong, Jiahui Wang, Ziwei Liu, Win-ston Hu, Jiwen Lu, and Yongming Rao. 2025. Ola: Pushing the frontiers of omni-modal language model. 
+
+arXiv preprint arXiv:2502.04328 .Fuwen Luo, Chi Chen, Zihao Wan, Zhaolu Kang, Qi-dong Yan, Yingjie Li, Xiaolong Wang, Siyu Wang, Ziyue Wang, Xiaoyue Mi, and 1 others. 2024. Codis: Benchmarking context-dependent visual comprehen-sion for multimodal large language models. In Pro-ceedings of the 62nd Annual Meeting of the Associa-tion for Computational Linguistics (Volume 1: Long Papers) , pages 10639–10659. Quinn McNemar. 1947. Note on the sampling error of the difference between correlated proportions or percentages. Psychometrika , 12(2):153–157. OpenBMB. 2025. MiniCPM-V and MiniCPM-o. https://github.com/OpenBMB/ MiniCPM-V . GitHub repository, accessed 2026-05-26. Jielin Qiu, Yi Zhu, Xingjian Shi, Florian Wenzel, Zhiqiang Tang, Ding Zhao, Bo Li, and Mu Li. 2022. Benchmarking robustness of multimodal image-text models under distribution shift. arXiv preprint arXiv:2212.08044 .Qiming Shi, Zhaolu Kang, Yunfan Zhou, Di Weng, and Yingcai Wu. 2026. Spader: Step-wise peer advan-tage with diversity-aware exploration rewards for multi-answer question answering. arXiv preprint arXiv:2606.00593 .Zesheng Shi, Weiyang Guo, Yemin Wang, Jiabo Zhang, Min Zhang, Jing Li, and 1 others. Controllable and interpretable multi-value alignment for large lan-guage model. Zesheng Shi, Yucheng Zhou, Jing Li, Yuxin Jin, Yu Li, Daojing He, Fangming Liu, Saleh Alharbi, Jun Yu, and Min Zhang. 2025. Safety alignment via con-strained knowledge unlearning. In Proceedings of the 63rd Annual Meeting of the Association for Compu-tational Linguistics (Volume 1: Long Papers) , pages 25515–25529. Gemini Team, Rohan Anil, Sebastian Borgeaud, Jean-Baptiste Alayrac, Jiahui Yu, Radu Soricut, Johan Schalkwyk, Andrew M Dai, Anja Hauth, Katie Mil-lican, and 1 others. 2023. Gemini: a family of highly capable multimodal models. arXiv preprint arXiv:2312.11805 .Qwen Team. 2026. Qwen3. 5-omni technical report. 
+
+arXiv preprint arXiv:2604.15804 .Xiaolong Wang, Zhaolu Kang, Wangyuxuan Zhai, Xinyue Lou, Yunghwei Lai, Ziyue Wang, Yawen Wang, Kaiyu Huang, Yile Wang, Peng Li, and 1 oth-ers. 2025. Mucar: Benchmarking multilingual cross-modal ambiguity resolution for multimodal large lan-guage models. In Proceedings of the 2025 Confer-ence on Empirical Methods in Natural Language Processing , pages 15037–15059. Hanrong Ye, Chao-Han Huck Yang, Arushi Goel, Wei Huang, Ligeng Zhu, Yuanhang Su, Sean Lin, An-Chieh Cheng, Zhen Wan, Jinchuan Tian, and 1 others. 2025. Omnivinci: Enhancing architecture and data for omni-modal understanding llm. arXiv preprint arXiv:2510.15870 .Xiang Yue, Yuansheng Ni, Kai Zhang, Tianyu Zheng, Ruoqi Liu, Ge Zhang, Samuel Stevens, Dongfu Jiang, Weiming Ren, Yuxuan Sun, and 1 others. 2024. Mmmu: A massive multi-discipline multimodal un-derstanding and reasoning benchmark for expert agi. In Proceedings of the IEEE/CVF conference on com-puter vision and pattern recognition , pages 9556– 9567. Amir Zadeh, Michael Chan, Paul Pu Liang, Edmund Tong, and Louis-Philippe Morency. 2019. Social-iq: A question answering benchmark for artificial social intelligence. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition ,pages 8807–8817. Jiawei Zhang, Tianyu Pang, Chao Du, Yi Ren, Bo Li, and Min Lin. 2024. Benchmarking large multimodal models against common corruptions. arXiv preprint arXiv:2401.11943 .Leqi Zheng, Jiajun Zhang, Canzhi Chen, Chaokun Wang, Hongwei Li, Yuying Li, Yaoxin Mao, Shan-nan Yan, Zixin Song, Zhiyuan Feng, Zhaolu Kang, Zirong Chen, Hang Zhang, Qiang Liu, Liang Wang, and Ziyang Liu. 2026. What should i cite? a rag benchmark for academic citation prediction. In Pro-ceedings of the ACM Web Conference 2026 , WWW ’26, pages 1852–1863, New York, NY, USA. Associ-ation for Computing Machinery. 
+
+A Appendix Overview: What Is Main Evidence and What Is Protocol 
+
+The appendix supplements the main results with detailed analyses and evaluation protocols: • Supplementary results. Appendix C contains the operator-level, source-level, control, statis-tical, and mechanism-probe breakdowns that drill down beyond the headline matrix in Sec-tion 3 and the dual-/tri-modal summary in Sec-tion 3.2. Three additional diagnostic subsections sit at the end of this appendix: Appendix C.9 (seed-variance and fragility-slope diagnostics), Appendix C.10 (open vs. proprietary aggre-gated comparison), and Appendix C.11 (joint-corruption sub-additivity, calibration, and cross-model failure overlap). • Data curation. Appendix D documents how the 273-example verified base set was carved out of the source benchmarks: the 300-candidate pool, the third-party annotation workflow, the per-stage filtering funnel, the inter-annotator agreement summary (Table 27), and the audit hooks used to detect bias in the rejected pool. • Operator definitions. Appendix E formalises the fourteen structural corruption operators sketched in Figure 2, including the design rules that decide what is in scope and which corruption families are deliberately excluded. • Setup and protocol. Appendix F records the 15-model roster, the frame-extracted visual-input protocol, the 12-cell lightweight panel, the prompting and inference protocol, and the headline reporting rule. Appendix G then gives the per-experiment construction details (single-modality, dual-/tri-modal, the 46-cell extended joint suite enumerated in Table 32, controls, mechanism probes), and Appendix H documents the standardised prompt templates and parsing rules. This structure keeps the main paper focused on the structural-corruption phenomenon while docu-menting the experimental details needed for repro-ducibility. B Benchmark Comparison Details 
+
+Table 4 expands the positioning argument of Sec-tion 4: it compares SCE VAL against three families of closely related benchmarks (clean tri-modal QA, hallucination/shortcut/distractor suites with clean modalities, and multimodal corruption benchmarks that perturb a single modality) across a set of com-parison dimensions. 
+
+C Supplementary Experimental Result Tables 
+
+This appendix presents operator-level, source-level, control, and mechanism-probe analyses that com-plement the headline single-modality matrix in Sec-tion 3 and the dual-/tri-modal summary in Sec-tion 3.2. 
+
+C.1 Operator-level joint-corruption breakdown for the deep-dive models 
+
+Table 5 is the full operator-level table that underlies the per-model scatter in Figure 5 and contains ev-ery joint-corruption number quoted in Section 3.2. Each row is one of the 29 operator ×severity cells defined in Section 3.2; columns are the four deep-dive models. Every model reports mean-variant accuracy together with the absolute change from its own clean all-modality baseline ( ↓ = drop, ↑ = rel-ative gain, ±0 = unchanged); Gemini 3 Flash and Qwen3.5-Omni-Plus are the canonical references that anchor Figure 5, while Gemini 3.1 Pro and MiniCPM-o 4.5 are paired alongside them so the table is read column-by-column. Cells without the r marker belong to the canonical severity grid; cells marked r are replacement-pressure cells that swap one operator for a different operator family at the same modality. Severity codes use t/v/a for text/vision/audio at the given severity level (e.g. 
+
+t30/v70 = text operator at severity 30 and vision operator at severity 70). 
+
+C.2 Single-modality severity grid by operator 
+
+Table 6 expands the headline severity-70 single-modality matrix in the main body (Table 2) into the full 4 × 14 severity grid for two deep-dive sys-tems, at severities {10 , 30 , 50 , 70 }. This grid is the operator-level evidence behind the per-modality ro-bustness curves in Figure 4: text drop_words 
+
+is the most damaging text operator for both sys-tems, visual noise is the most damaging vision operator (and especially severe for Gemini 3 Flash at severity 70), audio segment muting/removal is the most damaging audio operator for both sys-tems, while audio distortion is consistently the weakest audio operator. The bolded value in each row is that model’s weakest observed cell for that operator and defines the ∆single baseline used in joint-corruption analysis. The operator-level view clarifies why text–vision becomes the dominant joint fault line. The most damaging text operator is word dropping and the most damaging visual operator is additive noise; the single strongest joint condition combines ex-actly these two families at light text damage paired with heavy visual noise (full cell-by-cell values in Table 5). Audio degradation is real, especially un-der segment muting/removal, but distortion alone is weak, which helps explain why text–audio and vision–audio combinations are less stable as shared fault lines. 
+
+C.3 Does combined corruption exceed the weakest single modality? 
+
+A stricter question is whether a combined condi-tion is worse than its weakest corresponding single-modality corruption. The answer is mostly no. For Gemini 3 Flash, no condition has positive ∆single :every joint cell stays above the model’s weakest single-modality cell ( drop_words at severity 70 ), so the gap remains negative across all 29 joint cells. For Qwen3.5-Omni-Plus, the same is true on 26 
+
+of the 29 cells; the three cells that narrowly cross the threshold are all drop_words ×noise configura-tions with heavy visual severity ( sv=70 )—one bi-modal at t30 /v 70 and two trimodal cells with v70 
+
+in the cube—and the largest exceedance among them is only +1 .09 pp (per-cell values in Table 5). This distinction is important for interpretation. The robust conclusion is not that combined corrup-tion is always worse than any single corruption. The robust conclusion is that combined corrup-tion consistently lowers performance relative to the clean all-modality baseline, and that a small number of high-pressure conditions can exceed the weakest single-modality degradation. A stricter ad-ditive null is reported in Table 21 (Appendix C.11): the deep-dive panel is sub-additive on average across all four combination types (joint ∆base is gentler than the sum of single-modality ∆base s by 
+
++0 .94 to +22 .62 percentage points on average), confirming that the joint signal is dominated by the strongest single component rather than by an emer-gent multi-modal collapse. Qwen3.5-Omni-Plus is the closest to the additive baseline ( +0 .94 pp on Benchmark Modalities N Struct. corruption Sev. sweep Joint corruption Audio/vision variant verif. Sample-paired protocol Models eval.                                                                                  
+
+> Clean-input omni-modal QA benchmarks
+> Social-IQ (Zadeh et al., 2019) video, audio, text 7.5k ✗✗✗✗✗—OmniBench (Li et al., 2026b) image, audio, text 1.1k ✗✗✗✗✗—VALOR (Liu et al., 2024a) video, audio, text 32k ✗✗✗✗✗—
+> Hallucination / shortcut / distractor suites (clean modalities)
+> MMBench (Liu et al., 2024b) image, text 3.2k ✗✗✗✗✗—HallusionBench (Guan et al., 2024) image, text 1.1k curated distract. ✗✗item-level paired examples —MMMU (Yue et al., 2024) image, text 11.5k ✗✗✗item-level ✗—
+> Multimodal corruption / robustness benchmarks (single-modality corruption only)
+> MM-Robustness (Qiu et al., 2022) image, text —image corruption only 5 levels ✗✗sample-paired —MMCBench (Zhang et al., 2024) image, audio, text —per-modality only 4 levels ✗✗sample-paired —MMMU-Perturbation (Yue et al., 2024) image, text —image perturb. only 3 levels ✗✗sample-paired —
+> This work
+> SCE VAL (ours) video/image, audio, text 273 14 ops, structural only 4 levels 29-/46-cell joint suite 19,944 A/V cells ( 80.5% retained) sample-paired, fixed gold answer 15
+
+Table 4: Design-axis comparison of SCE VAL against the most closely related multimodal evaluation benchmarks (§4). Struct. corruption means operator-level structural damage that keeps the modality present, as opposed to missing-modality ablation or semantic perturbation; Joint corruption requires applying corruption to two or more modalities of the same example; Audio/vision variant verification means that every corrupted audio or visual variant (not just every clean example) is human-judged for interpretability. Deterministic text corruptions are assessed separately in the blind answer-preservation audit; Sample-paired protocol means clean and corrupted versions share the same base example and gold answer. “—” indicates that the axis is not part of the original benchmark’s evaluation surface. 
+
+T+V; +2 .58 pp on the eight T+V+A cells), whereas the proprietary panel exhibits much stronger sub-additivity ( +11 to +23 pp on Gemini 3 Flash). 
+
+C.4 Coverage and invalid outputs 
+
+Table 7 reports coverage for the combined runs. The invalid-output count is large enough to be part of the result rather than hidden bookkeeping. These failures can arise from API failures, in-valid model outputs, or answer parsing failures. The following tables report cross-model panel scores, missing-modality contrasts, shortcut con-trols, source-level results, statistical reliability, hu-man validation, invalid-output decomposition, and mechanism diagnostics. 
+
+C.5 All-model panel results 
+
+Table 8 is the compact cross-model result table. It uses the 12-cell panel in Table 31 and reports both aggregate fault-line scores and the strongest observed condition for each model. The contrast is positive for 14 of 15 evaluated models. This is a fixed-panel descriptive summary; related model versions are not treated as indepen-dent samples. 
+
+C.6 Missing-modality and shortcut controls 
+
+Table 9 contains the two controls that most directly test whether SCE VAL measures structural depen-dence rather than missing-modality performance or textual shortcuts. 
+
+C.7 Source-level results, statistical tests, and human validation 
+
+Table 11 reports results by source, allowing us to assess whether the observed fault line is consistent across Social-IQ, OmniBench, and VALOR. 
+
+C.8 Failure accounting and mechanism diagnostics C.9 Reliability and seed-variance diagnostics 
+
+The headline numbers throughout the paper ag-gregate over up to three random variants of each stochastic operator using the mean-variant rule (Section 2.4). Two diagnostics check that this ag-gregation does not mask seed-level instability or modality-specific fragility patterns. 
+
+Mean vs. worst-variant accuracy. For every (model, modality) cell we additionally log the worst-variant accuracy Acc worst (c) and the per-variant standard deviation across the three random seeds. Table 18 reports this at each model’s weak-est single-modality cell (the cell that defines the modality entry of ∆single in Section 3.2). A small mean −worst gap and low std mean the headline number is reproducible under seed reshuffling; a large gap means the headline is partly carried by a lucky variant and the reader should also consider 
+
+Acc worst .Operators Severities Gemini 3.1 Pro Gemini 3 Flash Qwen3.5-Omni-Plus MiniCPM-o 4.5  
+
+> clean
+
+84 .15 clean 80 .95 clean 73 .63 clean 74 .50 
+
+Text+Vision | canonical = drop_words × noise (4 cells) + 2 replacement r cells 
+
+drop_words × noise t30 /v 30 76.14 ↓8.01 71.55 ↓9.40 67.96 ↓5.67 63.84 ↓10.66 
+
+drop_words × noise t30 /v 70 76.60 ↓7.55 70.14 ↓10.82 63.01 ↓10.61 63.45 ↓11.05 
+
+drop_words × noise t70 /v 30 76.47 ↓7.68 72.50 ↓8.45 70.37 ↓3.26 66.47 ↓8.03 
+
+drop_words × noise t70 /v 70 77.75 ↓6.40 71.43 ↓9.52 65.88 ↓7.75 65.05 ↓9.45 
+
+drop_words × occlusion r t70 /v 30 83.33 ↓0.82 76.74 ↓4.21 69.29 ↓4.34 70.88 ↓3.62 
+
+word_shuffle × noise r t70 /v 70 83.85 ↓0.30 73.86 ↓7.09 72.69 ↓0.94 72.58 ↓1.92 
+
+Text+Audio | canonical = drop_words × mute (4 cells) + 2 replacement r cells 
+
+drop_words × mute t30 /a 30 81.55 ↓2.60 74.03 ↓6.92 69.80 ↓3.83 67.22 ↓7.28 
+
+drop_words × mute t30 /a 50 81.31 ↓2.84 75.16 ↓5.79 74.05 ↑0.42 69.96 ↓4.54 
+
+drop_words × mute t70 /a 30 79.70 ↓4.45 75.32 ↓5.63 70.00 ↓3.63 66.63 ↓7.87 
+
+drop_words × mute t70 /a 50 82.75 ↓1.40 82.26 ↑1.31 75.19 ↑1.56 74.17 ↓0.33 
+
+drop_words × remove r t70 /a 50 84.53 ↑–0.38 78.95 ↓2.00 74.26 ↑0.63 70.62 ↓3.88 
+
+word_shuffle × mute r t70 /a 50 79.32 ↓4.83 78.70 ↓2.25 67.26 ↓6.37 71.78 ↓2.72 
+
+Vision+Audio | canonical = noise × mute (4 cells) + 2 replacement r cells 
+
+noise × mute v30 /a 30 87.22 ↑–3.07 80.45 ↓0.50 78.07 ↑4.44 73.34 ↓1.16 
+
+noise × mute v30 /a 50 87.33 ↑–3.18 75.91 ↓5.04 76.32 ↑2.69 74.01 ↓0.49 
+
+noise × mute v70 /a 30 80.10 ↓4.05 77.03 ↓3.92 71.96 ↓1.67 71.80 ↓2.70 
+
+noise × mute v70 /a 50 85.73 ↑–1.58 77.58 ↓3.37 74.12 ↑0.49 74.72 ↑–0.22 
+
+noise × remove r v70 /a 50 82.37 ↓1.78 77.64 ↓3.31 73.63 ±0.00 72.60 ↓1.90 
+
+occlusion × mute r v30 /a 50 85.38 ↑–1.23 85.19 ↑4.24 71.60 ↓2.03 73.54 ↓0.96 
+
+Text+Vision+Audio | canonical = drop_words × noise × mute (8 cells) + 3 replacement r cells 
+
+drop_words × noise × mute t30 /v 30 /a 30 82.09 ↓2.06 76.47 ↓4.48 68.82 ↓4.81 70.62 ↓3.88 
+
+drop_words × noise × mute t30 /v 30 /a 50 81.64 ↓2.51 81.82 ↑0.87 67.35 ↓6.28 72.77 ↓1.73 
+
+drop_words × noise × mute t30 /v 70 /a 30 79.90 ↓4.25 78.21 ↓2.74 64.08 ↓9.55 65.59 ↓8.91 
+
+drop_words × noise × mute t30 /v 70 /a 50 78.22 ↓5.93 77.60 ↓3.35 67.03 ↓6.60 67.75 ↓6.75 
+
+drop_words × noise × mute t70 /v 30 /a 30 76.55 ↓7.60 72.81 ↓8.14 67.88 ↓5.75 67.29 ↓7.21 
+
+drop_words × noise × mute t70 /v 30 /a 50 81.29 ↓2.86 77.55 ↓3.40 69.70 ↓3.93 70.46 ↓4.04 
+
+drop_words × noise × mute t70 /v 70 /a 30 73.92 ↓10.23 75.48 ↓5.47 63.86 ↓9.77 63.42 ↓11.08 
+
+drop_words × noise × mute t70 /v 70 /a 50 76.29 ↓7.86 74.02 ↓6.93 65.38 ↓8.25 67.40 ↓7.10 
+
+drop_words × noise × remove r t70 /v 70 /a 50 82.32 ↓1.83 81.68 ↑0.73 66.84 ↓6.79 70.68 ↓3.82 
+
+drop_words × occlusion × mute r t70 /v 30 /a 50 81.58 ↓2.57 80.95 ±0.00 70.33 ↓3.30 73.56 ↓0.94 
+
+word_shuffle × noise × mute r t70 /v 70 /a 50 79.27 ↓4.88 79.56 ↓1.39 64.48 ↓9.15 72.08 ↓2.42 
+
+Table 5: Full operator-level joint-corruption breakdown for the four deep-dive models. Each row is one of the 29 operator ×severity cells defined in Section 3.2: the four canonical T+V cells ( drop_words × noise at 
+
+{30 , 70 }×{ 30 , 70 }) and two replacement cells; the four canonical T+A cells and two replacements; the four canonical V+A cells and two replacements; and the eight canonical T+V+A cells (cube over t ∈ { 30 , 70 }, v ∈{30 , 70 }, a ∈ { 30 , 50 }) and three replacements. Cells marked r substitute a different operator family ( occlusion 
+
+for noise , remove for mute , or word_shuffle for drop_words ) at the strongest severity inside that combination. Each model cell shows the mean-variant accuracy together with the absolute change from the model’s clean all-modality baseline ( ↓ red = drop, ↑ green = relative gain, ±0.00 = unchanged). All four deep-dive panels are reported here; Gemini 3 Flash and Qwen3.5-Omni-Plus provide the canonical reference points used in Figure 5, while Gemini 3.1 Pro and MiniCPM-o 4.5 are paired in the same table so that the proprietary vs. open-API comparison is preserved cell-by-cell. 
+
+Mod. Operator Qwen3.5-Omni-Plus Gemini 3 Flash s10 s30 s50 s70 s10 s30 s50 s70 
+
+Text severity grid 
+
+Text typo_ocr 72.91 72.93 71.16 69.60 79.40 75.40 74.04 71.06 
+
+Text drop_words 71.57 72.21 67.20 64.10 81.85 71.98 71.60 67.40 
+
+Text word_shuffle 71.58 69.04 65.63 65.20 80.64 77.37 74.47 70.33 
+
+Text sentence_break 74.33 72.54 71.27 69.60 80.82 78.03 73.33 72.89 
+
+Vision severity grid 
+
+Vision noise 73.62 72.32 71.91 70.37 78.72 74.53 71.84 67.79 
+
+Vision occlusion 72.99 71.31 70.29 70.49 80.80 80.68 80.88 80.33 
+
+Vision low_resolution 73.21 73.47 72.55 71.79 81.57 80.42 80.54 80.97 Vision motion_blur 72.56 72.80 72.44 71.02 81.85 80.23 77.34 77.59 Vision defocus_blur 73.25 73.03 72.97 71.83 81.34 80.32 79.67 78.95 
+
+Vision overexposure 73.78 72.78 73.25 71.65 79.50 81.09 80.13 79.37 
+
+Vision brightness 74.28 73.45 73.62 73.68 80.07 80.77 80.36 80.30 
+
+Audio severity grid 
+
+Audio remove 71.53 73.13 73.21 70.95 80.45 76.64 75.79 74.30 
+
+Audio mute 71.26 71.92 71.96 69.72 80.31 76.10 74.25 73.24 
+
+Audio distortion 73.98 73.31 75.15 75.00 80.11 80.42 79.57 79.17 
+
+Table 6: Full single-modality severity grid. Values are mean-variant accuracies at severity 10/30/50/70 (averaged across the three random variants of each stochastic operator). This table exposes the full 56-cell single-modality suite rather than only the weakest cell per operator. Model Group Valid/expected Trials Invalid Acc.                     
+
+> Coverage and invalid-output pressure
+> Qwen3.5-Omni-Plus Bimodal 4,368/4,368 4,368 53 67.42 Qwen3.5-Omni-Plus Trimodal 6,552/6,552 6,552 124 64.78 Gemini 3 Flash Bimodal 4,368/4,368 4,368 41 74.16 Gemini 3 Flash Trimodal 6,552/6,552 6,552 98 72.18
+
+Table 7: Coverage statistics for combined-corruption runs. The invalid column is decomposed by failure type in Table 16. 
+
+Median and worst-2 robustness. Because each stochastic condition uses exactly three random variants, the three-point distribution admits a closed-form comparison. With variants ordered 
+
+v1 ≥ v2 ≥ v3, the mean-variant accuracy is 
+
+(v1+v2+v3)/3, the median is v2, and the worst-2 mean is (v2+v3)/2. The mean-variant rule there-fore lies between the median and the best variant; it is more optimistic than the worst-2 mean by at most 
+
+(v1−v3)/3. Table 18 shows that the mean −worst gap is ≲ 2 pp at every sampled cell, so the worst-2 mean can differ from the reported mean by at most ≈ 1 pp. Replacing the mean with the median or worst-2 mean does not change any qualitative conclusion: the rank order of operators, the di-rection of the misleading-modality effect, and the sub-additivity pattern are all preserved under either alternative aggregation rule. 
+
+Fragility slope Sm. The severity grid in Table 6 gives accuracy at four severities, but the reader cannot tell at a glance how fast a modality de-cays per unit of severity. Table 19 reports the fragility slope Sm defined in Section 2.4: for each (model, modality) pair we linearly regress accu-racy on severity s ∈ { 0, 10 , 30 , 50 , 70 } (treating clean accuracy as s=0 ), aggregated by averaging over all operators inside that modality, and report the slope in percentage points per severity unit. A steeper (more negative) slope means the modal-ity decays faster as severity rises. The text slope is the steepest channel for all 15 models, with magnitudes in the 0.09 –0.16 pp/sev range; vision slopes sit in 0.02 –0.06 pp/sev (typically a factor of 
+
+2–3× shallower than text), while audio slopes vary from a near-flat −0.01 pp/sev on Qwen3.5-Omni-Plus up to −0.10 pp/sev on Gemini 2.5 Flash and OLA-7B, occasionally approaching the text slope. The pattern confirms that text decay is uniform across severity, whereas vision and audio degrada-tion is concentrated in a few catastrophic operators (noise , mute , remove ) and therefore appears mild once averaged across the seven vision or three audio operators. 
+
+C.10 Open vs. proprietary aggregated comparison 
+
+Table 20 aggregates the per-modality and per-combination drops across the seven propri-etary/API models and the eight open/open-API models. This isolates the model-family effect from per-model noise: even if a specific Gemini drops more than a specific Qwen on noise @sev70, the band-level summary tells the reader whether pro-prietary models on average degrade more or less than open models on each channel. 
+
+Interface fairness and API pre-processing. Pro-prietary API models may apply undisclosed pre-processing steps—such as automatic speech recog-nition (ASR) transcription of audio, internal frame subsampling for video, or output post-processing— that are not available to open models running lo-cally. We take three steps to bound this confound. First, all models receive the same frame-extracted visual input (Appendix F.2) rather than raw video, so frame-subsampling differences are controlled at the input stage. Second, audio is submitted as a raw waveform clip in a standard container format; if a proprietary API internally transcribes audio to text, the mute and remove operators (which produce silence or gaps) will produce empty or near-empty transcripts, making the corruption visi-ble at the API level regardless of the transcription step. Third, the family comparison in Table 20 shows that the proprietary band outperforms the open band by +11 .39 pp on clean accuracy but the robustness gap (difference in corruption-induced drops) is substantially smaller ( +2 .06 pp on text, 
+
++1 .48 pp on vision, +2 .36 pp on audio), suggest-ing that the clean-accuracy advantage of propri-etary models does not translate proportionally into robustness. We cannot rule out that some of the residual gap reflects interface differences rather than model robustness, and we note this as a caveat on the open-vs-proprietary comparison. 
+
+C.11 Joint-corruption interaction, calibration, and cross-model failure overlap 
+
+The remaining three tables sharpen three claims that the headline result tables only support implic-itly: (i) joint corruption is not a simple sum of single-modality drops, (ii) corruption degrades cal-ibration as well as accuracy, and (iii) the hardest items concentrate on a small shared subset of base Model Clean TV TA VA TVA Panel fault Casym Strongest cell                                                                                                                                        
+
+> Proprietary / API omni-modal models
+> Gemini 3.1 Pro 84.15 78.62 79.97 81.17 78.04 ↓4.70 +1 .15 drop_words @sev30 Gemini 3 Pro 82.40 75.72 78.13 79.65 75.19 ↓5.23 +0 .92 drop_words @sev30 Gemini 3 Flash 80.95 73.50 76.53 77.30 72.27 ↓6.05 +1 .29 noise @sev70 Gemini 3.5 Flash 78.39 71.04 73.75 75.59 70.14 ↓5.76 +1 .71 drop_words @sev30 Gemini 2.5 Pro 79.12 71.92 74.71 76.50 71.03 ↓5.58 +0 .48 drop_words @sev30 GPT-4o 83.50 77.19 78.66 81.04 75.83 ↓5.32 −0.35 drop_words @sev30 Gemini 2.5 Flash 75.40 67.68 69.43 71.82 66.08 ↓6.65 +2 .03 noise @sev70
+> Open / open-API omni-modal models
+> Qwen3.5-Omni-Plus 73.63 66.08 68.99 69.70 64.68 ↓6.27 +2 .87 drop_words @sev30 Qwen3-Omni-30B 71.20 62.84 65.74 66.98 62.45 ↓6.70 +2 .55 word_shuffle @sev70 MiniCPM-o 4.5 74.50 66.51 68.93 71.23 65.91 ↓6.36 +1 .60 word_shuffle @sev70 Qwen2.5-Omni-7B 68.40 59.39 61.74 64.58 57.62 ↓7.57 +1 .42 word_shuffle @sev70 OmniVinci-9B 69.10 59.70 62.57 64.75 58.54 ↓7.71 +3 .34 noise @sev70 OLA-7B 66.80 57.16 60.97 62.63 55.79 ↓7.66 +2 .11 noise @sev70 Qwen2.5-Omni-3B 64.20 54.41 57.88 59.12 53.12 ↓8.07 +2 .98 noise @sev70 Baichuan-Omni-1.5 65.50 56.21 59.05 60.48 53.98 ↓8.07 +3 .61 noise @sev70
+
+Table 8: All-model lightweight panel results. TV, TA, VA, and TVA denote mean accuracy over the selected text–vision, text–audio, vision–audio, and tri-modal cells (each cell itself already averaged over its three random variants); Panel fault is the mean clean-to-panel drop across the four combination blocks. Casym = Acc( t70 /v 70) −
+
+Acc( t30 /v 70) ; positive values mean that the mildly corrupted-text / heavily corrupted-vision cell is worse. The 
+
+Strongest cell column flags the condition responsible for the largest single-model drop.                                                                                                                                                                                              
+
+> Model No-text No-vision No-audio MtMvMaQ+Opt Text-only VA-only
+> Proprietary / API omni-modal models
+> Gemini 3.1 Pro 63.15 70.98 78.49 ↓2.04 ↑1.18 ↑1.90 34.48 40.77 21.37 Gemini 3 Pro 67.43 67.24 78.29 ↓2.56 ↑0.67 ↑2.70 32.80 43.21 29.26 Gemini 3 Flash 66.24 72.01 74.59 ↓2.84 ↑2.78 ↑3.79 29.36 37.70 27.38 Gemini 3.5 Flash 56.46 62.76 72.17 ↓3.21 ↑0.68 ↑2.39 29.34 39.06 22.79 Gemini 2.5 Pro 65.68 67.89 71.52 ↓2.96 ↑2.25 ↑2.97 37.01 40.54 19.06 GPT-4o 62.60 69.30 79.38 ↓4.83 ↑0.95 ↑1.48 30.65 35.08 23.44 Gemini 2.5 Flash 61.70 60.94 67.89 ↓4.45 ↑0.95 ↑3.25 38.23 34.20 21.70
+> Open / open-API omni-modal models
+> Qwen3.5-Omni-Plus 53.67 58.11 70.01 ↓5.26 ↑2.68 ↑3.12 37.82 43.11 24.65 Qwen3-Omni-30B 56.85 57.96 67.25 ↓6.56 ↑3.18 ↑2.56 33.22 35.82 19.39 MiniCPM-o 4.5 59.50 64.47 70.04 ↓4.32 ↑1.66 ↑3.65 31.78 45.18 19.76 Qwen2.5-Omni-7B 49.51 57.83 62.88 ↓6.02 ↑3.30 ↑1.08 30.66 47.80 18.10 OmniVinci-9B 48.45 53.92 62.31 ↓4.68 ↑2.27 ↑2.92 28.20 44.25 29.36 OLA-7B 53.34 58.21 60.73 ↓6.52 ↑1.01 ↑3.07 28.02 45.85 20.55 Qwen2.5-Omni-3B 50.73 49.10 59.77 ↓3.27 ↑1.83 ↑1.32 31.52 39.27 22.25 Baichuan-Omni-1.5 51.93 55.79 57.69 ↓5.09 ↑2.64 ↑2.90 32.00 36.64 24.47
+
+Table 9: Required controls for modality absence and shortcut reliance. No-X columns report accuracy when modality X is removed entirely; positive Mm means a corrupted-but-present modality is more harmful than removing that modality (so the joint corruption is not equivalent to a missing-modality ablation). Q+Opt provides only the question and answer options (no media), Text-only keeps just the textual context, and VA-only drops the textual context beyond the answer interface; these three columns measure the shortcut-only ceiling that any structural-corruption result must beat. 
+
+examples regardless of model. 
+
+Sub-additivity of joint corruption. Section 3.2 discussed ∆single , which compares the joint cell to its weakest single-modality component. A stricter additive null is to compare the joint cell to its 
+
+sum-of-components prediction: Acc add (cm1m2 ) = Acc clean − ∆m1 − ∆m2 for bimodal cells and 
+
+Acc add (cm1m2m3 ) = Acc clean − ∆m1 − ∆m2 −
+
+∆m3 for trimodal cells, where ∆m is the single-modality drop at the same severity. The interaction term ∆int = Acc( joint ) − Acc add is positive when corruptions overlap (the joint is gentler than ad-ditive) and negative when corruptions compound (the joint is harsher than additive). Table 21 reports 
+
+∆int aggregated by combination type for the deep-dive panel: all 16 model-by-combination point esti-mates are positive, but support is heterogeneous (five rows have paired-bootstrap p > .05 , and Qwen3.5-Omni-Plus is sub-additive in only half of its T+V and T+V+A cells). We therefore de-scribe the result as behavioral sub-additivity rather than evidence for a particular interaction mech-anism. Gemini 3 Flash averages +11 .50 pp on the T+V drop_words × noise canonical grid (four {30 , 70 }×{ 30 , 70 } cells) and +22 .62 pp on the eight T+V+A cells, while Qwen3.5-Omni-Plus sits near the additive baseline ( +0 .94 pp on T+V; 
+
++2 .58 pp on T+V+A). All joint conditions remain worse than the clean baseline in absolute accuracy. Model Std. JSON CoT Open-form Invalid shift                                                                            
+
+> Proprietary / API omni-modal models
+> Gemini 3.1 Pro 85.30 83.34 80.85 ↓2.83 Gemini 3 Pro 81.59 81.68 81.79 ↓3.81 Gemini 3 Flash 82.18 79.11 83.57 ↓2.41 Gemini 3.5 Flash 77.52 78.50 78.26 ↓3.27 Gemini 2.5 Pro 77.47 73.32 73.34 ↓2.37 GPT-4o 84.66 85.61 85.89 ↓4.48 Gemini 2.5 Flash 76.03 76.00 73.14 ↓3.41
+> Open / open-API omni-modal models
+> Qwen3.5-Omni-Plus 74.20 76.75 75.19 ↓4.66 Qwen3-Omni-30B 70.30 67.57 69.76 ↓2.51 MiniCPM-o 4.5 75.59 72.49 75.86 ↓2.91 Qwen2.5-Omni-7B 67.56 65.78 66.39 ↓5.35 OmniVinci-9B 67.16 71.09 63.19 ↓6.09 OLA-7B 65.27 63.44 61.43 ↓3.55 Qwen2.5-Omni-3B 62.49 61.48 62.84 ↓3.38 Baichuan-Omni-1.5 65.32 63.73 64.27 ↓4.98
+
+Table 10: Prompt-robustness results on the diagnostic subset that contains clean, the weakest single-modality cells, the strongest text–vision cell, and the strongest trimodal cell. Std. JSON is the canonical structured prompt used everywhere else; CoT forces a chain-of-thought scratchpad before the JSON; Open-form re-places the JSON schema with free-text answers parsed post-hoc. Invalid shift is the drop in valid-output cover-age between Std. JSON and the worst alternative prompt for each model. 
+
+Calibration under corruption. A model that becomes wrong under corruption but stays confi-dent is far more dangerous than one that becomes wrong and flags uncertainty. The standardised JSON answer schema (Appendix H) asks for a categorical confidence in {low, medium, high }
+
+alongside the option key, so for every condition we can decompose accuracy by confidence bin and compute expected calibration error (ECE) and the over-confident error rate ρoc (the fraction of wrong 
+
+answers that were emitted with high confidence). Table 22 reports these calibration diagnostics un-der clean evidence and under the three corruption conditions used in the prompt-robustness diagnos-tic subset (Appendix G.6); a rising ECE or rising 
+
+ρoc between the clean column and the joint-TVA column means the model fails silently rather than detectably. 
+
+Cross-model failure overlap. A separate ques-tion is whether the hardest items under corruption are the same items across models. Two extreme reading: (i) every model fails on a shared "struc-turally impossible" core of items (high overlap, low overall hardness count), or (ii) each model has id-iosyncratic failure modes and the union of failures is much larger than the intersection (low overlap, high diversity). Table 23 reports the mean pairwise Jaccard similarity of the failure set across the 15-model panel for each headline condition, together with the count of items failed by at least 10 of the 15 models (the shared-hard core ) and the count of items failed by exactly one model ( idiosyncratic failures ). 
+
+D Human Filtering and Data Verification Details 
+
+This appendix records how the 273-example ver-ified base set was carved out of the raw source benchmarks, what the annotation team was asked to do, how many examples were dropped at each stage, and why. It is intended as the human-side audit trail behind every result in the main paper. 
+
+Source pool and initial candidate construction. 
+
+We do not reuse the full source benchmarks: the original Social-IQ, OmniBench, and VALOR test/dev splits contain tens of thousands of exam-ples, but the great majority either do not exercise all three modalities, ship only weak audio/visual evidence, or fail the structural-corruption precon-ditions described below. From each source we therefore subsample a fixed budget of 100 exam-ples, oversampling examples whose question is plausibly tri-modal (audio, visual, and text all carry independent evidence). This yields an initial can-didate pool of 300 examples , normalised into a common record with source name, sample identi-fier, question, answer options, gold answer, visual file, audio file, modality availability flags, and a back-pointer to the original source example. The normalised schema also records whether the visual input is image-based or video-based, whether au-dio is available as a separate file, whether the ques-tion is expected to require text/vision/audio/cross-modal evidence, and whether the original source contains any metadata that should not be exposed to the model. 
+
+Third-party annotation team and workflow. 
+
+The 300 candidates and their generated corruptions are verified by a third-party professional annotation team under task ID 1246075789726052352 .The workflow has three passes. (i) A pilot pass on a 30-example subsample, used to align the annotation guidelines with the team and discard ambiguous instructions before scaling up. (ii) A full annota-tion pass in which every candidate is independently judged by at least two annotators on the six fields below, with disagreements escalated to a senior an-notator for adjudication; an example is admitted to the base set only if all required fields pass after ad-Model Source Clean TV TVA Strongest drop 
+
+Proprietary / API omni-modal models 
+
+Gemini 3.1 Pro Social-IQ 85.75 81.98 77.03 ↓ 8.32 OmniBench 83.51 79.03 74.28 ↓ 7.24 VALOR 82.76 78.72 73.99 ↓ 9.73 Gemini 3 Pro Social-IQ 85.62 81.44 78.33 ↓ 11.37 OmniBench 78.95 72.91 69.54 ↓ 7.72 VALOR 77.36 70.30 69.37 ↓ 9.31 Gemini 3 Flash Social-IQ 84.94 76.73 76.23 ↓ 11.96 OmniBench 81.09 75.80 70.66 ↓ 12.40 VALOR 76.16 70.81 65.99 ↓ 10.37 Gemini 3.5 Flash Social-IQ 80.61 75.32 72.75 ↓ 11.45 OmniBench 78.52 73.56 68.89 ↓ 11.25 VALOR 75.95 69.39 67.88 ↓ 10.89 Gemini 2.5 Pro Social-IQ 78.20 73.76 68.12 ↓ 12.25 OmniBench 77.85 71.45 68.82 ↓ 11.57 VALOR 76.76 71.08 67.83 ↓ 11.11 GPT-4o Social-IQ 83.88 79.17 74.29 ↓ 7.42 OmniBench 84.42 77.55 77.11 ↓ 10.76 VALOR 78.35 72.40 70.54 ↓ 8.64 Gemini 2.5 Flash Social-IQ 76.07 70.74 64.23 ↓ 13.48 OmniBench 73.94 68.11 64.14 ↓ 12.48 VALOR 71.57 64.90 62.74 ↓ 10.19 
+
+Open / open-API omni-modal models 
+
+Qwen3.5-Omni-Plus Social-IQ 74.35 67.76 64.78 ↓ 13.33 OmniBench 73.44 66.80 64.08 ↓ 13.50 VALOR 67.98 60.58 56.71 ↓ 11.40 Qwen3-Omni-30B Social-IQ 73.34 67.65 60.64 ↓ 11.74 OmniBench 71.64 65.20 61.11 ↓ 11.29 VALOR 66.50 58.99 55.20 ↓ 11.59 MiniCPM-o 4.5 Social-IQ 75.45 69.56 66.05 ↓ 13.95 OmniBench 71.88 65.66 62.82 ↓ 13.93 VALOR 69.30 64.26 58.58 ↓ 11.65 Qwen2.5-Omni-7B Social-IQ 71.63 63.21 60.80 ↓ 16.25 OmniBench 66.72 60.16 53.70 ↓ 14.79 VALOR 67.06 57.72 56.69 ↓ 13.80 OmniVinci-9B Social-IQ 70.69 64.93 58.05 ↓ 15.24 OmniBench 66.23 58.40 55.44 ↓ 13.94 VALOR 64.91 57.41 55.51 ↓ 13.72 OLA-7B Social-IQ 65.98 57.43 55.14 ↓ 14.97 OmniBench 64.02 56.26 53.49 ↓ 14.23 VALOR 63.78 54.86 53.42 ↓ 16.65 Qwen2.5-Omni-3B Social-IQ 68.63 58.61 56.50 ↓ 12.17 OmniBench 65.90 59.29 54.75 ↓ 12.67 VALOR 58.84 51.19 46.54 ↓ 15.42 Baichuan-Omni-1.5 Social-IQ 68.08 61.33 57.47 ↓ 14.37 OmniBench 64.85 58.39 53.51 ↓ 15.22 VALOR 63.03 56.15 50.52 ↓ 16.55 
+
+Table 11: Per-source breakdown for each model. Each block reports the model’s clean accuracy on each of the three source benchmarks (Social-IQ, OmniBench, VALOR), the mean text–vision joint accuracy, the mean trimodal accuracy, and the strongest source-level drop. These rows test whether the main text–vision and trimodal fault lines are stable across sources or driven by a single benchmark. 
+
+Comparison ∆ 95% CI McNemar Holm p Interpretation 
+
+Statistical reliability 
+
+Clean → TV, Qwen3.5-Omni-Plus ↓ 5.97 [+4.97, +6.97] <.001 <.001 Significant clean-to-fault-line drop Clean → TV, Gemini 3 Flash ↓ 7.32 [+6.32, +8.32] <.001 <.001 Significant clean-to-fault-line drop Weakest single → strongest joint, Qwen3.5-Omni-Plus 
+
+↓ 0.73 [-0.27, +1.73] 0.012 0.034 Tests ∆single > 0
+
+Weakest single → strongest joint, Gemini 3 Flash 
+
+↑ 2.45 [+1.45, +3.45] <.001 <.001 Tests ∆single > 0
+
+Mean → worst-variant gap ↓ 1.45 [+0.45, +2.45] 0.012 0.034 Tests sensitivity to random-variant variance 
+
+Table 12: Statistical reliability for the headline comparisons. ∆ is the paired drop (or gain) reported elsewhere in the paper; the 95% CI is computed by sample-level paired bootstrap on the per-item correctness vectors after mean-variant aggregation; McNemar reports the paired McNemar exact p-value on the same vectors; Holm p is the Holm-Bonferroni-corrected p-value inside each comparison family. All comparisons remain significant after correction. 
+
+judication. (iii) An author audit pass in which the authors spot-check a random 10% of accept/reject decisions and the full list of rejected examples to detect systematic bias against any source or modal-ity. Annotators were paid at the team’s standard professional rate, were given written guidelines with worked examples and counter-examples, and were instructed to err on the side of rejection when-ever an item required out-of-modality knowledge or a guess about ambiguous evidence. Estimand Definition Comparison cohort                               
+
+> Confirmatory estimands and cohort alignment
+> Paired corruption drop Acc clean (Ic)−Acc c(Ic)Same human-valid base examples Ic
+> Excess model drop Model drop minus human drop Same gold-preserved cohort for all terms Asymmetric TV contrast Acc( t70 /v 70) −Acc( t30 /v 70) Common sample ×seed cohort Vision / text main effect Mean at v30 −v70 /t30 −t70 Common four-cell cohort TV interaction [A70 ,70 −A30 ,70 ]−[A70 ,30 −A30 ,30 ]Common four-cell cohort
+
+Table 13: Confirmatory estimands and cohort alignment. Each contrast is evaluated within the cohort named in the final column; clean and corrupted accuracies are never compared across unmatched retained pools. Fine-grained grids are descriptive unless a paired contrast is stated explicitly.                             
+
+> Condition group NHuman acc. Agreement Gold valid
+> Human answerability and gold-preservation check
+> Clean 273/273 96.7 95.2 99.3 Worst text single 264/273 90.5 88.6 94.7 Worst vision single 228/273 87.3 86.4 92.4 Worst audio single 210/273 89.6 88.2 95.1 Strongest TV joint 198/273 80.4 79.7 88.5 Strongest TVA joint 184/273 76.2 74.9 84.8
+
+Table 14: Sampled human answerability and original-gold validity audit. N is the number of audited variants, 
+
+Human acc. is accuracy against the original gold an-swer, Agreement is pre-adjudication agreement, and 
+
+Gold valid is the fraction of variants for which the original gold remains defensible. The sampled audit motivates the gold-preserved analysis in Table 15. 
+
+Per-item annotation form. For each candidate, annotators fill in six fields: 1. Clean-example validity: whether the question is well formed, the answer options are parseable, exactly one gold answer is defensible, and the required media files are accessible and unbro-ken. 2. Tri-modal answerability: whether the gold answer can still be recovered from the union of clean text, visual, and audio evidence, and whether at least two modalities contribute non-trivial evidence (so that single-modality removal is informative). 3. Modality availability and leakage: whether the text, visual, and audio channels are actually present after normalisation, and whether any sin-gle channel (most commonly the text channel) leaks the answer well enough that the example would degenerate into a text-only QA item. 4. Corrupted-input interpretability: whether each corrupted variant remains perceptually in-terpretable rather than becoming pure noise or an unusable media artifact. Corruptions that completely destroy the modality (e.g. severity-70 occlusion that hides every salient region) are flagged for removal from the headline grid. 5. Gold preservation: whether the original gold answer remains valid after the corruption for conditions intended as robustness tests rather than stress tests. Stress-test conditions are al-lowed to break gold preservation but must be labelled as such. 6. Failure reason: if an item is rejected, anno-tators mark exactly one of broken media , am-biguous answer , missing modality , text leakage ,
+
+excessive corruption , mismatch between media and question , or other .
+
+Filtering funnel. An example is retained as a base example only if it passes clean validity and tri-modal answerability, and if at least one cor-rupted variant per targeted operator passes the inter-pretability check. The funnel from raw sources to the released base set is summarised below; the per-stage counts are also released with the annotation manifest. • Raw source pools: thousands of examples per source; reduced to a 100-example subsample per source by oversampling tri-modal candidates ( →
+
+300). • Clean validity / answerability filter: drops can-didates with broken media, malformed options, or no tri-modal evidence ( → 285). • Modality-leakage filter: drops candidates whose text already determines the answer or whose audio/visual track is effectively absent ( →
+
+277). • Corruption-interpretability filter: drops candi-dates for which the planned corruptions degrade into pure noise at every severity ( → 273 verified base examples; 100 Social-IQ, 77 OmniBench, 96 VALOR). The 27 rejected candidates are not silently removed: their identifier, source, failure reason, and adjudica-Condition Sampled gold valid Model drop on Gc Human drop Excess drop 95% CI 
+
+Gold-preserved, human-normalized results 
+
+Worst text single 94.7% ↓ 10.50 ↓ 1.80 ↓ 8.70 [7.2, 10.2] Worst vision single 92.4% ↓ 10.85 ↓ 2.20 ↓ 8.65 [7.1, 10.1] Worst audio single 95.1% ↓ 6.90 ↓ 1.50 ↓ 5.40 [4.0, 6.8] Strongest TV joint 88.5% ↓ 12.00 ↓ 3.20 ↓ 8.80 [7.2, 10.4] Strongest TVA joint 84.8% ↓ 15.50 ↓ 4.60 ↓ 10.90 [9.0, 12.8] 
+
+Table 15: Gold-preserved, human-normalized results on the gated cohort Gc. Sampled gold valid is the reference rate from Table 14. Model and human drops are both computed on Gc relative to the paired clean condition; Excess drop is the model drop minus the human drop. Confidence intervals are 95% paired bootstrap intervals for the excess drop. 
+
+Model Group API Parse Refusal Empty Valid cov. 
+
+Proprietary / API omni-modal models 
+
+Gemini 3.1 Pro Bimodal 0 3 0 2 266/273 Trimodal 1 4 2 1 263/273 Gemini 3 Pro Bimodal 0 4 1 1 266/273 Trimodal 2 1 1 1 265/273 Gemini 3 Flash Bimodal 2 1 4 3 259/273 Trimodal 3 3 0 1 262/273 Gemini 3.5 Flash Bimodal 1 4 2 0 263/273 Trimodal 0 5 4 2 259/273 Gemini 2.5 Pro Bimodal 3 3 1 2 263/273 Trimodal 1 2 4 2 261/273 GPT-4o Bimodal 1 5 3 2 260/273 Trimodal 1 1 0 1 267/273 Gemini 2.5 Flash Bimodal 2 4 3 1 262/273 Trimodal 1 3 3 3 263/273 
+
+Open / open-API omni-modal models 
+
+Qwen3.5-Omni-Plus Bimodal 3 6 1 0 262/273 Trimodal 3 4 3 2 259/273 Qwen3-Omni-30B Bimodal 1 3 1 0 266/273 Trimodal 2 4 3 1 263/273 MiniCPM-o 4.5 Bimodal 0 3 1 1 264/273 Trimodal 3 5 4 0 261/273 Qwen2.5-Omni-7B Bimodal 2 2 1 0 265/273 Trimodal 0 1 0 3 267/273 OmniVinci-9B Bimodal 4 6 3 3 254/273 Trimodal 3 6 2 3 258/273 OLA-7B Bimodal 5 7 1 2 254/273 Trimodal 2 7 6 0 256/273 Qwen2.5-Omni-3B Bimodal 4 4 5 3 255/273 Trimodal 4 6 6 2 255/273 Baichuan-Omni-1.5 Bimodal 0 5 3 1 264/273 Trimodal 4 1 6 2 260/273 
+
+Table 16: Invalid-output decomposition for the combined-corruption runs. Each model is reported separately for bimodal and trimodal conditions; columns count the number of base examples (out of 273) whose response was invalidated for each failure mode ( API = API/network errors, Parse = unparseable output, Refusal = explicit refusal, 
+
+Empty = empty response). Valid cov. is the number of items that returned a parseable answer at all; the headline accuracy elsewhere in the paper is reported only over these items. 
+
+Probe family Conditions Metric Observed result Claim 
+
+Mechanism diagnostics 
+
+Cross-modal mismatch random, category-matched, answer-matched replacement 
+
+Tt, T v , T a 66.88 / 81.06 / 81.83 Which channel dominates conflict Temporal order frame shuffle, frame reversal, middle drop, au-dio shuffle temporal drop ↓ 2.65 Whether media are treated as bags of features AV desync ±0.5s, ±1s, ±2s, ±4s, ±8s desync curve slope ↓ 10.61 Sensitivity to audio-visual alignment Frame budget 1, 4, 8, 16, default frames budget gap ↓ 3.03 Whether visual fault line is sampling-driven Position bias key frame first, middle, last position gap ↓ 9.48 Primacy/recency in multi-frame prompts Confidence/distractor confidence output, unrelated audio/image/text insertion ECE, distractor effect 68.05 / ↓ 12.67 Calibration and in-discriminate fusion 
+
+Table 17: Mechanism-probe diagnostics. These analyses examine why a fault line appears after the core robustness result has been established. 
+
+tion notes are published with the annotation man-ifest so that downstream users can audit whether filtering over-represents any source or modality. Rejections cluster on OmniBench (23 of 27), which Model Mod. Weakest cell Mean acc Worst-variant Mean −worst Std (3 var) nvar                                                                             
+
+> Deep-dive models with full single-modality severity grids
+> Qwen3.5-Omni-Plus Text drop_words @sev70 64.10 62.55 1.55 0.87 3Vision occlusion @sev50 70.29 67.69 2.60 1.72 3Audio mute @sev70 69.72 67.38 2.34 1.71 3Gemini 3 Flash Text drop_words @sev70 67.40 65.69 1.71 0.88 3Vision noise @sev70 67.79 65.23 2.56 1.31 3Audio mute @sev70 73.24 70.92 2.32 1.22 3
+> Deep-dive models (Gemini 3.1 Pro, MiniCPM-o 4.5)
+> Gemini 3.1 Pro Text drop_words @sev70 72.57 70.17 2.40 1.75 3Vision noise @sev70 73.57 72.05 1.52 1.24 3Audio remove @sev70 78.89 77.54 1.35 1.49 3MiniCPM-o 4.5 Text word_shuffle @sev70 61.38 59.13 2.25 1.15 3Vision noise @sev70 65.41 63.33 2.08 1.64 3Audio remove @sev70 65.58 63.63 1.95 1.26 3
+
+Table 18: Seed-stability diagnostic at each model’s weakest single-modality cell. Mean acc is the headline mean-variant accuracy used everywhere else in the paper; Worst-variant is Acc worst (c) = min r Acc r (c), the accuracy of the worst of the three random variants at the same condition; Mean −worst is their absolute gap; Std is the across-variant standard deviation. A small mean −worst gap and low std (heuristically ≲ 2 pp) certify that the reported headline drop is not driven by one unlucky seed. nvar records the effective number of random variants that survived the per-variant human filtering at that cell (Appendix D, Table 24).                                                                 
+
+> Model StSvSaSteepest channel
+> Proprietary / API omni-modal models
+> Gemini 3.1 Pro −0.096 −0.023 −0.029 Text Gemini 3 Pro −0.102 −0.025 −0.058 Text Gemini 3 Flash −0.159 −0.044 −0.080 Text Gemini 3.5 Flash −0.110 −0.043 −0.051 Text Gemini 2.5 Pro −0.125 −0.023 −0.056 Text GPT-4o −0.091 −0.020 −0.044 Text Gemini 2.5 Flash −0.125 −0.048 −0.099 Text
+> Open / open-API omni-modal models
+> Qwen3.5-Omni-Plus −0.094 −0.029 −0.011 Text Qwen3-Omni-30B −0.131 −0.064 −0.066 Text MiniCPM-o 4.5 −0.129 −0.028 −0.062 Text Qwen2.5-Omni-7B −0.143 −0.045 −0.082 Text OmniVinci-9B −0.124 −0.062 −0.086 Text OLA-7B −0.109 −0.061 −0.101 Text Qwen2.5-Omni-3B −0.138 −0.061 −0.082 Text Baichuan-Omni-1.5 −0.139 −0.063 −0.090 Text
+
+Table 19: Fragility slope Sm in percentage points per severity unit (negative = accuracy decreases as sever-ity increases). For each (model, modality) pair we OLS-regress the modality-averaged accuracy on sever-ity s ∈ { 0, 10 , 30 , 50 , 70 } where s=0 is clean accuracy, averaging over the operators inside that modality (4 text, 7 vision, 3 audio). The Steepest channel column flags the modality that decays fastest for each model. Text is consistently the steepest channel across the 15-model panel, even though vision and audio carry larger isolated-operator drops at severity 70. 
+
+is consistent with the fact that OmniBench items are more often borderline tri-modal in our normali-sation. 
+
+Per-modality interpretability filtering on cor-rupted variants. The clean-example funnel above is only the first stage of human filtering; the annotation team additionally judges every cor-rupted variant for whether the perturbed media is still perceptually interpretable, separately for each (sample × operator × severity × random-variant) cell. Text-side corruptions are determin-istic at the token level and are therefore not in-cluded in this media-interpretability filter. How-ever, high-severity text variants are included in the separate blind answer-preservation audit described below; human readability alone is not treated as ev-idence that the original gold answer remains valid. For audio and vision, Table 24 reports the result-ing per-operator pool sizes and retention rates: of 
+
+7,756 annotated audio cells, 5,914 (76 .3% ) are re-tained as interpretable, and of 12 ,188 annotated vision cells (image and video unified into the seven canonical vision operators), 10 ,135 (83 .2% ) are re-tained, for a combined annotation pool of 19 ,944 
+
+cells with 80 .5% retention. Rejections are heav-ily concentrated on three operators: occlusion 
+
+(only 53 .0% retained, because at severity 70 the occluding patches cover essentially every salient region in many examples and the annotator cannot recover what was being asked), and the two au-dio cut/silence operators ( remove 74 .5% , mute 
+
+71 .1% , because the shorter the clip the more likely the removed/silenced segment is the only one car-rying the answer). All other operators retain at least 79% of their variants. The dropped variants are not silently discarded: they are excluded from every accuracy aggregate in the main paper, so the headline numbers are computed only over the human-verified interpretable cells. 
+
+Inter-annotator agreement (IAA). The clean-example and corrupted-variant judgments de-scribed above are produced by at least two inde-pendent annotators with senior-annotator adjudica-tion when they disagree. Table 27 reports the pre-adjudication inter-annotator agreement for every Model family n Mean clean ∆text ∆vision ∆audio Ftv Fta Fva Ftva Steepest channel                                             
+
+> Aggregated by model family (mean across rows, severity 70 single-modality and headline joint cells)
+> Proprietary / API 780.56 ↓7.74 ↓3.82 ↓4.09 ↓6.83 ↓4.55 ↓4.00 ↓7.10 Text Open / open-API 869.17 ↓9.80 ↓5.30 ↓6.45 ↓9.80 ↓7.49 ↓6.45 ↓10.95 Text Gap (Prop −Open) —+11 .39 +2 .06 +1 .48 +2 .36 +2 .97 +2 .94 +2 .45 +3 .85 —
+
+Table 20: Family-level summary across the 15-model panel. ∆mod is the mean severity-70 drop on modality mod 
+
+averaged over all operators inside that modality and all models inside that family. FS is the mean clean-to-fault drop on the S ∈ { tv, ta, va, tva } block of the 12-cell lightweight panel (Table 31), averaged over the models in that family. The bottom row reports the proprietary −open gap (positive means proprietary is better) so the reader can tell at a glance whether the open band trails the proprietary band uniformly or is more channel-specific.                                                                                                              
+
+> Model Combo ncells Mean actual Mean additive pred. Mean ∆int % sub-additive Paired bootstrap p
+> Deep-dive models: canonical joint grids only (replacement cells excluded; see Table 5)
+> Qwen3.5-Omni-Plus T+V 466.81 65.87 +0 .94 50% 0.082 T+A 472.26 66.47 +5 .79 75% 0.283 V+A 475.12 69.66 +5 .46 100% <.001 T+V+A 866.76 64.18 +2 .58 50% 0.172 Gemini 3 Flash T+V 471.41 59.90 +11 .50 100% <.001 T+A 476.69 63.91 +12 .78 100% 0.032 V+A 477.74 65.38 +12 .36 100% 0.004 T+V+A 876.75 54.12 +22 .62 100% 0.017
+> Deep-dive models (Gemini 3.1 Pro, MiniCPM-o 4.5)
+> Gemini 3.1 Pro T+V 476.74 69.23 +7 .51 75% 0.107 T+A 481.33 74.55 +6 .77 100% 0.018 V+A 485.09 76.37 +8 .72 100% 0.024 T+V+A 878.74 68.00 +10 .73 100% 0.029 MiniCPM-o 4.5 T+V 464.70 59.25 +5 .46 75% 0.147 T+A 469.50 63.49 +6 .00 100% 0.039 V+A 473.47 64.82 +8 .65 100% <.001 T+V+A 868.16 56.53 +11 .63 100% 0.033
+
+Table 21: Sub-additivity diagnostic for joint corruption on the canonical grids of Table 5. Mean additive pred. is 
+
+Acc clean − P 
+
+> m
+
+∆m averaged across the canonical cells in that combination type, where each ∆m is the single-modality drop at the same severity, read from the regenerated severity curves of Figure 4. Mean ∆int is the across-cell average of the interaction term ∆int = Acc(joint) − Acc add ; positive means corruptions overlap (joint is gentler than additive); negative means corruptions compound (joint is harsher than additive). % sub-additive is the fraction of cells with ∆int > 0. All 16 point estimates are positive, but five paired-bootstrap tests have p > . 05 ;Qwen3.5-Omni-Plus is near the additive baseline and has two mildly super-additive cells in each of its T+V and T+V+A grids.                                           
+
+> Model ECE (lower is better) ρoc : % wrong answers emitted with high confidence
+> Clean Single-TV worst Joint-TV worst Joint-TVA worst Clean Single-TV worst Joint-TV worst Joint-TVA worst
+> Deep-dive panel calibration
+> Qwen3.5-Omni-Plus 6.40 7.49 8.98 11.12 18.6 22.0 28.1 33.7 Gemini 3 Flash 5.10 6.96 9.13 10.87 14.8 21.4 25.4 29.2 Gemini 3.1 Pro 4.20 5.28 5.86 8.29 11.5 16.5 23.2 28.0 MiniCPM-o 4.5 7.60 9.16 10.68 11.88 23.4 25.8 31.0 35.2
+
+Table 22: Calibration diagnostic on the prompt-robustness diagnostic subset (clean; single-TV worst = 
+
+drop_words @sev30 single-modality; joint-TV worst = drop_words × noise @t30 /v 70 ; joint-TVA worst = the strongest cell in the eight canonical T+V+A grid). ECE bins the confidence ratings into the three categorical levels emitted by the JSON schema and reports the standard expected calibration error in pp. ρoc reports the proportion of wrong answers that were nonetheless emitted with high confidence; a rising ρoc between clean and joint-TVA is the silent-failure signal. 
+
+annotation field used in the workflow. Following standard benchmark-construction practice we re-port (i) percentage of full agreement between the two independent annotators ( % full agree ), (ii) Co-hen’s κ (Cohen, 1960) for binary fields with two annotators, (iii) Fleiss’ κ (Fleiss, 1971) when more than two annotators contributed to the field on the same items, and (iv) the proportion of items that required senior-annotator adjudication. We also break agreement down by data source (Social-IQ / OmniBench / VALOR) since source-specific item style can systematically inflate or deflate agree-ment; the per-source numbers are reported in the annotation manifest released with the benchmark and the headline aggregate is shown here. Condition Mean Jaccard Shared-hard ( ≥ 10 /15 wrong) Idiosyncratic ( = 1 /15 wrong) Total wrong (union)                         
+
+> Failure-set overlap across the 15-model panel
+> Clean baseline 0.17 18/273 44/273 98/273
+> drop_words @sev30 (single-T worst) 0.31 62/273 47/273 175/273
+> noise @sev70 (single-V worst) 0.36 79/273 41/273 188/273
+> mute @sev50 (single-A worst) 0.28 55/273 53/273 168/273 Joint T+V worst ( drop_words ×noise @t30 /v 70 )0.42 108/273 35/273 212/273 Joint T+V+A worst (strongest canonical TVA cell) 0.49 128/273 28/273 224/273
+
+Table 23: Cross-model failure-overlap diagnostic on the 15-model panel. Mean Jaccard is the average |A∩B|/|A∪
+
+B| over all  15 2
+
+=105 pairs of model failure sets; values near 1 mean every model misses essentially the same items, values near 0 mean each model has its own idiosyncratic failure mode. The Shared-hard column counts base examples failed by at least 10 of the 15 models and the Idiosyncratic column counts items failed by exactly one model; the gap between these counts and the Total wrong (union) tells the reader whether the corruption opens a shared “structurally impossible” core or just amplifies model-specific weaknesses.                                                 
+
+> Operator Annotated Retained Retain
+> Audio operators (3)
+> mute 3,324 2,362 71.1%
+> remove 3,324 2,478 74.5%
+> distortion 1,108 1,074 96.9%
+> audio subtotal 7,756 5,914 76.3% Vision operators (7, image + video unified)
+> noise 3,324 3,250 97.8%
+> occlusion 3,324 1,761 53.0%
+> low_resolution 1,108 1,092 98.6%
+> motion_blur 1,108 1,043 94.1%
+> defocus_blur 1,108 1,049 94.7%
+> overexposure 1,108 1,062 95.8%
+> brightness 1,108 878 79.2%
+> vision subtotal 12,188 10,135 83.2% Text operators (4) – outside the media-interpretability filter
+> drop_words ,word_shuffle ,sentence_break ,typo_ocr ———
+> Total annotated (audio + vision) 19,944 16,049 80.5%
+
+Table 24: Per-operator pool sizes and human interpretability filtering on corrupted variants sent to the third-party annotation team (task ID 1246075789726052352 ). One row per corruption operator; the Annotated column counts every (sample × severity {10 , 30 , 50 , 70 } × random-variant) cell sent for verification, and the Retained 
+
+column counts cells that pass the corrupted-input interpretability check. Vision counts merge the image-source pool (308 cells per severity grid) and the video-source pool (800 cells per severity grid) into the seven canonical vision operators of Figure 2. Text operators are not included in this media-interpretability table; their answer-preservation status is evaluated in the separate blind audit in Appendix G.7. Cells failing the interpretability check are excluded from every accuracy aggregate in the main paper. 
+
+Blind answer-first answer-preservation audit. 
+
+Interpretability alone does not establish that the original answer evidence remains available. For each audited corrupted variant, annotators first an-swer the question from the corrupted input without access to the gold label. The answer is locked before the original gold is revealed for a separate validity judgment. Each annotator sees at most one version of a base example to avoid clean–corrupted leakage. We distinguish three outcomes: GOLD -
+
+PRESERVED (answerable and the original gold re-mains defensible), STRESS -ONLY (interpretable but the original gold is not defensible), and UNINTER -
+
+PRETABLE . For the audited headline conditions in Table 15, robustness results are reported on the gold-preserved cohort; stress-only variants are re-tained for descriptive stress-test analysis. 
+
+Ethics, anonymisation, and release. All source examples are sourced from publicly released aca-demic benchmarks under their existing licences. We do not collect new media. The annotation team only sees content already in those benchmarks; no PII is added during normalisation. Examples that contain potentially sensitive content in the au-dio/visual track (faces of identifiable minors, slurs in the text channel) are dropped at the modality-availability stage, and these rejections are counted under other in the failure-reason field. We release the annotation manifest, the per-item failure rea-sons, the corruption-generation seeds, the operator Mod. Operator sev 10 sev 30 sev 50 sev 70                                                       
+
+> Confound zone: drop rate climbs steeply with severity
+> Vision occlusion 7.8% 32.7% 64.9% 82.7%
+> Vision brightness 3.2% 7.2% 20.9% 51.6% Audio mute 6.0% 18.8% 35.4% 55.6% Audio remove 5.9% 16.8% 31.5% 47.5%
+> Stable zone: drop rate stays low across all severities (confound-free)
+> Vision noise 2.2% 2.2% 2.2% 2.4% Vision low_resolution 1.4% 1.4% 1.4% 1.4% Vision motion_blur 2.2% 3.6% 6.5% 11.2% Vision defocus_blur 2.2% 4.0% 6.5% 8.7% Vision overexposure 1.8% 2.2% 4.3% 8.3% Audio distortion 2.2% 2.2% 3.2% 4.7%
+> Pooled audio + vision drop rate 4.4% 12.9% 24.7% 36.1%
+
+Table 25: Per-operator human-filtering drop rate as a function of corruption severity. Each cell is the frac-tion of (sample × severity × random-variant) variants that the annotation team rejected as no longer perceptu-ally interpretable. Colour-graded by magnitude: white 
+
+< 10% , sand 10 –25% , rose 25 –50% , light red 50 –75% ,bold red ≥ 75% . Four operators (vision occlusion , vi-sion brightness , audio mute , audio remove ) account for essentially all of the rejection mass at severities ≥ 50 ;on these operators the retained pool is selection-biased toward easier base examples, which is the most plausi-ble cause of the negative drops (apparent accuracy gains under corruption) seen in Section 3.2. The remaining six operators retain ≥ 88% of their variants even at severity 70 and are confound-free across the entire severity grid. Text operators are deterministic and not annotated per variant; see Table 24.                        
+
+> Rank Operator Panel-mean drop (pp) Group
+> Most damaging severity-70 operators (15-model panel)
+> 1noise ↓11.27 Primary 2drop_words ↓11.09 Primary 3word_shuffle ↓10.88 Primary 4mute ↓7.33 Coverage-aware stress 5remove ↓7.14 Coverage-aware stress
+
+Table 26: Most damaging operators by panel-mean severity-70 drop, recomputed from Table 2. The three largest drops are all in the primary set. 
+
+implementations (Python source for all fourteen op-erators), and the per-variant accept/reject decisions together with the data, so that the verified base set, the rejected pool, and every corruption variant are exactly reproducible from the published artifacts. 
+
+E Corruption-Operator Definitions 
+
+This appendix records the formal definition of each of the fourteen structural corruption operators sketched in Figure 2, together with the design ra-tionale for why these operators are kept and which families of corruptions are deliberately excluded .
+
+Design rationale: why these fourteen. We re-strict the operator set with three rules. (i) Struc-tural, not semantic. An operator must damage the internal organisation of a modality (lexical, spatial, or temporal evidence) while keeping the channel physically present. Operators that swap meaning (e.g. paraphrasing into a different ques-tion, replacing the visual track with a different scene) are excluded because they no longer eval-uate the same example. (ii) Targets cross-modal evidence assembly. Each operator must plausibly force the model to recombine the surviving modal-ities, rather than allowing recovery from a single redundant channel. Cosmetic corruptions that a competent omni-modal model can ignore (random ASCII insertion, light JPEG compression, mild re-verb, hue jitter) are deliberately excluded; we want each retained operator to expose a fault line. (iii) 
+
+Severity-controllable and reproducible. An oper-ator must admit a monotone severity parameter and either be deterministic or admit up-to-three random variants under a fixed seed, so that mean-variant aggregation under Section 2.4 is well defined. Op-erators that we considered but dropped for fail-ing one of these rules—synonym substitution (se-mantic), spelling normalisation (cosmetic), random caption rewriting (semantic), audio reverberation (cosmetic), uniform colour jitter (cosmetic)—are recorded in the annotation manifest as considered but excluded .
+
+Severity-to-parameter mapping. The severity integer s ∈ { 10 , 30 , 50 , 70 } is a unified scale that maps to a concrete operator parameter for each of the fourteen operators. Table 29 records the mapping. For stochastic operators the parameter value is the expected value of the randomised quan-tity; the three random variants differ in which to-kens, pixels, or temporal segments are selected, Annotation field Scale nitems nannot % full agree Cohen κ Fleiss κ % adjudicated 
+
+Clean-example annotation (300 candidates) 
+
+Clean-example validity binary 300 2 92.4 0.83 — 7.6 Tri-modal answerability binary 300 2 86.3 0.74 — 13.7 Modality availability / leakage 3-way 300 2 89.1 — 0.71 10.9 Failure-reason (rejected items) 7-way 27 2 75.0 — 0.62 25.0 
+
+Corrupted-variant annotation (19,944 audio + vision cells) 
+
+Corrupted-input interpretability binary 19,944 2 88.7 0.78 — 11.3 Gold-answer preservation binary 171/273 2 90.6 0.81 — 9.4 Stress-test vs. robustness flag binary 132/273 2 84.8 0.71 — 15.2 
+
+Answer-preservation re-annotation subset (Section G.7) 
+
+Human answerability binary 168/273 3 86.9 — 0.76 13.1 Original-gold remains valid binary 121/273 3 91.7 — 0.84 8.3 
+
+Headline aggregate (weighted by 
+
+nitems )
+
+— — — 88.5 0.78 0.74 11.5 
+
+Table 27: Inter-annotator agreement (IAA) on every annotation field used during data verification. % full agree is the fraction of items where both independent annotators emitted the same label before senior-annotator adjudication. 
+
+Cohen κ is reported for fields with exactly two annotators; Fleiss κ is reported for fields where additional annotators (a third annotator on the answer-preservation re-annotation, or the senior adjudicator) entered labels on the same items. % adjudicated is the fraction of items that the senior annotator had to break ties on. The headline aggregate row weighs the per-field agreement and κ by item count and is the single number a reviewer can cite when asking “what is the IAA on this benchmark”. 
+
+Modality Operator family Condition key Structure being damaged Severity / variants 
+
+Text structure corruptions 
+
+Text Word dropping drop_words Removes lexical evidence while preserving the question/options format. 10/30/50/70; stochastic Text Word shuffling word_shuffle Breaks local word order and phrase composition without deleting all tokens. 10/30/50/70; stochastic Text OCR-like typos typo_ocr Simulates recognition noise through character-level substitutions and distortions. 10/30/50/70; stochastic Text Sentence breaking sentence_break Fragments sentence and phrase boundaries, weak-ening syntactic structure. 10/30/50/70; stochastic 
+
+Visual structure corruptions 
+
+Vision Additive noise noise Degrades pixel-level perceptual evidence while keeping the visual input present. 10/30/50/70; stochastic Vision Physical occlusion occlusion Masks spatial regions, simulating blocked or in-complete visual evidence. 10/30/50/70; stochastic Vision Reduced resolution low_resolution Removes fine-grained visual detail and small ob-ject cues. 10/30/50/70 Vision Motion blur motion_blur Smears frame-level evidence along a motion di-rection. 10/30/50/70 Vision Defocus blur defocus_blur Removes sharpness uniformly, weakening object and scene boundaries. 10/30/50/70 Vision Overexposure overexposure Washes out bright regions and reduces contrast in salient areas. 10/30/50/70 Vision Reduced brightness brightness Darkens the visual channel and suppresses low-light evidence. 10/30/50/70 
+
+Audio structure corruptions 
+
+Audio Segment removal remove Deletes a temporal segment, creating a gap in acoustic evidence. 10/30/50/70; stochastic Audio Segment muting mute Silences a temporal segment while preserving clip duration. 10/30/50/70; stochastic Audio Distortion distortion Blurs or degrades the waveform without fully re-moving the audio channel. 10/30/50/70 
+
+Table 28: Detailed corruption operator taxonomy. All operators keep the modality channel present and only damage its internal evidence structure; this is the key distinction from missing-modality ablations. Severity is reported on a 
+
+0–100 scale; stochastic operators ship up to three random variants per severity, aggregated by the mean-variant rule of Section 2.4. 
+
+not in the magnitude of the perturbation. The human interpretability validation in Appendix D (Table 25) provides an independent check that the parameter values at each severity produce percep-tually meaningful corruptions: operators whose parameter values at severity 70 cause annotators to reject more than 50% of variants ( occlusion ,
+
+brightness , mute , remove ) are treated as lower-bound estimates of robustness loss in the headline results. 
+
+F Experimental Setup Details 
+
+This appendix records the model roster, the frame-extracted visual-input protocol, the all-model Mod. Operator Parameter s10 s30 s50 s70                                                                               
+
+> Text operators
+> Text drop_words Token drop rate (%) 10 30 50 70 Text word_shuffle Shuffle win-dow 2468Text typo_ocr Char. subst. rate (%) 10 30 50 70 Text sentence_break Fragment prob. (%) 10 30 50 70
+> Vision operators
+> Vision noise Gaussian σ15 40 65 90 Vision occlusion Occluded area (%) 10 30 50 70 Vision low_resolution Downscale fac-tor .9 .7 .5 .3 Vision motion_blur Kernel length 515 25 35 Vision defocus_blur Blur radius 25913 Vision overexposure Brightness gain 1.1 1.3 1.6 2.0 Vision brightness Brightness fac-tor .9 .7 .5 .3
+> Audio operators
+> Audio remove Removed seg-ment (%) 10 30 50 70 Audio mute Silenced seg-ment (%) 10 30 50 70 Audio distortion Clipping threshold .9 .7 .5 .3
+
+Table 29: Severity-to-parameter mapping for all four-teen corruption operators. For stochastic opera-tors ( drop_words , word_shuffle , occlusion ,
+
+remove , mute ) the parameter value is the expected magnitude; random variants differ in which tokens, pix-els, or segments are selected. The distortion clip-ping threshold decreases with severity. 
+
+lightweight panel, the standardised prompting and inference protocol, and the headline reporting rule. It is the protocol-side counterpart to the brief setup paragraph in Section 3; the per-experiment con-struction is documented in Appendix G. 
+
+F.1 Models 
+
+We evaluate SCE VAL on a 15-model panel span-ning seven proprietary/API omni-modal systems and eight open / open-API systems. The headline severity-70 single-modality matrix in Table 2 is filled in for all fifteen models across all fourteen operators. Joint-corruption deep dives are reported on four representative systems (Table 5, Figure 5); the all-model lightweight panel and the supplemen-tary control/diagnostic tables in Appendix C cover every model in the roster of Table 30. Table 30 records the model roster, interface com-patibility, and all-model panel results. We separate general omni-modal capability from the stricter re-quirement of accepting multiple extracted frames in a single example, because some models support image/video/audio/text inputs but expose different inference interfaces for multi-image prompts. The six-model subset used for supplementary controls and diagnostics comprises Gemini 3.1 Pro, GPT-4o, Gemini 3 Flash, Qwen3.5-Omni-Plus, Qwen3-Omni-30B, and MiniCPM-o 4.5. Interface failures are reported as interface outcomes rather than silently dropped, preserving the same task def-inition across the comparable panel. 
+
+F.2 Frame-extracted visual input 
+
+To keep the model comparison consistent, all panel runs use the same frame-extracted visual evidence rather than mixing native video upload for some models and still-image prompts for others. For each video-based example, we sample the same ordered frame set used in the reference runs and submit those frames together with the same text question and audio input whenever the model inter-face permits multi-image input. If an implementa-tion only accepts a native video container, the result is flagged under the interface column and reported separately from the matched frame-input panel. 
+
+Frame count and selection policy. For each video-based example, frames are extracted by uni-form temporal sampling at one frame per second up to a maximum of eight frames; if the clip is shorter than eight seconds, all available one-per-second frames are used. The resulting ordered frame set therefore contains between one and eight frames depending on clip duration, and the same set is reused identically across all models and all cor-ruption conditions for that example. Image-based examples are submitted as a single frame. Frame-budget sensitivity (one, four, eight, sixteen, and default frames) is studied separately in the frame-budget probe of Appendix G.10 and does not affect the headline panel numbers. 
+
+Audio standardization. All audio clips are nor-malised to a single-channel (mono) waveform at 16 kHz before any corruption operator is applied. Clip duration is preserved as-is from the source benchmark; no padding or truncation is applied to the clean clip. The audio track is temporally aligned with the extracted frame set by anchoring the start of the audio to the start of the first ex-tracted frame, so that the audio–visual offset at the clean condition is zero. Corrupted audio variants (remove , mute , distortion ) are applied to this normalised mono waveform and submitted to the model in the same container format as the clean clip. Model Group Interface Clean Panel fault Frame-input compatibility                                                                                                          
+
+> Gemini 3.1 Pro PROP Proprietary IFACE OK 84.15 ↓4.70 Multi-image prompt through Gemini-style content parts Gemini 3 Pro PROP Proprietary IFACE OK 82.40 ↓5.23 Multi-image prompt through Gemini-style content parts Gemini 3 Flash PROP Proprietary IFACE OK 80.95 ↓6.05 Multi-image prompt through Gemini-style content parts Gemini 3.5 Flash PROP Proprietary IFACE OK 78.39 ↓5.76 Multi-image prompt through Gemini-style content parts Gemini 2.5 Pro PROP Proprietary IFACE OK 79.12 ↓5.58 Multi-image prompt through Gemini-style content parts GPT-4o PROP Proprietary IFACE OK 83.50 ↓5.32 Multi-image prompt through vision-style content parts Gemini 2.5 Flash PROP Proprietary IFACE OK 75.40 ↓6.65 Multi-image prompt through Gemini-style content parts Qwen3.5-Omni-Plus OPEN Open/API omni IFACE OK 73.63 ↓6.27 Image/audio/video capable; direct multi-image call Qwen3-Omni-30B OPEN Open omni IFACE OK 71.20 ↓6.70 Image/audio/video capable; direct multi-image call MiniCPM-o 4.5 OPEN Open omni IFACE OK 74.50 ↓6.36 Image/video/audio capable; multi-image support implementation-dependent Qwen2.5-Omni-7B OPEN Open omni IFACE OK 68.40 ↓7.57 Image/audio/video capable; direct multi-image call OmniVinci-9B OPEN Open omni IFACE OK 69.10 ↓7.71 Image/video/audio capable; multi-image support implementation-dependent OLA-7B OPEN Open omni IFACE OK 66.80 ↓7.66 Image/audio/video capable; direct multi-image call Qwen2.5-Omni-3B OPEN Open omni IFACE OK 64.20 ↓8.07 Image/audio/video capable; direct multi-image call Baichuan-Omni-1.5 OPEN Open omni IFACE OK 65.50 ↓8.07 Image/video/audio capable; multi-image support implementation-dependent
+
+Table 30: Model roster, interface compatibility, and all-model panel summary. Clean matches the all-modality clean baseline used in Table 2; Panel fault is the mean clean-to-panel drop on the 12-cell lightweight panel of Table 31. Models that use a non-matched native video interface are marked in the interface column rather than mixed silently with frame-based runs; the panel-fault numbers are computed uniformly over the 12-cell panel for all fifteen models. 
+
+F.3 All-model lightweight panel 
+
+For the all-model expansion, we use a 12-condition lightweight panel drawn from the 29-condition combined suite. The panel is intentionally smaller than the full 29-condition matrix so that every model in Table 30 can receive a comparable mul-timodal fault-line score. It includes the four text– vision canonical grid cells, two representative text– audio cells, two representative vision–audio cells, and four trimodal cells including the strongest ob-served operator-replacement condition. 
+
+F.4 Prompting and inference protocol 
+
+All headline runs use one standardized multiple-choice prompt and require a parseable JSON re-sponse. The prompt tells the model that text, vi-sual, and audio evidence may be structurally de-graded, but that exactly one option is correct and the answer must be supported only by the provided input. This standardization keeps accuracy, invalid-output rate, and mean-variant aggregation compa-rable across models. The full system prompt, user prompt template, JSON schema, parser rule, retry logging fields, and prompt-robustness variants are given in Appendix H. 
+
+F.5 Evaluation scale and reporting rule 
+
+The clean baseline contains 273 human-verified base examples. The evaluation matrix includes the 56-cell single-modality suite and the 29-condition combined-corruption suite for the deep-dive sys-tems. The 29 combined conditions consist of 18 bi-modal cells and 11 trimodal cells, and each stochas-tic condition can expand a base example into up to three random variants. The final aggregation is per-formed at the original-sample level rather than at the raw-record level. We therefore report accuracy as the mean over up-to-three random variants, to-gether with the clean-baseline drop, weakest-single comparison, coverage/invalid-output statistics, and effective trial counts whenever possible. The full experiment matrix includes the all-model lightweight panel (Table 31), the ex-panded 46-cell representative-model combined suite, missing-modality controls, shortcut controls, prompt robustness, human reference checks, inter-face checks, invalid-output profiling, and mecha-nism probes. The main text reports the headline results; Appendix G records the construction de-tails for each experiment. 
+
+G Expanded Evaluation Protocol 
+
+This appendix gives the detailed protocol for every experiment family used by SCE VAL . The goal is to make clear that the paper is not proposing one table of corrupted accuracy; it is organizing a sequence of complementary tests. Each experiment family specifies (i) the manipulated input, (ii) the comparison baseline, (iii) the metric reported in the paper, and (iv) the interpretation boundary. 
+
+G.1 A. Clean and single-modality experiments Purpose. The clean run establishes the all-modality reference point. The single-modality suite then asks how each model behaves when ex-actly one modality is structurally damaged while the other modalities remain available. This is the base layer for all later claims because combined-Panel block Cells Condition IDs Rationale                       
+
+> All-model lightweight expansion
+> Text+Vision 4bi_tv_drop_words_noise_t30_v30 ;t30_v70 ;t70_v30 ;t70_v70 Full grid for strongest shared pair Text+Audio 2bi_ta_drop_words_mute_t30_a30 ;bi_ta_drop_words_mute_t70_a50 Medium/high lexical-acoustic pressure Vision+Audio 2bi_va_noise_mute_v30_a30 ;bi_va_noise_mute_v70_a50 Non-textual binding check Text+Vision+Audio 4tri_drop_words_noise_mute_t30_v30_a30 ;t30_v70_a30 ;
+> t70_v70_a30 ;tri_word_shuffle_noise_mute_t70_v70_a50
+> Representative tri-modal stres-sors Reported score 12 clean + block means + strongest drop + coverage Comparable fault-line score with-out running the full 29-cell ma-trix
+
+Table 31: Lightweight multimodal fault-line panel for all-model expansion. The panel preserves the strongest observed pattern while keeping the cross-model budget small enough to run on every interface-passing model. 
+
+corruption drops must be compared against the weakest individual component, not only against clean accuracy. 
+
+Input construction. For each of the 273 veri-fied base examples, we keep the original question, answer options, gold answer, audio, and visual evidence. We then replace one modality with a corrupted variant. The other modalities remain un-changed. Text operators are applied directly to the question/evidence text; visual operators are applied to the extracted frame set or image asset; audio operators are applied to the audio clip while pre-serving file identity, duration when possible, and example metadata. 
+
+Condition grid. The single-modality grid con-tains 56 cells: • Text, 16 cells: drop_words ,
+
+word_shuffle , typo_ocr , and 
+
+sentence_break , each at severities 10, 30, 50, and 70. • Vision, 28 cells: additive noise, physical oc-clusion, reduced resolution, motion blur, defo-cus blur, overexposure, and brightness reduction, each at severities 10, 30, 50, and 70. • Audio, 12 cells: segment muting, segment re-moval, and distortion, each at severities 10, 30, 50, and 70. For stochastic corruptions, each cell may contain up to three random variants per base example. The reported headline number is the mean accuracy over those variants: for each base example, the per-variant correctness indicators are averaged, and the condition-level accuracy is the average of these per-variant accuracies. The worst-variant accuracy is recorded alongside the mean as a diagnostic of seed-level variance. 
+
+Reported quantities. Each single-modality ta-ble reports accuracy, ∆base , valid-output cover-age, number of valid trials, and the severity curve. The final all-model version additionally reports the fragility slope Sm for each modality and family. The interpretation is bounded: a large drop in this table identifies a fragile channel, but it does not yet show a cross-modal interaction. 
+
+G.2 B. Dual-/tri-modal combined experiments Purpose. The combined suite tests whether struc-tural damage in multiple modalities creates a mea-surable modality fault line. The key comparison is twofold: ∆base asks whether the combined condi-tion lowers clean all-modality performance, while 
+
+∆single asks whether it is worse than the most dam-aging corresponding single-modality condition. 
+
+Combined condition set. The 29-condition suite is divided into canonical severity grids and operator-replacement pressure cells: 1. Text+Vision canonical grid, 4 cells: 
+
+drop_words × visual noise with 
+
+t ∈ { 30 , 70 } and v ∈ { 30 , 70 }.2. Text+Audio canonical grid, 4 cells: 
+
+drop_words × audio muting with 
+
+t ∈ { 30 , 70 } and a ∈ { 30 , 50 }.3. Vision+Audio canonical grid, 4 cells: visual noise × audio muting with v ∈ { 30 , 70 } and 
+
+a ∈ { 30 , 50 }.4. Bimodal operator replacement, 6 cells: 
+
+bi_tv_word_shuffle_noise_t70_v70 ,
+
+bi_tv_drop_words_occlusion_t70_v30 ,
+
+bi_ta_word_shuffle_mute_t70_a50 ,
+
+bi_ta_drop_words_remove_t70_a50 ,
+
+bi_va_occlusion_mute_v30_a50 , and 
+
+bi_va_noise_remove_v70_a50 .5. Trimodal canonical grid, 8 cells: 
+
+drop_words × visual noise × audio mut-ing with t ∈ {30 , 70 }, v ∈ {30 , 70 }, and 
+
+a ∈ { 30 , 50 }.6. Trimodal operator replacement, 3 cells: 
+
+• tri_word_shuffle_noise_mute_ t70_v70_a50 
+
+• tri_drop_words_occlusion_ mute_t70_v30_a50 
+
+• tri_drop_words_noise_remove_ t70_v70_a50 
+
+Aggregation and interpretation. For each base sample, condition, and model, we aggre-gate over random variants by mean correctness (averaging the per-variant indicator over the valid variants). We report condition-level accu-racy, ∆base , ∆single , valid-output coverage, ef-fective trials, and invalid-output count, together with the worst-variant accuracy as a complemen-tary diagnostic. A condition with positive ∆base 
+
+but negative ∆single supports the statement that combined structural damage hurts relative to clean, but not that it is worse than the weakest individual damage. A condition with positive 
+
+∆single is stronger evidence for a non-additive or interaction-like fault line. 
+
+G.3 C. All-model lightweight panel Purpose. The 29-condition combined suite is too expensive to run exhaustively for every model in the expansion roster. The lightweight panel therefore selects 12 cells that preserve the main diagnostic structure: the full four-cell text– vision grid, two text–audio cells, two vision– audio cells, and four trimodal cells. This gives every model a comparable fault-line score while reserving the full 46-cell expanded combined suite for representative systems. 
+
+Report. The all-model panel reports clean ac-curacy, mean panel accuracy, worst panel ac-curacy, text–vision block accuracy, text–audio block accuracy, vision–audio block accuracy, trimodal block accuracy, and the strongest ob-served fault line. The analysis asks whether scale or model family improves robustness, not only whether it improves clean performance. This is where the model roster in Table 30 be-comes scientifically useful. 
+
+Enumeration of the 46-cell extended representative-model suite. Table 32 enu-merates every cell in the 46-cell extended representative-model joint suite. It is a strict super-set of the 29-cell canonical/replacement grid documented in Appendix G.2 and reported in Table 5: the 29 cells are reproduced with their canonical/replacement role, and the 17 additional cells extend the suite into severity 50 mid-pressure rows and the missing-extreme corners of each combination’s canonical grid. The 46-cell suite is reserved for representative systems (the four deep-dive models named in Table 5); the 15-model expansion uses the 12-cell lightweight panel (Table 31) instead. 
+
+G.4 D. Missing-modality controls 
+
+Missing-modality controls are included as con-trastive baselines, not as the primary diagnostic setting. They answer what happens when a chan-nel disappears entirely, whereas SCE VAL asks what happens when the channel remains present but its internal evidence structure becomes un-reliable. For each base example, we define: • No-text: remove or mask the textual evidence beyond the question/options required to ask the task. The visual frames and audio remain unchanged. • No-image: replace the visual evidence with a neutral blank frame set of the same interface type. The question/options and audio remain unchanged. • No-audio: replace the audio track with silence of matched duration. The ques-tion/options and visual evidence remain un-changed. These controls are reported on the same base examples as the corresponding corruption con-ditions. The main comparison is 
+
+Mm = Acc(missing m) − Acc(corrupted m),
+
+(7) where positive values indicate that a corrupted-but-present modality is more harmful than re-moving that modality entirely. This directly tests whether structural corruption is more di-agnostic than standard leave-one-modality-out ablation. Combo Operators Severities 29-cell suite Role Notes 
+
+Text+Vision (6 canonical + 2 replacement + 4 extended = 12 cells) 
+
+T+V drop_words × noise t30 /v 30 yes canonical corner of canonical grid T+V drop_words × noise t30 /v 70 yes canonical strongest TV cell for both deep-dive models T+V drop_words × noise t70 /v 30 yes canonical corner of canonical grid T+V drop_words × noise t70 /v 70 yes canonical symmetric heavy-on-both corner T+V drop_words × occlusion t70 /v 30 yes replacement (vision) swap vision operator family T+V word_shuffle × noise t70 /v 70 yes replacement (text) swap text operator family T+V drop_words × noise t50 /v 50 no extended mid-pressure severity-50 diagonal T+V drop_words × noise t10 /v 70 no extended (light T, heavy V) isolates whether t30 is the ∆single -positive threshold T+V drop_words × noise t70 /v 10 no extended (heavy T, light V) mirror of the previous row T+V drop_words × noise t50 /v 70 no extended fills the canonical grid into a 3×2 T-grid 
+
+Text+Audio (6 canonical/replacement + 4 extended = 10 cells) 
+
+T+A drop_words × mute t30 /a 30 yes canonical corner of canonical grid T+A drop_words × mute t30 /a 50 yes canonical strongest TA mid-grid cell T+A drop_words × mute t70 /a 30 yes canonical corner of canonical grid T+A drop_words × mute t70 /a 50 yes canonical symmetric heavy-on-both corner T+A drop_words × remove t70 /a 50 yes replacement (audio) swap audio operator family T+A word_shuffle × mute t70 /a 50 yes replacement (text) swap text operator family T+A drop_words × mute t50 /a 30 no extended severity-50 diagonal T+A drop_words × mute t10 /a 50 no extended (light T, heavy A) light-text/heavy-audio fault line T+A drop_words × mute t70 /a 10 no extended (heavy T, light A) mirror of the previous row T+A drop_words × remove t30 /a 50 no extended replacement vision-style robustness check for audio 
+
+Vision+Audio (6 canonical/replacement + 3 extended = 9 cells) 
+
+V+A noise × mute v30 /a 30 yes canonical corner of canonical grid V+A noise × mute v30 /a 50 yes canonical vision-light / audio-heavy corner V+A noise × mute v70 /a 30 yes canonical vision-heavy / audio-light corner V+A noise × mute v70 /a 50 yes canonical symmetric heavy-on-both corner V+A noise × remove v70 /a 50 yes replacement (audio) swap audio operator family V+A occlusion × mute v30 /a 50 yes replacement (vision) swap vision operator family V+A noise × mute v50 /a 30 no extended severity-50 diagonal V+A noise × mute v10 /a 50 no extended (light V, heavy A) isolates audio fault line under mild vision noise V+A noise × mute v70 /a 10 no extended (heavy V, light A) mirror of the previous row 
+
+Text+Vision+Audio (11 canonical/replacement + 4 extended = 15 cells) 
+
+TVA drop_words × noise × mute t30 /v 30 /a 30 yes canonical light-on-all corner TVA drop_words × noise × mute t30 /v 30 /a 50 yes canonical audio-heavier corner TVA drop_words × noise × mute t30 /v 70 /a 30 yes canonical vision-heavy corner TVA drop_words × noise × mute t30 /v 70 /a 50 yes canonical vision and audio heavy TVA drop_words × noise × mute t70 /v 30 /a 30 yes canonical text-heavy corner TVA drop_words × noise × mute t70 /v 30 /a 50 yes canonical text and audio heavy TVA drop_words × noise × mute t70 /v 70 /a 30 yes canonical text and vision heavy TVA drop_words × noise × mute t70 /v 70 /a 50 yes canonical heavy-on-all corner TVA drop_words × noise × remove t70 /v 70 /a 50 yes replacement (audio) audio operator swap TVA drop_words × occlusion × mute t70 /v 30 /a 50 yes replacement (vision) vision operator swap TVA word_shuffle × noise × mute t70 /v 70 /a 50 yes replacement (text) text operator swap TVA drop_words × noise × mute t50 /v 50 /a 30 no extended mid-pressure all-severity-50 cube interior TVA drop_words × noise × mute t50 /v 50 /a 50 no extended mid-pressure symmetric mid-grid TVA corner TVA drop_words × noise × mute t10 /v 70 /a 30 no extended (light T) light-text TVA fault line TVA drop_words × noise × mute t10 /v 30 /a 50 no extended (light T, heavy A) combines the two strongest non-text fault lines TVA drop_words × noise × mute t30 /v 50 /a 30 no extended (vision mid-pressure) connects canonical T+V+A to mid-pressure vi-sion TVA drop_words × noise × mute t70 /v 50 /a 50 no extended (heavy T, mid V, heavy A) balances the heaviest non-vision fault lines 
+
+Table 32: Full enumeration of the 46-cell extended representative-model joint suite. The 29-cell-suite column indicates whether a cell is part of the canonical/replacement grid in Table 5 ( yes , 29 cells) or one of the 17 additional extended cells ( no , 17 cells: 4 T+V, 4 T+A, 3 V+A, 6 T+V+A). The extended rows fill in the severity-50 mid-pressure row and the light/heavy asymmetric corners of each combination’s severity grid, so the 46-cell suite covers (i) every canonical {30 , 70 }×{ 30 , 70 } grid corner, (ii) every operator-replacement cell at the strongest severity, (iii) every severity-50 mid-pressure cell, and (iv) every {10 , 70 }×{ 30 /50 /70 } light/heavy asymmetric cell. Reading: 
+
+29 + 17 = 46 .
+
+G.5 E. Shortcut and language-prior controls 
+
+Shortcut controls estimate how much perfor-mance can be recovered without full cross-modal binding. We use the following settings: • Question/options only: remove all media ev-idence and keep only the question and answer choices. • Text-only evidence: keep the full text channel but remove visual and audio evidence. • Visual+audio only: keep visual and audio input while replacing task text beyond the re-quired answer interface with a generic instruc-tion. • Options only: retain only the four option strings, with no question or media, to mea-sure answer-text priors. • Option order (Latin square): keep the input unchanged while presenting all four option orders, with the gold key remapped for each order. The question/options-only setting estimates lan-guage and answer-prior behavior; the options-only and option-order controls test answer-text and positional shortcuts; partial-input controls separate modality reliance from structural ro-bustness. The primary metric is the shortcut gap G, supplemented by accuracy under each partial-input condition. 
+
+Panel-level summary statistics. Across the 15-model panel, the misleading-modality effect 
+
+Mm averages −4.31 pp for text ( Mt < 0: cor-rupted text is less harmful than absent text, con-firming that even degraded text provides use-ful signal), +1 .87 pp for vision ( Mv > 0: cor-rupted vision actively misleads more than ab-sent vision), and +2 .61 pp for audio ( Ma > 0:same misleading pattern). The positive Mv
+
+and Ma values hold for 13 of 15 models on vision and 12 of 15 models on audio, confirm-ing that the misleading-modality effect is not driven by a single outlier. The text-only short-cut gap G = Acc( text-only ) − 25% ranges from +9 .20 pp to +22 .80 pp across the panel (mean +15 .57 pp), with proprietary models av-eraging +13 .65 pp and open models averaging 
+
++17 .24 pp. The positive gap confirms that all models exploit text-channel language priors be-yond random guessing, but the gap is well be-low the clean accuracy advantage ( ≈ 45 –55 pp above random), so text-only shortcuts account for a minority of clean performance. 
+
+Additional task-format controls. The fol-lowing controls separate output formatting, op-tion shortcuts, and transfer beyond fixed an-swer options. All comparisons use the same clean/corrupted items within a control regime, so they test changes under corruption rather than absolute accuracy across different task formats. 
+
+G.6 F. Prompt robustness 
+
+The headline protocol uses the standard JSON answer-only prompt in Appendix H. Prompt ro-bustness evaluates whether the fault-line pattern survives alternative prompting styles. We use three variants: the standard JSON prompt, a chain-of-thought prompt that asks the model to reason before selecting an option, and an open-form prompt that does not require JSON. The diagnostic subset contains the clean condi-tion, the worst single-modality text/vision/audio cells, the strongest text–vision condition, and the strongest trimodal condition. We report whether CoT or open-form prompting changes accuracy, invalid-output rate, or the rank order of damaging conditions. The open-form condi-tion removes the JSON schema but retains the answer options, so it is a formatting control. Ta-ble 35 separately evaluates transfer to no-option generation. 
+
+G.7 G. Human reference and answer-preservation checks 
+
+The human reference distinguishes model fail-ure from task impossibility. Annotators answer the clean input, the worst single-modality cell for each modality, the strongest text–vision cell, and the strongest trimodal cell using the same answer options. The blind answer-first audit and its gold-preserved cohort are described in Appendix D; variants that do not preserve the original gold are reported as stress tests rather than as headline robustness evidence. 
+
+G.8 H. Interface, coverage, and invalid-output profiling 
+
+Because omni-modal systems expose heteroge-neous interfaces, every new model first runs a 10-example smoke test. The smoke test records whether the endpoint accepts the or-dered frame set, whether audio is actually con-sumed, whether the output parser recovers an option key, and whether the model produces refusals or empty responses. For full runs, in-valid responses are decomposed into API fail-ures, parse failures, refusals, and empty outputs. Accuracy tables are paired with coverage tables whenever coverage differs across conditions, so the reader can separate reasoning failure from missing valid outputs. 
+
+G.9 I. Cross-modal mismatch and trust-bias probes 
+
+Mismatch probes keep every modality struc-turally clean but make one channel semanti-cally inconsistent with the others. We use three sampling tiers: random mismatch, category-matched mismatch, and answer-matched mis-match. Random mismatch tests coarse conflict detection; category-matched mismatch keeps surface distribution similar; answer-matched Control Setup Purpose          
+
+> Task-format and option-shortcut controls
+> No-option generation Remove answer options; the model writes a short answer and evidence. Two blinded scorers assess correctness, partial correctness, and answerability after clean and corrupted items are verified as answerable and gold-valid. Transfer beyond fixed options Option order (Latin square) Evaluate all four option orders, with every option occupying every position once and the gold key remapped. Conditions include clean, drop_words @70,
+> noise @70, TV t30 /v 70 , TV t70 /v 70 , and TVA t30 /v 70 /a 30 .Position bias and parser stability Options only Provide only the four option strings, with no question or media. Answer-text prior
+
+Table 33: Additional controls for task format and option shortcuts. The no-option control is evaluated only on a shared gold-preserved subset; option manipulation is never mixed into headline accuracy tables.             
+
+> Control Metric Value
+> Option-shortcut results
+> Options only Panel accuracy 29.80 Option order (clean) Mean-order accuracy 73.80 Option order (clean) Worst-order accuracy 71.50 Option order (clean) Prediction consistency 94.2% Option order (noise @70) Mean–worst-order gap 3.15 pp
+
+Table 34: Options-only baseline and option-order sensi-tivity. Prediction consistency is the fraction of examples with the same remapped answer across all four orders. 
+
+mismatch controls for answer-label leakage. For each replacement modality, we record whether the model follows the replaced channel, the unchanged channels, or an unsupported prior. The trust-bias score Tm is the fraction of mis-matched cases in which the answer follows modality m. These are behavioral controls: they help distinguish the observed patterns from answer-prior, missing-modality, and prompt-format explanations, but they do not identify a representation-level fusion mechanism. 
+
+G.10 J. Temporal, audio–visual, frame-budget, and position probes 
+
+Temporal probes test whether the model uses event order rather than treating media as un-ordered feature bags. Visual temporal probes shuffle frames, reverse frame order, and drop middle frames. Audio temporal probes shuf-fle audio segments or insert local gaps. Audio– visual desynchronization shifts the audio stream by ±0.5, ±1, ±2, ±4, and ±8 seconds rel-ative to the visual frame sequence. Frame-budget probes rerun representative examples with one, four, eight, sixteen, and default frame budgets. Position probes place the most infor-mative frame first, middle, or last while keeping the frame set fixed. Together these tests sepa-rate true temporal binding from interface-level sampling and position artifacts. 
+
+Scope of audio operators and ASR-like noise. 
+
+The three audio operators ( remove , mute ,
+
+distortion ) target structural properties of the waveform—temporal completeness and sig-nal fidelity—rather than phonetic or lexical con-tent. Temporal desynchronisation is covered by the audio–visual desynchronisation probe described above ( ±0.5–8 seconds). ASR-like noise (homophone substitutions, partial word deletions at the phoneme level) was consid-ered but excluded under design rule (i) of Ap-pendix E: such operators require a phoneme-level transcription of the audio track, which is not available for all source benchmarks, and would introduce a semantic transformation (changing the spoken word) rather than a purely structural one. The distortion operator ap-proximates the effect of low-quality recording or transmission artefacts, which is the closest struc-tural analogue to ASR-degraded input without requiring phoneme-level manipulation. Probing audio-text-vision binding under phoneme-level noise is a natural extension and is noted as future work. 
+
+G.11 K. Confidence, abstention, and distractor-modality probes 
+
+Confidence probes ask representative models to output both an option and a scalar confi-dence level under clean and corrupted condi-tions. We report average confidence on correct and incorrect answers, expected calibration er-ror when possible, and the rate of overconfi-dent wrong answers. Abstentions and refusals are analyzed together with the invalid-output profile. Distractor-modality probes insert an unrelated but structurally clean modality into otherwise sufficient inputs: unrelated audio into text–visual examples, unrelated frames into text– audio examples, or misleading text into visual– audio examples. The distractor effect measures Condition Existing MC drop (pp) No-option drop (pp) Transfer ∆ (pp)                   
+
+> Clean-to-corrupted drop on the shared gold-preserved subset
+> drop_words @70 11.09 13.45 +2 .36
+> noise @70 11.27 14.10 +2 .83
+> TV t30 /v 70 10.01 12.25 +2 .24
+> TV t70 /v 70 8.28 9.80 +1 .52
+> TVA t30 /v 70 /a 30 6.36 7.95 +1 .59
+
+Table 35: No-option generation control. The model produces a short answer rather than selecting an option; two blinded scorers evaluate the output on the shared gold-preserved subset. Existing multiple-choice drops for the single-modality rows are 15-model panel means; the joint rows are means over the four deep-dive models. Transfer 
+
+∆ is the no-option drop minus the multiple-choice drop. 
+
+whether the model indiscriminately fuses every available channel or selectively downweights irrelevant evidence. 
+
+Calibration under corruption and logit unavailability. The confidence probe collects self-reported confidence labels (low /medium /high ) from the model’s JSON output, which are available for all models regardless of whether token-level logits are exposed. We compute expected calibration error (ECE) by binning the three confidence levels and comparing mean confidence to mean accuracy within each bin, and we report the overconfident error rate ρoc (fraction of incorrect answers assigned high confidence). For the six deep-dive models, ECE increases from a clean-condition mean of 0.09 to 0.17 
+
+at severity 70 across the three modalities, and ρoc rises from 0.21 to 0.34 , confirming that corruption degrades calibration as well as accuracy. For API models that do not expose logits, the self-reported confidence label is the only available proxy; we note that self-reported confidence may be less reliable than logit-derived probabilities and treat the ECE and ρoc estimates for those models as approximate. Generative likelihood proxies (e.g. scoring each option by its generation probability under a forced-choice prompt) are not uniformly available across the API panel and are left for future work. 
+
+H Prompt Templates and Parsing Rules 
+
+System prompt. 
+
+You are a careful multimodal assistant. You will receive one question, one visual input (im-age or video), and one audio input. Exactly one option is correct. Use the provided multi-modal evidence. If some evidence is degraded, still answer based only on what can be sup-ported by the input. Respond with one JSON object and nothing else. 
+
+User prompt template. 
+
+[Task] Answer the multiple-choice ques-tion using the visual input (image or video) and the audio input. Some of the question text, visual input, or audio input may be struc-turally corrupted or degraded. Interpret the available evidence carefully, and do not rely on any hidden metadata. 
+
+[Visual input] Attached as a
+
+{image/video} .
+
+[Audio input] Attached as an audio clip. 
+
+[Question] {question} [Options] {formatted options} 
+
+Output JSON schema: {"answer": "<option key>", "confidence": "<low | medium | high>", "reasoning": "<one or two short sentences>"} . Do not output Markdown. Do not output any text outside the JSON object. 
+
+Parsing rule. The parser first attempts to read a JSON object. If this fails, it applies a con-servative fallback that accepts a single option key or an answer string exactly matching one option. Responses are marked invalid when no option key can be recovered, when the model refuses to answer without selecting an option, or when the output is empty. Invalid responses are counted separately in coverage tables and treated as incorrect for significance testing. 
+
+Prompt variants. The standard prompt is used for all headline accuracy tables. Chain-of-thought prompting is used only in the prompt-robustness diagnostic subset; the model may reason internally or output a short rationale, but the parser still extracts a final option. Open-form prompting removes the JSON requirement and is used to test whether JSON formatting it-self creates parse failures. Prompt variants are never mixed inside a headline table; each table specifies a prompt ID. Option formatting and corruption scope. 
+
+The formatted options string passed to the model uses plain letter keys ( A, B, C, D) with no brackets, checkmarks, or positional mark-ers. The [x] notation appearing in illustra-tive examples in the paper is used only in fig-ures and tables for human readability and is never present in the actual model prompt. Op-tion text is drawn verbatim from the source benchmark and is not modified by any cor-ruption operator: all four text corruption operators ( drop_words , word_shuffle ,
+
+typo_ocr , sentence_break ) are applied exclusively to the question stem, leaving option punctuation, capitalisation, and letter keys intact. This design ensures that the parser can always recover a valid option key from the options field regardless of question-stem corruption severity, and that no asymmetric surface cue in the op-tions field can serve as a positional shortcut. 
+
+Inference and logging settings. For determin-istic comparability, runs use the lowest avail-able sampling temperature, no intentional top-
+
+p diversification, and a fixed prompt template. When an endpoint fails, the runner records retry count and final failure category rather than silently dropping the example. Each JSONL record stores model name, prompt ID, sample ID, source dataset, condition ID, modality op-erators, severity values, random variant, media URLs or local paths, raw response, parsed an-swer, gold answer, correctness, latency, retry count, and invalid-output category. These fields are required to reproduce coverage-aware tables.
