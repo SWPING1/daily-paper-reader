@@ -1,0 +1,291 @@
+Title: Video2Reaction: Training Foundation Video Models to Predict Audience Reaction
+
+URL Source: https://arxiv.org/pdf/2609.01816v1
+
+Published Time: Thu, 03 Sep 2026 00:11:56 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Video2Reaction: Training Foundation Video Models to Predict Audience Reaction 
+
+## Sidong Zhang UMass Amherst 130 Governors Drive, Amherst 
+
+sidongzhang@umass.edu 
+
+## Trang Nguyen UMass Amherst 130 Governors Drive, Amherst 
+
+tramnguyen@cs.umass.edu 
+
+## Shiv Shankar UMass Amherst 130 Governors Drive, Amherst 
+
+sshankar@umass.edu 
+
+## Gauri Jagatap Dolby Laboratories 1275 Market Street, San Francisco 
+
+Gauri.Jagatap@dolby.com 
+
+## Deepak Chandran Dolby Laboratories 1275 Market Street, San Francisco 
+
+deepak.chandran@dolby.com 
+
+## Andrea Fanelli Dolby Laboratories 1275 Market Street, San Francisco 
+
+andrea.fanelli@dolby.com 
+
+## Madalina Fiterau UMass Amherst 130 Governors Drive, Amherst 
+
+mfiterau@cs.umass.edu 
+
+## Abstract 
+
+We introduce Video2Reaction , a multimodal dataset that maps short movie segments to the induced emotional re-actions of viewers in the wild, as expressed through so-cial media comments. Video2Reaction captures the nat-ural diversity of emotional responses by aggregating re-actions from online comments at scale, modeling labels as distributions over categorical emotions to better reflect the subjective and ambiguous nature of emotional percep-tion. We benchmark two vision-language models (VLMs) finetuned with LoRA, showing that VLMs learn effectively from Video2Reaction and outperform specialized baselines on dominant reaction prediction. We further demonstrate that VLMs pre-finetuned on Video2Reaction transfer effec-tively to VCE, another induced emotion dataset with a dif-ferent taxonomy and video domain. Notably, LLaVA-NeXT-Video-7B pre-finetuned on Video2Reaction and adapted on only 1% of VCE training data achieves a top-3 accu-racy of 0.682 , on par with the best reported VCE perfor-mance trained on the full dataset. The dataset is avail-able at https : / / huggingface . co / datasets / infofusionlab/Video2Reaction .
+
+## 1. Introduction 
+
+Training foundation models to anticipate how audiences re-act to video content is a crucial yet underexplored challenge in affective computing. If such capability were achieved, it would enable pre-screening of media and iterative content refinement well before public release. However, two major barriers hinder progress in this direction. First, there is a lack of large-scale data and standard-ized evaluation for induced emotion . Existing video affec-tive datasets [2, 12, 18] predominantly focus on perceived emotions —for example, the emotions expressed by charac-ters or scenes—while relatively few datasets target induced emotions [15], i.e., the emotional responses elicited in view-ers. Induced emotions are inherently more complex and variable, as they depend on individual, cultural, and tem-poral factors. Second, induced emotions are dynamic and may shift over time, requiring datasets to support continuous updates to remain relevant. Existing approaches [10, 11, 20] typ-ically rely on controlled data collection through recruited arXiv:2609.01816v1 [cs.CV] 1 Sep 2026 participants, capturing audience reactions at a fixed point in time. This process is costly, slow, and difficult to scale. To address these challenges, we introduce 
+
+Video2Reaction , a large-scale multimodal dataset for training foundation models to predict audience reactions to short movie segments. Our dataset leverages social media as a proxy for real-world audience response, aggregating nearly one million YouTube comments across approxi-mately 10,000 videos. We propose a scalable, multi-agent LLM annotation pipeline that extracts structured emotion distributions from raw comments through automated rea-soning. Each data instance consists of a video clip paired with a probability distribution over audience reactions, en-abling fine-grained modeling of diverse viewer responses. Because annotations are generated automatically, the dataset supports rapid and incremental expansion, allowing it to evolve alongside changing audience preferences. Empirically, we demonstrate that finetuning two VLMs — Qwen2.5-VL-7B-Instruct and LLaVA-NeXT-Video-7B — on Video2Reaction leads to substantial improvements in audience reaction prediction. Moreover, the resulting mod-els exhibit promising generalization to out-of-distribution datasets under limited supervision. 
+
+## 2. Video2Reaction Dataset                  
+
+> Table 1. Finer-grained reaction categories (21) used in
+> Video2Reaction grouped by sentiment.
+> Sentiment Category Finer-grained Reaction Cate-gories
+> Positive amusement, excitement, joy, car-ing, admiration, relief, approval Negative fear, nervousness, embarrassment, disappointment, sadness, grief, dis-gust, anger, annoyance, disapproval Ambiguous realization, surprise, curiosity, con-fusion
+
+2.1. Data Collection 
+
+We curate movie clips from the CondensedMovies dataset [1] (licensed with CC BY 4.0), which contains licensed content from the Movieclips 1 YouTube channel. The use of licensed content improves the longevity of the dataset, as these clips are less likely to be removed from the platform. To ensure meaningful audience engagement, we retain only videos with a minimum of 10,000 views and at least 10 comments. The selected clips, originally uploaded between 2011 and 2019, are downloaded for further pro-cessing. Viewer comments on these videos extend through 
+
+> 1https://www.youtube.com/@MOVIECLIPS
+
+2025, resulting in each clip having a minimum of six years of audience commentary. 
+
+2.2. Reaction Distribution Annotation 
+
+Reaction Taxonomy. To represent the complexity of audi-ence reaction, we adopt the 28-category emotion taxonomy from GoEmotions [6], originally designed for Reddit com-ments but directly applicable to YouTube, as both platforms share a similar social media language register. However, we drop 7 of the original categories in GoEmotions due to their significant under-representation in our data. These 7 reac-tions contribute to less than 0.01% of the distribution mass on average. Our final taxonomy consists of 21 fine-grained emotions (Table 1). 
+
+Two-stage Multi-agent Reaction Annotation Pipeline. 
+
+Given the volume of raw comments and the non-stationary nature of induced emotions over time, we designed a scal-able and reliable multi-agent annotation pipeline that sup-ports frequent dataset updates, ensuring long-term rele-vance and impact. Figure 1 outlines our LLM-based pipeline for annotating audience reactions based on user comments. Each comment is processed in two stages. The first stage of rephrasing comments is critical, as many au-dience comments reflect implicit reactions or off-topic re-marks that need contextual interpretation to reveal their emotional intent. For example, a comment like “I’m so dis-appointed this actor didn’t win an Oscar” will be mistak-enly labeled as disappointment without being rephrased as 
+
+”the acting in the movie is so impressive” in the first stage. The second stage then extracts relevant reaction labels from the rephrased comments from the first stage. Prompt details for both stages and qualitative comparison of single-stage versus two-stage annotations are provided in Appendix A.1. Motivated by prior findings in the use of multi-agent framework in text classification [16], compound systems [3], and chain-of-thought reasoning [4, 17], we em-ploy an ensemble of of three medium-sized multilingual instruction-tuned LLMs 2 and adopt a straightforward ma-jority voting approach for our emotion annotation task. This ensemble design enables inference-time speedup through agent parallelization, in contrast to annotator–critic archi-tectures that require sequential interaction. Our choice to use three medium-sized LLMs with comparable perfor-mance aligns with prior observations that ensemble meth-ods are most effective when constituent models exhibit sim-ilar strength [16]. 
+
+Quality of Reaction Annotations. To assess annotation quality, we conduct two complementary evaluations. 
+
+Human–LLM alignment. We collect independent anno-tations from 29 participants on 233 video–comment pairs (median 3 annotators per comment) and compute Spearman                     
+
+> 2LLaMA-3.1-8B-Instruct [9] ,Qwen2.5-14B-Instruct [13] ,and DeepSeek-R1-Distill-Qwen-7B [5] STAGE 2: Reaction Label Extraction STAGE 1: Comment Rephrasing + Filtering INPUT
+> AI Agent 1 Rephrase: This clip is a poor imitation of a well-known movie, and the acting is so bad it's painful to watch.
+> AI Agent 2 Rephrase: This clip is a poor imitation of a well-known movie, and the acting is so bad it's painful to watch.
+> AI Agent 3
+> 🎭 Reaction: Admiration
+> AI Agent 1 Rephrase: This clip is a poor imitation of a well-known movie, and the acting is so bad it's painful to watch.
+> AI Agent 2 Rephrase: This clip is a poor imitation of a well-known movie, and the acting is so bad it's painful to watch.
+> AI Agent 3
+> 📝 Rephrase: The writer found the acting in the movie to be impressive.
+> OUTPUT
+> ≥2 Agree 🎞 Clip
+> 🎭 Clip-level Reaction Distribution
+> 🎞 Clip Description
+> 💬 Top 100 Comments
+> Human Verification Protocol
+> Diversely Sampled Test Set Dual blind reviewer
+
+Figure 1. Overview of Video2Reaction Two-Stage LLM-based Data Annotation Pipeline. Stage 1 rephrases comments to explicitly state their reactions towards the clip. It also filters out comments that lack a discernible reaction to the clip. Stage 2 extracts reaction labels, with majority voting across three LLM agents to ensure consistency and discard ambiguous cases. 
+
+correlation per emotion following GoEmotions [6]. The mean inter-rater correlation is 0.428 (std = 0.233), reflect-ing the subjective nature of induced emotion labeling. Our LLM pipeline achieves a comparable mean correlation of 0.402 (std = 0.243), operating within the same reliability range as human annotators. Full breakdown by emotion is in Appendix A.2. 
+
+Dual-blind verification. We randomly sample 100 clips across all genres, selecting 10 comments each (1,000 total), independently reviewed by two annotators with a third con-sulted on disagreements. Overall, 86% of LLM-assigned la-bels were judged correct, 7.8% incorrect, and 6.2% indeter-minate (Table 5). A control of randomly-labeled comments yields only 0.2% correct, ruling out confirmation bias. Per-formance remains above 70% across all genres, with Com-edy and Drama posing greater challenges due to subtle cues such as pop culture references (Table 6). 
+
+2.3. Dataset Statistics 
+
+The dataset spans 390 hours from 1,545 movies, 10,348 clips (7,243/1,035/2,070 train/val/test), with an average of 44 scenes and 24 comments per clip. Video2Reaction cap-tures substantial variation in audience reactions within the same movie, with a median Chebyshev distance of 0.48 
+
+(ranging from 0 to 1.0) between clip-level distributions of the same movie, highlighting the need for clip-level rather than movie-level labeling. The imbalanced factor γ is 28.36 across all 21 taxonomies, while the dominant emotion has a median probability of only 0.4, underscoring the impor-tance of modeling full reaction distributions instead of only the dominant label. Details are included in Appendix B. 
+
+## 3. Methods 
+
+3.1. Problem Setup 
+
+We frame audience reaction prediction as a label distribu-tion learning (LDL) task. LDL predicts a probability dis-tribution over labels, capturing the ambiguity and diversity of audience reactions. Let x denote an input video clip. Its audience reaction is represented by a label distribution 
+
+dx = {dxm }Mm=1 , where M is the number of reaction classes, dxm ∈ [0 , 1] indicates the proportion of viewers associating label m with x, and PMm=1 dxm = 1 . This can be interpreted as the conditional probability p(m|x). Our objective is to learn a model fθ (x) that predicts ˆdx ≈ dx
+
+by minimizing the KL divergence between ˆdx and dx.
+
+3.2. Finetuning VLMs to Predict Audience Reaction 
+
+We study Video2Reaction for foundation model training through two experiments. First, we evaluate in-domain VLM finetuning, showing that VLMs can effectively learn audience reaction prediction from Video2Reaction and achieve strong performance on test samples. Second, we leverage the finetuned VLMs for out-of-domain transfer to VCE [11], a large-scale induced emotion dataset col-lected from social media short videos. VCE is a well-motivated transfer target for three reasons: (1) it shares the same induced emotion paradigm as Video2Reaction, mak-ing the task semantically close; (2) its videos are sourced from social media while emotions are annotated under con-trolled conditions, introducing distributional shift in both the visual modality and the label space; and (3) its large scale requires substantial human annotation effort, making it expensive to extend and a natural testbed for evaluating whether Video2Reaction can reduce target-domain anno-tation cost. We show that the knowledge acquired from Video2Reaction generalizes effectively to VCE, reducing the need for costly target-domain supervision. 
+
+3.3. In-Domain Finetuning of VLMs 
+
+We finetune two VLMs — LLaVA-NeXT-Video-7B [19] and Qwen2.5-VL-7B-Instruct [14] — on Video2Reaction using LoRA of rank 8 applied to attention layers, yield-ing approximately 6% trainable parameters. We instruct each VLM to reason about the most likely induced emo-tion given the input video and clip description, and use the next-token probability over candidate emotion labels as the predicted distribution. This requires that all candidate emo-tions have distinct first tokens to avoid ambiguity. We adopt two strategies to ensure this: (1) Label-option : assigning each emotion a unique letter label and prompting the VLM to respond with only the letter; (2) Word-option : rewording any colliding emotion names so their first tokens are non-overlapping, allowing the VLM to reason on the emotion word directly while still enabling unambiguous probability extraction via unique first tokens. Three emotion words are reworded in the Word-option strategy: disgust is changed to grossed, disapproval to opposed, and disappointment to deflated. 
+
+3.4. Out-of-Domain Transfer Learning of VLMs 
+
+We hypothesize that VLMs finetuned on Video2Reaction acquire transferable knowledge that benefits adaptation to video emotion datasets with shifted video content and la-bel taxonomy. To test this, we compare two settings on VCE [11]: (1) a VLM pre-finetuned on Video2Reaction and then adapted with a small subset of VCE training data, and (2) a VLM finetuned directly on the same subset of VCE from scratch. Since VCE relies on costly human annotation, a key question is whether Video2Reaction pre-finetuning can reduce the required amount of target-domain supervi-sion while maintaining competitive performance. We eval-uate both settings across varying VCE training subset sizes (zero-shot, 500, 1,000, and 5,000 samples), where each sub-set is drawn via stratified sampling to ensure balanced dom-inant class representation. Following the in-domain fine-tuning procedure, we instruct VLMs to respond with the most likely emotion given the video and apply KL diver-gence between the next single token probabilities and the human-annotated distribution as the training objective. The Word-option strategy requires the following rewording of VCE emotion labels for unique first tokens: adoration to cherish, aesthetic appreciation to beauty, awe (or wonder) to wonder, and anxiety to worry. 
+
+3.5. Baseline Methods 
+
+For in-domain evaluation, we include classic LDL models, LDSVR [8] and SA-BFGS [7], trained from scratch, and zero-shot Gemini 2.5 Flash as a proprietary VLM refer-ence. For out-of-domain transfer, we refer to the state-of-the-art result reported in VCE: VideoMAE trained on the full 50,000 samples with top-3 accuracy 0.689 [11]. 
+
+## 4. Results 
+
+4.1. In-Domain Results 
+
+We evaluate dominant reaction prediction using three met-rics: Mean Reciprocal Rank (MRR), which measures the ranking quality of the dominant reaction; Top-1 Probability Error (TPE), which captures probability misestimation of the dominant reaction; and class-weighted Top-k F1 ( F 1k).                                                     
+
+> Table 2. Dominant reaction evaluation benchmark results. Best performance is shown in bold.
+> Model Name TPE ↓MRR ↑F1 1↑F1 3↑
+> LDSVR 0.1599 0.7054 0.5034 0.5696 SA-BFGS 0.1882 0.7163 0.5283 0.6265 Gemini 2.5 Flash 0.3026 0.4378 0.2735 0.3794 LLaVA-NeXT-Video-7B -Temperature-scaled 0.4103 0.1992 0.0143 0.1374 -Finetuned with Label-option 0.1742 0.7632 0.5938 0.6281 -Finetuned with Word-option 0.1643 0.7723 0.6035 0.6591
+> Qwen2.5-VL-7B-Instruct -Temperature-scaled 0.3923 0.3088 0.1958 0.3037 -Finetuned with Label-option 0.1692 0.7558 0.5814 0.6386 -Finetuned with Word-option 0.1588 0.7742 0.6158 0.6583
+
+Table 2 summarizes the dominant reaction evaluation re-sults. Both zero-shot temperature-scaled VLMs and Gemini perform poorly across all metrics, confirming that audience reaction prediction requires task-specific adaptation .After LoRA finetuning, both VLMs substantially outper-form the LDL baselines LDSVR and SA-BFGS across most metrics, demonstrating that Video2Reaction provides suffi-cient and learnable supervision signal for VLMs. Word-option consistently outperforms Label-option for both mod-els, suggesting that reasoning directly over emotion words rather than abstract letter labels better leverages the seman-tic knowledge encoded in pretrained VLMs. 
+
+4.2. Out-of-Domain Transferable Results 
+
+We adopt the Word-option finetuning strategy based on its superior in-domain performance. We report top-3 ac-curacy following the evaluation protocol of the original VCE paper [11], where the best reported performance is 
+
+0.689 , achieved by training VideoMAE on the full 50,000 training samples. Table 3 reports top-3 accuracy for both VLMs with and without Video2Reaction pre-finetuning across varying VCE training subset sizes. In the zero-shot setting, Video2Reaction pre-finetuning alone substan-tially improves performance over non-pre-finetuned coun-terparts, demonstrating that reaction knowledge learned from Video2Reaction transfers directly without any VCE supervision. Across all subset sizes, Video2Reaction pre-finetuned VLMs consistently outperform their counterparts trained from scratch on VCE. Notably, LLaVA-NeXT-Video-7B + V2R finetuned on only 500 VCE samples (0.682 ) already matches LLaVA trained on 5,000 sam-ples ( 0.701 ) and reported SOTA ( 0.689 ), suggesting that Video2Reaction pre-finetuning reduces the required target-domain annotation by up to an order of magnitude. 
+
+Table 3. Top-3 accuracy on VCE dataset. VLMs finetuned on V2R are on par with full-set trained models with only 1% of training samples.                            
+
+> Size of VCE Training Subset Model Zero Shot 500 1000 5000
+> VCE Training Subset Ratio 0% 1% 2% 10% LLaVA-NeXT-Video-7B 0.232 0.653 0.663 0.701 LLaVA-NeXT-Video-7B + V2R 0.347 0.682 0.678 0.701 Qwen2.5-VL-7B-Instruct 0.083 0.636 0.665 0.713 Qwen2.5-VL-7B-Instruct + V2R 0.352 0.665 0.686 0.722 Full-Set Training / Baselines
+> VideoMAE (Full 50K) 0.689 Majority Emotion 0.357 Random Chance 0.111
+
+## 5. Next Steps 
+
+Transfer annotation knowledge for automatic labeling. 
+
+We are experimenting with using Video2Reaction pre-finetuned VLMs to automatically label VCE data, then training VideoMAE on the full VLM-labeled 50,000 sam-ples to measure the quality gap against human annotation. Sufficiently high annotation quality would enable scalable, low-cost curation of induced emotion datasets. 
+
+Understand the effect of model scale on knowledge transfer. Current experiments are limited to 7B-scale VLMs. We plan to evaluate compact and larger variants of LLaVA and Qwen to understand whether Video2Reaction pre-finetuning benefits scale proportionally or exhibits di-minishing returns. 
+
+## References 
+
+[1] Max Bain, Arsha Nagrani, Andrew Brown, and Andrew Zis-serman. Condensed movies: Story based retrieval with con-textual embeddings, 2020. 2 [2] Carlos Busso, Murtaza Bulut, Chi-Chun Lee, Abe Kazemzadeh, Emily Mower, Samuel Kim, Jeannette N Chang, Sungbok Lee, and Shrikanth S Narayanan. Iemo-cap: Interactive emotional dyadic motion capture database. 
+
+Language resources and evaluation , 42:335–359, 2008. 1 [3] Lingjiao Chen, Jared Quincy Davis, Boris Hanin, Peter Bailis, Ion Stoica, Matei A Zaharia, and James Y Zou. Are more llm calls all you need? towards the scaling properties of compound ai systems. Advances in Neural Information Processing Systems , 37:45767–45790, 2024. 2 [4] Juhwan Choi, Jungmin Yun, Kyohoon Jin, and Youngbin Kim. Multi-news+: Cost-efficient dataset cleansing via llm-based data annotation. In EMNLP , 2024. 2 [5] DeepSeek-AI. Deepseek-r1: Incentivizing reasoning capa-bility in llms via reinforcement learning, 2025. 2 [6] Dorottya Demszky, Dana Movshovitz-Attias, Jeongwoo Ko, Alan Cowen, Gaurav Nemade, and Sujith Ravi. Goemo-tions: A dataset of fine-grained emotions. arXiv preprint arXiv:2005.00547 , 2020. 2, 3 [7] Xin Geng. Label Distribution Learning, 2016. 4 [8] Xin Geng and Peng Hou. Pre-release prediction of crowd opinion on movies by label distribution learning. In IJCAI ,pages 3511–3517. Citeseer, 2015. 4 [9] Aaron Grattafiori, Abhimanyu Dubey, Abhinav Jauhri, Ab-hinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Alex Vaughan, Amy Yang, Angela Fan, Anirudh Goyal, Anthony Hartshorn, Aobo Yang, Archi Mitra, Archie Sravankumar, Artem Ko-renev, Arthur Hinsvark, Arun Rao, Aston Zhang, Aure-lien Rodriguez, Austen Gregerson, Ava Spataru, Baptiste Roziere, Bethany Biron, Binh Tang, Bobbie Chern, Charlotte Caucheteux, Chaya Nayak, Chloe Bi, Chris Marra, Chris McConnell, Christian Keller, Christophe Touret, Chunyang Wu, Corinne Wong, Cristian Canton Ferrer, Cyrus Niko-laidis, Damien Allonsius, Daniel Song, Danielle Pintz, Danny Livshits, Danny Wyatt, David Esiobu, Dhruv Choud-hary, Dhruv Mahajan, Diego Garcia-Olano, Diego Perino, Dieuwke Hupkes, Egor Lakomkin, Ehab AlBadawy, Elina Lobanova, Emily Dinan, Eric Michael Smith, Filip Raden-ovic, Francisco Guzm´ an, Frank Zhang, Gabriel Synnaeve, Gabrielle Lee, Georgia Lewis Anderson, Govind Thattai, Graeme Nail, Gregoire Mialon, Guan Pang, Guillem Cu-curell, Hailey Nguyen, Hannah Korevaar, Hu Xu, Hugo Tou-vron, Iliyan Zarov, Imanol Arrieta Ibarra, Isabel Kloumann, Ishan Misra, Ivan Evtimov, Jack Zhang, Jade Copet, Jae-won Lee, Jan Geffert, Jana Vranes, Jason Park, Jay Ma-hadeokar, Jeet Shah, Jelmer van der Linde, Jennifer Bil-lock, Jenny Hong, Jenya Lee, Jeremy Fu, Jianfeng Chi, Jianyu Huang, Jiawen Liu, Jie Wang, Jiecao Yu, Joanna Bit-ton, Joe Spisak, Jongsoo Park, Joseph Rocca, Joshua John-stun, Joshua Saxe, Junteng Jia, Kalyan Vasuden Alwala, Karthik Prasad, Kartikeya Upasani, Kate Plawiak, Ke Li, Kenneth Heafield, Kevin Stone, Khalid El-Arini, Krithika Iyer, Kshitiz Malik, Kuenley Chiu, Kunal Bhalla, Kushal Lakhotia, Lauren Rantala-Yeary, Laurens van der Maaten, Lawrence Chen, Liang Tan, Liz Jenkins, Louis Martin, Lo-vish Madaan, Lubo Malo, Lukas Blecher, Lukas Landzaat, Luke de Oliveira, Madeline Muzzi, Mahesh Pasupuleti, Mannat Singh, Manohar Paluri, Marcin Kardas, Maria Tsim-poukelli, Mathew Oldham, Mathieu Rita, Maya Pavlova, Melanie Kambadur, Mike Lewis, Min Si, Mitesh Kumar Singh, Mona Hassan, Naman Goyal, Narjes Torabi, Niko-lay Bashlykov, Nikolay Bogoychev, Niladri Chatterji, Ning Zhang, Olivier Duchenne, Onur C ¸ elebi, Patrick Alrassy, Pengchuan Zhang, Pengwei Li, Petar Vasic, Peter Weng, Pra-jjwal Bhargava, Pratik Dubal, Praveen Krishnan, Punit Singh Koura, Puxin Xu, Qing He, Qingxiao Dong, Ragavan Srini-vasan, Raj Ganapathy, Ramon Calderer, Ricardo Silveira Cabral, Robert Stojnic, Roberta Raileanu, Rohan Mah-eswari, Rohit Girdhar, Rohit Patel, Romain Sauvestre, Ron-nie Polidoro, Roshan Sumbaly, Ross Taylor, Ruan Silva, Rui Hou, Rui Wang, Saghar Hosseini, Sahana Chennabas-appa, Sanjay Singh, Sean Bell, Seohyun Sonia Kim, Sergey Edunov, Shaoliang Nie, Sharan Narang, Sharath Ra-parthy, Sheng Shen, Shengye Wan, Shruti Bhosale, Shun Zhang, Simon Vandenhende, Soumya Batra, Spencer Whit-man, Sten Sootla, Stephane Collot, Suchin Gururangan, Sydney Borodinsky, Tamar Herman, Tara Fowler, Tarek Sheasha, Thomas Georgiou, Thomas Scialom, Tobias Speck-bacher, Todor Mihaylov, Tong Xiao, Ujjwal Karn, Vedanuj Goswami, Vibhor Gupta, Vignesh Ramanathan, Viktor Kerkez, Vincent Gonguet, Virginie Do, Vish Vogeti, V´ ıtor Albiero, Vladan Petrovic, Weiwei Chu, Wenhan Xiong, Wenyin Fu, Whitney Meers, Xavier Martinet, Xiaodong Wang, Xiaofang Wang, Xiaoqing Ellen Tan, Xide Xia, Xin-feng Xie, Xuchao Jia, Xuewei Wang, Yaelle Goldschlag, Yashesh Gaur, Yasmine Babaei, Yi Wen, Yiwen Song, Yuchen Zhang, Yue Li, Yuning Mao, Zacharie Delpierre Coudert, Zheng Yan, Zhengxing Chen, Zoe Papakipos, Aa-ditya Singh, Aayushi Srivastava, Abha Jain, Adam Kelsey, Adam Shajnfeld, Adithya Gangidi, Adolfo Victoria, Ahuva Goldstand, Ajay Menon, Ajay Sharma, Alex Boesenberg, Alexei Baevski, Allie Feinstein, Amanda Kallet, Amit San-gani, Amos Teo, Anam Yunus, Andrei Lupu, Andres Al-varado, Andrew Caples, Andrew Gu, Andrew Ho, An-drew Poulton, Andrew Ryan, Ankit Ramchandani, Annie Dong, Annie Franco, Anuj Goyal, Aparajita Saraf, Arka-bandhu Chowdhury, Ashley Gabriel, Ashwin Bharambe, As-saf Eisenman, Azadeh Yazdan, Beau James, Ben Maurer, Benjamin Leonhardi, Bernie Huang, Beth Loyd, Beto De Paola, Bhargavi Paranjape, Bing Liu, Bo Wu, Boyu Ni, Braden Hancock, Bram Wasti, Brandon Spence, Brani Sto-jkovic, Brian Gamido, Britt Montalvo, Carl Parker, Carly Burton, Catalina Mejia, Ce Liu, Changhan Wang, Changkyu Kim, Chao Zhou, Chester Hu, Ching-Hsiang Chu, Chris Cai, Chris Tindal, Christoph Feichtenhofer, Cynthia Gao, Da-mon Civin, Dana Beaty, Daniel Kreymer, Daniel Li, David Adkins, David Xu, Davide Testuggine, Delia David, Devi Parikh, Diana Liskovich, Didem Foss, Dingkang Wang, Duc Le, Dustin Holland, Edward Dowling, Eissa Jamil, Elaine Montgomery, Eleonora Presani, Emily Hahn, Emily Wood, Eric-Tuan Le, Erik Brinkman, Esteban Arcaute, Evan Dun-bar, Evan Smothers, Fei Sun, Felix Kreuk, Feng Tian, Fil-ippos Kokkinos, Firat Ozgenel, Francesco Caggioni, Frank Kanayet, Frank Seide, Gabriela Medina Florez, Gabriella Schwarz, Gada Badeer, Georgia Swee, Gil Halpern, Grant Herman, Grigory Sizov, Guangyi, Zhang, Guna Lakshmi-narayanan, Hakan Inan, Hamid Shojanazeri, Han Zou, Han-nah Wang, Hanwen Zha, Haroun Habeeb, Harrison Rudolph, Helen Suk, Henry Aspegren, Hunter Goldman, Hongyuan Zhan, Ibrahim Damlaj, Igor Molybog, Igor Tufanov, Ilias Leontiadis, Irina-Elena Veliche, Itai Gat, Jake Weissman, James Geboski, James Kohli, Janice Lam, Japhet Asher, Jean-Baptiste Gaya, Jeff Marcus, Jeff Tang, Jennifer Chan, Jenny Zhen, Jeremy Reizenstein, Jeremy Teboul, Jessica Zhong, Jian Jin, Jingyi Yang, Joe Cummings, Jon Carvill, Jon Shepard, Jonathan McPhie, Jonathan Torres, Josh Gins-burg, Junjie Wang, Kai Wu, Kam Hou U, Karan Sax-ena, Kartikay Khandelwal, Katayoun Zand, Kathy Matosich, Kaushik Veeraraghavan, Kelly Michelena, Keqian Li, Kiran Jagadeesh, Kun Huang, Kunal Chawla, Kyle Huang, Lailin Chen, Lakshya Garg, Lavender A, Leandro Silva, Lee Bell, Lei Zhang, Liangpeng Guo, Licheng Yu, Liron Moshkovich, Luca Wehrstedt, Madian Khabsa, Manav Avalani, Manish Bhatt, Martynas Mankus, Matan Hasson, Matthew Lennie, Matthias Reso, Maxim Groshev, Maxim Naumov, Maya Lathi, Meghan Keneally, Miao Liu, Michael L. Seltzer, Michal Valko, Michelle Restrepo, Mihir Patel, Mik Vy-atskov, Mikayel Samvelyan, Mike Clark, Mike Macey, Mike Wang, Miquel Jubert Hermoso, Mo Metanat, Mohammad Rastegari, Munish Bansal, Nandhini Santhanam, Natascha Parks, Natasha White, Navyata Bawa, Nayan Singhal, Nick Egebo, Nicolas Usunier, Nikhil Mehta, Nikolay Pavlovich Laptev, Ning Dong, Norman Cheng, Oleg Chernoguz, Olivia Hart, Omkar Salpekar, Ozlem Kalinli, Parkin Kent, Parth Parekh, Paul Saab, Pavan Balaji, Pedro Rittner, Philip Bon-trager, Pierre Roux, Piotr Dollar, Polina Zvyagina, Prashant Ratanchandani, Pritish Yuvraj, Qian Liang, Rachad Alao, Rachel Rodriguez, Rafi Ayub, Raghotham Murthy, Raghu Nayani, Rahul Mitra, Rangaprabhu Parthasarathy, Raymond Li, Rebekkah Hogan, Robin Battey, Rocky Wang, Russ Howes, Ruty Rinott, Sachin Mehta, Sachin Siby, Sai Jayesh Bondu, Samyak Datta, Sara Chugh, Sara Hunt, Sargun Dhillon, Sasha Sidorov, Satadru Pan, Saurabh Mahajan, Saurabh Verma, Seiji Yamamoto, Sharadh Ramaswamy, Shaun Lindsay, Shaun Lindsay, Sheng Feng, Shenghao Lin, Shengxin Cindy Zha, Shishir Patil, Shiva Shankar, Shuqiang Zhang, Shuqiang Zhang, Sinong Wang, Sneha Agarwal, Soji Sajuyigbe, Soumith Chintala, Stephanie Max, Stephen Chen, Steve Kehoe, Steve Satterfield, Sudarshan Govindaprasad, Sumit Gupta, Summer Deng, Sungmin Cho, Sunny Virk, Suraj Subramanian, Sy Choudhury, Sydney Goldman, Tal Remez, Tamar Glaser, Tamara Best, Thilo Koehler, Thomas Robinson, Tianhe Li, Tianjun Zhang, Tim Matthews, Timo-thy Chou, Tzook Shaked, Varun Vontimitta, Victoria Ajayi, Victoria Montanez, Vijai Mohan, Vinay Satish Kumar, Vishal Mangla, Vlad Ionescu, Vlad Poenaru, Vlad Tiberiu Mihailescu, Vladimir Ivanov, Wei Li, Wenchen Wang, Wen-wen Jiang, Wes Bouaziz, Will Constable, Xiaocheng Tang, Xiaojian Wu, Xiaolan Wang, Xilun Wu, Xinbo Gao, Yaniv Kleinman, Yanjun Chen, Ye Hu, Ye Jia, Ye Qi, Yenda Li, Yilin Zhang, Ying Zhang, Yossi Adi, Youngjin Nam, Yu, Wang, Yu Zhao, Yuchen Hao, Yundi Qian, Yunlu Li, Yuzi He, Zach Rait, Zachary DeVito, Zef Rosnbrick, Zhaoduo Wen, Zhenyu Yang, Zhiwei Zhao, and Zhiyu Ma. The llama 3 herd of models, 2024. 2 [10] Sander Koelstra, Christian Muhl, Mohammad Soleymani, Jong-Seok Lee, Ashkan Yazdani, Touradj Ebrahimi, Thierry Pun, Anton Nijholt, and Ioannis Patras. Deap: A database for emotion analysis; using physiological signals. IEEE trans-actions on affective computing , 3(1):18–31, 2011. 1 [11] Mantas Mazeika, Eric Tang, Andy Zou, Steven Basart, Jun Shern Chan, Dawn Song, David Forsyth, Jacob Stein-hardt, and Dan Hendrycks. How would the viewer feel? esti-mating wellbeing from video scenarios. Advances in Neural Information Processing Systems , 35:18571–18585, 2022. 1, 3, 4 [12] Soujanya Poria, Devamanyu Hazarika, Navonil Majumder, Gautam Naik, Erik Cambria, and Rada Mihalcea. Meld: A multimodal multi-party dataset for emotion recognition in conversations. arXiv preprint arXiv:1810.02508 , 2018. 1 [13] Qwen Team. Qwen2.5: A party of foundation models, 2024. 2[14] Qwen Team. Qwen2.5-vl, 2025. 4 [15] Leimin Tian, Michal Muszynski, Catherine Lai, Johanna D Moore, Theodoros Kostoulas, Patrizia Lombardo, Thierry Pun, and Guillaume Chanel. Recognizing induced emotions of movie audiences: Are induced and perceived emotions the same? In 2017 Seventh International Conference on Af-fective Computing and Intelligent Interaction (ACII) , pages 28–35. IEEE, 2017. 1 [16] Fouad Trad and Ali Chehab. To ensemble or not: Assessing majority voting strategies for phishing detection with large language models. In International Conference on Intelligent Systems and Pattern Recognition , pages 158–173. Springer, 2024. 2 [17] Xuezhi Wang, Jason Wei, Dale Schuurmans, Quoc V Le, Ed H Chi, Sharan Narang, Aakanksha Chowdhery, and Denny Zhou. Self-consistency improves chain of thought reasoning in language models. In The Eleventh International Conference on Learning Representations , 2023. 2 [18] AmirAli Bagher Zadeh, Paul Pu Liang, Soujanya Poria, Erik Cambria, and Louis-Philippe Morency. Multimodal lan-guage analysis in the wild: Cmu-mosei dataset and inter-pretable dynamic fusion graph. In Proceedings of the 56th Annual Meeting of the Association for Computational Lin-guistics (Volume 1: Long Papers) , pages 2236–2246, 2018. 1[19] Yuanhan Zhang, Bo Li, haotian Liu, Yong jae Lee, Liangke Gui, Di Fu, Jiashi Feng, Ziwei Liu, and Chunyuan Li. Llava-next: A strong zero-shot video understanding model, 2024. 4[20] Athanasia Zlatintsi, Petros Koutras, Georgios Evangelopou-los, Nikolaos Malandrakis, Niki Efthymiou, Katerina Pastra, Alexandros Potamianos, and Petros Maragos. Cognimuse: A multimodal video database annotated with saliency, events, semantics and emotion with application to summarization. 
+
+EURASIP Journal on Image and Video Processing , 2017:1– 24, 2017. 1 
+
+## A. Data Annotation Pipeline 
+
+A.1. Implementation Details 
+
+Given the volume of raw comments to process, we employ an ensemble of three medium-sized multilin-gual instruction-tuned LLMs—LLaMA-3.1-8B-Instruct 3,Qwen2.5-14B-Instruct 4, and DeepSeek-R1-Distill-Qwen-7B 5—chosen for their strong performance and favorable ef-ficiency. All LLM agents share the same prompt for both stages, which are listed below. The LLM annotation pipeline requires two following in-puts: • Clip Description, to set context to understand the senti-ment of the comments. Our pipeline uses the short clip description provided by @MOVIECLIPS Youtube chan-nel but we can also use a description generated by a video understanding model if no existing description is avail-able. • Comment, user-written comments on youtube. 
+
+> 3https://huggingface.co/meta- llama/Llama- 3.1-8B-Instruct
+> 4https : / / huggingface . co / Qwen / Qwen2 . 5 - 14B -Instruct
+> 5https://huggingface.co/deepseek- ai/DeepSeek-R1-Distill-Qwen-7B
+
+Stage 1: Rephrase and Filter Comment Prompt You are to roleplay as a senior director speaking to a junior director in training. You are reviewing comments from audience members on a variety of scenes from a variety of movies/shows. You are explaining to the junior director what the audience member is likely feeling due to the clip along with your reasoning. The goal is to teach the junior direc-tor how film can predictably be used to invoke cer-tain emotions; as a result, you should ignore com-ments from audience members where the analysis shows there is likely nothing the junior director can generalize. Be concise in explanations, limit them to 2 sentences at most. 
+
+Example 1: <description> Paul makes a pair of thieves pay for bringing a knife to a gun fight. 
+
+<comment> TTC Subways, this is Toronto these days. <explanation> The audience member here is comparing how Toronto subways seems sim-ilar to the subways in the scene. You cannot gener-alize the feelings of this audience member broadly so we will ignore this comment. <rephrased> 
+
+None 
+
+Example 2: <description> Crocodile Dundee interrogates a gangster off the side of a build-ing. <comment> It’s Milton from Office Space. 
+
+<explanation> The audience member just real-izes the same actor from another TV show so there is no reaction towards any aspect of the clip here. 
+
+<rephrased> None 
+
+Example 3: <description> Marius mourns his fallen comrades. <comment> My favorite song of this masterpiece <explanation> The audience member likes the music background in the movie clip so this is a reaction we want to know so that we can pay more attention to music and sound in the future. <rephrased> The writer loves the music background. 
+
+Example 4: <description> The Th´ enardiers swindle guests at their inn. <comment> The 1985 version is the best one yet <explanation> The audience member prefers another version of the movie but the comment does not explain why so we will ignore this comment. <rephrased> None 
+
+Example 5: <description> Walking alone at night, Paul comes face-to-face with an armed crim-inal. <comment> Keep shooting til he’s dead, leave no ”victim” to identify you later..and sue you.. 
+
+<explanation> The audience member reiter-ates a character’s action in the movie, implying that it is a good idea so this is an implicit reaction to-wards the character’s decision or part of the plot in the scene. <rephrased> The writer agrees with the character’s action in the scene. Now, analyze the following comment: 
+
+<description> {summary } <comment> 
+
+{comment } Director: Stage 2: Extract Reaction Labels Prompt You are an assistant analyzing YouTube comments to extract audience reactions to a movie clip. Given the following inputs: - clip description :A short description of the movie clip. -
+
+rephrased comment : The original comment rewritten from a third-person perspective. Return a JSON object with the following fields: • high level reaction : One or more words from {”joy”, ”sadness”, ”anger”, ”surprise”, ”dis-gust”, ”fear”, ”neutral” }.• finer grained reaction : One or more words from {”admiration”, ”amusement”, ”anger”, ”annoyance”, ”approval”, ”caring”, ”confusion”, ”curiosity”, ”desire”, ”disappoint-ment”, ”disapproval”, ”disgust”, ”embarrass-ment”, ”excitement”, ”fear”, ”gratitude”, ”grief”, ”joy”, ”love”, ”nervousness”, ”optimism”, ”pride”, ”realization”, ”relief”, ”remorse”, ”sadness”, ”surprise”, ”neutral” }.• reaction reason type : One or more from {”cinematography”, ”character”, ”acting”, ”sound and music”, ”editing and pacing”, ”nar-rative and thematic elements”, ”personal” }; if no reason is clear, return "none" .Return only a valid JSON object with these fields and no additional text or explanations .
+
+clip description : {clip description }
+
+rephrased comment : {rephrased comment }
+
+Output: 
+
+A.2. Human Evaluation & Additional Error Anal-ysis 
+
+Human-LLM Annotaiton Agreement. Table 4 shows a comparison of inter-rater correlation and LLM-Human cor-relation by 21 emotion classes. 
+
+Dual-blind Human Verification. We provide a summary of human evaluation on our test set in Table 5. We further analyze different types of errors that our annotation pipeline tend to make and present them in Table 7 and 6. 
+
+## B. Data Statistics 
+
+Table 8 summarizes Video2Reaction at the movie, clip, and comment levels. As shown in Figure 2a, the dataset is highly imbalanced across the 21 reaction categories (with an imbalance factor of 28 .36 ). Figure 2b further shows that top-1 reaction probability varies considerably across clips (with a median of approximately 0.4). (a) Total number of videos and mean video-level probability of each reac-tion category ( γ denotes imbalance factor) 
+
+> (b) Distribution of dominant reaction probability per video
+
+Figure 2. Key Statistics on Reaction Outcome in the Video2Reaction dataset. Table 4. Comparison between human inter-rater agreement and LLM-human correlation across emotion categories. 
+
+Emotion Inter-rater Corr. LLM-Human Corr. 
+
+admiration 0.622 ± 0.158 0.562 ± 0.177 
+
+relief 0.792 ± 0.063 0.732 ± 0.053 
+
+embarrassment 0.472 ± 0.463 0.719 ± 0.380 
+
+curiosity 0.459 ± 0.301 0.690 ± 0.281 
+
+confusion 0.643 ± 0.235 0.545 ± 0.330 
+
+sadness 0.847 ± 0.235 0.524 ± 0.244 
+
+anger 0.511 ± 0.238 0.484 ± 0.399 
+
+disapproval 0.467 ± 0.243 0.445 ± 0.245 
+
+surprise 0.279 ± 0.349 0.439 ± 0.383 
+
+grief 0.740 ± 0.307 0.437 ± 0.277 
+
+realization 0.292 ± 0.289 0.381 ± 0.389 
+
+amusement 0.431 ± 0.288 0.380 ± 0.290 
+
+joy 0.331 ± 0.253 0.285 ± 0.232 
+
+excitement 0.162 ± 0.270 0.275 ± 0.421 
+
+disgust 0.434 ± 0.339 0.265 ± 0.330 
+
+disappointment 0.186 ± 0.266 0.191 ± 0.404 
+
+annoyance 0.368 ± 0.289 0.165 ± 0.236 
+
+approval 0.495 ± 0.126 0.070 ± 0.176 
+
+fear −0.043 ± 0.013 0.903 ± 0.097 
+
+caring −0.042 ± 0.013 −0.022 ± 0.000 
+
+nervousness 0.541 ± 0.171 −0.031 ± 0.006 
+
+Mean 0.428 0.402 
+
+Table 5. Human evaluation of automated reaction annotation on a sample of 1000 comments. 
+
+Human Rating Description # comments (%) 
+
+Correct Most annotators agree the LLM-assigned la-bels are correct. 860 (86.0%) Incorrect Most annotators agree the LLM-assigned la-bels are incorrect. 78 (7.8%) Not Sure Most annotators are un-sure about the correct-ness of the labels (i.e. due to lack of context on movie references). 62 (6.2%) Table 6. Performance across different movie genres. 
+
+Movie Genre % Correct % Not Sure % Incorrect 
+
+Adventure 96.23 1.89 1.89 Fantasy 96.23 1.89 1.89 Film-Noir 95.00 5.00 0.00 Musical 93.94 0.00 6.06 Documentary 90.48 4.76 4.76 History 90.20 3.92 5.88 Sci-Fi 89.58 4.17 6.25 Biography 88.24 5.88 5.88 Romance 87.27 3.64 9.09 Crime 87.04 7.41 5.56 Horror 86.79 3.77 9.43 Sport 84.09 4.55 11.36 Thriller 83.33 1.85 14.81 Mystery 83.02 3.77 13.21 Music 81.63 16.33 2.04 Animation 80.77 11.54 7.69 War 80.39 5.88 13.73 Family 80.00 7.27 12.73 Comedy 79.25 16.98 3.77 Drama 77.78 14.81 7.41 Action 72.55 15.69 11.76 Table 7. Performance across different emotion categories. 
+
+Emotion Category % Correct % Not Sure % Incorrect 
+
+annoyance 100.00 0.00 0.00 relief 100.00 0.00 0.00 confusion 94.64 5.36 0.00 approval 93.94 0.00 6.06 curiosity 92.31 0.00 7.69 amusement 91.53 5.29 3.17 admiration 90.41 5.17 4.43 surprise 85.71 2.86 11.43 disapproval 84.71 7.85 7.44 excitement 82.35 17.65 0.00 disappointment 73.91 8.70 17.39 disgust 72.73 9.09 18.18 sadness 66.67 20.00 13.33 fear 66.67 11.67 21.67 realization 66.67 0.00 33.33 joy 50.00 16.67 33.33 caring 50.00 25.00 25.00 grief 50.00 16.67 33.33 anger 0.00 75.00 25.00 embarrassment 0.00 33.33 66.67 nervousness 0.00 0.00 100.00 Table 8. Descriptive statistics for video and comment data in Video2Reaction.

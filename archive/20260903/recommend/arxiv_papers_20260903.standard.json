@@ -1,0 +1,131 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-03T23:07:23.946182+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2609.02039v1",
+      "source": "arxiv",
+      "title": "Test-Time Logit Prompting for Source-Free Missing Modality Adaptation",
+      "abstract": "Vision-language models (VLMs) have achieved remarkable performance by leveraging complementary information from large-scale image-text pairs. However, missing-modality inputs are commonly encountered during real-world deployment, often leading to significant performance degradation. Existing methods primarily enhance model robustness by learning modality compensation strategies from source training data. However, their reliance on source training data makes them difficult to apply when original data are unavailable due to privacy, storage, or accessibility constraints, such as clinical applications and personalized AI services. This raises an important yet underexplored question: can VLMs be efficiently adapted at test time for visual recognition with missing modalities without accessing source training data? To this end, we propose Test-Time Logit Prompting (TLP), a lightweight source-free test-time adaptation framework for visual recognition with missing modalities. To address missing-induced prediction shifts, TLP optimizes logit prompts with uncertainty-aware adjustment and modality-complete consistency regularization, adaptively adjusting prediction confidence while preserving semantic consistency. Extensive experiments across diverse vision-language benchmarks demonstrate that TLP consistently enhances recognition performance under missing-modality scenarios, achieving up to 8\\% improvements while requiring only hundreds of tunable parameters and a few test-time optimization steps.",
+      "authors": [
+        "Taixi Chen",
+        "Nancy Guo"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-02T03:13:06+00:00",
+      "link": "https://arxiv.org/pdf/2609.02039v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "directly addresses missing-modality input adaptation for vision-language models under source-data-free conditions; core of missing modality robustness",
+      "llm_evidence_cn": "直接研究视觉语言模型中模态缺失的自适应问题，属于缺失模态鲁棒性核心方向",
+      "llm_evidence": "直接研究视觉语言模型中模态缺失的自适应问题，属于缺失模态鲁棒性核心方向",
+      "canonical_evidence": "直接研究视觉语言模型中模态缺失的自适应问题，属于缺失模态鲁棒性核心方向",
+      "llm_tldr_en": "For missing-modality inputs during VLM deployment with no source data access, the paper proposes test-time logit prompting, adapting prediction logits without retraining. It achieves missing-modality robustness in privacy- or storage-constrained visual recognition.",
+      "llm_tldr_cn": "针对视觉语言模型部署时常见的模态缺失导致性能下降、且因隐私或存储限制无法访问源训练数据的问题，论文提出测试时Logit提示方法，仅通过调整输出端logits即可适配缺失模态。方法不依赖模态补偿训练或源数据，为无源场景下的缺失模态自适应提供高效且隐私友好的新思路。",
+      "llm_tldr": "针对视觉语言模型部署时常见的模态缺失导致性能下降、且因隐私或存储限制无法访问源训练数据的问题，论文提出测试时Logit提示方法，仅通过调整输出端logits即可适配缺失模态。方法不依赖模态补偿训练或源数据，为无源场景下的缺失模态自适应提供高效且隐私友好的新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.01816v1",
+      "source": "arxiv",
+      "title": "Video2Reaction: Training Foundation Video Models to Predict Audience Reaction",
+      "abstract": "We introduce Video2Reaction, a multimodal dataset that maps short movie segments to the induced emotional reactions of viewers in the wild, as expressed through social media comments. Video2Reaction captures the natural diversity of emotional responses by aggregating reactions from online comments at scale, modeling labels as distributions over categorical emotions to better reflect the subjective and ambiguous nature of emotional perception. We benchmark two vision-language models (VLMs) finetuned with LoRA, showing that VLMs learn effectively from Video2Reaction and outperform specialized baselines on dominant reaction prediction. We further demonstrate that VLMs pre-finetuned on Video2Reaction transfer effectively to VCE, another induced emotion dataset with a different taxonomy and video domain. Notably, LLaVA-NeXT-Video-7B pre-finetuned on Video2Reaction and adapted on only 1% of VCE training data achieves a top-3 accuracy of 0.682, on par with the best reported VCE performance trained on the full dataset. The dataset is available at https://huggingface.co/datasets/infofusionlab/Video2Reaction",
+      "authors": [
+        "Sidong Zhang",
+        "Trang Nguyen",
+        "Shiv Shankar",
+        "Gauri Jagatap",
+        "Deepak Chandran",
+        "Andrea Fanelli",
+        "Madalina Fiterau"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-01T19:44:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.01816v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal video-to-audience-reaction emotion dataset and VLM evaluation for induced emotion prediction.",
+      "llm_evidence_cn": "构建视频到观众情感反应的多模态数据集，并评测视觉语言模型，属于多模态情感识别研究。",
+      "llm_evidence": "构建视频到观众情感反应的多模态数据集，并评测视觉语言模型，属于多模态情感识别研究。",
+      "canonical_evidence": "构建视频到观众情感反应的多模态数据集，并评测视觉语言模型，属于多模态情感识别研究。",
+      "llm_tldr_en": "Introduces Video2Reaction, a multimodal dataset mapping movie clips to viewer emotional reactions from social comments, benchmarks LoRA-finetuned VLMs, and shows transfer to other induced-emotion tasks.",
+      "llm_tldr_cn": "观众对视频片段的情感反应多样且主观，缺少大规模多模态训练资源。论文构建Video2Reaction数据集，将短视频映射为社交媒体评论中的观众情绪，并用类别分布刻画主观性。用LoRA微调视觉语言模型后，模型能学习该数据上的情感预测，显著优于专业基线，且预训练后可迁移到其他诱导情感基准。该工作为多模态情感识别与视觉基础模型的受众反应建模提供新基准和数据资源。",
+      "llm_tldr": "观众对视频片段的情感反应多样且主观，缺少大规模多模态训练资源。论文构建Video2Reaction数据集，将短视频映射为社交媒体评论中的观众情绪，并用类别分布刻画主观性。用LoRA微调视觉语言模型后，模型能学习该数据上的情感预测，显著优于专业基线，且预训练后可迁移到其他诱导情感基准。该工作为多模态情感识别与视觉基础模型的受众反应建模提供新基准和数据资源。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.02152v1",
+      "source": "arxiv",
+      "title": "Beyond Modality Harmony: Orthogonal Purification and Topology-Guided MoE for Conflict-Aware Multimodal Recommendation",
+      "abstract": "Multimodal Recommender Systems (MRSs) typically rely on a flawed \"modality harmony\" assumption, presuming that multimodal features are inherently beneficial and strictly aligned with users' collaborative interaction patterns. However, modality-topology conflicts are ubiquitous in real-world scenarios due to deceptive visual clickbaits and mismatched semantics. Blindly integrating these noisy modalities inevitably pollutes the pristine collaborative space, causing severe representation distortion. To address this, we propose Orthogonal purification and topology-guided MoE for conflict-aware multimodal Recommendation (OrthoRec). At its core, OrthoRec introduces Collaborative-Guided Orthogonal Purification (CGOP), which geometrically decouples multimodal features into directions parallel and orthogonal to a pure collaborative anchor. By adaptively truncating the orthogonal noise with an energy-preserving normalization, CGOP rectifies deceptive semantic directions while preserving the modality's intrinsic representation capacity. Furthermore, we design a Topology-Aware Routing Mixture-of-Experts (TAR-MoE). Guided by the collaborative topology, TAR-MoE employs decoupled sigmoid gating to break the zero-sum bottleneck of traditional softmax attention, autonomously determining the injection scale for each purified modality. Finally, a safe-SSL objective is introduced to dynamically penalize the forced contrastive alignment of contradictory pairs. Experiments on three real-world Amazon datasets show that OrthoRec consistently outperforms competitive recent baselines and exhibits improved robustness under modality noise and item sparsity.",
+      "authors": [
+        "Jialin Liu",
+        "Zhaorui Zhang",
+        "Ray C. C. Cheung"
+      ],
+      "primary_category": "cs.IR",
+      "categories": [
+        "cs.IR",
+        "cs.AI"
+      ],
+      "published": "2026-09-02T06:06:30+00:00",
+      "link": "https://arxiv.org/pdf/2609.02152v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "orthogonal purification decouples clean collaborative representation from noisy modality components; relevant to disentangled representation learning",
+      "llm_evidence_cn": "采用正交净化将干净协同表示与含噪模态解耦，与解耦表示学习精神一致",
+      "llm_evidence": "采用正交净化将干净协同表示与含噪模态解耦，与解耦表示学习精神一致",
+      "canonical_evidence": "采用正交净化将干净协同表示与含噪模态解耦，与解耦表示学习精神一致",
+      "llm_tldr_en": "Multimodal recommender systems assume modality features align with user patterns, but clickbait and semantic mismatch cause modality-topology conflicts. OrthoRec performs collaborative-guided orthogonal purification to separate noisy modality components and uses topology-guided MoE for fusion, preventing representation distortion and improving robustness.",
+      "llm_tldr_cn": "多模态推荐系统常假设模态特征与用户交互一致，但点击诱饵或语义错位会产生模态拓扑冲突。论文提出OrthoRec，采用协同引导的正交净化去除与协同空间冲突的模态成分，并用拓扑引导MoE聚合信息。实验表明该方法能缓解推荐表征失真并提升性能，为多模态鲁棒去噪提供了可参照的解耦式净化思路。",
+      "llm_tldr": "多模态推荐系统常假设模态特征与用户交互一致，但点击诱饵或语义错位会产生模态拓扑冲突。论文提出OrthoRec，采用协同引导的正交净化去除与协同空间冲突的模态成分，并用拓扑引导MoE聚合信息。实验表明该方法能缓解推荐表征失真并提升性能，为多模态鲁棒去噪提供了可参照的解耦式净化思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

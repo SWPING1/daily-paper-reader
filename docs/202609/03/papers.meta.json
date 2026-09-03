@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-03",
+  "date": "2026-09-03",
+  "generated_at": "2026-09-03T23:10:19",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/03/2609.02039v1-test-time-logit-prompting-for-source-free-missing-modality-adaptation",
+      "section": "deep",
+      "title_en": "Test-Time Logit Prompting for Source-Free Missing Modality Adaptation",
+      "authors": "Taixi Chen, Nancy Guo",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02039v1",
+      "score": "9.0",
+      "evidence": "直接研究视觉语言模型中模态缺失的自适应问题，属于缺失模态鲁棒性核心方向",
+      "tldr": "视觉语言模型在模态缺失场景下性能显著下降，现有方法依赖源数据训练补偿策略，难以用于隐私受限场景。为此提出测试时logit提示方法TLP，在无源数据条件下通过不确定性感知调整与模态一致正则化优化logit提示，修正预测偏移并保持语义一致。实验显示TLP在多个基准上最高提升8%，仅需数百参数和几步优化，为缺失模态识别提供了轻量高效的解决方案。",
+      "tags": "query:mm",
+      "abstract_en": "Vision-language models (VLMs) have achieved remarkable performance by leveraging complementary information from large-scale image-text pairs. However, missing-modality inputs are commonly encountered during real-world deployment, often leading to significant performance degradation. Existing methods primarily enhance model robustness by learning modality compensation strategies from source training data. However, their reliance on source training data makes them difficult to apply when original data are unavailable due to privacy, storage, or accessibility constraints, such as clinical applications and personalized AI services. This raises an important yet underexplored question: can VLMs be efficiently adapted at test time for visual recognition with missing modalities without accessing source training data? To this end, we propose Test-Time Logit Prompting (TLP), a lightweight source-free test-time adaptation framework for visual recognition with missing modalities. To address missing-induced prediction shifts, TLP optimizes logit prompts with uncertainty-aware adjustment and modality-complete consistency regularization, adaptively adjusting prediction confidence while preserving semantic consistency. Extensive experiments across diverse vision-language benchmarks demonstrate that TLP consistently enhances recognition performance under missing-modality scenarios, achieving up to 8\\% improvements while requiring only hundreds of tunable parameters and a few test-time optimization steps.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/03/2609.01816v1-video2reaction-training-foundation-video-models-to-predict-audience-reaction",
+      "section": "deep",
+      "title_en": "Video2Reaction: Training Foundation Video Models to Predict Audience Reaction",
+      "authors": "Sidong Zhang, Trang Nguyen, Shiv Shankar, Gauri Jagatap, Deepak Chandran, Andrea Fanelli, Madalina Fiterau",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01816v1",
+      "score": "8.0",
+      "evidence": "构建视频到观众情感反应的多模态数据集，并评测视觉语言模型，属于多模态情感识别研究。",
+      "tldr": "观众情绪反应具有主观性和模糊性，现有数据集难以捕获自然多样性。本文提出Video2Reaction多模态数据集，从社交媒体评论聚合真实观众反应，并以情绪分布形式建模。微调的视觉语言模型在主导反应预测上超越专门基线，且在迁移至VCE数据集时仅用1%训练数据即达到与全量训练相当的性能。该数据集和预微调策略为理解视频引发的群体情感提供了有效基准。",
+      "tags": "query:mm",
+      "abstract_en": "We introduce Video2Reaction, a multimodal dataset that maps short movie segments to the induced emotional reactions of viewers in the wild, as expressed through social media comments. Video2Reaction captures the natural diversity of emotional responses by aggregating reactions from online comments at scale, modeling labels as distributions over categorical emotions to better reflect the subjective and ambiguous nature of emotional perception. We benchmark two vision-language models (VLMs) finetuned with LoRA, showing that VLMs learn effectively from Video2Reaction and outperform specialized baselines on dominant reaction prediction. We further demonstrate that VLMs pre-finetuned on Video2Reaction transfer effectively to VCE, another induced emotion dataset with a different taxonomy and video domain. Notably, LLaVA-NeXT-Video-7B pre-finetuned on Video2Reaction and adapted on only 1% of VCE training data achieves a top-3 accuracy of 0.682, on par with the best reported VCE performance trained on the full dataset. The dataset is available at https://huggingface.co/datasets/infofusionlab/Video2Reaction",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/03/2609.02152v1-beyond-modality-harmony-orthogonal-purification-and-topology-guided-moe-for-conflict-aware-multimodal-recommendation",
+      "section": "quick",
+      "title_en": "Beyond Modality Harmony: Orthogonal Purification and Topology-Guided MoE for Conflict-Aware Multimodal Recommendation",
+      "authors": "Jialin Liu, Zhaorui Zhang, Ray C. C. Cheung",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02152v1",
+      "score": "6.0",
+      "evidence": "采用正交净化将干净协同表示与含噪模态解耦，与解耦表示学习精神一致",
+      "tldr": "多模态推荐常假设模态与协同行为和谐，但点击诱饵等带来模态-拓扑冲突，盲目融合会污染协同空间。为此提出OrthoRec：协同引导正交净化(CGOP)将模态分解为平行与正交噪声并截断，拓扑感知路由MoE以解耦sigmoid门控调节各模态注入，safe-SSL动态抑制矛盾对比。在三个Amazon数据集上超强基线，且对噪声和稀疏鲁棒。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Recommender Systems (MRSs) typically rely on a flawed \"modality harmony\" assumption, presuming that multimodal features are inherently beneficial and strictly aligned with users' collaborative interaction patterns. However, modality-topology conflicts are ubiquitous in real-world scenarios due to deceptive visual clickbaits and mismatched semantics. Blindly integrating these noisy modalities inevitably pollutes the pristine collaborative space, causing severe representation distortion. To address this, we propose Orthogonal purification and topology-guided MoE for conflict-aware multimodal Recommendation (OrthoRec). At its core, OrthoRec introduces Collaborative-Guided Orthogonal Purification (CGOP), which geometrically decouples multimodal features into directions parallel and orthogonal to a pure collaborative anchor. By adaptively truncating the orthogonal noise with an energy-preserving normalization, CGOP rectifies deceptive semantic directions while preserving the modality's intrinsic representation capacity. Furthermore, we design a Topology-Aware Routing Mixture-of-Experts (TAR-MoE). Guided by the collaborative topology, TAR-MoE employs decoupled sigmoid gating to break the zero-sum bottleneck of traditional softmax attention, autonomously determining the injection scale for each purified modality. Finally, a safe-SSL objective is introduced to dynamically penalize the forced contrastive alignment of contradictory pairs. Experiments on three real-world Amazon datasets show that OrthoRec consistently outperforms competitive recent baselines and exhibits improved robustness under modality noise and item sparsity.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
