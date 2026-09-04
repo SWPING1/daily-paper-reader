@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-04 <!--dpr-date:20260904-->
+    * 精读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/04/2609.03569v1-occlusion-robust-multimodal-emotion-recognition-in-vr-via-fusion-of-facial-images-and-emg" data-sidebar-item="{&quot;title&quot;: &quot;Occlusion-Robust Multimodal Emotion Recognition in VR via Fusion of Facial Images and EMG&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.03569v1-occlusion-robust-multimodal-emotion-recognition-in-vr-via-fusion-of-facial-images-and-emg&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;VR中上脸被遮挡导致表情信息不完整，融合下脸视频与上脸EMG实现遮挡鲁棒的多模态情绪识别&quot;}">Occlusion-Robust Multimodal Emotion Recognition in VR via Fusion of Facial Images and EMG</a>
   * 2026-09-03 <!--dpr-date:20260903-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/03/2609.02039v1-test-time-logit-prompting-for-source-free-missing-modality-adaptation" data-sidebar-item="{&quot;title&quot;: &quot;Test-Time Logit Prompting for Source-Free Missing Modality Adaptation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.02039v1-test-time-logit-prompting-for-source-free-missing-modality-adaptation&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;直接研究视觉语言模型中模态缺失的自适应问题，属于缺失模态鲁棒性核心方向&quot;}">Test-Time Logit Prompting for Source-Free Missing Modality Adaptation</a>
