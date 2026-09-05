@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-05 <!--dpr-date:20260905-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/05/2609.00708v1-differentially-private-paired-table-image-multimodal-synthesis" data-sidebar-item="{&quot;title&quot;: &quot;Differentially Private Paired Table-Image Multimodal Synthesis&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.00708v1-differentially-private-paired-table-image-multimodal-synthesis&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;面向跨模态合成的生成式条件扩散方法，对缺失模态重建具有借鉴价值&quot;}">Differentially Private Paired Table-Image Multimodal Synthesis</a>
   * 2026-09-04 <!--dpr-date:20260904-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/04/2609.03569v1-occlusion-robust-multimodal-emotion-recognition-in-vr-via-fusion-of-facial-images-and-emg" data-sidebar-item="{&quot;title&quot;: &quot;Occlusion-Robust Multimodal Emotion Recognition in VR via Fusion of Facial Images and EMG&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.03569v1-occlusion-robust-multimodal-emotion-recognition-in-vr-via-fusion-of-facial-images-and-emg&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;VR中上脸被遮挡导致表情信息不完整，融合下脸视频与上脸EMG实现遮挡鲁棒的多模态情绪识别&quot;}">Occlusion-Robust Multimodal Emotion Recognition in VR via Fusion of Facial Images and EMG</a>

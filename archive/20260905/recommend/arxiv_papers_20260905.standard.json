@@ -1,0 +1,57 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-05T21:27:37.177547+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.00708v1",
+      "source": "arxiv",
+      "title": "Differentially Private Paired Table-Image Multimodal Synthesis",
+      "abstract": "Differentially private (DP) synthesis has been extensively studied for tabular and image data separately, yet many real-world datasets contain images paired with multivariate tabular records. Synthesizing such data is particularly challenging under DP, as the two modalities favor different private learning mechanisms while their dependence must also be preserved. To address this challenge, we propose DP-TabImage, a modality-specialized framework for private paired synthesis. DP-TabImage instantiates the factorization $p(x,y)=p_T(y)p_I(x\\;|\\;y)$ using a private Probabilistic Graphical Model for the multivariate table distribution and a table-conditioned diffusion model trained with DP-SGD for the conditional image distribution. To facilitate conditional learning under clipped and noisy gradients, we further pretrain the model on private table-image prototypes, pairing privately constructed attribute-conditioned images with tabular vectors derived from the already private tabular model at no additional privacy cost. Experiments on three real-world datasets show that DP-TabImage achieves a strong balance among tabular fidelity, image fidelity, and cross-modal alignment. Our analysis further reveals that visual warm-up primarily improves marginal image fidelity, whereas aligned table-image warm-up is critical for improving cross-modal correspondence. Our source code is available in the GitHub repository, https://github.com/KaiChen9909/TabImage_Syn.",
+      "authors": [
+        "Kai Chen",
+        "Josephine Lamp",
+        "Somesh Jha",
+        "Tianhao Wang"
+      ],
+      "primary_category": "cs.CR",
+      "categories": [
+        "cs.CR",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-09-01T04:34:54+00:00",
+      "link": "https://arxiv.org/pdf/2609.00708v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Generative conditional diffusion model for cross-modal synthesis, useful for missing-modality reconstruction",
+      "llm_evidence_cn": "面向跨模态合成的生成式条件扩散方法，对缺失模态重建具有借鉴价值",
+      "llm_evidence": "面向跨模态合成的生成式条件扩散方法，对缺失模态重建具有借鉴价值",
+      "canonical_evidence": "面向跨模态合成的生成式条件扩散方法，对缺失模态重建具有借鉴价值",
+      "llm_tldr_en": "Proposes DP-TabImage, a differentially private framework for paired table-image synthesis that factorizes joint distribution and uses a table-conditioned diffusion model, enabling privacy-preserving conditional image generation.",
+      "llm_tldr_cn": "现实数据常由图像与表格配对组成，而差分隐私(DP)下的两模态联合合成既需适应各自机制又需保持依赖关系。论文提出DP-TabImage，将联合分布分解为私有表格概率图模型与以表格为条件的扩散图像生成器，并分别用相应DP机制训练。该方法可在不泄露隐私的前提下生成保留表格-图像依赖的配对数据，为异质多模态数据生成提供了可复用的条件生成范式，这类范式也可用于缺失模态的填补与重建。",
+      "llm_tldr": "现实数据常由图像与表格配对组成，而差分隐私(DP)下的两模态联合合成既需适应各自机制又需保持依赖关系。论文提出DP-TabImage，将联合分布分解为私有表格概率图模型与以表格为条件的扩散图像生成器，并分别用相应DP机制训练。该方法可在不泄露隐私的前提下生成保留表格-图像依赖的配对数据，为异质多模态数据生成提供了可复用的条件生成范式，这类范式也可用于缺失模态的填补与重建。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

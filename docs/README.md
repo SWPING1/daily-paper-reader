@@ -6,28 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-04
-- 运行时间：2026-09-04 22:48:31 UTC
+- 最新运行日期：2026-09-05
+- 运行时间：2026-09-05 21:28:19 UTC
 - 运行状态：成功
 - 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读1篇，聚焦VR环境下结合面部图像与EMG的多模态情绪识别方法。
-
-该研究针对遮挡鲁棒性提出融合方案，在虚拟现实中提升情绪识别准确率，值得关注多模态融合与遮挡处理方向。
-
-下步可延伸探索更轻量级模型或实时应用场景，普通读者可借此了解VR情绪交互的前沿进展。
-- 详情：[/202609/04/README](/202609/04/README)
+今日仅速读1篇论文，无精读，主题聚焦差分隐私与多模态合成。  
+最值得关注的是《Differentially Private Paired Table-Image Multimodal Synthesis》（6.0/10），探讨表格与图像配对生成中的隐私保护。  
+若对隐私计算或多模态生成感兴趣，可进一步查阅该文的差分隐私机制设计。
+- 详情：[/202609/05/README](/202609/05/README)
 
 ### 精读区论文标签
-1. [Occlusion-Robust Multimodal Emotion Recognition in VR via Fusion of Facial Images and EMG](/202609/04/2609.03569v1-occlusion-robust-multimodal-emotion-recognition-in-vr-via-fusion-of-facial-images-and-emg)  
-   标签：评分：8.0/10、query:mm
-   evidence：VR中上脸被遮挡导致表情信息不完整，融合下脸视频与上脸EMG实现遮挡鲁棒的多模态情绪识别
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Differentially Private Paired Table-Image Multimodal Synthesis](/202609/05/2609.00708v1-differentially-private-paired-table-image-multimodal-synthesis)  
+   标签：评分：6.0/10、query:mm
+   evidence：面向跨模态合成的生成式条件扩散方法，对缺失模态重建具有借鉴价值
 
 
 <div class="dpr-home-promo-card">
