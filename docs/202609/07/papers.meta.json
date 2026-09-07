@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-07",
+  "date": "2026-09-07",
+  "generated_at": "2026-09-07T22:56:16",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/07/2609.04690v1-enhancing-multimodal-emotion-recognition-via-multi-feature-encoding-and-attention-based-fusion",
+      "section": "deep",
+      "title_en": "Enhancing Multimodal Emotion Recognition via Multi-Feature Encoding and Attention-Based Fusion",
+      "authors": "Xu Lin, Ke Wang, Hui Kang, Xinying Wang",
+      "date": "2026-09-04",
+      "pdf": "https://arxiv.org/pdf/2609.04690v1",
+      "score": "10.0",
+      "evidence": "直接研究多模态情感识别，利用音频与视觉特征提取及注意力融合",
+      "tldr": "多模态情感识别在人机交互、远程教育、医疗等领域具有重要价值。现有方法在特征互补利用和模态融合上存在不足。本文提出音频与视频双流框架：音频提取Wav2Vec2语义、MFCC及韵律统计特征并经BiLSTM建模时序；视频采用ResNet50-BiLSTM提取表情时空特征。引入多头注意力进行特征级融合，自适应调控模态贡献。在MELD和IEMOCAP数据集上性能显著优于基线，消融实验表明注意力融合在类别不平衡设置下明显提升鲁棒性。该框架能有效捕获语音和视觉情感线索，为实际多模态情感识别提供了通用且实用的方案。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal emotion recognition has attracted growing interest due to its importance in human-computer interaction, remote education, and healthcare. This paper proposes a novel multimodal emotion recognition framework that integrates rich audio and visual feature extraction with an attention-based fusion strategy. For audio, we extract three complementary feature types: semantic embeddings from Wav2Vec2, MFCC features, and statistical acoustic descriptors such as pitch, energy, and rhythm. These are aligned and fused via a BiLSTM to capture temporal dependencies. For video, we propose a ResNet50-BiLSTM architecture that combines deep residual learning and sequential modeling to extract expressive spatiotemporal features from facial sequences. To enhance multimodal synergy, we introduce a feature-level fusion mechanism based on multi-head attention, allowing the model to adaptively weigh contributions across modalities. Experiments conducted on the MELD and IEMOCAP datasets demonstrate that our model significantly outperforms baselines in both accuracy and robustness. Furthermore, ablation studies show that the attention-based fusion strategy significantly improves performance in unbalanced data settings. Our findings suggest that the proposed framework effectively captures diverse emotional cues from speech and visual expressions, and offers a practical and generalizable approach for real-world multimodal emotion recognition tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/07/2609.02941v1-siser-speaker-invariant-speech-emotion-recognition-with-entropy-based-adversarial-training",
+      "section": "quick",
+      "title_en": "SISER: Speaker-Invariant Speech Emotion Recognition with Entropy-Based Adversarial Training",
+      "authors": "Eunseo Choi, Hyunku Kang, Chanwoo Kim",
+      "date": "2026-08-31",
+      "pdf": "https://arxiv.org/pdf/2609.02941v1",
+      "score": "7.0",
+      "evidence": "利用熵对抗训练实现说话人不变的语音情感表征，与解耦表示学习思想一致",
+      "tldr": "语音情感识别受标注样本稀缺和说话人差异两个核心挑战制约，现有对抗式方法尚未充分利用预训练表示。为此，提出SISER，以wav2vec 2.0为编码器、以ECAPA-TDNN为判别器，并利用基于熵的对抗训练在学习情感表征时抑制说话人身份，促进跨说话人对齐。在IEMOCAP评测中，SISER达到60.63%的未加权准确率，高于基线51.15%以及无说话人抑制模型的56.46%。消融实验进一步说明，说话人判别器架构是决定性能的核心因素，也体现了强预训练特征与充分判别训练结合的价值。",
+      "tags": "query:mm",
+      "abstract_en": "Speech emotion recognition (SER) faces two fundamental challenges: scarcity of labeled data and inter-speaker variability, both of which hinder generalization of emotion recognition systems. While prior adversarial approaches address speaker variability, they fall short in leveraging powerful pre-trained representations. We propose SISER (Speaker-Invariant Speech Emotion Recognition), integrating wav2vec 2.0 as a feature encoder and ECAPA-TDNN as a speaker discriminator within an entropy-based adversarial training scheme. wav2vec 2.0 provides rich self-supervised representations that alleviate dependency on large labeled datasets, while ECAPA-TDNN enables suppression of speaker identity via a stronger adversarial signal than shallow classifiers. Evaluated on IEMOCAP, SISER achieves a UA of 60.63%, outperforming the baseline (51.15%) and wav2vec 2.0 without speaker suppression (56.46%), with ablation emphasizing that the choice of speaker classifier architecture is a key factor.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/07/2609.05256v1-emotion-recognition-from-physiological-signals-using-machine-learning-algorithms-under-controlled-emotional-stimuli",
+      "section": "quick",
+      "title_en": "Emotion Recognition from Physiological Signals Using Machine Learning Algorithms Under Controlled Emotional Stimuli",
+      "authors": "Aditi Site, Annariina Lohiranta, Tarmo Lipping",
+      "date": "2026-09-04",
+      "pdf": "https://arxiv.org/pdf/2609.05256v1",
+      "score": "7.0",
+      "evidence": "在受控情绪刺激下利用生理信号（ECG和GSR）进行多模态情绪识别",
+      "tldr": "情绪识别在健康分析和人机交互中具有重要意义。现有研究利用ECG和GSR生理信号，提取时域和频域特征，训练多种机器学习模型以分类离散情绪、效价和唤醒度。结果表明，树模型在较少情绪类别和唤醒度分类上表现良好，其中XGBoost对离散情绪分类准确率达52.8%，随机森林对唤醒度分类准确率达53.6%，且ECG与GSR特征组合效果最优。该研究验证了生理信号在情绪识别中的有效性，为情感计算系统提供了实用依据。",
+      "tags": "query:mm",
+      "abstract_en": "Emotion recognition using physiological signals plays a crucial role in well-being analysis, affective computing and human-computer interaction. This study investigates the performance of multiple machine learning models in classifying targets such as discrete emotions with varying granularity, valence and arousal using physiological signals such as Electrocardiogram (ECG) and Galvanic Skin Response (GSR). In here, we extracted various time- and frequency-domain features from the ECG and GSR data to train machine learning models. The results indicate that categorizing discrete emotions with fewer emotions and categorizing arousal achieves good classification accuracy with tree-based models. XGBoost achieved accuracy of 52.8 % for classifying discrete emotions and Random Forest achieved accuracy of 53.6% for classifying arousal. In both the cases, the combination of ECG+GSR feature sets achieved best performance. These findings highlight the effectiveness of physiological signals in capturing emotional states and support their use for emotion recognition systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/07/2609.04525v1-discriminative-flow-matching-beyond-time-conditioning-in-generative-restoration-via-flow-state-representations",
+      "section": "quick",
+      "title_en": "Discriminative Flow Matching: Beyond Time-Conditioning in Generative Restoration via Flow-State Representations",
+      "authors": "Shrishti Saha Shetu, Emanuël A. P. Habets, Andreas Brendel",
+      "date": "2026-09-03",
+      "pdf": "https://arxiv.org/pdf/2609.04525v1",
+      "score": "6.0",
+      "evidence": "基于判别式流状态表示的生成式复原，可适用于缺失模态的补全重建",
+      "tldr": "现有条件流匹配依赖全局时间坐标描述生成进度，但修复任务的传输进度与样本相关，同坐标的退化程度差异大。本文通过潜在空间分析发现判别表示能按退化程度组织并沿生成轨迹移动，据此提出判别流匹配，用判别流状态表示替换显式时间条件。在语音增强和图像去噪上优于现有基线，为判别式与生成式建模提供新视角。",
+      "tags": "query:mm",
+      "abstract_en": "Existing Conditional Flow Matching (CFM) formulations describe transport progress using an explicit interpolation coordinate, commonly interpreted as time, assuming that a single global variable adequately represents a sample's position along the generative trajectory. In restoration tasks, however, transport progress is sample-dependent because the initial distribution may exhibit varying statistical dependencies with the target distribution. Thus, samples at the same interpolation coordinate can differ substantially in degradation level, distance to the target distribution, and restoration difficulty. We investigate whether signal representations learned by discriminatively trained models provide a meaningful description of generative transport state in CFM-based restoration. Through systematic latent-space analysis, we show that discriminative representations organize according to degradation severity and follow a consistent trajectory toward the clean-data manifold during generation. Motivated by these observations, we introduce the Discriminative Flow-State Hypothesis, which posits that discriminative representations encode a transport state governing generative restoration. Based on this hypothesis, we propose Discriminative Flow Matching, which conditions the Flow-Matching velocity field on Discriminative Flow-State Representations rather than explicit time coordinates. Experiments on speech enhancement and image denoising show that these representations characterize restoration progress, enable adaptive inference, and consistently outperform CFM and diffusion-related baselines. Our findings suggest that discriminative representations provide an effective state-aware alternative to explicit time conditioning and offer a novel perspective on the relationship between discriminative and CFM-based generative modeling.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
