@@ -1,0 +1,526 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-09T22:03:49.631475+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 9,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 7,
+    "quick_skim_target": 11,
+    "quick_selected": 7
+  },
+  "deep_dive": [
+    {
+      "id": "2609.05537v1",
+      "source": "arxiv",
+      "title": "VIS-DICT: A Visual Dictionary for Missing Modality Imputation in Social Network Depression Detection",
+      "abstract": "Tracking social media posts can help spot early signs of depression. Recent studies show that combining text and images works better for detecting depression than using text alone. However, many social media posts do not have images, which makes it hard to use multimodal models. Most existing methods fill in missing images using retrieval or generative models that need extra training. In this paper, we introduce Vis-Dict, a dictionary-based method that builds missing visual features by linking words to average image vectors from complete training posts. These estimated visual features are then combined with text to track changes in user behavior over time. We tested Vis-Dict on a social media dataset using user timelines of up to 512 posts and compared it with other missing-data methods. The results show that Vis-Dict performs on par with generative networks, reaching an F1-score of 0.9454 and an ROC-AUC of 0.9890. Most importantly, Vis-Dict achieves this strong performance with zero trainable parameters for image generation. These findings show that directly connecting words to visual features is an effective and practical way to handle missing images in depression detection systems.",
+      "authors": [
+        "Hamed Marvi",
+        "Mohammad Mehdi Keikha",
+        "Abolfazl Nadi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-02T08:13:30+00:00",
+      "link": "https://arxiv.org/pdf/2609.05537v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Dictionary-based visual feature imputation for missing image modality in social media depression detection; direct imputation method for missing modality robustness.",
+      "llm_evidence_cn": "针对社交媒体抑郁症检测实现缺失视觉特征的词典式补全，直接契合缺失模态补全要求。",
+      "llm_evidence": "针对社交媒体抑郁症检测实现缺失视觉特征的词典式补全，直接契合缺失模态补全要求。",
+      "canonical_evidence": "针对社交媒体抑郁症检测实现缺失视觉特征的词典式补全，直接契合缺失模态补全要求。",
+      "llm_tldr_en": "VIS-DICT builds a visual dictionary from complete posts and maps words to averaged image features to impute missing visual modality, enabling multimodal depression detection on text-only timelines without extra training.",
+      "llm_tldr_cn": "社交媒体帖子常缺图像，导致多模态抑郁症检测难以部署在纯文本时间线上，而现有补图方法依赖检索或生成并需要额外训练。本文提出词典式补全方法VIS-DICT：从完整训练贴中统计词语对应的平均图像向量，构建视觉词典，对缺少图片的帖子估计其视觉特征，再与文本融合并追踪用户时间线行为变化。在社交网络抑郁数据集上的结果表明，该方法无需额外生成训练即可实现有效的缺失视觉补全，支撑多模态状态预测的低成本应用。",
+      "llm_tldr": "社交媒体帖子常缺图像，导致多模态抑郁症检测难以部署在纯文本时间线上，而现有补图方法依赖检索或生成并需要额外训练。本文提出词典式补全方法VIS-DICT：从完整训练贴中统计词语对应的平均图像向量，构建视觉词典，对缺少图片的帖子估计其视觉特征，再与文本融合并追踪用户时间线行为变化。在社交网络抑郁数据集上的结果表明，该方法无需额外生成训练即可实现有效的缺失视觉补全，支撑多模态状态预测的低成本应用。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.05755v1",
+      "source": "arxiv",
+      "title": "Emotion as a Distribution: Joint Valence-Arousal Probability Learning for Speaker-Independent Multimodal Emotion Recognition",
+      "abstract": "Human emotion is graded and frequently mixed, yet most multimodal recognizers collapse it onto a single hard label. We argue the recognizer should instead expose a distribution over affective space. Our text+speech system, alongside its categorical decision, emits a $9\\times9$ probability matrix over the Valence-Arousal plane, trained with a two-dimensional Gaussian soft target under a Kullback-Leibler/cross-entropy objective, aimed at counseling support. Evaluation is strict: speaker-independent 5-fold leave-one-session-out IEMOCAP with rotating-session inner validation, headline metrics only on the held-out session. Within one fixed encoder-fusion-head pipeline we compare Transformer and state-space (Mamba-1/2/3) backbones at matched depth and width, at two operating points ($T\\approx550$, $T\\approx2750$). The featured dual-head system reaches 73.0% $\\pm$ 0.3 unweighted accuracy over three seeds (separate rerun: 72.1%), exceeding the Transformer fusion baseline by 3.0 UA points (95% session-bootstrap CI [1.0,4.7]; significant under paired t-test and session-level bootstrap), with no latency or memory advantage at these lengths; swapping the ~1M trainable front-end for frozen WavLM-Large features (learnable layer weights) lifts the same architecture to 76.6% $\\pm$ 1.3. Pre-specified controls scope the claims honestly: simpler valence-arousal auxiliaries reproduce the classification lift within noise, and a dedicated regression head tracks the continuous ratings slightly better, so the head's specific value is the normalized affect distribution itself. That distribution recovers the circumplex: its center of mass tracks valence and arousal (CCC 0.66/0.66; predominantly between-class structure, weaker within-class tracking), and its entropy is weakly but consistently linked to categorical rater ambiguity, not dimensional spread.",
+      "authors": [
+        "Tingyi Lin",
+        "Wen-Ren Yang",
+        "Kuanwei Chen"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.CL"
+      ],
+      "published": "2026-09-04T22:34:14+00:00",
+      "link": "https://arxiv.org/pdf/2609.05755v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "directly targets multimodal emotion recognition with text and speech on IEMOCAP",
+      "llm_evidence_cn": "直接面向文本加语音的多模态情感识别，并在IEMOCAP上进行说话者独立评估",
+      "llm_evidence": "直接面向文本加语音的多模态情感识别，并在IEMOCAP上进行说话者独立评估",
+      "canonical_evidence": "直接面向文本加语音的多模态情感识别，并在IEMOCAP上进行说话者独立评估",
+      "llm_tldr_en": "Proposes a text and speech multimodal emotion recognition system that additionally outputs a 9x9 valence-arousal probability matrix via Gaussian soft-target training; speaker-independent IEMOCAP evaluation compares transformer and state-space encoders to capture mixed emotions.",
+      "llm_tldr_cn": "现有大多多模态情感识别系统把情绪识别成单一硬标签，难以刻画情绪的分级和混合特性。该文提出文本加语音的情感识别框架，除类别判断外在效价-唤醒平面上输出9×9概率矩阵，并通过二维高斯软目标进行训练。在IEMOCAP数据集的说话者独立、留一会话验证中评估，并与Transformer等结构比较。该方法将情感建模为分布而非点标签，更适合心理咨询等需要细腻情感估计的应用。",
+      "llm_tldr": "现有大多多模态情感识别系统把情绪识别成单一硬标签，难以刻画情绪的分级和混合特性。该文提出文本加语音的情感识别框架，除类别判断外在效价-唤醒平面上输出9×9概率矩阵，并通过二维高斯软目标进行训练。在IEMOCAP数据集的说话者独立、留一会话验证中评估，并与Transformer等结构比较。该方法将情感建模为分布而非点标签，更适合心理咨询等需要细腻情感估计的应用。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.06188v1",
+      "source": "arxiv",
+      "title": "MVFA: A Multi-View Text-Guided Multimodal Fusion LLM Adapter for Sentiment Analysis and Emotion Recognition",
+      "abstract": "Multimodal sentiment analysis and emotion recognition in conversations demand effective modeling of heterogeneous interactions across textual, acoustic, and visual modalities. Although large language models (LLMs) offer powerful language understanding, adapting them to multimodal affective computing remains challenging: full-model fine-tuning is computationally prohibitive, while many existing lightweight adapters fail to preserve rich textual cues during cross-modal fusion. To address these limitations, we propose the multi-view text-guided multimodal fusion adapter (MVFA), a parameter-efficient framework that augments frozen LLMs with strong multimodal reasoning capability. MVFA first constructs complementary text views via max pooling, mean pooling, and attention pooling; these views then guide cross-modal interactions with audio and visual features. The fused multimodal representations are subsequently compressed into a compact set of learnable pseudo-tokens through an Enhanced Q-Former Fusion Module. Using ChatGLM3-6B-base as the primary backbone, we further validate MVFA on LLaMA2-7B and Qwen3-8B to examine its portability across multiple frozen LLM backbones. MVFA is evaluated on three challenging datasets: CH-SIMS V2.0, MELD, and CHERMA. Experimental results demonstrate that MVFA achieves state-of-the-art performance on key metrics while updating only a small fraction of parameters. Specifically, it attains 84.62\\% Acc2 and 84.59\\% F1 on CH-SIMS V2.0, 67.36\\% Acc and 66.03\\% WF1 on MELD, and 74.66\\% Acc on CHERMA. These findings establish multi-view text-guided fusion as an effective and scalable paradigm for parameter-efficient multimodal LLM adaptation in affective computing. The code is publicly available at https://github.com/Overwhelm1208/MVFA.",
+      "authors": [
+        "Pengfei Shao",
+        "Jisheng Dang",
+        "Jiawen Fang",
+        "Ning Liu",
+        "Wencan Zhang",
+        "Bimei Wang",
+        "Jingwen Zhao",
+        "Jianhuang Lai",
+        "Qi Tian",
+        "Tat-Seng Chua"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-05T17:12:51+00:00",
+      "link": "https://arxiv.org/pdf/2609.06188v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Sentiment analysis and emotion recognition in conversations; text-guided multimodal fusion adapter; directly matches multimodal emotion recognition.",
+      "llm_evidence_cn": "面向多模态情感分析和情绪识别，提出文本引导的大语言模型高效融合适配器，与多模态情感识别需求直接相关。",
+      "llm_evidence": "面向多模态情感分析和情绪识别，提出文本引导的大语言模型高效融合适配器，与多模态情感识别需求直接相关。",
+      "canonical_evidence": "面向多模态情感分析和情绪识别，提出文本引导的大语言模型高效融合适配器，与多模态情感识别需求直接相关。",
+      "llm_tldr_en": "MVFA is a parameter-efficient multi-view text-guided LLM adapter for multimodal sentiment analysis and emotion recognition, injecting acoustic and visual cues into frozen LLMs while preserving strong textual semantics.",
+      "llm_tldr_cn": "多模态情感分析与对话情绪识别需要处理文本、语音和视觉等异构模态的复杂交互，但常用轻量适配器容易丢失文本语义，全量微调代价又过大。本文设计多视图文本引导融合适配器MVFA：先构建互补的文本视角，再通过跨模态注意力将声音与视觉信息融合到冻结大语言模型上，以低参数量保留文本建模能力。在情感分析与情绪识别任务中，该框架展示出相比普通适配器更充分的跨模态语义保持和多模态推理优势，为大模型高效赋能情感计算提供可行方案。",
+      "llm_tldr": "多模态情感分析与对话情绪识别需要处理文本、语音和视觉等异构模态的复杂交互，但常用轻量适配器容易丢失文本语义，全量微调代价又过大。本文设计多视图文本引导融合适配器MVFA：先构建互补的文本视角，再通过跨模态注意力将声音与视觉信息融合到冻结大语言模型上，以低参数量保留文本建模能力。在情感分析与情绪识别任务中，该框架展示出相比普通适配器更充分的跨模态语义保持和多模态推理优势，为大模型高效赋能情感计算提供可行方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.06733v1",
+      "source": "arxiv",
+      "title": "LASSNet: Level-Aware Availability-Conditioned Spatial-Semantic Fusion for Brain Tumor Segmentation with Missing MRI Modalities",
+      "abstract": "Brain tumor segmentation from multimodal MRI relies on complementary evidence across four imaging sequences, yet one or more modalities may be unavailable because of acquisition cost, protocol variation, scan failure, or patient condition. Existing work has explored reconstruction, knowledge transfer, and direct feature fusion, but leaves open whether missing-modality fusion should change with representation level. High-resolution lateral features retain spatial detail, whereas compressed bottleneck features encode semantic and inter-modality context. We therefore hypothesize that fusion should be conditioned jointly on modality availability and feature hierarchy. We propose the Level-Aware Availability-Conditioned Spatial-Semantic Fusion Network (LASSNet), which contains two level-specialized modules. Hierarchical Availability-Conditioned Fusion (HACF) constructs four lateral representations using count-normalized aggregation of available modalities, mask-conditioned channel modulation, and local 3D refinement. Tri-Scale Relational-Spatial Fusion (TriRSF) models relations among available modality descriptors and spatial context across multiple bottleneck resolutions, followed by cross-scale aggregation and availability-conditioned global spatial attention. A shared coarse-to-fine decoder starts from TriRSF semantics and progressively injects HACF features, without reconstructing missing inputs. Across all 15 non-empty modality configurations, LASSNet obtains mean Dice scores of 76.7% and 83.2% over WT, TC, and ET on BraTS2019 and BraTS2023, respectively.",
+      "authors": [
+        "Haobin Chen",
+        "Ao Chang",
+        "Rundong Wang",
+        "Zhicheng Li",
+        "Zhihao Tang",
+        "Heqin Zhu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-06T17:12:43+00:00",
+      "link": "https://arxiv.org/pdf/2609.06733v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly tackles missing MRI modalities via level-aware availability-conditioned spatial-semantic fusion, a core missing-modality robustness method",
+      "llm_evidence_cn": "针对脑肿瘤多模态MRI中一个或多个序列缺失问题，提出层级感知的可用性条件空间-语义融合",
+      "llm_evidence": "针对脑肿瘤多模态MRI中一个或多个序列缺失问题，提出层级感知的可用性条件空间-语义融合",
+      "canonical_evidence": "针对脑肿瘤多模态MRI中一个或多个序列缺失问题，提出层级感知的可用性条件空间-语义融合",
+      "llm_tldr_en": "LASSNet addresses missing MRI modalities in brain tumor segmentation by conditioning fusion on modality availability and feature hierarchy, showing level-aware fusion is beneficial when some imaging sequences are absent.",
+      "llm_tldr_cn": "脑肿瘤分割依赖四种MRI序列的互补证据，但采集成本、扫描失败等常导致模态缺失。已有重建、知识迁移和直接融合等方法并未回答缺失模态融合是否应随表征层级改变。论文提出LASSNet，将融合建模为模态可用性与特征层级共同条件下的自适应策略，在高分辨率空间细节与瓶颈语义上下文两个层面分别调整融合。实验表明该层级感知可用性条件融合对多模态MRI缺失场景更鲁棒，说明融合策略应同时考虑模态缺失模式和特征尺度，对缺失模态学习具有借鉴价值。",
+      "llm_tldr": "脑肿瘤分割依赖四种MRI序列的互补证据，但采集成本、扫描失败等常导致模态缺失。已有重建、知识迁移和直接融合等方法并未回答缺失模态融合是否应随表征层级改变。论文提出LASSNet，将融合建模为模态可用性与特征层级共同条件下的自适应策略，在高分辨率空间细节与瓶颈语义上下文两个层面分别调整融合。实验表明该层级感知可用性条件融合对多模态MRI缺失场景更鲁棒，说明融合策略应同时考虑模态缺失模式和特征尺度，对缺失模态学习具有借鉴价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.06928v1",
+      "source": "arxiv",
+      "title": "Emo-DVS: A Multimodal Benchmark for Privacy-Aware Emotion Recognition with Event Cameras",
+      "abstract": "Emotion analysis is a fundamental task in computer vision, but its practical deployment remains constrained by the privacy risks inherent to conventional RGB cameras. Bio-inspired event cameras present a promising hardware-level solution because they capture asynchronous brightness changes, thereby reducing exposure of facial identity details while leveraging high dynamic range for robust perception under challenging illumination conditions. Despite these advantages, existing event-based methods struggle in complex real-world settings due to limited dataset scales, simple acquisition conditions, and reliance on single-modality visual cues. To address these, we establish a challenging tri-modal benchmark with event, audio, and text modalities and propose the Information-Guided Gated Fusion (IGF) framework, which first pre-trains an event encoder on the FAU subset of Emo-DVS to capture fine-grained facial dynamics, then employs adaptive modality gating to suppress modality-specific noise, and finally leverages mutual information maximization to align robust cross-modal representations. To alleviate data scarcity, we introduce Emo-DVS, the first large-scale event-based emotion analysis dataset, which couples dynamic illumination with the Facial Action Unit (FAU) subset and emotion subset. Extensive experiments demonstrate that IGF achieves state-of-the-art performance.",
+      "authors": [
+        "Jiaqi Chen",
+        "Qinfu Xu",
+        "Hao Zhuang",
+        "Liyuan Pan"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-07T01:55:44+00:00",
+      "link": "https://arxiv.org/pdf/2609.06928v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Builds a multimodal benchmark (event, audio, text) for privacy-aware emotion recognition",
+      "llm_evidence_cn": "构建事件-音频-文本多模态情绪识别基准，直接匹配多模态情绪识别需求",
+      "llm_evidence": "构建事件-音频-文本多模态情绪识别基准，直接匹配多模态情绪识别需求",
+      "canonical_evidence": "构建事件-音频-文本多模态情绪识别基准，直接匹配多模态情绪识别需求",
+      "llm_tldr_en": "Proposes Emo-DVS, a tri-modal benchmark for emotion recognition using event cameras, audio, and text to enable privacy-preserving and illumination-robust multimodal affective computing.",
+      "llm_tldr_cn": "针对RGB相机带来的隐私风险和现有事件方法局限于单模态小数据的问题，Emo-DVS构建了事件、音频与文本协同的大规模三模态情绪识别基准。事件相机通过异步亮度变化减少面部身份曝光，同时保证高动态范围的复杂光照鲁棒性。该基准弥补了数据规模与模态覆盖不足，为隐私友好且光照鲁棒的跨模态情绪识别研究提供了标准评测平台。",
+      "llm_tldr": "针对RGB相机带来的隐私风险和现有事件方法局限于单模态小数据的问题，Emo-DVS构建了事件、音频与文本协同的大规模三模态情绪识别基准。事件相机通过异步亮度变化减少面部身份曝光，同时保证高动态范围的复杂光照鲁棒性。该基准弥补了数据规模与模态覆盖不足，为隐私友好且光照鲁棒的跨模态情绪识别研究提供了标准评测平台。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.07009v1",
+      "source": "arxiv",
+      "title": "NeuCME: Toward Dynamic Multimodal Continual Learning via Neural Combinatorics of Multiple Experts",
+      "abstract": "Multimodal continual learning has recently shown great potential for developing agents with human-like intelligence by continuously learning new tasks across multiple modalities. However, existing methods typically assume that the set of modalities per task is predefined and fixed. In this paper, we investigate a more realistic learning setting, referred to as dynamic multimodal continual learning, in which the set of modalities may vary across tasks rather than remaining fixed. This setting involves two primary challenges: (i) spatio-temporal catastrophic forgetting and (ii) adaptive multimodal fusion. To address these challenges, we propose NeuCME (as shorthand for \\textbf{Neu}ral \\textbf{C}ombinatorics of \\textbf{M}ultiple \\textbf{E}xperts), a novel framework designed to effectively learn and integrate knowledge across tasks with varying modalities. The proposed NeuCME model comprises three key components, namely modality-combinational rehearsal, multi-gated mixture-of-experts, and task relevance-guided distillation. Furthermore, we formulate an evaluation metric to quantify the dynamism of task sequences and then set up a comprehensive benchmark with different degrees of dynamism. Extensive experiments using four real-world datasets demonstrate that the proposed NeuCME outperforms state-of-the-art methods markedly.",
+      "authors": [
+        "Kai Guo",
+        "Chuanbin Liu",
+        "Peng Hu",
+        "Hao Wang",
+        "Xi Peng"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-09-07T03:59:55+00:00",
+      "link": "https://arxiv.org/pdf/2609.07009v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Varying modality sets per task directly handle incomplete and missing modality learning",
+      "llm_evidence_cn": "每个任务的模态集合可变，直接面向不完整模态与缺失模态的自适应融合",
+      "llm_evidence": "每个任务的模态集合可变，直接面向不完整模态与缺失模态的自适应融合",
+      "canonical_evidence": "每个任务的模态集合可变，直接面向不完整模态与缺失模态的自适应融合",
+      "llm_tldr_en": "NeuCME handles dynamic multimodal continual learning where the modality set varies per task, using neural combinatorics of multiple experts to reduce spatio-temporal forgetting and enable adaptive multimodal fusion, offering robust learning under incomplete modality settings.",
+      "llm_tldr_cn": "NeuCME针对现有持续学习假设模态集合固定的局限，提出动态多模态持续学习设定，允许每个任务的模态集合发生变化，直接对应缺失或不完整模态场景。方法上通过多个专家的神经组合应对时空灾难性遗忘，并实现自适应多模态融合。实验表明该框架在模态组合动态变化时优于现有方法，为鲁棒多模态学习和后续情感识别中的缺失模态处理提供了通用基础。",
+      "llm_tldr": "NeuCME针对现有持续学习假设模态集合固定的局限，提出动态多模态持续学习设定，允许每个任务的模态集合发生变化，直接对应缺失或不完整模态场景。方法上通过多个专家的神经组合应对时空灾难性遗忘，并实现自适应多模态融合。实验表明该框架在模态组合动态变化时优于现有方法，为鲁棒多模态学习和后续情感识别中的缺失模态处理提供了通用基础。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.07010v1",
+      "source": "arxiv",
+      "title": "Fine-Grained Visual Preprocessing and Dual-Stream Temporal Modeling for Multimodal Sentiment Analysis on Social Media",
+      "abstract": "Multimodal sentiment analysis often remains text-dominant due to raw-video noise and insufficient temporal modeling. Using CH-SIMS v2.0S, this study proposes three improvements: the NAPS pipeline---a seven-stage system integrating face tracking,identity embedding, and normalized lip-motion analysis to reduce visual noise;DS-TANet, combining an EfficientNetB2 static stream, RAFT optical-flow motion stream, motion-guided attention, and Bi-GRU temporal modeling; and DS-TAFNet, fusing visual and MacBERT-Base textual representations via concatenation fusion. With NAPS, the static visual baseline achieves 80.98\\% Macro F1, comparable to the text baseline of 80.55\\%; DS-TANet improves visual Macro F1 to 82.58\\%;and DS-TAFNet achieves 87.49\\% accuracy and 87.48\\% Macro F1. These results demonstrate that improving visual input quality and temporal representation is more effective than increasing fusion complexity under limited-data conditions.",
+      "authors": [
+        "Su Li",
+        "Yigong Zhang",
+        "Lei Xiong",
+        "Chune Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-07T04:01:23+00:00",
+      "link": "https://arxiv.org/pdf/2609.07010v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Directly proposes vision/text preprocessing and temporal models for multimodal sentiment analysis, aligning with multimodal emotion recognition",
+      "llm_evidence_cn": "直接面向多模态情感分析提出视觉预处理与双流时序建模，契合多模态情绪识别",
+      "llm_evidence": "直接面向多模态情感分析提出视觉预处理与双流时序建模，契合多模态情绪识别",
+      "canonical_evidence": "直接面向多模态情感分析提出视觉预处理与双流时序建模，契合多模态情绪识别",
+      "llm_tldr_en": "Presents NAPS visual preprocessing plus DS-TANet/DS-TAFNet temporal models to reduce text dominance and improve visual modality performance in Chinese multimodal sentiment analysis.",
+      "llm_tldr_cn": "多模态情感分析常因视频噪声与时序建模不足而文本主导。本文设计七阶段NAPS流程整合人脸跟踪、身份嵌入与归一化唇动分析，并构建静态流与光流运动流结合的DS-TANet，再以DS-TAFNet与文本表示拼接融合。在CH-SIMS v2.0S上，静态视觉基线即达到与文本基线相当的80.98%Macro F1，双流时序建模将视觉Macro F1提高至82.58%。该结果表明精细视觉清洗和运动时序建模可以有效平衡模态贡献，促进多模态情感分析的实用性。",
+      "llm_tldr": "多模态情感分析常因视频噪声与时序建模不足而文本主导。本文设计七阶段NAPS流程整合人脸跟踪、身份嵌入与归一化唇动分析，并构建静态流与光流运动流结合的DS-TANet，再以DS-TAFNet与文本表示拼接融合。在CH-SIMS v2.0S上，静态视觉基线即达到与文本基线相当的80.98%Macro F1，双流时序建模将视觉Macro F1提高至82.58%。该结果表明精细视觉清洗和运动时序建模可以有效平衡模态贡献，促进多模态情感分析的实用性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2609.06007v1",
+      "source": "arxiv",
+      "title": "Depth-to-Image Synthesis-Driven Generative Unguided Depth Completion",
+      "abstract": "Guided depth completion methods heavily depend on RGB quality and alignment, while unguided ones often suffer from limited precision due to the absence of explicit visual cues. In this paper, we present Depth-to-Image Synthesis-Driven Generative Unguided Depth Completion (GUDC), a new completion paradigm that innovatively bridges advanced 2D generative models with unguided depth completion, enabling semantics-aware depth inference without real RGB inputs. Our key idea is to exploit ControlNet's powerful depth-conditioned generation capability to synthesize pseudo-images directly from sparse depth, effectively converting the original unguided setting into a semantics-guided one. To address the potential image-depth misalignment caused by depth sparsity, we propose a multi-level dense-to-sparse representation distillation strategy for ControlNet fine-tuning, where dense-depth features act as teacher signals to distill consistent structural representations for sparse-depth inputs. Furthermore, during pseudo-image-guided completion, we propose a pseudo-image semantic attention fusion module to adaptively extract informative semantic cues from pseudo-images while suppressing artifacts (e.g., texture hallucinations). Extensive experiments on KITTI and NYUv2 validate that our GUDC achieves superior accuracy and robustness over existing methods.",
+      "authors": [
+        "Jiayi Yuan",
+        "Na Zhao",
+        "De Wen Soh"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-05T10:20:22+00:00",
+      "link": "https://arxiv.org/pdf/2609.06007v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "generative ControlNet-based pseudo-image synthesis converts unguided depth completion into semantics-guided setting, an imputation-style strategy for missing RGB modality",
+      "llm_evidence_cn": "基于ControlNet从稀疏深度生成伪图像来弥补缺失颜色模态，属于生成式缺失模态补全方法",
+      "llm_evidence": "基于ControlNet从稀疏深度生成伪图像来弥补缺失颜色模态，属于生成式缺失模态补全方法",
+      "canonical_evidence": "基于ControlNet从稀疏深度生成伪图像来弥补缺失颜色模态，属于生成式缺失模态补全方法",
+      "llm_tldr_en": "GUDC bridges 2D generative models with unguided depth completion by synthesizing pseudo-images from sparse depth via ControlNet, turning missing-RGB unguided completion into semantics-guided inference without real RGB inputs.",
+      "llm_tldr_cn": "无引导深度补全缺乏真实RGB的显式视觉线索，精度常受限；引导方法又依赖RGB质量与配准。本文提出GUDC范式，利用ControlNet从稀疏深度合成伪图像，将无引导补全转化为语义引导补全，并专门缓解深度稀疏导致的图像-深度错位。实验表明无需真实RGB也可获得语义感知的深度补全结果。该工作显示生成式图像合成可以成为缺失模态补全的通用桥梁，对缺失模态下的鲁棒多模态学习具有借鉴价值。",
+      "llm_tldr": "无引导深度补全缺乏真实RGB的显式视觉线索，精度常受限；引导方法又依赖RGB质量与配准。本文提出GUDC范式，利用ControlNet从稀疏深度合成伪图像，将无引导补全转化为语义引导补全，并专门缓解深度稀疏导致的图像-深度错位。实验表明无需真实RGB也可获得语义感知的深度补全结果。该工作显示生成式图像合成可以成为缺失模态补全的通用桥梁，对缺失模态下的鲁棒多模态学习具有借鉴价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.06497v1",
+      "source": "arxiv",
+      "title": "Vision-Guided Text Prompt Tuning for Multimodal Sentiment Analysis",
+      "abstract": "Multimodal sentiment analysis requires effective modeling of both verbal semantics and non-verbal affective cues. A central challenge is to calibrate text-centered sentiment understanding with visual facial evidence in a controlled, adaptive, and parameter-efficient manner. Text usually serves as the semantic anchor, whereas visual cues provide complementary evidence for ambiguous or implicit expressions; however, indiscriminate fusion may introduce visual noise and distort textual semantics. Moreover, fully fine-tuning large visual and textual encoders is costly and prone to overfitting on limited and scenario-dependent MSA benchmarks. To address these issues, we propose Vision-Guided Text Prompt Tuning (VG-TPT), which formulates visual-text sentiment modeling as controllable visual calibration of frozen text representations. VG-TPT injects visual affective cues into a frozen BERT encoder through layer-wise adaptive prompts, rather than relying on late-stage feature fusion or full backbone tuning. A co-guided router composes prompts from a trainable prompt bank according to both the evolving text state and the visual guidance feature, enabling sample-specific and layer-specific modulation. Experiments on CMU-MOSEI and CMU-MOSI show that VG-TPT consistently improves over text-only baselines and achieves competitive or superior performance compared with several full-modality methods, while updating only 2.4M trainable parameters. The code is available at https://github.com/ma-tubu/VG-TPT.",
+      "authors": [
+        "Xiaoran Kou",
+        "Jingyi Wu",
+        "Peng Sun",
+        "Yang Liu",
+        "Hong Chen"
+      ],
+      "primary_category": "cs.MM",
+      "categories": [
+        "cs.MM",
+        "cs.CV"
+      ],
+      "published": "2026-09-06T09:25:32+00:00",
+      "link": "https://arxiv.org/pdf/2609.06497v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal sentiment analysis with vision-guided prompt tuning to control text-visual fusion and avoid visual noise; contributes to robust multimodal learning",
+      "llm_evidence_cn": "提出视觉引导的文本提示调优来控制视觉与文本融合，降低多模态融合中的视觉噪声干扰，属于鲁棒多模态学习",
+      "llm_evidence": "提出视觉引导的文本提示调优来控制视觉与文本融合，降低多模态融合中的视觉噪声干扰，属于鲁棒多模态学习",
+      "canonical_evidence": "提出视觉引导的文本提示调优来控制视觉与文本融合，降低多模态融合中的视觉噪声干扰，属于鲁棒多模态学习",
+      "llm_tldr_en": "Proposes Vision-Guided Text Prompt Tuning (VG-TPT) for multimodal sentiment analysis, adapting text prompts under visual facial guidance to fuse modalities in a controlled, parameter-efficient way, reducing visual noise and full fine-tuning cost.",
+      "llm_tldr_cn": "多模态情感分析需要融合文本语义与非语言视觉线索，但盲目融合会引入视觉噪声并扭曲文本语义。论文提出视觉引导的文本提示调优（VG-TPT），用视觉面部证据引导文本提示，实现可控、自适应的多模态融合。该方法避免全量微调大模型，降低了过拟合和计算开销。整体为多模态情感分析提供了一种参数高效且鲁棒的新范式。",
+      "llm_tldr": "多模态情感分析需要融合文本语义与非语言视觉线索，但盲目融合会引入视觉噪声并扭曲文本语义。论文提出视觉引导的文本提示调优（VG-TPT），用视觉面部证据引导文本提示，实现可控、自适应的多模态融合。该方法避免全量微调大模型，降低了过拟合和计算开销。整体为多模态情感分析提供了一种参数高效且鲁棒的新范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.07409v1",
+      "source": "arxiv",
+      "title": "RAFM-SER++: A Lightweight Multimodal Emotion Recognition Framework for Real-Time Behavioral Monitoring in Surveillance Systems",
+      "abstract": "Recent multimodal Speech Emotion Recognition (SER) systems achieve high accuracy through interaction-heavy cross-modal transformers, but their computational cost limits deployment in latency-sensitive and resource-constrained surveillance systems. To address this challenge, we propose RAFM_SER++, a lightweight multimodal SER framework featuring an asymmetric Residual Attention Fusion Mechanism (RAFM). Rather than relying on computationally expensive bidirectional interactions, RAFM injects affective speech cues into semantic text representations through a one-directional residual attention pathway. Combined with a BYOL-inspired cross-modal alignment objective and attention-guided pooling, the proposed framework improves multimodal representation learning while maintaining low computational overhead.   Experiments on the IEMOCAP and ESD benchmarks demonstrate that RAFM_SER++ consistently outperforms the HuBERT-Base baseline and achieves a superior accuracy-efficiency trade-off compared with the state-of-the-art MemoCMT. Specifically, RAFM_SER++ reduces trainable parameters by more than 60%, achieves faster inference (79.60 it/s), and attains BACC scores of 81.10% on IEMOCAP and 95.39% on ESD. These results indicate that lightweight asymmetric multimodal fusion is an effective alternative to interaction-heavy cross-modal transformers for real-time surveillance applications.",
+      "authors": [
+        "Ngo Truong Dinh",
+        "Tung-Lam Bui",
+        "Chi-Trung Duong",
+        "Vien Nguyen Thi",
+        "Viet-Anh Nguyen",
+        "Phuc-Lu Le"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.MM",
+        "cs.SD"
+      ],
+      "published": "2026-09-07T12:23:42+00:00",
+      "link": "https://arxiv.org/pdf/2609.07409v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Lightweight multimodal speech emotion recognition framework; directly targets multimodal emotion recognition.",
+      "llm_evidence_cn": "面向多模态语音情感识别，提出非对称残差注意力融合，属于多模态情绪识别任务重点。",
+      "llm_evidence": "面向多模态语音情感识别，提出非对称残差注意力融合，属于多模态情绪识别任务重点。",
+      "canonical_evidence": "面向多模态语音情感识别，提出非对称残差注意力融合，属于多模态情绪识别任务重点。",
+      "llm_tldr_en": "RAFM-SER++ is a lightweight multimodal speech emotion recognition framework that injects affective speech cues into text representations via asymmetric residual attention, plus BYOL-style alignment, for efficient real-time monitoring.",
+      "llm_tldr_cn": "交互密集型跨模态Transformer虽然显著提升多模态语音情感识别精度，但其计算开销难以满足实时监控场景。为此本文引入RAFM-SER++，以非对称残差注意力机制代替双向交互，将语音情感线索单向注入文本表示，降低特征交互成本。配合BYOL启发的跨模态对齐与注意力池化，该框架在保持精简结构的同时实现了较强的情感识别表现，适合部署到资源受限监控系统，兼顾精度与实时性。",
+      "llm_tldr": "交互密集型跨模态Transformer虽然显著提升多模态语音情感识别精度，但其计算开销难以满足实时监控场景。为此本文引入RAFM-SER++，以非对称残差注意力机制代替双向交互，将语音情感线索单向注入文本表示，降低特征交互成本。配合BYOL启发的跨模态对齐与注意力池化，该框架在保持精简结构的同时实现了较强的情感识别表现，适合部署到资源受限监控系统，兼顾精度与实时性。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2609.07525v1",
+      "source": "arxiv",
+      "title": "When Semantically Consistent Encoding Meets View-Label Heterogeneity Modeling: A Unified Framework for Incomplete Multi-View Multi-Label Learning",
+      "abstract": "Incomplete multi-view multi-label learning requires not only robust semantic aggregation from partially observed views, but also label-aware exploitation of view-specific evidence. Existing approaches usually emphasize either shared representation learning or decision-level fusion. The former improves robustness against missing views, yet tends to compress label-discriminative view-specific cues into a single latent representation. The latter preserves individual view predictions, but often relies on fixed or globally learned fusion weights, ignoring that different labels of different instances may require different views. To address these limitations, this paper presents V2L, a unified representation-decision framework for incomplete multi-view multi-label classification. On the representation side, V2L constructs semantically consistent variational posteriors from incomplete views through a perturbation-aware encoding mechanism, which provides a stable shared semantic basis. On the decision side, V2L introduces an active view-label relevance modeling strategy that estimates instance-wise and label-wise view contributions, allowing each label prediction to adaptively select useful view-specific evidence. From the perspective of model architecture, these two important strategies are integrated into a unified framework through a hybrid fusion architecture, simultaneously meeting the requirements of cross-view semantic consistency and representational complementarity. Extensive experiments under both incomplete and complete settings show that V2L achieves leading performance on five benchmarks. Code is available at: https://github.com/justsmart/V2L.",
+      "authors": [
+        "Chengliang Liu",
+        "Bo Li",
+        "Bob Zhang",
+        "Yanghao Zhou",
+        "Jie Wen",
+        "Wenwu Wang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-07T14:07:10+00:00",
+      "link": "https://arxiv.org/pdf/2609.07525v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Unified framework for incomplete multi-view multi-label learning addressing missing views and robust semantic aggregation; transferable to incomplete multimodal learning.",
+      "llm_evidence_cn": "面向不完整多视图数据的统一建模，处理缺失视图下的标签判别性特征融合，与不完整多模态学习需求类似。",
+      "llm_evidence": "面向不完整多视图数据的统一建模，处理缺失视图下的标签判别性特征融合，与不完整多模态学习需求类似。",
+      "canonical_evidence": "面向不完整多视图数据的统一建模，处理缺失视图下的标签判别性特征融合，与不完整多模态学习需求类似。",
+      "llm_tldr_en": "V2L is a unified framework for incomplete multi-view multi-label learning that combines semantically consistent encoding with view-label heterogeneity modeling, tackling missing views while preserving label-specific evidence.",
+      "llm_tldr_cn": "不完整多视图多标签学习需兼顾缺失视图下的稳健语义聚合与标签可判别的视图特异性利用。现有共享表示学习易压缩视图特有线索，决策级融合又常依赖固定权重，忽视不同样本和标签对不同视图的需求。本文提出V2L统一框架，以语义一致编码融合视图间共性，同时显式建模视图-标签异质性，在标签感知下保留视图特有证据。实验验证该框架在部分视图缺失时具有更优的鲁棒融合性能，可为不完整多模态学习提供方法与思路借鉴。",
+      "llm_tldr": "不完整多视图多标签学习需兼顾缺失视图下的稳健语义聚合与标签可判别的视图特异性利用。现有共享表示学习易压缩视图特有线索，决策级融合又常依赖固定权重，忽视不同样本和标签对不同视图的需求。本文提出V2L统一框架，以语义一致编码融合视图间共性，同时显式建模视图-标签异质性，在标签感知下保留视图特有证据。实验验证该框架在部分视图缺失时具有更优的鲁棒融合性能，可为不完整多模态学习提供方法与思路借鉴。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Incomplete Multimodal",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.07596v1",
+      "source": "arxiv",
+      "title": "I Don't Miss You, but I Do: Self-Explanation Faithfulness of Modality Missingness in Vision-Language Models",
+      "abstract": "Vision-language models are increasingly used in settings where some input modalities may be unavailable, yet we know little about whether they can faithfully explain how such missing information affects their own predictions. We introduce an interventional protocol for evaluating self-explanations of modality dynamics: models state what each modality alone would support, whether restoring a missing modality would change their answer, and whether the available evidence is sufficient; we then execute the corresponding modality intervention and compare these claims with the model's realized behavior. We evaluate eight open-weight VLMs from two model families across four tasks spanning complementary and isomorphic text-image settings and a multi-view driving setting. We find a systematic tendency to overstate the sufficiency of available modality evidence. Models substantially underestimate the effect of restoring missing modalities: task-level median predicted change rates are at most 8.8%, while the corresponding executed change rates reach 72.1%, with underprediction in 62 of 64 model-task-condition settings. Insufficiency claims are rare, but precise when produced: restoring the modality changes the answer in a median of 78-100% of flagged cases. Retrospective self-explanations show the same tendency: on complementary data, models over-credit single-modality sufficiency; on isomorphic data, they over-credit single representation sufficiency relative to their executed behavior. Together, these results show that VLMs systematically mischaracterize how their predictions depend on available and missing modality evidence, motivating executable interventions as a behavioral ground truth for evaluating multimodal self-explanations.",
+      "authors": [
+        "Aydin Javadov",
+        "Daniel Schoess",
+        "Florian von Wangenheim"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CL",
+        "cs.CV"
+      ],
+      "published": "2026-09-07T15:07:01+00:00",
+      "link": "https://arxiv.org/pdf/2609.07596v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Directly studies modality missingness in vision-language models by testing whether restoring a missing modality changes model predictions and whether self-explanations are faithful",
+      "llm_evidence_cn": "直接研究视觉语言模型输入模态缺失时的行为与自我解释，通过干预缺失模态恢复验证模型判断",
+      "llm_evidence": "直接研究视觉语言模型输入模态缺失时的行为与自我解释，通过干预缺失模态恢复验证模型判断",
+      "canonical_evidence": "直接研究视觉语言模型输入模态缺失时的行为与自我解释，通过干预缺失模态恢复验证模型判断",
+      "llm_tldr_en": "Vision-language models often face missing modalities, yet self-explanations of missingness are rarely tested. This work proposes an interventional protocol: models state whether restoring a missing modality would change predictions, then the actual intervention is executed. Eight open VLMs over four tasks reveal frequent unfaithfulness.",
+      "llm_tldr_cn": "视觉语言模型在部分输入模态缺失时仍要预测，但其对模态缺失影响的自我解释缺乏忠实度验证。论文提出干预式协议，让模型先声明各模态单独支持什么、恢复缺失模态是否会改变答案以及证据是否充分，再实际执行对应干预并与真实行为比较。对八个开源视觉语言模型、四个任务的实验表明，自我解释与实际行为经常不符。该协议可作为缺失模态场景下多模态模型可靠性的诊断工具。",
+      "llm_tldr": "视觉语言模型在部分输入模态缺失时仍要预测，但其对模态缺失影响的自我解释缺乏忠实度验证。论文提出干预式协议，让模型先声明各模态单独支持什么、恢复缺失模态是否会改变答案以及证据是否充分，再实际执行对应干预并与真实行为比较。对八个开源视觉语言模型、四个任务的实验表明，自我解释与实际行为经常不符。该协议可作为缺失模态场景下多模态模型可靠性的诊断工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "8plus"
+    },
+    {
+      "id": "2609.08390v1",
+      "source": "arxiv",
+      "title": "Noise Adaptive Streaming Audio-Visual Speech Token Enhancement for Robust Full-Duplex Spoken Dialogue Models",
+      "abstract": "Full-duplex spoken dialogue systems enable simultaneous listening and speaking, but their audio-only perception often fails under background noise and overlapping speech, leading to incoherent responses. Recent audio-visual dialogue approaches show that incorporating visual cues such as lip movements improve robustness under audio corruption. However, existing approaches often adapt the large speech dialogue model itself to process visual input, requiring costly multimodal training. We propose AV-STE, a modular streaming audio-visual front-end that restores corrupted semantic speech tokens from noisy audio and lip video before they reach the speech LLM. The downstream dialogue model remains entirely frozen, preserving its pretrained conversational capabilities. When integrated with frozen Moshi, AV-STE improves average GPT-4o-judged response coherence from 1.42 to 1.91 under same-dataset speaker interference while largely preserving turn-taking behavior. Gains also transfer to out-of-domain Seamless Interaction.",
+      "authors": [
+        "Bella Godiva",
+        "Yeonju Kim",
+        "Yong Man Ro"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI",
+        "cs.HC"
+      ],
+      "published": "2026-09-08T07:59:13+00:00",
+      "link": "https://arxiv.org/pdf/2609.08390v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Uses lip video to restore corrupted speech tokens, an imputation-style mechanism for missing/corrupt audio modality in multimodal systems",
+      "llm_evidence_cn": "利用唇部视频恢复被污染的语音标记，为缺失/噪声音频模态提供补偿式补全",
+      "llm_evidence": "利用唇部视频恢复被污染的语音标记，为缺失/噪声音频模态提供补偿式补全",
+      "canonical_evidence": "利用唇部视频恢复被污染的语音标记，为缺失/噪声音频模态提供补偿式补全",
+      "llm_tldr_en": "AV-STE is a modular streaming audio-visual front-end that restores corrupted semantic speech tokens from noisy audio and lip video, improving dialogue robustness while keeping the speech LLM frozen.",
+      "llm_tldr_cn": "全双工语音对话系统在噪声与重叠语音下性能下降，现有音视频方案往往要改造大模型。AV-STE采用模块化流式前端，将含噪音频和唇部视频映射回语义语音标记，在下游语音大模型保持冻结的情况下恢复被污染的输入。这样避免了昂贵的多模态训练，是对音频模态信息缺失的一种端到端补全机制，为鲁棒全双工对话提供可插拔的预处理方案。",
+      "llm_tldr": "全双工语音对话系统在噪声与重叠语音下性能下降，现有音视频方案往往要改造大模型。AV-STE采用模块化流式前端，将含噪音频和唇部视频映射回语义语音标记，在下游语音大模型保持冻结的情况下恢复被污染的输入。这样避免了昂贵的多模态训练，是对音频模态信息缺失的一种端到端补全机制，为鲁棒全双工对话提供可插拔的预处理方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
