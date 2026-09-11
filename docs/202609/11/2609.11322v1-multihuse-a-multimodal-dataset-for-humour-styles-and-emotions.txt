@@ -1,0 +1,248 @@
+Title: MultiHuSE: A Multimodal Dataset for Humour Styles and Emotions
+
+URL Source: https://arxiv.org/pdf/2609.11322v1
+
+Published Time: Fri, 11 Sep 2026 00:51:03 GMT
+
+Number of Pages: 7
+
+Markdown Content:
+© 2025 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any copyrighted component of this work in other works. This is the accepted version of the paper published as: M. Ogbuka Kenneth, F. Khosmood and A. Edalat, “MultiHuSE: A Multimodal Dataset for Humour Styles and Emotions,” 2025 International Conference on Content-Based Multimedia Indexing (CBMI), Dublin, Ireland, 2025, pp. 1–7, doi: 10.1109/CBMI66578.2025.11339313. 
+
+# MultiHuSE: A Multimodal Dataset for Humour Styles and Emotions 
+
+1st Mary Ogbuka Kenneth 
+
+Algorithmic Human Development group, Department of Computing Imperial College London 
+
+London, United Kingdom m.kenneth22@imperial.ac.uk 
+
+2nd Foaad Khosmood 
+
+Computer Engineering Department California Polytechnic State University 
+
+San Luis Obispo, United States foaad@calpoly.edu 
+
+3rd Abbas Edalat 
+
+Algorithmic Human Development group, Department of Computing Imperial College London 
+
+London, United Kingdom a.edalat@imperial.ac.uk 
+
+Abstract —Computational recognition of verbal humour re-mains a challenging task, requiring an understanding of lan-guage, delivery style, emotions, and cultural context. Most exist-ing approaches focus on binary classification and lack datasets that capture psychological dimensions of humour alongside variations in expression. We introduce MultiHuSE, a multi-modal dataset comprising 2,407 high-definition videos of 50 demographically diverse actors performing 1,463 text samples across four psychological humour styles (affiliative, aggressive, self-enhancing, and self-deprecating), as well as neutral content. A subset is additionally annotated for underlying emotions. The dataset uniquely captures multiple actor interpretations of the same texts, enabling systematic analysis of expressive diversity. Baseline experiments show that multimodal fusion outperforms unimodal approaches (80.1% vs. 77.4% accuracy) in humour style classification, with particularly strong gains for affiliative humour (66% to 74%). While text provides the strongest individual signal, fusion models deliver meaningful im-provements. We hope that MultiHuSE provides empirical support for psychological theories linking humour and emotion, while also opening new avenues for research in human communication, well-being, and AI-driven interaction. The dataset is available for academic use under an End-User Licence Agreement. 
+
+Index Terms —Computational humour, Multimodal emotion recognition, Humour style classification, Facial expression anal-ysis, Affective computing 
+
+I. I NTRODUCTION 
+
+Humour recognition presents significant challenges for arti-ficial intelligence systems, particularly in multimodal contexts that require integration of verbal, visual, and acoustic cues [1]– [3]. While research in multimodal humour detection has ad-vanced [4]–[6], most approaches remain limited to binary clas-sification (humour vs. non-humour) [7], overlooking deeper psychological dimensions of humour identified by Martin et al. [8]: self-enhancing, self-deprecating, affiliative, and aggres-sive styles. These categories have significant implications for psychological well-being: affiliative and self-enhancing styles generally foster positive outcomes [9]–[12], while aggressive and self-deprecating styles can be detrimental to mental health [13]–[15]. The growing adoption of laughter-based interventions in therapeutic settings for addressing depression and anxiety [16], 
+
+This research was supported by the Petroleum Technology Development Fund (PTDF) of Nigeria. 
+
+[17], combined with evidence that specific humour styles differentially impact mental health outcomes [8], [18], [19], underscores the need for computational systems that detect humour styles and their associated emotional expressions. Unlike conventional emotion datasets capturing well-defined emotional states, our approach examines nuanced emotional undertones within humour delivery, emotions that may be subtly expressed or filtered through the comedic performance context [20]. This integration enables computational validation of psychological theories and the development of emotionally-aware systems for mental health applications. Existing multimodal humour datasets present several limi-tations for analysing humour styles. UR-FUNNY [21] focuses on binary humour detection using TED talks; MHD [5] uses sitcom recordings with laughter tracks; and Passau-SFCH [22] provides style annotations but is restricted to German football press conferences. Additionally, these datasets typically cap-ture only a single performance per instance, limiting the study of expressive variation. To address these gaps, we introduce MultiHuSE , a new multimodal dataset of over 2,400 recordings featuring fifty diverse performers executing humour across four psycho-logical categories and neutral content, with annotations of underlying emotion. The dataset uniquely captures multiple interpretations of the same texts, enabling systematic analysis of expression variation and multimodal humour perception. Our contributions include: 1) The first English-language multimodal dataset annotated with psychological humour styles and enriched with emotion labels. 2) Multiple video performances of the same text by differ-ent actors, enabling analysis of expressive and subjective variation in humour delivery 3) Benchmark experiments showing that multimodal fusion outperforms unimodal models (80% vs. 77% F1-score) II. R ELATED WORK 
+
+Recent datasets have advanced multimodal humour detec-tion, but with significant limitations (see Table I for compari-son). UR-FUNNY [21] contains 16,514 video segments from TED Talks with binary classification, while MHD [5] provides arXiv:2609.11322v1 [cs.CL] 10 Sep 2026 13,633 TV sitcom clips with laughter-based annotations. Both datasets offer valuable scale and naturalistic settings but focus solely on binary humour detection, overlooking psychologi-cally grounded humour styles that have different implications for well-being [2], [8]. The Passau-SFCH dataset [22] addresses this gap by incor-porating four humour styles across 39,682 German football press conference segments, though only 6% contains actual hu-mour content. However, it is limited to male German speakers in a single domain and lacks controlled recording conditions, limiting its generalisability across diverse populations and contexts. Similarly, YouTube stand-up datasets [23] capture authentic performances but focus on laughter detection rather than humour style classification. Multimodal emotion datasets provide methodological foun-dations for affective analysis but are limited for humour research. MELD [24] includes 13,708 video segments from 
+
+Friends with rich emotion annotations, but only 38% contain humorous content and lacks humour-specific style labels. SHEMuD [25] combines binary humour detection with emo-tion labels across 6,191 TV dialogue segments, but its humour classification remains binary without distinguishing psycho-logically meaningful humour styles. Both datasets capture only single expressions of content, preventing analysis of how performers might express the same humorous material with varying emotional undertones. 
+
+A. Dataset Gaps and Research Motivation 
+
+The analysis of existing datasets reveals three critical gaps: (1) predominant focus on binary classification rather than psy-chologically meaningful humour styles, (2) single-expression capture that overlooks interpretative diversity, and (3) limited integration with psychological theories linking humour to emotional expression and well-being. We developed Multi-HuSE with the goal of addressing these gaps and supporting research at the intersection of computation and psychological theory. III. D ATASET CREATION 
+
+We present MultiHuSE, an unpublished multimodal dataset for humour style and emotion recognition. The collection com-prises 2,407 high-definition recordings (1080p at 25fps) of fifty demographically diverse participants performing nearly 1,500 text instances. The texts were sourced from the humour style corpus of Kenneth et al. [2], which includes psychologically grounded humour style annotations. While the text annotations are from this prior work, all video recordings, actor perfor-mances, and emotion annotations are novel contributions of our dataset. 
+
+A. Data Collection a) Recording Setup : We employed a professional, con-trolled recording environment in a dedicated room at Imperial College London with a Canon EOS Rebel DSLR camera and Rode VideoMic Pro directional microphone. All recordings were conducted under identical setup conditionswhite back-drop, consistent lighting, and standardised participant position-ing (head to knee)to ensure both facial expressions and body gestures were clearly visible while minimising environmental variability that could interfere with model training. 
+
+b) Participant Demographics : We recruited 50 ac-tors (54% female, 40% male, 6% other genders; ages 18–69 years; 72% White, 12% Asian/Asian British, 6% Black/African/Caribbean, 10% other backgrounds) through a structured recruitment process. 1 Participants received a 50 compensation for their ∼ 2.5 hour commitment, including preparation and recording. 
+
+c) Participant Preparation : Participants received de-tailed instructions explaining each humour style (full instruc-tions available online 2), along with the following definitions:  
+
+> •
+
+Affiliative : Humour used to build connections and social bonds, focusing on shared experiences.  
+
+> •
+
+Self-enhancing : Humour involving finding amusement in adversity; a positive, adaptive style.  
+
+> •
+
+Aggressive : Humour used to attack or belittle others through sarcasm or put-downs.  
+
+> •
+
+Self-deprecating : Humour involving making fun of one-self, highlighting personal weaknesses.  
+
+> •
+
+Neutral : Statements that are not jokes or do not fit other humour styles. Participants were provided with the text samples prior to the recording day to familiarise themselves with the content, practise delivery with different emotions, and opt out of any samples they felt uncomfortable performing. They were instructed to consider six emotional categories (joy, empathy, anger, neutral, embarrassment, and superiority) while prepar-ing their performances. 
+
+d) Dataset Composition : Our video collection contains over 2,400 samples distributed across five categories with near-balanced representation: self-enhancing (500 videos, 20.8%), aggressive (529 videos, 22.0%), neutral (495 videos, 20.6%), self-deprecating (457 videos, 19.0%), and affiliative (426 videos, 17.7%) instances. The dataset uniquely features 943 re-performed videos (ap-proximately 40% of the dataset), capturing multiple interpreta-tions of identical content for direct comparison of expression variations. This approach enables systematic analysis of the subjective nature of humour delivery, where performers bring unique interpretations to the same textual content. Fig. 1 illustrates this interpretative diversity through an example of the aggressive humour sample “I hear you were born on April 2, one day too late” . The first performer (Fig. 1a) delivers the joke with visible anger, whilst the second performer (Fig. 1b) expresses a sense of superiority—demonstrating how identical text can elicit distinct emotional expressions and performance styles. Such variation is particularly valuable for studying the nuanced relationship between humour styles, emotional expression, and delivery techniques. 
+
+> 1Detailed recruitment process available at: https://sites.google.com/view/ laughterai-com/recruitement
+> 2https://sites.google.com/view/laughterai-com/dataset
+
+TABLE I: Comparison of existing multimodal humour and emotion datasets. The table shows key characteristics, including data source, number of video samples, average video duration in seconds, modalities used, annotation granularity, and whether datasets capture single or multiple performances of the same content                                                        
+
+> Dataset Content Source # Videos Avg Dur.[s] Modalities Annotation Type Performance Type Key Limitations/Features
+> UR-FUNNY [21] TED Talks 16,514 4.58 Video, audio, text Binary humour Single English; No humour style differentiation MHD [5] TV sitcoms (Big Bang Theory) 13,633 3.83 Video, audio Binary humour Single English; Producer-added laughter; no styles Passau-SFCH [22] Football press conferences 39,682 N/A Video, audio, text Four humour styles Single German; Limited to male speakers in single domain MELD [24] TV series (Friends) 13,708 3.59 Video, audio, text Emotions only Single English; No humour style annotations SHEMuD [26] TV dialogues 6,191 N/A Video, audio, text Binary humour + emotions Single Hindi/English; Single source; no style annotations YouTube Stand-up [23] YouTube stand-up comedy 39,127 N/A Video, audio, text Laughter-based Single Russian/English; Focus on laughter, not humour styles
+> MultiHuSE (Ours) Controlled studio 2,407 6.66 Video, audio, text Four humour styles + emotions Multiple
+> English; Diverse performers; consistent quality;
+> 943 alternative performances of identical jokes with varied expressions
+
+(a) Performer 1 Expressing Anger 
+
+(b) Performer 2 Expressing Su-periority 
+
+Fig. 1: Expression variability for the same aggressive joke: (a) anger versus (b) superiority delivery of joke: “I hear you were born on April 2, one day too late” .
+
+e) Recording Duration : Videos range from 2 to 74.96 seconds (mean = 6.66 s), with 91.3% under 10 seconds, 6.7% (10–20 s), 1.2% (20–30 s), and 0.8% ( > 30 s). Brief videos include concise jokes such as “Do your thing and don’t care if they like it” (self-enhancing, 2 seconds), “They say good things take time so that’s why I am always late” (self-enhancing, 3 seconds), and “I feel there is no more trash to burn but myself” (self-deprecating, 2 seconds). These brief clips capture complete but concise humorous expressions, while longer videos contain more elaborate joke narratives. This variation in duration reflects the natural diversity of humour delivery, from quick one-liners to extended anecdotes. 
+
+B. Annotation and Performance Approach a) Humour Style and Text Categories : We utilised the labels from the existing text dataset [2], which contains 1,463 instances across five categories: 1,129 jokes aligned with four humour styles framework (self-enhancing, self-deprecating, affiliative, and aggressive) [8], and 334 neutral non-jokes. 
+
+b) Performance Guidance and Interpretative Freedom :
+
+Actors received a preparation document 3 with brief definitions of each humour style, along with the actual jokes and their associated category labels. Crucially, the instructions explicitly stated: “Remember, there are no ‘correct’ interpretations. We’re interested in your natural portrayal of these jokes across 
+
+> 3
+
+Available at: https://sites.google.com/view/laughterai-com/dataset 
+
+different emotional spectrums.” Participants were encouraged to practise delivering each joke with different emotions from a provided list (joy, anger, neutral, superiority, embarrassment, and empathy) to explore varied interpretations. This balanced approach–providing category understanding while emphasis-ing interpretative freedom– resulted in substantial performance diversity, even for identical text samples, as evidenced by the varying emotions displayed across performances (see Fig. 2, analysed in detail in Section III-C). 
+
+c) Emotion Annotation : Immediately after performing each text sample, performers provided self-reports of their own emotional state during delivery, selecting from six emotion categories (joy, anger, neutral, superiority, embarrassment, and empathy). These self-reported emotions represent the performers’ internal experience while expressing the humour, not anticipated audience reactions or observer perceptions. This approach aligns with psychological research [10], [27]– [29] that examines humour styles in relation to the expresser’s emotional state. These categories enable analysis of humour-embedded emotional states distinct from general emotion datasets, supporting psychological theory validation (Section III-C, Figure 2). This performer-centred emotional assessment provides insight into the psychological experience of humour production rather than reception. 
+
+d) Emotion Inter-annotator Agreement : We evaluated agreement between emotion annotations from original per-formances and re-performances using paired data where the same jokes were performed by different actors or the same actor with different interpretations. Our analysis used 687 paired instances representing jokes with both original and re-performance emotion annotations. Our analysis employed two key metrics: 1) Simple Agreement Rate (0.440) : The proportion of instances where both annotators assigned the same emo-tion, calculated as the number of perfect matches (302) divided by the total paired instances (687). 2) Cohen’s Kappa (0.325) : A robust measure accounting for chance agreement, indicating fair agreement above random chance [30], [31]. While all original performances include emotion annota-tions, only 687 of the 943 re-performances have emotion labels, allowing for paired analysis of these 687 jokes. Fig. 2: Relationship between humour styles and emotions visualised through heatmaps. Left: original performance annotations; Right: re-performance annotations. Darker colours represent stronger associations between specific emotions and humour styles 
+
+C. Humour Styles-Emotion Relationships 
+
+Figure 2 demonstrates consistent emotion-humour associ-ations across original and re-performances using 687 paired instances. The stable patterns (e.g., aggressive humour pre-dominantly paired with anger/superiority, self-deprecating hu-mour paired with embarrassment) validate that these emotion-humour relationships are robust across different performers, supporting psychological theories that link specific humour styles to corresponding emotional states during expression. Key patterns include:  
+
+> •
+
+Neutral humour : Strong association with neutral emo-tion (Original: 90; Re-performance: 98)  
+
+> •
+
+Aggressive humour : Predominantly paired with Anger 
+
+(Original: 60; Re-performance: 74) and Superiority (Orig-inal: 42; Re-performance: 40), reflecting consistent as-sertive or mocking interpretations.  
+
+> •
+
+Self-deprecating humour : Strongly aligns with Embar-rassment (Original: 70; Re-performance: 55), supporting its association with vulnerability and self-directed awk-wardness.  
+
+> •
+
+Self-enhancing humour : Co-occurs with Empathy (Orig-inal: 39; Re-performance: 31) and Joy (Original: 36; Re-performance: 45), indicating reflective and positive self-regard.  
+
+> •
+
+Affiliative humour : Primarily linked to Joy (Original: 59; Re-performance: 67), supporting its role in positive social bonding. The consistent patterns observed between original and re-performance data indicate emotion-humour associations that align with established psychological theories [10], [27]–[29] and offer potential support for computational approaches to recognising emotional aspects of humour styles. 
+
+D. Ethical Considerations and Data Access 
+
+The MultiHuSE dataset was created with careful attention to ethical principles. All procedures received approval from the Science, Engineering and Technology Research Ethics Committee at Imperial College London. Participants provided informed consent, were compensated £50 for their time, and had the option to opt out of performing any content they found uncomfortable. While personal identifiers were pseudonymised, facial features remained visible as required for research purposes, with participants explicitly informed of this necessity. The MultiHuSE dataset is available to researchers via a dedicated section of our project website 4, under a custom End-User Licence Agreement (EULA) permitting use for academic and research purposes only. The website currently provides information about the project and access procedures. To mitigate potential risks associated with offensive content in certain aggressive humour samples, the dataset documenta-tion explicitly states that inclusion does not imply endorse-ment. Use of the dataset is restricted to research purposes aligned with the advancement of mental health understanding and computational humour analysis. IV. E XPERIMENTS 
+
+To demonstrate the viability and research utility of our multimodal collection, we performed baseline experiments evaluating humour style and emotion recognition across single and combined modalities. Direct comparison with existing datasets is not feasible as MultiHuSE represents the first English-language multimodal dataset with psychological hu-mour style annotations, making our baselines foundational benchmarks for future research. 
+
+A. Feature Extraction 
+
+We employed state-of-the-art encoders to extract robust multimodal features: 
+
+Text: BERT-base-uncased embeddings (768-D), using the [CLS] token from padded sequences (max 128 tokens) [32] 
+
+Audio: Dasheng-0.6B (1280D) [33], a powerful audio en-coder pretrained on diverse audio data for capturing nuanced speech and sound features. 
+
+Video: MC3-18 (768D) [34], a spatiotemporal convolutional encoder optimised for short video clips and fine-grained mo-tion representation. 
+
+> 4Dataset available at: https://sites.google.com/view/laughterai-com/dataset
+
+B. Data Splits and Preprocessing 
+
+We used an 80:20 train-test split stratified by humour style for humour style classification. Training data underwent 5-fold stratified cross-validation. 
+
+C. Baseline Models 
+
+We evaluated XGBoost classifiers and Cross-Modal Atten-tion Transformer: 
+
+XGBoost: XGBClassifier(use_label_encoder =False, random_state=42, eval_metric=’mlogloss’) [35]. 
+
+Transformer: Cross-modal attention network with multi-head attention (8 heads) projecting text, audio, and visual features to a common 1024D space, trained end-to-end for humour style and emotions classification. 
+
+D. Fusion Strategies 
+
+Single Modality: Individual XGBoost models trained for text, audio, and visual encoder features. 
+
+Exponential Weighted Fusion: Predictions from sepa-rate XGBoost modality models combined using exponential weighting ( α = 2 ) based on individual modality performance, resulting in dynamic weights (humour: text 0.54, audio 0.31, visual 0.15; emotion: text 0.40, audio 0.32, visual 0.27). 
+
+Cross-Modal Attention: Uses an attention mechanism to weigh the relevance of features from one modality when processing another. This allows the model to learn complex relationships between modalities directly. 
+
+E. Evaluation 
+
+We report accuracy, precision, recall, and F1-score (weighted averages). Accuracy measures overall prediction correctness, while precision reflects the proportion of true positives among predicted positives. Recall assesses the mod-els ability to identify all actual positives, and the F1-score provides the harmonic mean of precision and recall, balancing both metrics. V. R ESULTS 
+
+A. Modality Effectiveness Analysis 
+
+Table II shows baseline results. Text features yielded the strongest performance (77.4%), confirming linguistic content as the primary signal for humour style classification. Audio (58.5%) and visual (40.0%) lagged behind, reflecting the subtle and subjective nature of emotional and humorous expression, which makes these cues harder to model. Still, they add complementary prosodic and expressive information. Multimodal fusion outperformed unimodal baselines: expo-nential weighted fusion reached 80.1% accuracy and cross-attention 79.7%. Though gains over text-only are modest (+2.7%, +2.3%), they highlight meaningful cross-modal con-tributions and demonstrate the datasets compatibility with modern architectures. Table III shows humour-style variation: neutral content was most reliable (85 - 90% F1), while affiliative humour benefited most from multimodality (66% to 74% F1 with exponential TABLE II: Comprehensive Multimodal Results on MultiHuSE Dataset                                                          
+
+> Method Humor Styles (%) Emotion (%)
+> Acc Prec Recall F1 Acc Prec Recall F1
+> Single Modality Baselines
+> Text Only 77.4 78.0 77.0 77.0 36.5 35.0 37.0 35.0 Audio Only 58.5 59.0 58.0 58.0 32.8 33.0 33.0 32.0 Visual Only 40.0 40.0 40.0 39.0 30.1 30.0 30.0 29.0
+> Multimodal Fusion
+> Equal Fusion 77.8 78.0 78.0 78.0 38.2 38.0 38.0 37.0 Exponential Fusion 80.1 80.0 80.0 80.0 38.6 38.0 39.0 37.0
+> Cross-Attention 79.7 80.0 79.0 79.0 32.2 32.0 32.0 32.0
+
+fusion). Text remained dominant across all fusions, with audio-visual alone achieving only 58.3%. Thus, humour style recognition is semantically driven but enriched by multimodal expression, underscoring the capacity of the data set to provide a complete understanding of humour. TABLE III: F1-Scores for Individual Humour Styles                                    
+
+> Method Self-Enhancing Self-Deprecating Affiliative Aggressive Neutral
+> Text Only 77 80 66 77 85 Audio Only 55 57 47 54 79 Visual Only 39 29 33 40 56 Equal Fusion 76 79 66 76 90 Exponential Fusion 79 81 74 78 89
+> Cross-Attention 83 78 68 81 85
+
+B. Dataset Quality and Validation 
+
+To assess the reliability and research utility of the dataset, we conducted validation across three key dimensions: feature extraction reliability, re-performance variation, and annotation coverage. 
+
+1) Feature Extraction Reliability: To validate technical data quality, we assessed computational feature extraction success rates across all video samples using state-of-the-art encoders. Table IV presents the success rates for each modality. TABLE IV: Feature extraction success rates             
+
+> Modality Encoder Success Rate Successful/Total
+> Text BERT-base-uncased 100% 2,407/2,407 Audio Dasheng-0.6B 100% 2,407/2,407 Visual MC3-18 100% 2,407/2,407
+
+All modalities achieved perfect extraction rates (100%) using modern pre-trained encoders, ensuring comprehensive coverage for multimodal fusion experiments. 
+
+2) Re-performance Variation: A central strength of our dataset is its capture of diverse interpretations of identical humorous content. We analysed 1,872 re-performance videos corresponding to 927 unique jokes, using 17 facial features extracted via MediaPipe Face Mesh [36]. For each joke per-formed by multiple actors, we computed pairwise Euclidean distances between facial feature vectors and compared them to random baseline distances. Within-joke distances were significantly smaller than ran-dom baseline distances, indicating that re-performances of TABLE V: Re-performance variation analysis             
+
+> Distance Type Mean SD Interpretation
+> Within-joke 0.2181 0.1112 Same joke re-performances Random baseline 0.2661 0.1181 Different jokes
+> Mann-Whitney U p < 0.000001 Cohen’s d = 0.43
+
+identical content maintain meaningful similarity whilst exhibit-ing substantial expressive diversity. This statistically signif-icant difference suggests that re-performances capture both content consistency and interpretative variation, supporting MultiHuSE’s ability to study the subjective nature of humour expression. 
+
+3) Annotation Coverage: All 2,407 videos include com-plete humour style labels inherited from the source text dataset. Self-reported emotion annotations are available for all 1,463 original performances and 687 re-performances (72.7% of re-performed instances), providing 89.3% overall emotion cov-erage (2,150/2,407 instances). The partial emotion coverage resulted from methodological evolution during data collection, as the emotion annotation protocol for re-performance was introduced partway through the study after recognising its value for understanding expression variation. VI. A PPLICATIONS OF THE MULTI HUSE D ATASET 
+
+MultiHuSE enables recognition of psychologically grounded humour styles with established links to mental health outcomes. Meta-analytic evidence shows affiliative and self-enhancing humour protects against depression and anxiety [18], [19], while aggressive and self-deprecating styles increase mental health risks [15], [37]. Recent laughter-based interventions for treating depression [16], [17] highlight the therapeutic potential of humour style differentiation. 
+
+A. Mental Health Applications 
+
+Digital Monitoring : Apps that track users’ humour ex-pressions during therapy sessions–detecting predominant self-deprecating humour (depression risk indicator) versus affil-iative humour (protective factor)–enabling personalised inter-vention recommendations. For example, a system could alert therapists when patients consistently use self-deprecating hu-mour, prompting targeted cognitive behavioural interventions. 
+
+Clinical Assessment : Tools supporting mental health pro-fessionals in evaluating humour-based coping mechanisms and therapeutic progress through automated analysis of patient expressions. 
+
+Content Moderation : Systems detecting harmful humour while preserving adaptive styles, reducing cyberbullying and enhancing digital well-being. 
+
+Emotionally Aware AI : Virtual assistants that differentiate supportive from harmful humour, enabling psychologically sensitive responses in therapeutic contexts. VII. C ONCLUSION 
+
+We present MultiHuSE, a multimodal dataset for humour style and emotion recognition comprising over 2,400 high-definition recordings of fifty diverse performers executing a balanced set of textual content across four psychologically-grounded categories. The dataset includes 943 re-performed samples, enabling direct comparison of expression variations for identical content. Our validation shows 100% feature extraction success with state-of-the-art encoders and significant performance variation reflecting interpretative diversity ( p < 0.000001 ). Multimodal fusion outperformed single modalities, with exponential fusion achieving 80.1% accuracy vs. 77.4% for text-only; cross-attention reached 79.7%, confirming compatibility with mod-ern deep learning. Ablation highlights text dominance while showing complementary contributions from audio and visual cues. We have observed relationships between humour styles and specific emotions that appear consistent with psychologi-cal theories. VIII. LIMITATIONS AND FUTURE DIRECTIONS We acknowledge several limitations. First, the moder-ate inter-annotator agreement (Cohen’s κ = 0.325 ) re-flects the inherent subjectivity of emotional experiences in humour contexts. Second, despite demographic diversity within our sample 72% White, 12% Asian/Asian British, 6% Black/African/Caribbean, 10% other backgrounds), recruit-ment was geographically constrained to London, which may limit the dataset’s representation of global humour expression patterns and cultural interpretations of humour styles. This geographical limitation reinforces Western humour perspec-tives and may introduce cultural bias in computational models trained on this data. Third, while our dataset contains 2,407 videos compared to larger collections, our controlled design emphasises quality and balance–79.4% humorous content with even distribution across styles, compared to Passau-SFCH’s 6.02% humorous content from a single domain. Direct comparison with ex-isting datasets is challenging as MultiHuSE represents the first English-language multimodal dataset with psychological humour style annotations. Future research will address these limitations through multi-ple recruitment centers across different countries and cultural contexts to capture diverse humour expression patterns and cultural interpretations of humour styles. Additional directions include exploring advanced vision-language models, longitu-dinal studies of humour style changes for intervention appli-cations, and investigating relationships between automatically detected and human-perceived emotions in humour contexts. REFERENCES [1] C. Strapparava, O. Stock, and R. Mihalcea, “Computational Humour,” in Emotion-Oriented systems , 2011, pp. 609–634. [2] M. O. Kenneth, F. Khosmood, and A. Edalat, “A Two-Model Approach for Humour Style Recognition,” in Proceedings of the 4th International Conference on Natural Language Processing for Digital Humanities .Miami: Association for Computational Linguistics, 11 2024, pp. 259– 274. [Online]. Available: https://aclanthology.org/2024.nlp4dh-1.25/ [3] C. Shani, N. Borenstein, and D. Shahaf, “How Did This Get Funded?! Automatically Identifying Quirky Scientific Achievements,” in Proceedings of the 59th Annual Meeting of the Association for Computational Linguistics and the 11th International Joint Conference on Natural Language Processing . Association for Computational Linguistics, 6 2021, pp. 14–28. [Online]. Available: http://arxiv.org/abs/2106.03048 [4] Y. Kayatani, Z. Yang, M. Otani, N. Garcia, C. Chu, Y. Nakashima, and H. Takemura, “The laughing machine: Predicting humor in video,” in Proceedings - 2021 IEEE Winter Conference on Applications of Computer Vision, WACV 2021 . Institute of Electrical and Electronics Engineers Inc., 1 2021, pp. 2072–2081. [5] B. N. Patro, M. Lunayach, D. Srivastava, H. Singh, and V. P. Namboodiri, “Multimodal Humor Dataset: Predicting Laughter tracks for Sitcoms,” Computer Vision fundation , pp. 576–585, 2021. [Online]. Available: https://delta-lab-iitk.github.io/ [6] S. Castro, D. Hazarika, V. P´ erez-Rosas, R. Zimmermann, R. Mihalcea, and S. Poria, “Towards Multimodal Sarcasm Detection (An Obviously Perfect Paper),” in Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics , 2019, pp. 4619–4629. [Online]. Available: https://github. [7] M. O. Kenneth, F. Khosmood, and A. Edalat, “Systematic Literature Review: Computational Approaches for Humour Style Classification,” 
+
+ArXiv , 1 2024. [Online]. Available: https://arxiv.org/abs/2402.01759 [8] R. A. Martin, P. Puhlik-Doris, G. Larsen, J. Gray, and K. Weir, “Individual differences in uses of humor and their relation to psychological well-being: Development of the Humor Styles Questionnaire,” Journal of Research in Personality , vol. 37, pp. 48–75, 2003. [Online]. Available: www.elsevier.com/locate/jrp [9] A. Edalat, “Self-initiated humour protocols: An algorithmic approach for learning to laugh,” PsyArXiv , vol. 5, pp. 1–14, 11 2023. [10] W. P. Hampes, “The Relation Between Humor Styles and Empathy,” 
+
+Europe’s Journal of Psychology , vol. 6, no. 3, pp. 34–45, 2007. [Online]. Available: www.ejop.org [11] C. Y. Plessen, F. R. Franken, C. Ster, R. R. Schmid, C. Wolfmayr, A. M. Mayer, M. Sobisch, M. Kathofer, K. Rattner, E. Kotlyar, R. J. Maier-wieser, and U. S. Tran, “Humor styles and personality: A systematic review and meta-analysis on the relations between humor styles and the Big Five personality traits,” Personality and Individual Differences , vol. 154, 2 2020. [12] M. O. Kenneth, F. Khosmood, and A. Edalat, “Explaining Humour Style Classifications: An XAI Approach to Understanding Computational Humour Analysis,” Journal of Data Mining & Digital Humanities, NLP4DH , 1 2025. [Online]. Available: http://arxiv.org/abs/2501.02891 [13] L. Veselka, J. A. Schermer, R. A. Martin, and P. A. Vernon, “Rela-tions between humor styles and the Dark Triad traits of personality,” 
+
+Personality and Individual Differences , vol. 48, no. 6, pp. 772–774, 4 2010. [14] I. I. Khramtsova and T. S. Chuykova, “Mindfulness and self-compassion as predictors of humor styles in US and Russia,” Social Psychology and Society , vol. 7, no. 2, pp. 93–108, 2016. [15] N. Kuiper and N. McHale, “Humor styles as mediators between self-evaluative standards and psychological well-being,” Journal of Psychol-ogy: Interdisciplinary and Applied , vol. 143, no. 4, pp. 359–376, 7 2009. [16] J. E. Yim, “Therapeutic benefits of laughter in mental health: Atheoretical review,” pp. 243–249, 7 2016. [17] N. S. Akimbekov and M. S. Razzaque, “Laughter therapy: A humor-induced hormonal intervention to reduce stress and anxiety,” pp. 135– 138, 1 2021. [18] T. E. Ford, S. K. Lappi, E. C. O’Connor, and N. C. Banos, “Manipulating humor styles: Engaging in self-enhancing humor reduces state anxiety,” 
+
+Humor , vol. 30, no. 2, pp. 169–191, 5 2017. [19] . Men´ endez-Aller, . Postigo, P. Montes- ´ Alvarez, F. J. Gonz´ alez-Primo, and E. Garc´ ıa-Cueto, “Humor as a protective factor against anxiety and depression,” International Journal of Clinical and Health Psychology ,vol. 20, no. 1, pp. 38–45, 1 2020. [20] G. Ritchie, The Comprehension of Jokes: A Cognitive Science Frame-work , 1st ed. London: Routledge Taylor & Francis Group, 7 2018. [21] M. Kamrul Hasan, W. Rahman, A. Zadeh, J. Zhong, M. Iftekhar Tanveer, L.-P. Morency, and M. Hoque, “UR-FUNNY: A Multimodal Language Dataset for Understanding Humor,” in Proceedings ofthe 2019 Conference on Empirical Methods in Natural Language Processing and the 9th International Joint Conference on Natural Language Processing , 2019, pp. 2046–2056. [Online]. Available: www.ted.com [22] L. Christ, S. Amiriparian, A. Kathan, N. M¨ uller, A. K¨ onig, and B. W. Schuller, “Multimodal Prediction of Spontaneous Humour: A Novel Dataset and First Results,” Transactions on Affective Computing , vol. 20, no. 10, pp. 1–15, 9 2022. [Online]. Available: http://arxiv.org/abs/2209.14272 [23] A. Kuznetsova and C. Strapparava, “Multimodal and Multilingual Laughter Detection in Stand-Up Comedy Videos,” in The 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation . ELRA Language Resource Association, 5 2024, pp. 11 884–11 889. [Online]. Available: https://github.com/ MontrealCorpusTools/ [24] S. Poria, D. Hazarika, N. Majumder, G. Naik, E. Cambria, and R. Mihal-cea, “MELD: A Multimodal Multi-Party Dataset for Emotion Recogni-tion in Conversations,” in Proceedings of the 57th Annual Meeting of the Association for Computational Linguistics . Florence, Italy: Association for Computational Linguistics, 8 2019, pp. 527–536. [25] D. Singh Chauhan, G. Vikram Singh, A. Arora, A. Ekbal, and P. Bhattacharyya, “A Sentiment and Emotion aware Multimodal Multiparty Humor Recognition in Multilingual Conversational Setting,” in Proceedings of the 29th International Conference on Computational Linguistics, , 10 2022, pp. 6752–6761. [Online]. Available: https: //huggingface.co/ [26] D. S. Chauhan, G. V. Singh, A. Arora, A. Ekbal, and P. Bhattacharyya, “An emoji-aware multitask framework for multimodal sarcasm detec-tion,” Knowledge-Based Systems , vol. 257, 12 2022. [27] J. Torres-Mar´ ın, G. Navarro-Carrillo, and H. Carretero-Dios, “Is the use of humor associated with anger management? The assessment of individual differences in humor styles in Spain,” Personality and Individual Differences , vol. 120, pp. 193–201, 1 2018. [28] G. E. Weisfeld and M. B. Weisfeld, “Does a humorous element charac-terize embarrassment?” Humor , vol. 27, no. 1, pp. 65–85, 2 2014. [29] M. Billig, “Humour and Embarrassment: Limits of ‘Nice-Guy’ Theories of Social Life,” Theory, Culture & Society (SAGE, London, Thousand oaks and new Delhi) , vol. 18, no. 5, pp. 23–43, 2001. [30] C. L. Sabharwal, “Cohen’s Kappa Statistic and newKappaStatistic for Measuring and Interpreting Inter-Rater Agreement,” International Journal of Research in Engineering and Science (IJRES) ISSN , vol. 9, no. 7, pp. 23–28, 7 2021. [Online]. Available: www.ijres.org [31] S. Sun, “Meta-analysis of Cohen’s kappa,” Health Services and Out-comes Research Methodology , vol. 11, no. 3-4, pp. 145–163, 12 2011. [32] J. Devlin, M.-W. Chang, K. Lee, K. T. Google, and A. I. Language, “BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding,” in Proceedings of NAACL-HLT . Minnesota: Association for Computational Linguistics, 6 2019, pp. 4171–4186. [Online]. Available: https://github.com/tensorflow/tensor2tensor [33] H. Dinkel, Z. Yan, Y. Wang, J. Zhang, Y. Wang, and B. Wang, “Scaling up masked audio encoder learning for general audio classification,” in Proceedings of the Annual Conference of the International Speech Communication Association, INTERSPEECH . International Speech Communication Association, 2024, pp. 547–551. [34] D. Tran, H. Wang, L. Torresani, J. Ray, Y. Lecun, and M. Paluri, “A Closer Look at Spatiotemporal Convolutions for Action Recognition,” in Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition . IEEE Computer Society, 12 2018, pp. 6450–6459. [35] T. Chen and C. Guestrin, “XGBoost: A scalable tree boosting system,” in 
+
+Proceedings of the ACM SIGKDD International Conference on Knowl-edge Discovery and Data Mining , vol. 13-17-August-2016. Association for Computing Machinery, 8 2016, pp. 785–794. [36] Y. Kartynnik, A. Ablavatski, I. Grishchenko, and M. Grundmann, “Real-time Facial Surface Geometry from Monocular Video on Mobile GPUs,” 
+
+arXiv , 7 2019. [Online]. Available: http://arxiv.org/abs/1907.06724 [37] A. Amjad and R. Dasti, “Humor styles, emotion regulation and subjec-tive well-being in young adults,” Current Psychology , vol. 41, no. 9, pp. 6326–6335, 9 2022.
