@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-12 <!--dpr-date:20260912-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/12/2609.11648v1-rddmpi-residual-denoising-diffusion-model-for-probabilistic-multivariate-time-series-imputation" data-sidebar-item="{&quot;title&quot;: &quot;RDDMPI: Residual Denoising Diffusion Model for Probabilistic Multivariate Time Series Imputation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.11648v1-rddmpi-residual-denoising-diffusion-model-for-probabilistic-multivariate-time-series-imputation&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;基于扩散的概率化缺失值插补&quot;}">RDDMPI: Residual Denoising Diffusion Model for Probabilistic Multivariate Time Series Imputation</a>
   * 2026-09-11 <!--dpr-date:20260911-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/11/2609.10950v1-robust-multimodal-sentiment-analysis-with-incomplete-modalities-via-semantic-aware-completeness-based-reconstruction" data-sidebar-item="{&quot;title&quot;: &quot;Robust Multimodal Sentiment Analysis with Incomplete Modalities via Semantic-aware Completeness based Reconstruction&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.10950v1-robust-multimodal-sentiment-analysis-with-incomplete-modalities-via-semantic-aware-completeness-based-reconstruction&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;不完整模态下通过语义重建实现鲁棒多模态情感分析&quot;}">Robust Multimodal Sentiment Analysis with Incomplete Modalities via Semantic-aware Completeness based Reconstruction</a>
