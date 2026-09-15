@@ -6,26 +6,39 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-14
-- 运行时间：2026-09-14 22:54:11 UTC
+- 最新运行日期：2026-09-15
+- 运行时间：2026-09-15 22:00:48 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：5
+- 精读区：1
+- 速读区：4
 
 ### 今日简报（AI）
-今日速读1篇：RA-SOD聚焦模态退化下的可靠性感知RGB-T显著目标检测，评分6.0/10。
-最值得看的是“可靠性感知”如何应对RGB-T模态退化，但6分属中等，需结合实验判断其有效性。
-普通读者建议先读摘要与实验结论，再决定是否精读或等待复现与对比验证。
-- 详情：[/202609/14/README](/202609/14/README)
+今天完成 5 篇多模态情感/情绪方向论文筛选：精读 ReH-FUSE（8.0/10），速读 MLLM 情绪幻觉评测与缓解、多模态学习的依赖-压缩-协同信息论视角、不确定性下的感官精度推断等 4 篇。
+
+最值得看的是精读的 ReH-FUSE 可靠性感知分层专家融合框架（8.0），以及 MLLM 情绪幻觉"先评测、再缓解"的思路（6.0），两者都指向同一件事：多模态情绪判断的可信度问题。
+
+普通读者可先读精读那篇掌握分层融合与可靠性建模的骨架，再从速读中挑一篇（如情绪幻觉评测）了解如何发现和减少多模态模型"一本正经胡说"的情绪判断。
+- 详情：[/202609/15/README](/202609/15/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [ReH-FUSE: Reliability-Aware Hierarchical Fusion of Experts for Multimodal Emotion Recognition in Conversation](/202609/15/2609.13857v1-reh-fuse-reliability-aware-hierarchical-fusion-of-experts-for-multimodal-emotion-recognition-in-conversation)  
+   标签：评分：8.0/10、query:mm
+   evidence：可靠性感知融合的对话多模态情感识别
 
 ### 速读区论文标签
-1. [RA-SOD: Reliability-Aware RGB-T Salient Object Detection under Modality Degradation](/202609/14/2609.12622v1-ra-sod-reliability-aware-rgb-t-salient-object-detection-under-modality-degradation)  
+1. [Multi-Faceted Evaluation and Mitigation of Emotion Hallucinations in MLLMs](/202609/15/2609.11154v1-multi-faceted-evaluation-and-mitigation-of-emotion-hallucinations-in-mllms)  
    标签：评分：6.0/10、query:mm
-   evidence：模态退化下可靠性感知的跨模态融合
+   evidence：多模态大模型情感幻觉的多维评估与缓解
+2. [Dependency, Compression, and Synergy: A Unified Information-Theoretic View of Multimodal Learning](/202609/15/2609.14421v1-dependency-compression-and-synergy-a-unified-information-theoretic-view-of-multimodal-learning)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态信息处理的信息论视角
+3. [Sensory Precision Inference for Multimodal Arbitration under Uncertainty](/202609/15/2609.15065v1-sensory-precision-inference-for-multimodal-arbitration-under-uncertainty)  
+   标签：评分：6.0/10、query:mm
+   evidence：噪声、缺失与不一致下的多模态仲裁
+4. [Query-Conditioned Spherical Centroid Aggregation for Multimodal Retrieval](/202609/15/2609.15335v1-query-conditioned-spherical-centroid-aggregation-for-multimodal-retrieval)  
+   标签：评分：6.0/10、query:mm
+   evidence：可处理任意模态子集并用掩码训练
 
 
 <div class="dpr-home-promo-card">
