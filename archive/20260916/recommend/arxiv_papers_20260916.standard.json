@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-16T22:11:15.440364+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.15320v1",
+      "source": "arxiv",
+      "title": "Hypergraph-Regularized Gramian Volumes for Multimodal Retrieval",
+      "abstract": "Volume-based multimodal retrieval jointly scores a text query with a candidate's video, audio, and subtitle embeddings. While this approach captures higher-order within-candidate alignment, the score remains candidate-local, and semantically related training samples primarily serve as contrastive negatives. This work introduces Hypergraph-Regularized Gramian Volumes (HyVol), a training-time module that incorporates these semantic relations prior to evaluating the original volume loss. Document hyperedges connect the observed modalities of each candidate, whereas semantic hyperedges link candidates whose detached captions are mutual top-k neighbors. A shallow gated hyper-graph network applies residual corrections to the modality embeddings. Presence masks exclude unavailable streams from message passing, and identity padding preserves the determinant of the observed Gram submatrix without feature imputation. As refinement operates on embeddings rather than scores, the same construction applies to both Gram and HyperGram. We remove the hypergraph after training, leaving the backbone-only architecture, original scoring function, and retrieval cost unchanged. We train both backbones on a 150K-clip subset of VAST-27M and evaluate zero-shot performance on six benchmarks. Under the paired protocol, HyVol improves R@1 across all five retrieval benchmarks, with video-to-text gains reaching +8.3 on MSR-VTT and +7.6 on VATEX. Under missing-modality masking, the V2T margin remains positive in all experimental settings, although the T2V margin becomes slightly negative in four.",
+      "authors": [
+        "Anindya Nag",
+        "Ambuj Mehrish",
+        "Sebastiano Vascon"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-14T10:12:07+00:00",
+      "link": "https://arxiv.org/pdf/2609.15320v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal retrieval with presence masks for missing modalities and semantic hypergraph regularization",
+      "llm_evidence_cn": "使用存在掩码处理缺失模态并做超图正则的多模态检索",
+      "llm_evidence": "使用存在掩码处理缺失模态并做超图正则的多模态检索",
+      "canonical_evidence": "使用存在掩码处理缺失模态并做超图正则的多模态检索",
+      "llm_tldr_en": "Volume-based multimodal retrieval scores candidates locally and treats related samples only as negatives. HyVol adds a training-time hypergraph module linking observed modalities and semantic neighbors, applying residual corrections to embeddings, improving robustness with presence masks.",
+      "llm_tldr_cn": "现有基于体积的多模态检索仅对候选内部模态做高阶对齐评分，语义相关样本只被当作对比负例，关系未被充分利用。本文提出HyVol训练模块，用文档超边连接候选已观测模态、语义超边连接互为近邻的样本，并通过浅层门控超图网络对模态嵌入施加残差修正。结合存在掩码处理缺失模态，该方法提升了检索对齐与鲁棒性，为缺失模态场景下的多模态学习提供了语义关系正则化新思路。",
+      "llm_tldr": "现有基于体积的多模态检索仅对候选内部模态做高阶对齐评分，语义相关样本只被当作对比负例，关系未被充分利用。本文提出HyVol训练模块，用文档超边连接候选已观测模态、语义超边连接互为近邻的样本，并通过浅层门控超图网络对模态嵌入施加残差修正。结合存在掩码处理缺失模态，该方法提升了检索对齐与鲁棒性，为缺失模态场景下的多模态学习提供了语义关系正则化新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

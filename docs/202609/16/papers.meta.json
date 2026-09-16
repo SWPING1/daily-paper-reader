@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-16",
+  "date": "2026-09-16",
+  "generated_at": "2026-09-16T22:12:19",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/16/2609.15320v1-hypergraph-regularized-gramian-volumes-for-multimodal-retrieval",
+      "section": "quick",
+      "title_en": "Hypergraph-Regularized Gramian Volumes for Multimodal Retrieval",
+      "authors": "Anindya Nag, Ambuj Mehrish, Sebastiano Vascon",
+      "date": "2026-09-14",
+      "pdf": "https://arxiv.org/pdf/2609.15320v1",
+      "score": "6.0",
+      "evidence": "使用存在掩码处理缺失模态并做超图正则的多模态检索",
+      "tldr": "基于Gramian体积的多模态检索能联合打分文本与候选的视频、音频和字幕，但得分仅限候选内部，语义相关训练样本多被当作对比负例。为此提出HyVol训练期模块：用文档超边连接候选已观测模态，用语义超边连接互Top-k近邻的候选，并以浅层门控超图网络对模态嵌入做残差修正，缺失流用存在掩码与恒等填充处理，训练后移除超图，推理架构与检索成本不变。在VAST-27M子集训练、六个基准零样本评测中，五个检索基准R@1均提升，MSR-VTT和VATEX视频到文本分别提升8.3和7.6；缺失模态下V2T边距全为正，T2V在四种设置略负。该即插即用正则引入语义关系，且不改变最终评分与开销。",
+      "tags": "query:mm",
+      "abstract_en": "Volume-based multimodal retrieval jointly scores a text query with a candidate's video, audio, and subtitle embeddings. While this approach captures higher-order within-candidate alignment, the score remains candidate-local, and semantically related training samples primarily serve as contrastive negatives. This work introduces Hypergraph-Regularized Gramian Volumes (HyVol), a training-time module that incorporates these semantic relations prior to evaluating the original volume loss. Document hyperedges connect the observed modalities of each candidate, whereas semantic hyperedges link candidates whose detached captions are mutual top-k neighbors. A shallow gated hyper-graph network applies residual corrections to the modality embeddings. Presence masks exclude unavailable streams from message passing, and identity padding preserves the determinant of the observed Gram submatrix without feature imputation. As refinement operates on embeddings rather than scores, the same construction applies to both Gram and HyperGram. We remove the hypergraph after training, leaving the backbone-only architecture, original scoring function, and retrieval cost unchanged. We train both backbones on a 150K-clip subset of VAST-27M and evaluate zero-shot performance on six benchmarks. Under the paired protocol, HyVol improves R@1 across all five retrieval benchmarks, with video-to-text gains reaching +8.3 on MSR-VTT and +7.6 on VATEX. Under missing-modality masking, the V2T margin remains positive in all experimental settings, although the T2V margin becomes slightly negative in four.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

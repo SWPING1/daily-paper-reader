@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-16 <!--dpr-date:20260916-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/16/2609.15320v1-hypergraph-regularized-gramian-volumes-for-multimodal-retrieval" data-sidebar-item="{&quot;title&quot;: &quot;Hypergraph-Regularized Gramian Volumes for Multimodal Retrieval&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.15320v1-hypergraph-regularized-gramian-volumes-for-multimodal-retrieval&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;使用存在掩码处理缺失模态并做超图正则的多模态检索&quot;}">Hypergraph-Regularized Gramian Volumes for Multimodal Retrieval</a>
   * 2026-09-15 <!--dpr-date:20260915-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/15/2609.13857v1-reh-fuse-reliability-aware-hierarchical-fusion-of-experts-for-multimodal-emotion-recognition-in-conversation" data-sidebar-item="{&quot;title&quot;: &quot;ReH-FUSE: Reliability-Aware Hierarchical Fusion of Experts for Multimodal Emotion Recognition in Conversation&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.13857v1-reh-fuse-reliability-aware-hierarchical-fusion-of-experts-for-multimodal-emotion-recognition-in-conversation&quot;, &quot;score&quot;: &quot;8.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;可靠性感知融合的对话多模态情感识别&quot;}">ReH-FUSE: Reliability-Aware Hierarchical Fusion of Experts for Multimodal Emotion Recognition in Conversation</a>
