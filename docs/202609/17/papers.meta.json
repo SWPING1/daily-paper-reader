@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-17",
+  "date": "2026-09-17",
+  "generated_at": "2026-09-17T22:04:41",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/17/2609.16962v1-affect-prototype-guided-fusion-for-open-vocabulary-incomplete-multi-modal-emotion-recognition",
+      "section": "deep",
+      "title_en": "Affect-Prototype Guided Fusion for Open-Vocabulary Incomplete Multi-modal Emotion Recognition",
+      "authors": "Yichi Zhang, Shenyue Wang, Jing Luo, Chunyang Yu, Xinyu Yang",
+      "date": "2026-09-15",
+      "pdf": "https://arxiv.org/pdf/2609.16962v1",
+      "score": "9.0",
+      "evidence": "面向模态缺失的开放词汇多模态情感识别融合",
+      "tldr": "开放词汇多模态情感识别（OV-MER）需从多模态线索生成自然语言情感标签，但现实采集常导致模态缺失与不同步。现有方法多面向完整模态，缺失模态融合又局限于固定标签，难以适配任意情感语义。为此，本文提出情感原型条件融合框架APCF：构建情感原型库建模不同情感下的模态贡献，为缺失模态融合提供动态约束，并基于可用模态条件检索与聚合特征，再由LLM解码器生成开放词汇标签。在OV-MERD+与MER-FG上，APCF显著优于当前最优基线。",
+      "tags": "query:mm",
+      "abstract_en": "Open-vocabulary multimodal emotion recognition (OV-MER) aims to generate open natural-language emotion labels from multimodal affective cues. In real-world scenarios, however, complete and synchronized modal data are difficult to obtain due to limitations of acquisition devices and user privacy constraints. Existing OV-MER methods are largely designed for full-modal inputs, and fail to perform effective feature fusion under modal missing conditions. Meanwhile, current fusion approaches designed for incomplete modalities mainly focus on fixed-label recognition context, and cannot satisfy the demand for fuse emotional cues guided with arbitrary emotion semantics in OV-MER context. To tackle these challenges, this paper proposes an Affect-Prototype-Conditioned Fusion (APCF) framework for incomplete open-vocabulary emotion recognition. As a candidate-free generative framework, APCF extends modal contribution learning to scenarios guided by arbitrary emotional semantics. Specifically, we construct an affect-prototype library to explicitly model multimodal contribution characteristics corresponding to diverse emotions, which provides dynamic constraints for modal fusion under different emotional semantic perspectives. Conditional retrieval and feature aggregation are conducted based on available modal features. The refined fused affective representations are then fed into an LLM decoder to produce open-vocabulary emotion labels. Experiments on the OV-MERD+ and MER-FG datasets demonstrate that APCF substantially outperforms state-of-the-art baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/17/2609.18470v1-divide-and-conquer-mixture-of-bottleneck-experts-in-informative-ordinal-space-for-video-based-multimodal-sentiment-analysis",
+      "section": "deep",
+      "title_en": "Divide and Conquer: Mixture-of-Bottleneck Experts in Informative Ordinal Space for Video-based Multimodal Sentiment Analysis",
+      "authors": "Ronghao Lin, Qiaolin He, Zefeng Lu, Yichu Liu, Li Huang, Sijie Mai, Haifeng Hu, Yap-peng Tan",
+      "date": "2026-09-16",
+      "pdf": "https://arxiv.org/pdf/2609.18470v1",
+      "score": "8.0",
+      "evidence": "视频多模态情感分析中的解耦序数建模",
+      "tldr": "视频多模态情感分析需融合文本、音频与图像，但现有方法常缺乏任务感知，且忽略情感的序数性质。本文将MSA重构为序数回归，解耦为极性识别与强度预测，并提出Mixture-of-Bottleneck专家框架，为不同模态的极性和强度专家分配潜变量。通过信息瓶颈学习紧凑任务表征并过滤冗余，再以多模态瓶颈路由融合与硬挖掘策略在序数情感空间预测。在4个数据集和4个语言模型上，MoB提升性能并捕捉细粒度模态内/间动态。",
+      "tags": "query:mm",
+      "abstract_en": "Video-based Multimodal sentiment analysis (MSA) must handle information from text, audio, and image sequence in human speaking videos, yet current methods often fail to integrate modalities with task awareness. Most models treat video sentiment prediction as a single task, overlooking its ordinal nature, and their fusion strategies struggle to capture diverse unique and synergic cues across modalities. To address these limitations, we adopt a divide-and-conquer perspective by reformulating MSA as an ordinal regression problem and decoupling it into polarity recognition and intensity prediction. Driven by information theory, we introduce a Mixture-of-Bottleneck (MoB) framework that assigns different latents to polarity- and intensity-specific experts for different modalities. With the learning of information bottleneck, each expert learns compact and task-relevant representations while filtering out redundancy and noise. A multimodal bottleneck routing fusion module then fuses these expert latents with hard mining strategy, guiding the prediction in the ordinal sentiment space. Extensive experiments on 4 MSA datasets and 4 language models show that MoB effectively leverages informative latents from diverse modalities and captures general sentiment structure. Beyond stronger performance, MoB comprehensively captures fine-grained intra- and inter-modal dynamics, enabling more trustworthy localization of nuanced video sentiment signals.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/17/2609.18385v1-emotion-experience-expression-and-perception-emotion-analysis-on-multimodal-social-media-posts",
+      "section": "quick",
+      "title_en": "Emotion Experience, Expression, and Perception: Emotion Analysis on Multimodal Social Media Posts",
+      "authors": "Christopher Bagdon, Carina Silberer, Roman Klinger",
+      "date": "2026-09-16",
+      "pdf": "https://arxiv.org/pdf/2609.18385v1",
+      "score": "6.0",
+      "evidence": "图文社交媒体帖子的多模态情感分析",
+      "tldr": "社交媒体情绪分析多聚焦文本，忽略图像与触发事件，难以衡量读者能否重建作者情绪。本文构建 Mult2EMo 多模态多情绪数据集，同时收集作者与读者对帖子及触发事件的标注，并分析情绪体验、表达与感知关系。实验表明，人类与计算模型均可重建但挑战显著，触发事件理解是关键，图像主导表达时尤其困难。该工作强调多模态与事件语境对情绪分析的重要性。",
+      "tags": "query:mm",
+      "abstract_en": "Emotions are an essential aspect of human communication, particularly on social media, where authors frequently combine text and images to convey their emotions. Yet prior work on emotion analysis of social media posts has overlooked two important aspects in regard to measuring how well readers can reconstruct the authors' intent: (1)~the image modality, with most work focusing solely on text, and (2)~the real-world events that trigger the expressed emotions, and their relationship to the post content. We therefore study the relation between (a) the author's experience of the event that caused them to write a social media post and (b) the content of the post, with a focus on readers' capability to reconstruct that emotion expression. To do that, we introduce the Multimodal Multi-Emotion-Model dataset Mult2EMo, created by collecting annotations from both authors and readers on the posts and their triggering events. We find that reconstruction is possible but challenging for both human readers and computational models. We show that understanding the triggering event is crucial for accurate reconstruction, and that reconstruction is particularly challenging when posts rely heavily on the image to express emotion.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

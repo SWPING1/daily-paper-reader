@@ -6,24 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-16
-- 运行时间：2026-09-16 22:12:13 UTC
+- 最新运行日期：2026-09-17
+- 运行时间：2026-09-17 22:04:35 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：3
+- 精读区：2
 - 速读区：1
 
 ### 今日简报（AI）
-今日仅速读1篇，聚焦多模态检索中的超图正则化Gramian体积方法。该方向值得关注的是用超图约束几何体积来优化跨模态表示，但6.0分提示效果中等、尚在探索期。普通读者可先记住“超图+几何”这一组合思路，暂不必深入公式细节。
-- 详情：[/202609/16/README](/202609/16/README)
+今天精读2篇、速读1篇，共3篇，焦点集中在多模态情绪识别与视频多模态情感分析。
+
+最值得看的是9.0分的《Affect-Prototype Guided Fusion for Open-Vocabulary Incomplete Multi-modal Emotion Recognition》，以及8.0分的《Divide and Conquer: Mixture-of-Bottleneck Experts in Informative Ordinal Space for Video-based Multimodal Sentiment Analysis》。
+
+普通读者可先读9分那篇理解“情感原型引导融合”如何应对不完整多模态，再对比8分那篇的“混合瓶颈专家”设计。
+- 详情：[/202609/17/README](/202609/17/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Affect-Prototype Guided Fusion for Open-Vocabulary Incomplete Multi-modal Emotion Recognition](/202609/17/2609.16962v1-affect-prototype-guided-fusion-for-open-vocabulary-incomplete-multi-modal-emotion-recognition)  
+   标签：评分：9.0/10、query:mm
+   evidence：面向模态缺失的开放词汇多模态情感识别融合
+2. [Divide and Conquer: Mixture-of-Bottleneck Experts in Informative Ordinal Space for Video-based Multimodal Sentiment Analysis](/202609/17/2609.18470v1-divide-and-conquer-mixture-of-bottleneck-experts-in-informative-ordinal-space-for-video-based-multimodal-sentiment-analysis)  
+   标签：评分：8.0/10、query:mm
+   evidence：视频多模态情感分析中的解耦序数建模
 
 ### 速读区论文标签
-1. [Hypergraph-Regularized Gramian Volumes for Multimodal Retrieval](/202609/16/2609.15320v1-hypergraph-regularized-gramian-volumes-for-multimodal-retrieval)  
+1. [Emotion Experience, Expression, and Perception: Emotion Analysis on Multimodal Social Media Posts](/202609/17/2609.18385v1-emotion-experience-expression-and-perception-emotion-analysis-on-multimodal-social-media-posts)  
    标签：评分：6.0/10、query:mm
-   evidence：使用存在掩码处理缺失模态并做超图正则的多模态检索
+   evidence：图文社交媒体帖子的多模态情感分析
 
 
 <div class="dpr-home-promo-card">
