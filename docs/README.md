@@ -6,33 +6,27 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-17
-- 运行时间：2026-09-17 22:04:35 UTC
+- 最新运行日期：2026-09-18
+- 运行时间：2026-09-18 21:19:26 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今天精读2篇、速读1篇，共3篇，焦点集中在多模态情绪识别与视频多模态情感分析。
-
-最值得看的是9.0分的《Affect-Prototype Guided Fusion for Open-Vocabulary Incomplete Multi-modal Emotion Recognition》，以及8.0分的《Divide and Conquer: Mixture-of-Bottleneck Experts in Informative Ordinal Space for Video-based Multimodal Sentiment Analysis》。
-
-普通读者可先读9分那篇理解“情感原型引导融合”如何应对不完整多模态，再对比8分那篇的“混合瓶颈专家”设计。
-- 详情：[/202609/17/README](/202609/17/README)
+2026-09-18 日报速读2篇：一篇用共识引导的共享—特异三视角学习提升语音情感识别，一篇提出生成式AI驱动的多模态低延迟多摄像头行人重识别框架。最值得关注的是语音情感识别方向（7.0分）的三视角共识建模思路，以及生成式AI在实时行人重识别中的落地潜力。普通读者可优先浏览第一篇，并留意多模态融合在低延迟场景中的实际表现。
+- 详情：[/202609/18/README](/202609/18/README)
 
 ### 精读区论文标签
-1. [Affect-Prototype Guided Fusion for Open-Vocabulary Incomplete Multi-modal Emotion Recognition](/202609/17/2609.16962v1-affect-prototype-guided-fusion-for-open-vocabulary-incomplete-multi-modal-emotion-recognition)  
-   标签：评分：9.0/10、query:mm
-   evidence：面向模态缺失的开放词汇多模态情感识别融合
-2. [Divide and Conquer: Mixture-of-Bottleneck Experts in Informative Ordinal Space for Video-based Multimodal Sentiment Analysis](/202609/17/2609.18470v1-divide-and-conquer-mixture-of-bottleneck-experts-in-informative-ordinal-space-for-video-based-multimodal-sentiment-analysis)  
-   标签：评分：8.0/10、query:mm
-   evidence：视频多模态情感分析中的解耦序数建模
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Emotion Experience, Expression, and Perception: Emotion Analysis on Multimodal Social Media Posts](/202609/17/2609.18385v1-emotion-experience-expression-and-perception-emotion-analysis-on-multimodal-social-media-posts)  
+1. [Consensus-Guided Shared-Specific Tri-View Learning for Speech Emotion Recognition](/202609/18/2609.19826v1-consensus-guided-shared-specific-tri-view-learning-for-speech-emotion-recognition)  
+   标签：评分：7.0/10、query:mm
+   evidence：共享-特有关联解耦的视图分解
+2. [A Generative AI Integrated Multimodal Framework for Low-Latency Multi-Camera Person Re-Identification](/202609/18/2609.14419v1-a-generative-ai-integrated-multimodal-framework-for-low-latency-multi-camera-person-re-identification)  
    标签：评分：6.0/10、query:mm
-   evidence：图文社交媒体帖子的多模态情感分析
+   evidence：面向缺失线索鲁棒的低延迟生成式多模态框架
 
 
 <div class="dpr-home-promo-card">
