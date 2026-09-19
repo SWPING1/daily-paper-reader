@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-19",
+  "date": "2026-09-19",
+  "generated_at": "2026-09-19T21:28:49",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/19/2609.15284v1-impute-em-native-mixed-state-diffusion-models-for-heterogeneous-data-imputation",
+      "section": "quick",
+      "title_en": "Impute-EM: Native Mixed-State Diffusion Models for Heterogeneous Data Imputation",
+      "authors": "Sergei Kholkin, Kirill Sokolov, Dmitry Baranchuk, Evgeny Burnaev, Alexander Korotin",
+      "date": "2026-09-14",
+      "pdf": "https://arxiv.org/pdf/2609.15284v1",
+      "score": "6.0",
+      "evidence": "面向异构缺失数据的扩散插补",
+      "tldr": "异构数据中数值、类别与二元变量常共存，缺失值问题普遍。现有扩散插补多将离散变量转为one-hot连续代理，导致模型状态空间与混合离散连续结构不匹配。为此提出Impute-EM，一种EM风格框架，交替用当前模型插补缺失项并重训扩散骨干，实例化为原生混合状态扩散模型，结合高斯与掩码类别组件。理论上精确设定下掩码索引边际在极限匹配目标，但完整数据分布通常不可识别。实验在混合类型表格插补上取得最佳分布保真度，文本插补验证原生离散骨干。",
+      "tags": "query:mm",
+      "abstract_en": "Missing values are ubiquitous in heterogeneous data mining, where numerical, categorical, and binary variables often coexist. Many imputation methods, especially diffusion-based ones, treat discrete variables through continuous surrogates such as one-hot relaxations rather than modeling them natively. This creates a mismatch between the model state space and the mixed discrete and continuous structure of the data. We propose Impute-EM, an Expectation Maximization style framework that alternates between imputing missing entries with the current model and refitting a diffusion backbone on completed data. We instantiate Impute-EM with native mixed-state diffusion backbones for heterogeneous data, combining Gaussian and masked categorical components without one-hot relaxations. In exact settings, we characterize the update and show that the observed mask-indexed marginals match the targets at the limit, while making explicit that the full data distribution is generally non-identifiable from incomplete observations alone. Empirically, Impute-EM delivers the best distributional fidelity on mixed-type tabular imputation, on which downstream modeling relies, with text imputation serving as a controlled validation of the native discrete backbone.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/19/2609.18404v1-multimodal-aspect-level-sentiment-analysis-based-on-gated-noise-filtering-and-emotion-relevance-interaction",
+      "section": "quick",
+      "title_en": "Multimodal Aspect-Level Sentiment Analysis Based on Gated Noise Filtering and Emotion-Relevance Interaction",
+      "authors": "Chen Huang, Liangwei Guo, Yamin Li, Yan Zhang, Chao Yang, Li Yang, Jianhua Song",
+      "date": "2026-09-16",
+      "pdf": "https://arxiv.org/pdf/2609.18404v1",
+      "score": "6.0",
+      "evidence": "多模态情感分析，跨模态噪声抑制与对齐",
+      "tldr": "面向多方面的多模态方面级情感分析中，图文融合常受方面无关噪声干扰，且视觉证据模糊、图文情感冲突导致跨模态对齐不足。为此提出GNSRI框架：用门控噪声过滤抑制无关特征并强化方面情感线索，用情感相关性交互在微观与宏观层面捕捉一致与冲突信号，再以可学习决策融合自适应整合文本、视觉与跨模态分支。在公开MABSA基准上，Twitter-2015和Twitter-2017准确率分别提升1.94%和2.06%，优于现有方法。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal Aspect-Based Sentiment Analysis (MABSA) infers fine-grained sentiment polarity toward specific aspects by jointly modeling text and images. Despite progress in cross-modal fusion, two challenges remain in multi-aspect settings: (1) multimodal noise, where aspect-irrelevant content distracts sentiment learning; and (2) weak cross-modal sentiment alignment, as visual evidence can be ambiguous and textual--visual sentiments may conflict, limiting multimodal complementarity. To address these issues, we propose a Gated Noise-filtered Sentiment-Relevance Interaction (GNSRI) framework. It employs a gated noise-filtering module to suppress sentiment-irrelevant features and enhance aspect-aware sentiment cues, and a sentiment-relevance interaction module to capture consistent and conflicting cross-modal signals at micro and macro levels. Finally, a learnable decision fusion mechanism adaptively combines predictions from textual, visual, and cross-modal branches at the aspect level. Experiments on public MABSA benchmarks show that GNSRI outperforms state-of-the-art methods, improving accuracy by 1.94\\% and 2.06\\% on Twitter-2015 and Twitter-2017, respectively.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/19/2609.20081v1-reading-emotions-in-the-token-space-discriminative-adaptation-of-speechllms-for-emotion-recognition",
+      "section": "quick",
+      "title_en": "Reading Emotions in the Token Space: Discriminative Adaptation of SpeechLLMs for Emotion Recognition",
+      "authors": "Hasindri Watawana, Sergio Burdisso, Esaú Villatoro-Tello, Manjunath K E, Kadri Hacioglu, Petr Motlicek, Andreas Stolcke",
+      "date": "2026-09-17",
+      "pdf": "https://arxiv.org/pdf/2609.20081v1",
+      "score": "6.0",
+      "evidence": "语音大模型的情感识别判别式读出",
+      "tldr": "SpeechLLM在情感识别上有潜力，但依赖生成式解码器读情感标签，易输出目标集外标签并偏向高频类别。本文提出判别式适配：不改主干，仅用单线性分类头读取最终提示词隐藏状态，一次前向得到标签。在IEMOCAP、两种SpeechLLM架构上，该方法提升Macro F1并消除幻觉，在真实ASR转录上增益最大。分析还表明情感方向对应LLM输出词空间中的可解释方向，并映射网络文本偏差。",
+      "tags": "query:mm",
+      "abstract_en": "SpeechLLMs have shown strong potential for emotion recognition, yet they read the predicted emotion off a generative decoder not suited for classification: it can emit labels outside the target set and favors frequent classes. We propose a discriminative adaptation that reads the final prompt token's hidden state through a classification head, producing a label in one forward pass without modifying the backbone. Because this readout starts from the hidden state the model would otherwise decode, it gives a controlled comparison of generative and discriminative inference in an otherwise identical speechLLM. We keep the head a single linear layer, trading little accuracy for interpretability: each emotion becomes one direction in the LLM output token space, revealing associated tokens. On IEMOCAP, across two speechLLM architectures, it improves Macro F1 and removes hallucinations, with largest gains on realistic ASR transcripts. Our analysis reveals that these emotion directions encode indirect associations mirroring biases in web-scale text.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

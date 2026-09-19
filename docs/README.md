@@ -6,27 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-18
-- 运行时间：2026-09-18 21:19:26 UTC
+- 最新运行日期：2026-09-19
+- 运行时间：2026-09-19 21:28:44 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：3
 - 精读区：0
-- 速读区：2
+- 速读区：3
 
 ### 今日简报（AI）
-2026-09-18 日报速读2篇：一篇用共识引导的共享—特异三视角学习提升语音情感识别，一篇提出生成式AI驱动的多模态低延迟多摄像头行人重识别框架。最值得关注的是语音情感识别方向（7.0分）的三视角共识建模思路，以及生成式AI在实时行人重识别中的落地潜力。普通读者可优先浏览第一篇，并留意多模态融合在低延迟场景中的实际表现。
-- 详情：[/202609/18/README](/202609/18/README)
+3篇速读全过，6分梯队聚焦扩散模型补数据、多模态情感分析与SpeechLLM情绪识别。
+最值得看的是多模态情感分析的门控降噪与SpeechLLM的token空间情绪适配，都指向更鲁棒的情感计算。
+普通读者可先读这两篇摘要，若关心缺失数据再看扩散插补，今日无精读篇目需自行筛选。
+- 详情：[/202609/19/README](/202609/19/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Consensus-Guided Shared-Specific Tri-View Learning for Speech Emotion Recognition](/202609/18/2609.19826v1-consensus-guided-shared-specific-tri-view-learning-for-speech-emotion-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：共享-特有关联解耦的视图分解
-2. [A Generative AI Integrated Multimodal Framework for Low-Latency Multi-Camera Person Re-Identification](/202609/18/2609.14419v1-a-generative-ai-integrated-multimodal-framework-for-low-latency-multi-camera-person-re-identification)  
+1. [Impute-EM: Native Mixed-State Diffusion Models for Heterogeneous Data Imputation](/202609/19/2609.15284v1-impute-em-native-mixed-state-diffusion-models-for-heterogeneous-data-imputation)  
    标签：评分：6.0/10、query:mm
-   evidence：面向缺失线索鲁棒的低延迟生成式多模态框架
+   evidence：面向异构缺失数据的扩散插补
+2. [Multimodal Aspect-Level Sentiment Analysis Based on Gated Noise Filtering and Emotion-Relevance Interaction](/202609/19/2609.18404v1-multimodal-aspect-level-sentiment-analysis-based-on-gated-noise-filtering-and-emotion-relevance-interaction)  
+   标签：评分：6.0/10、query:mm
+   evidence：多模态情感分析，跨模态噪声抑制与对齐
+3. [Reading Emotions in the Token Space: Discriminative Adaptation of SpeechLLMs for Emotion Recognition](/202609/19/2609.20081v1-reading-emotions-in-the-token-space-discriminative-adaptation-of-speechllms-for-emotion-recognition)  
+   标签：评分：6.0/10、query:mm
+   evidence：语音大模型的情感识别判别式读出
 
 
 <div class="dpr-home-promo-card">
