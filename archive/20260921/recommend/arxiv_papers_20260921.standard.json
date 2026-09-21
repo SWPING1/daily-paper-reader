@@ -1,0 +1,131 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-21T22:40:21.704292+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.19826v2",
+      "source": "arxiv",
+      "title": "Consensus-Guided Shared-Specific Tri-View Learning for Speech Emotion Recognition",
+      "abstract": "Speech emotion recognition (SER) benefits from heterogeneous acoustic representations, but views derived from the same utterance contain both overlapping emotional evidence and representation-dependent cues. Direct fusion may therefore propagate redundant information or obscure complementary details. To address this issue, we propose Tri-view Consensus-Guided Fusion (TriCGF) for jointly modeling spectrogram, Mel-frequency cepstral coefficients, and HuBERT representations. TriCGF organizes each view into common and view-specific components before fusion. Cross-view Consensus Learning aggregates the common components into a global reference, while View-wise Gated Integration adaptively combines this reference with each view-specific component. A soft difference regularizer further discourages excessive information overlap. Under speaker-independent evaluation, TriCGF achieves 74.19% weighted accuracy (WA) and 75.17% unweighted accuracy (UA) on IEMOCAP, and 94.36% WA and 94.28% UA on EmoDB, outperforming representative SER methods on both datasets.",
+      "authors": [
+        "Bing Huang",
+        "Yujian Ma",
+        "Xikun Lu",
+        "Xianquan Jiang",
+        "Jinqiu Sang"
+      ],
+      "primary_category": "eess.AS",
+      "categories": [
+        "eess.AS"
+      ],
+      "published": "2026-09-17T07:32:38+00:00",
+      "link": "https://arxiv.org/pdf/2609.19826v2",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Splits each view into common and view-specific components before fusion, a shared-specific disentanglement for emotion recognition",
+      "llm_evidence_cn": "将每个视图拆分为共享与特有分量，属于情感识别中的解耦表示",
+      "llm_evidence": "将每个视图拆分为共享与特有分量，属于情感识别中的解耦表示",
+      "canonical_evidence": "将每个视图拆分为共享与特有分量，属于情感识别中的解耦表示",
+      "llm_tldr_en": "TriCGF disentangles spectrogram, MFCC and HuBERT views into shared and view-specific components, then fuses via cross-view consensus and gated integration to improve speech emotion recognition.",
+      "llm_tldr_cn": "语音情感识别中不同声学视图既含重叠情感证据又含视图特有线索，直接融合易传播冗余信息。本文提出TriCGF，将频谱图、MFCC与HuBERT三种视图拆分为共享与特有分量，通过跨视图共识学习聚合共享分量，并用视图门控整合自适应融合。实验表明该方法能有效利用互补信息提升情感识别性能，为多视图解耦融合提供了新思路。",
+      "llm_tldr": "语音情感识别中不同声学视图既含重叠情感证据又含视图特有线索，直接融合易传播冗余信息。本文提出TriCGF，将频谱图、MFCC与HuBERT三种视图拆分为共享与特有分量，通过跨视图共识学习聚合共享分量，并用视图门控整合自适应融合。实验表明该方法能有效利用互补信息提升情感识别性能，为多视图解耦融合提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.17977v1",
+      "source": "arxiv",
+      "title": "When to Call an LLM: A Confidence-Gated Hybrid for Cost-Effective Emotion Recognition in Conversational AI",
+      "abstract": "Emotion recognition in conversation (ERC) is a production capability behind agent-assist prompts, escalation routing, and post-call analytics in contact-center-as-a-service (CCaaS) platforms, where cost and latency constraints matter as much as accuracy. We report a systems-level comparison of three deployment options for dialogue-contextual ERC: a low-cost stacked ensemble (sentence embeddings, windowed context, RandomForest/XGBoost/logistic-regression stacking), off-the-shelf LLM prompting (GPT-4o-mini; zero-shot, few-shot, chain-of-thought), and a confidence-gated hybrid that escalates only the ensemble's least-confident predictions to the LLM - modeled on IVA-to-human-agent escalation policies used in production contact centers. On IEMOCAP, the ensemble significantly outperforms every LLM configuration (0.595 vs. 0.460-0.536 weighted F1, p < 0.0001) at a fraction of the cost and sub-10ms latency; on MELD and CMU-MOSI the ranking reverses, showing neither pure system is a safe default. The confidence-gated hybrid resolves this by Pareto-dominating both pure systems on all three datasets (0.620, 0.643, 0.824 weighted F1) while routing the majority of traffic through the near-zero-cost ensemble, translating to roughly $10-85 per million utterances versus $99-170 for an LLM-only pipeline. The escalation policy is not an opaque cost/accuracy dial: escalated turns disproportionately follow an emotion or sentiment shift, giving operators an interpretable, auditable routing signal, and the ensemble's confidence is well-calibrated and safely under- rather than over-confident. The pattern holds across three datasets and two LLM providers. Confidence-gated cascading is established in general ML systems; our contribution is showing it transfers cleanly to dialogue-contextual ERC, yielding a concrete deployment recipe for CCaaS and conversational-AI platforms deciding how to allocate LLM spend.",
+      "authors": [
+        "Sai Babu Udayagiri",
+        "Arjun Chouhan",
+        "Ravisekhar Kanagala",
+        "Trishala Pavagada"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-16T01:05:22+00:00",
+      "link": "https://arxiv.org/pdf/2609.17977v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "emotion recognition in conversation comparing ensemble, LLM, and hybrid deployment",
+      "llm_evidence_cn": "对话情感识别中集成、大模型与混合方案的比较",
+      "llm_evidence": "对话情感识别中集成、大模型与混合方案的比较",
+      "canonical_evidence": "对话情感识别中集成、大模型与混合方案的比较",
+      "llm_tldr_en": "Emotion recognition in conversation faces cost and latency constraints. This work compares a stacked ensemble, LLM prompting, and a confidence-gated hybrid that escalates only uncertain predictions to the LLM, balancing accuracy and cost.",
+      "llm_tldr_cn": "对话情感识别在生产环境中受成本与延迟约束，本文比较三种部署方案：低成本堆叠集成、现成大模型提示，以及仅在集成模型低置信时升级到大模型的置信门控混合方案。实验在对话情境情感识别任务上对比准确率与成本，结果显示置信门控混合能在接近大模型精度的同时显著降低调用成本，为情感识别的工程化部署提供了实用参考。",
+      "llm_tldr": "对话情感识别在生产环境中受成本与延迟约束，本文比较三种部署方案：低成本堆叠集成、现成大模型提示，以及仅在集成模型低置信时升级到大模型的置信门控混合方案。实验在对话情境情感识别任务上对比准确率与成本，结果显示置信门控混合能在接近大模型精度的同时显著降低调用成本，为情感识别的工程化部署提供了实用参考。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.20991v1",
+      "source": "arxiv",
+      "title": "From Stress to Affect: Multimodal Deep Learning for Physiological Emotion Recognition Across Wearable Sensor Modalities",
+      "abstract": "Physiological emotion recognition using wearable sensors has important applications in mental health monitoring, affective computing, and human-computer interaction. However, existing studies typically evaluate a single model, sensing configuration, or dataset, limiting our understanding of how these factors influence recognition performance. We present a comparative study of temporal deep learning architectures for physiological emotion recognition using two multimodal wearable datasets: WESAD and EmoWear. Bidirectional long short-term memory (LSTM), temporal convolutional network (TCN), and Transformer models are evaluated under wrist-only, chest-only, and multimodal sensing configurations using participant-independent leave-one-subject-out cross-validation (LOSO-CV). We also investigate soft-voting ensembles, sensor ablation, sampling frequency, and gradient-based saliency. The Transformer achieved the highest multimodal accuracy on WESAD (99.02% +/- 0.51%), whereas the LSTM achieved the best multimodal accuracy on EmoWear for both arousal (91.80% +/- 1.06%) and valence (89.96% +/- 0.36%). These results show that relative architecture performance depends on dataset characteristics rather than one architecture being uniformly superior. Multimodal sensing consistently outperformed wrist-only and chest-only configurations across both datasets. Sampling-frequency analysis showed that 4 Hz provides a practical operating point, with performance comparable to higher frequencies at substantially lower training cost. These findings provide guidance for selecting architectures, sensing modalities, and sampling frequencies for wearable physiological emotion recognition.",
+      "authors": [
+        "Desta Haileselassie Hagos",
+        "Saurav Keshari Aryal",
+        "Legand L. Burge"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-09-17T18:45:17+00:00",
+      "link": "https://arxiv.org/pdf/2609.20991v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Multimodal deep learning for physiological emotion recognition across wearable sensor modalities",
+      "llm_evidence_cn": "跨可穿戴传感器模态的生理情感识别多模态深度学习",
+      "llm_evidence": "跨可穿戴传感器模态的生理情感识别多模态深度学习",
+      "canonical_evidence": "跨可穿戴传感器模态的生理情感识别多模态深度学习",
+      "llm_tldr_en": "A comparative study of LSTM, TCN and Transformer architectures for physiological emotion recognition on WESAD and EmoWear under wrist, chest and multimodal sensing.",
+      "llm_tldr_cn": "生理情感识别在可穿戴传感器场景有重要应用，但既有研究多局限于单一模型、配置或数据集。本文对WESAD与EmoWear两个多模态可穿戴数据集上的时序深度学习架构进行比较研究，评估双向LSTM、TCN与Transformer在腕部、胸部及多模态配置下的表现。结果表明不同传感配置与模型组合对识别性能影响显著，为可穿戴情感识别提供了系统性的实证参考。",
+      "llm_tldr": "生理情感识别在可穿戴传感器场景有重要应用，但既有研究多局限于单一模型、配置或数据集。本文对WESAD与EmoWear两个多模态可穿戴数据集上的时序深度学习架构进行比较研究，评估双向LSTM、TCN与Transformer在腕部、胸部及多模态配置下的表现。结果表明不同传感配置与模型组合对识别性能影响显著，为可穿戴情感识别提供了系统性的实证参考。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
