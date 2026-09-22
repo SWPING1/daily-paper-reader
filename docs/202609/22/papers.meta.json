@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-22",
+  "date": "2026-09-22",
+  "generated_at": "2026-09-22T22:12:49",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/22/2609.23876v1-glr-mm-graph-based-global-local-reconstruction-for-robust-multimodal-chest-x-ray-and-ehr-representation-learning-under-missing-modalities",
+      "section": "deep",
+      "title_en": "GLR-MM: Graph-Based Global-Local Reconstruction for Robust Multimodal Chest X-ray and EHR Representation Learning under Missing Modalities",
+      "authors": "Surbhi Sharma, Nikhil Manali, Devesh Maheshwari",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23876v1",
+      "score": "9.0",
+      "evidence": "通过局部跨模态与全局图分支重建缺失嵌入",
+      "tldr": "临床多模态预测常面临胸部X光与电子健康记录输入不完整的问题，现有方法难以同时利用患者内与相似患者间证据。GLR-MM将五种CXR-EHR模态映射到共享空间，通过局部跨模态重建与全局图注意力分支补全缺失嵌入，并自适应融合。在9620例MIMIC ICU数据上，50%随机缺失时AUROC和AUPRC分别提升0.0088和0.0249。结果表明图引导重建在输入严重缺失时更具价值。",
+      "tags": "query:mm",
+      "abstract_en": "Clinical multimodal models must often predict before all chest X-ray (CXR) and electronic health record (EHR) inputs are available. Existing approaches align observed representations, model missingness, or reconstruct across modalities, but do not jointly exploit within-patient and clinically similar inter-patient evidence. We propose GLR-MM, a Graph-Based Global-Local Reconstruction framework for early ICU mortality prediction. It maps five CXR-EHR modalities to a shared space, reconstructs missing embeddings through complementary local cross-modal and global graph-attention branches, adaptively fuses their estimates, and optimizes class-balanced prediction, reconstruction, and contrastive objectives. On 9,620 MIMIC-derived ICU stays, we evaluate 10%, 30%, and 50% random modality missingness with shared deterministic masks. MUSE performs better under mild and moderate missingness, whereas GLR-MM achieves higher AUROC and AUPRC at 50% by 0.0088 and 0.0249, respectively. These results indicate that graph-guided reconstruction is most useful when inputs are severely incomplete.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/22/2609.23533v1-geobalance-geometry-aware-monitoring-and-reconstruction-with-asymmetric-optimization-for-balanced-multimodal-learning",
+      "section": "quick",
+      "title_en": "GeoBalance: Geometry-Aware Monitoring and Reconstruction with Asymmetric Optimization for Balanced Multimodal Learning",
+      "authors": "Zechang Xiong, Da Li, Rong Yin, Kexin Tang, Biao Yang, Pengyuan Li, Wenkang Kong, Yulan Hu, Shengyu Zhu, Hao Peng",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23533v1",
+      "score": "6.0",
+      "evidence": "以重建应对模态崩溃的平衡多模态学习",
+      "tldr": "多模态分类器易偏向主导模态，抑制弱模态学习；已有平衡方法多从损失、梯度或贡献调整出发，默认弱模态表征仍完整。本文发现持续模态主导会导致弱模态表征级崩溃，称为流形模态崩溃（MMC），表现为类内方向减少且类间可分性下降。为此提出 GeoBalance：几何感知监控MMC迹象，仅在触发时重建弱模态表征，并用固定 Simplex-ETF 类支架与谱正则恢复类间分离、防止方向坍缩，同时以非对称梯度投影消除冲突梯度。六个多模态基准上优于竞争平衡方法。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal classifiers can converge to modality-dominant solutions in which one modality dominates the joint prediction, suppressing the learning of others. Existing balancing methods mainly adjust losses, gradients, or modality contributions, largely treating modality imbalance as an optimization problem while implicitly treating the weak modality as under-optimized but representationally intact. In this work, we find that this assumption does not always hold, as persistent modality dominance can induce a representation-level collapse of the weak modality, which we term \\emph{manifold modality collapse} (MMC). MMC manifests as a coupled geometric degradation in which weak-modality representations collapse onto fewer directions within each class and become less separable across classes. Motivated by this observation, we propose \\emph{GeoBalance}, a geometry-aware framework that monitors these two geometric properties and reconstructs the weak modality representation only when it exhibits signs of MMC. Once triggered, GeoBalance uses a fixed Simplex-ETF class scaffold and spectral regularization to restore class separation while preventing collapse onto a few feature directions. To preserve reconstruction during joint training, asymmetric gradient projection removes the joint-gradient component conflicting with reconstruction, leaving non-conflicting optimization unchanged. Extensive experiments across six multimodal benchmarks demonstrate great improvements over competitive balancing methods, validating its effectiveness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
