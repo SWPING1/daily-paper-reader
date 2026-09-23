@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-23",
+  "date": "2026-09-23",
+  "generated_at": "2026-09-23T22:31:20",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/23/2609.26617v1-mmap-multimodal-missing-aware-pretraining-for-longitudinal-alzheimers-prediction",
+      "section": "quick",
+      "title_en": "MMAP: Multimodal Missing-Aware Pretraining for Longitudinal Alzheimer's Prediction",
+      "authors": "Fiona Kekwick, Matthew Baugh, Bernhard Kainz, Paul M. Matthews, Wenjia Bai",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26617v1",
+      "score": "7.0",
+      "evidence": "多模态学习中的模态缺失与不完整表格数据",
+      "tldr": "临床决策依赖多模态纵向数据预测阿尔茨海默病进展，但模态缺失与表格不完整严重制约模型。MMAP提出缺失感知对齐预训练，用Sigmoid对比学习与生成重建训练图像编码器，并以表格基础模型和缺失令牌生成器处理不完整输入。在疾病阶段转换和淀粉样蛋白状态两项任务上，MMAP优于强多模态与单模态基线。该工作为不完整临床数据的鲁棒表征学习提供了新思路。",
+      "tags": "query:mm",
+      "abstract_en": "Clinical decision making heavily relies on predicting the disease progression trajectory by seeking to understand patient's health status which is characterised by multimodal medical data. AI holds great potential for learning useful representations from multimodal medical data to predict disease progression and aid clinical decision making. However, development of predictive AI models is constrained by missing modalities and incomplete tabular data frequently occurring in medical datasets. In addition, disease labels alone may only provide limited supervisory signals for learning representations from high-dimensional multimodal data. Here, we present MMAP, a novel Multimodal Missing-aware Alignment Pretraining method for learning image-tabular representations from incomplete data. An image encoder is pretrained with efficient sigmoid contrastive learning combined with generative reconstruction. A tabular encoder is built upon a tabular foundation model. A missing token generator enables the two encoders to take incomplete data as input, enabling the model to be robust against missing modalities, either with missing images or missing tabular data. We evaluate the clinical usefulness of the learnt multimodal representations on two challenging longitudinal clinical tasks for Alzheimer's disease: predicting disease stage conversion and predicting amyloid status. The proposed method outperforms strong multimodal and unimodal baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/23/2609.26648v1-roam-asd-robust-open-world-active-speaker-detection-with-flexible-multimodal-fusion",
+      "section": "quick",
+      "title_en": "ROAM-ASD: Robust Open-World Active Speaker Detection with Flexible Multimodal Fusion",
+      "authors": "Pu Wang, Yujun Wang, Hugo Van hamme",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26648v1",
+      "score": "7.0",
+      "evidence": "模态dropout的灵活多模态融合应对缺失输入",
+      "tldr": "主动说话人检测需可靠关联可见人脸与语音，但现有系统在挑战域或观测不完整时易退化。ROAM-ASD联合建模音频、全脸和细粒度嘴部表征，通过统一联合自注意力与模态无关查询令牌，让可用模态直接交互，并用模态丢弃提升缺失鲁棒性。该框架面向开放世界场景，在模态缺失时仍保持稳健。它在WASD、UniTalk、AVA、ASW、Talkies五个基准取得最优结果，mAP分别为98.8、87.9、96.5、99.3、98.2，较前最佳提升5.1、4.7、0.9、1.0、2.1点，并显著增强零样本跨数据集泛化。",
+      "tags": "query:mm",
+      "abstract_en": "Active speaker detection (ASD) requires reliable association between visible faces and acoustic speech, yet existing systems often degrade under challenging domains or incomplete observations. We introduce ROAM-ASD, a robust audiovisual framework that jointly models audio, full-face, and fine-grained mouth representations. A unified joint self-attention mechanism processes all input streams together with modality-agnostic query tokens, enabling direct interaction among available modality inputs. Modality dropout further improves robustness when input streams are unavailable. ROAM-ASD achieves state-of-the-art performance across five ASD benchmarks: 98.8% mAP on WASD, 87.9% on UniTalk, 96.5% on AVA, 99.3% on ASW, and 98.2% on Talkies, improving over previous best systems by 5.1, 4.7, 0.9, 1.0, and 2.1 mAP points, respectively. ROAM-ASD also substantially improves zero-shot cross-dataset generalization and remains robust to missing observations.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/23/2609.23267v1-knowing-when-to-trust-images-reliability-aware-multi-modal-entity-alignment",
+      "section": "quick",
+      "title_en": "Knowing When to Trust Images: Reliability-Aware Multi-modal Entity Alignment",
+      "authors": "Chenxiao Li, Yunhe Feng, Dongfang Liu, Dong Nie, Yan Huang, Heng Fan",
+      "date": "2026-09-20",
+      "pdf": "https://arxiv.org/pdf/2609.23267v1",
+      "score": "6.0",
+      "evidence": "通过评估模态可靠性实现鲁棒多模态融合",
+      "tldr": "多模态实体对齐（MMEA）通常直接融合图像与文本等模态，但图像可能含噪声且与实体语义错位，造成融合次优和性能下降。为此，本文提出可靠性感知框架 RA-MMEA，先由依赖感知视觉可靠性预测（DA-VRP）利用实体内部多模态依赖估计图像可靠度，再由稳定性正则化视觉嵌入生成（SR-VEG）依据文本语义生成替代视觉表示。大量实验表明 RA-MMEA 达到当前最优，验证可靠视觉模态对实体对齐的重要性和方法的有效性。",
+      "tags": "query:mm",
+      "abstract_en": "The visual modality, i.e., images, plays a key role in multi-modal entity alignment (MMEA). Existing approaches often directly fuse the image with other modalities to align different entities. Although simple, such strategies overlook the potential noise in the images and their semantic misalignment with corresponding entities, resulting in suboptimal fusion and degraded performance. Addressing this, we propose a novel Reliability-Aware framework for MMEA (RA-MMEA), which assesses visual reliability and adaptively improves unreliable visual representations for robust entity alignment. The core lies in two modules, including dependency-aware visual reliability prediction (DA-VRP) and stability-regularized visual embedding generation (SR-VEG). The former aims to estimate the reliability of an image by leveraging multi-modal dependency within the entity, while the latter focuses on producing alternative visual representation conditioned on semantics encoded in textual modalities for multi-modal fusion. Compared to current methods, RA-MMEA enables more reliable visual representations for modality fusion, thereby improving performance. In extensive experiments, RA-MMEA achieves state-of-the-art results, verifying the importance of reliable visual modality for entity alignment and the effectiveness of RA-MMEA. The code and results will be released.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/23/2609.25650v1-decoupling-disease-covariates-and-individual-variability-a-unified-disentanglement-framework-for-medical-image-classification",
+      "section": "quick",
+      "title_en": "Decoupling Disease, Covariates, and Individual Variability: A Unified Disentanglement Framework for Medical Image Classification",
+      "authors": "Shengjie Zhang, Jinglin Zhang, Zhuangzhuang Jiang, Ziqi Yu, Yipin Zhang, Qi Zhang, Xiang Chen, Haibo Yang, Fei Gao, Longbiao Cui, Yuan Zhou, Xiao-Yong Zhang, Alzheimer's Disease Neuroimaging Initiative",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.25650v1",
+      "score": "6.0",
+      "evidence": "统一解耦框架",
+      "tldr": "医学图像分类常受年龄、性别、站点等混杂协变量与个体差异干扰，传统回归方法难以刻画非线性关系。为此，作者提出统一解耦框架MedIDL，将图像特征映射到三个相互正交的潜空间，分别用监督疾病分类头、跨受试者相似匹配的协变量对齐头和高斯头吸收个体变异。在7个多模态数据集上，MedIDL分类准确率均超越监督与自监督SOTA，并能定位与临床文献一致的病理模式。",
+      "tags": "query:mm",
+      "abstract_en": "Accurately isolating disease-related features from confounding covariates (e.g., age, gender, site) and individual variations remains a fundamental challenge in medical image classification. Traditional regression-based approaches may ignore non-linear relations between image features and true covariates. To overcome this issue, we present a generalized Medical Imaging Disentanglement Learning (MedIDL) framework. MedIDL maps image features into three mutually orthogonal latent spaces through specialized disentanglement heads: a disease classification head guided by a supervised loss, a covariate-alignment head constrained by cross-subject similarity matching, and a Gaussian head absorbing individual variations. We evaluated our framework across 7 datasets encompassing diverse imaging modalities. MedIDL outperforms state-of-the-art supervised and self-supervised classification methods in accuracy across all datasets. Association analyses demonstrate that MedIDL successfully isolates target-specific latent representations. Gradient-based interpretability mappings localize pathognomonic patterns aligning with established clinical literature.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
