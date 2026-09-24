@@ -1,0 +1,39 @@
+{
+  "label": "2026-09-24",
+  "date": "2026-09-24",
+  "generated_at": "2026-09-24T22:46:31",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202609/24/2609.27615v1-bicflow-mer-orchestrating-discriminative-and-generative-multimodal-emotion-recognition-via-conditional-transport",
+      "section": "deep",
+      "title_en": "BiCFlow-MER: Orchestrating Discriminative and Generative Multimodal Emotion Recognition via Conditional Transport",
+      "authors": "Yanbing Wang, Shenyue Wang, Chunyang Yu",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.27615v1",
+      "score": "8.0",
+      "evidence": "判别与生成协同的多模态情感识别",
+      "tldr": "音频-文本多模态情感识别中，情感线索常与说话人风格和词汇内容纠缠，跨模态冲突也使证据融合困难。BiCFlow-MER将情感识别建模为结构化情感空间中的生成式证据传输，通过双向条件流解耦情感线索并构建冲突感知条件。该方法将话语传输至显式情感端点，并用原型云评分与反向类到条件一致性联合验证候选情感。在IEMOCAP、MELD及零样本CASE上优于所有对比方法，融合判别识别与生成证据建模，提出MER新范式。",
+      "tags": "query:mm",
+      "abstract_en": "In multimodal emotion recognition (MER), human affective states are inferred by integrating complementary cues from multiple modalities. In audio-text MER, affective cues are often entangled with speaker style and lexical content, while cross-modal disagreement further complicates how the evidence should be integrated. Under conventional discriminative fusion, multimodal evidence is compressed into a terminal prediction, with modality-specific cues and conflict information insufficiently preserved. In large generative affective models, by contrast, affective reasoning is typically embedded in language decoding, leaving emotion evidence implicit and difficult to verify in a structured space. To address these limitations, BiCFlow-MER (Bidirectional Conditional Flow for Multimodal Emotion Recognition) is proposed as a conditional-flow framework in which audio-text MER is formulated as generative evidence transport within a structured emotion space. Within BiCFlow-MER, emotion-oriented evidence is disentangled from speaker-style and lexical-content factors to construct a conflict-aware affective condition. Guided by this condition, each utterance is transported to an explicit emotion-space endpoint through a bidirectional rectified flow. Candidate emotions are jointly verified through adaptive prototype-cloud scoring of the transported endpoint and backward class-to-condition consistency with the original multimodal condition, enabling conflict-aware recognition. BiCFlow-MER is shown to outperform all compared methods across IEMOCAP, MELD, and the zero-shot CASE benchmark. By orchestrating discriminative recognition and generative evidence modeling through conditional transport, BiCFlow-MER defines a new MER paradigm.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/24/2609.28165v1-confidence-falls-short-asymmetric-certainty-gains-from-optimization-hinder-multimodal-classification",
+      "section": "quick",
+      "title_en": "Confidence Falls Short: Asymmetric Certainty Gains from Optimization Hinder Multimodal Classification",
+      "authors": "Longfei Huang, Xiangyu Wu, Yang Yang",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.28165v1",
+      "score": "6.0",
+      "evidence": "模态不平衡与鲁棒多模态学习",
+      "tldr": "多模态学习常因模态不平衡陷入优化困境，现有方法多关注优化动态平衡，却忽视优化会带来不对称的预测确定性增益：强模态比弱模态更自信，导致贡献失衡。作者发现该差异源于单模态特性，并可通过正向跨模态干预纠正，据此提出多模态最大置信度正则化MaxCR。方法用非线性稀疏度量追踪各模态语义置信度，对强、弱模态分别施加最大抑制与最大激励，校准top-1置信度。在常用数据集上，MaxCR优于多种SOTA基线，表明置信度校准能缓解模态不平衡并提升整体性能。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal learning (MML) falls into the optimization dilemma due to the modality imbalance phenomenon, leading to suboptimal overall performance in practice. While many attempts primarily focus on balancing the optimization dynamics across modalities to address this issue, we identify a subtle yet critical flaw: optimization yields asymmetric gains in predictive certainty, with the strong modality more confident than the weak one, driving imbalanced modality contributions. In this paper, our analysis reveals that this flaw stems from unimodal characteristics rather than multimodal learning, and this confidence discrepancy can be corrected by positive cross-modal intervention. Based on this insight, we propose multimodal Max Confidence Regularization (MaxCR) to dynamically intervene in modality semantic confidence. Specifically, the semantic confidence of each modality is tracked using a nonlinear sparsity measure. We then design max suppression and max excitation based on this measure to regularize strong and weak modalities, respectively. They penalize and encourage the top-1 confidence, thereby constraining multimodal prediction. To this end, strong and weak modalities are expected to make calibrated confidence, thereby improving the overall performance. Empirical experiments on widely used datasets reveal the superiority of our method through comparison with various state-of-the-art (SOTA) multimodal learning baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

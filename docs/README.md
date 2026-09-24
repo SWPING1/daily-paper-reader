@@ -6,35 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-23
-- 运行时间：2026-09-23 22:31:12 UTC
+- 最新运行日期：2026-09-24
+- 运行时间：2026-09-24 22:46:27 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：0
-- 速读区：4
+- 本次总论文数：2
+- 精读区：1
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 0 篇，速读 4 篇）
-- 速读：《MMAP: Multimodal Missing-Aware Pretraining for Longitudinal Alzheimer's Prediction》（7.0/10）, 《ROAM-ASD: Robust Open-World Active Speaker Detection with Flexible Multimodal Fusion》（7.0/10）, 《Knowing When to Trust Images: Reliability-Aware Multi-modal Entity Alignment》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/23/README](/202609/23/README)
+1) 2026-09-24日报：共2篇，精读BiCFlow-MER（8.0）1篇，速读Confidence Falls Short（6.0）1篇。
+2) 最值得看的是精读方向：用条件传输协同多模态情感识别中的判别与生成；速读则提醒优化带来的确定性增益并不对称，可能反而拖累多模态分类。
+3) 普通读者可先读8.0分的精读论文，再结合6.0分速读关注模型置信度是否真正可靠。
+- 详情：[/202609/24/README](/202609/24/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [BiCFlow-MER: Orchestrating Discriminative and Generative Multimodal Emotion Recognition via Conditional Transport](/202609/24/2609.27615v1-bicflow-mer-orchestrating-discriminative-and-generative-multimodal-emotion-recognition-via-conditional-transport)  
+   标签：评分：8.0/10、query:mm
+   evidence：判别与生成协同的多模态情感识别
 
 ### 速读区论文标签
-1. [MMAP: Multimodal Missing-Aware Pretraining for Longitudinal Alzheimer's Prediction](/202609/23/2609.26617v1-mmap-multimodal-missing-aware-pretraining-for-longitudinal-alzheimers-prediction)  
-   标签：评分：7.0/10、query:mm
-   evidence：多模态学习中的模态缺失与不完整表格数据
-2. [ROAM-ASD: Robust Open-World Active Speaker Detection with Flexible Multimodal Fusion](/202609/23/2609.26648v1-roam-asd-robust-open-world-active-speaker-detection-with-flexible-multimodal-fusion)  
-   标签：评分：7.0/10、query:mm
-   evidence：模态dropout的灵活多模态融合应对缺失输入
-3. [Knowing When to Trust Images: Reliability-Aware Multi-modal Entity Alignment](/202609/23/2609.23267v1-knowing-when-to-trust-images-reliability-aware-multi-modal-entity-alignment)  
+1. [Confidence Falls Short: Asymmetric Certainty Gains from Optimization Hinder Multimodal Classification](/202609/24/2609.28165v1-confidence-falls-short-asymmetric-certainty-gains-from-optimization-hinder-multimodal-classification)  
    标签：评分：6.0/10、query:mm
-   evidence：通过评估模态可靠性实现鲁棒多模态融合
-4. [Decoupling Disease, Covariates, and Individual Variability: A Unified Disentanglement Framework for Medical Image Classification](/202609/23/2609.25650v1-decoupling-disease-covariates-and-individual-variability-a-unified-disentanglement-framework-for-medical-image-classification)  
-   标签：评分：6.0/10、query:mm
-   evidence：统一解耦框架
+   evidence：模态不平衡与鲁棒多模态学习
 
 
 <div class="dpr-home-promo-card">
