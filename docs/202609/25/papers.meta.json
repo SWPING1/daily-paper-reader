@@ -1,0 +1,54 @@
+{
+  "label": "2026-09-25",
+  "date": "2026-09-25",
+  "generated_at": "2026-09-25T22:14:58",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202609/25/2609.30238v1-semmsa-latent-semantic-aided-robust-multimodal-sentiment-analysis-with-incomplete-data",
+      "section": "deep",
+      "title_en": "SemMSA: Latent Semantic-Aided Robust Multimodal Sentiment Analysis with Incomplete Data",
+      "authors": "Wenhao Li, Zhibin Wu, Chong Xiao, Qiangchang Wang",
+      "date": "2026-09-24",
+      "pdf": "https://arxiv.org/pdf/2609.30238v1",
+      "score": "9.0",
+      "evidence": "基于潜在语义的不完整数据鲁棒多模态情感分析",
+      "tldr": "多模态情感分析在模态缺失时易因缺乏高层语义基础而引入虚假生成与噪声引导，现有重建或复杂融合方法难以提供可靠语义约束。SemMSA利用大语言模型构建情感相关潜在语义，并通过无锚谱对齐融合语言、视觉与声学模态。其语义细化模块以适配器生成多模态前缀，并在冻结大语言模型中隐式迭代细化语义。谱对齐模块增强核Gram矩阵主谱分量，捕获全局非线性依赖，并加实例级谱分离约束。在SIMS、MOSI、MOSEI上达到SOTA，提升不完整数据下的鲁棒性。",
+      "tags": "query:mm",
+      "abstract_en": "Recent research on Multimodal Sentiment Analysis (MSA) has focused on learning from language, visual, and acoustic modalities with incomplete data to infer human sentiment. Most studies typically compensate for missing information by reconstructing modality features or designing complicated fusion mechanisms. However, these methods still suffer from spurious generation and noisy guidance due to the lack of high-level semantic grounding in partially observed multimodal evidence. To address these issues, we propose SemMSA, a latent semantic-aided framework that constructs rich sentiment-relevant semantics with LLMs, fully integrating with all modalities via anchor-free spectral alignment. It mainly consists of Cross-modal Semantic Refinement (CSR) and Cross-modal Spectral Alignment (CSA). Specifically, CSR first adaptively extracts visual and acoustic representations by corresponding adapters to form a unified multimodal prefix with language in the frozen LLM embedding space. It then iteratively produces continuous discriminative semantic states through a token-efficient latent refinement process without decoding explicit text. Next, CSA simultaneously aligns the refined semantics with all modalities by enhancing the dominant spectral component of their kernel Gram matrix. This captures global nonlinear dependencies among all representations without relying on a predefined anchor modality. In addition, an instance-level spectral separation constraint preserves cross-sample discriminability and mitigates representation collapse. Extensive experiments on SIMS, MOSI, and MOSEI benchmarks demonstrate that SemMSA achieves state-of-the-art performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/25/2609.26648v2-roam-asd-robust-open-world-active-speaker-detection-with-flexible-multimodal-fusion",
+      "section": "quick",
+      "title_en": "ROAM-ASD: Robust Open-World Active Speaker Detection with Flexible Multimodal Fusion",
+      "authors": "Pu Wang, Hugo Van hamme",
+      "date": "2026-09-22",
+      "pdf": "https://arxiv.org/pdf/2609.26648v2",
+      "score": "7.0",
+      "evidence": "通过模态丢弃应对输入缺失的鲁棒音视频融合",
+      "tldr": "主动说话人检测需要可靠关联可见人脸与语音，但现有系统在挑战域或观测不完整时性能明显下降。ROAM-ASD联合建模音频、全脸和细粒度嘴部表征，通过统一联合自注意力与模态无关查询token让可用模态直接交互，并用模态dropout增强缺失模态鲁棒性。它在WASD、UniTalk、AVA、ASW、Talkies五个基准上均达最优，mAP分别为98.8、87.9、96.5、99.3、98.2，较前最佳提升5.1、4.7、0.9、1.0、2.1。该方法还显著改善零样本跨数据集泛化，并在缺失观测下保持稳健，展现开放世界ASD的实用潜力。",
+      "tags": "query:mm",
+      "abstract_en": "Active speaker detection (ASD) requires reliable association between visible faces and acoustic speech, yet existing systems often degrade under challenging domains or incomplete observations. We introduce ROAM-ASD, a robust audiovisual framework that jointly models audio, full-face, and fine-grained mouth representations. A unified joint self-attention mechanism processes all input streams together with modality-agnostic query tokens, enabling direct interaction among available modality inputs. Modality dropout further improves robustness when input streams are unavailable. ROAM-ASD achieves state-of-the-art performance across five ASD benchmarks: 98.8% mAP on WASD, 87.9% on UniTalk, 96.5% on AVA, 99.3% on ASW, and 98.2% on Talkies, improving over previous best systems by 5.1, 4.7, 0.9, 1.0, and 2.1 mAP points, respectively. ROAM-ASD also substantially improves zero-shot cross-dataset generalization and remains robust to missing observations.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/25/2609.27577v1-vcmm-variance-calibrated-momentum-for-multimodal-learning",
+      "section": "quick",
+      "title_en": "VCMM: Variance-Calibrated Momentum for Multimodal Learning",
+      "authors": "Zhongjing Gu, Chenyang Huang, Yufa Feng, Chong He, Qinxu Ding, Yiming Cui",
+      "date": "2026-09-23",
+      "pdf": "https://arxiv.org/pdf/2609.27577v1",
+      "score": "6.0",
+      "evidence": "面向鲁棒多模态学习的模态不平衡与方差校准优化",
+      "tldr": "多模态联合训练常因模态不平衡，强势模态抑制其他模态优化；现有方法多只调节当前梯度，忽略动量优化器累积的历史更新，平衡效果有限。VCMM 在线估计小批量噪声与时间漂移，用其相对强度经 Kalman 式控制器为各模态设定动量，并做跨模态中心化与一阶矩精确偏差校正。在四个多模态基准上，VCMM 以较小训练开销取得一致性能提升，为动量优化下的模态平衡问题提供了新思路。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal joint training often suffers from modality imbalance, where a dominant modality suppresses the optimization of others. Existing methods mainly balance modality learning by modulating gradient magnitudes or directions, modifying optimization objectives, or adjusting training strategies, with most interventions focusing on the current update. However, when combined with widely used momentum-based optimizers, the update also incorporates accumulated information from previous gradients, which is not explicitly addressed by current-step modulation alone. To address this issue, we propose Variance-Calibrated MomentuM (VCMM), which adapts gradient memory to modality-specific gradient dynamics. Specifically, VCMM estimates minibatch noise and temporal drift online and uses their relative strength to determine modality-specific momentum through a Kalman-inspired controller. We further center the control signal across modalities and apply exact bias correction for the time-varying first moment, enabling adaptive gradient memory without extra network passes or explicit learning-rate scaling. Experiments on four multimodal benchmarks demonstrate consistent improvements with modest training overhead.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
