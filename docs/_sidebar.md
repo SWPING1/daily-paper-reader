@@ -1,6 +1,9 @@
 * <a class="dpr-sidebar-root-link" href="#/">首页</a>
 * <a class="dpr-sidebar-root-link dpr-sidebar-noactive-link" href="javascript:void(0)" data-dpr-hash="#/tutorial/README">使用教程</a>
 * Daily Papers
+  * 2026-09-27 <!--dpr-date:20260927-->
+    * 速读区
+      * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/27/2609.24409v1-deco-efficient-decouple-to-couple-learning-for-multi-task-visual-grounding" data-sidebar-item="{&quot;title&quot;: &quot;DeCo: Efficient Decouple-to-Couple Learning for Multi-Task Visual Grounding&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.24409v1-deco-efficient-decouple-to-couple-learning-for-multi-task-visual-grounding&quot;, &quot;score&quot;: &quot;6.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;表征解耦与互补耦合&quot;}">DeCo: Efficient Decouple-to-Couple Learning for Multi-Task Visual Grounding</a>
   * 2026-09-25 <!--dpr-date:20260925-->
     * 精读区
       * <a class="dpr-sidebar-item-link dpr-sidebar-item-structured" href="#/202609/25/2609.30238v1-semmsa-latent-semantic-aided-robust-multimodal-sentiment-analysis-with-incomplete-data" data-sidebar-item="{&quot;title&quot;: &quot;SemMSA: Latent Semantic-Aided Robust Multimodal Sentiment Analysis with Incomplete Data&quot;, &quot;link&quot;: &quot;https://arxiv.org/abs/2609.30238v1-semmsa-latent-semantic-aided-robust-multimodal-sentiment-analysis-with-incomplete-data&quot;, &quot;score&quot;: &quot;9.0&quot;, &quot;tags&quot;: [{&quot;kind&quot;: &quot;query&quot;, &quot;label&quot;: &quot;mm&quot;}], &quot;evidence&quot;: &quot;基于潜在语义的不完整数据鲁棒多模态情感分析&quot;}">SemMSA: Latent Semantic-Aided Robust Multimodal Sentiment Analysis with Incomplete Data</a>

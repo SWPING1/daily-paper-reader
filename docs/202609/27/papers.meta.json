@@ -1,0 +1,24 @@
+{
+  "label": "2026-09-27",
+  "date": "2026-09-27",
+  "generated_at": "2026-09-27T21:53:31",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202609/27/2609.24409v1-deco-efficient-decouple-to-couple-learning-for-multi-task-visual-grounding",
+      "section": "quick",
+      "title_en": "DeCo: Efficient Decouple-to-Couple Learning for Multi-Task Visual Grounding",
+      "authors": "Xiaoqiang Lu, Licheng Jiao, Long Sun, Yuting Yang, Xu Liu, Lingling Li, Wenping Ma, Fang Liu",
+      "date": "2026-09-21",
+      "pdf": "https://arxiv.org/pdf/2609.24409v1",
+      "score": "6.0",
+      "evidence": "表征解耦与互补耦合",
+      "tldr": "多任务视觉定位需同时理解语言并完成定位与分割，但现有方法共享表征易导致任务冲突。DeCo提出解耦到耦合的两阶段框架：先以任务感知语义解耦将共享视觉线索路由为独立特征，再通过混合先验耦合融合句子语义与掩码空间先验。基于冻结多模态编码器，DeCo仅需轻量可训练参数，在自然与遥感多个基准上取得SOTA，验证了高效多任务适配的有效性。",
+      "tags": "query:mm",
+      "abstract_en": "Multi-task visual grounding requires models to jointly understand linguistic semantics and perform accurate visual localization and segmentation. Despite the success of multimodal large language models, effectively adapting them to multiple grounding objectives remains challenging. Existing methods commonly enforce task cooperation through shared representations, while overlooking the intrinsic conflict between task-oriented feature interests. In this paper, we introduce $\\textbf{DeCo}$, an efficient $\\textbf{De}$couple-to-$\\textbf{Co}$uple learning framework that resolves this dilemma through a two-stage paradigm: task-specific representation decoupling followed by complementary prior coupling. Specifically, we first propose Task-aware Semantic Decoupling (TSD) to route shared visual cues into individual features under salient word-level guidance, alleviating representation interference between localization and segmentation. Furthermore, we observe that segmentation naturally provides informative localization priors due to dense supervision. Based on this insight, we introduce Hybrid Prior Coupling (HPC), which integrates sentence-level semantic prior with mask-derived spatial prior for enhanced grounding. Built upon a frozen multimodal encoder, DeCo requires lightweight trainable parameters while achieving strong generalization across multiple grounding objectives. Extensive experiments on RefCOCO/+, G-Ref, ReferIt, Flickr, DIOR-RSVG, SARVG1.0, RRSIS-D, RIS-LAD, and RefDIOR demonstrate that DeCo achieves state-of-the-art performance on both natural and remote sensing benchmarks. The code and models are available at https://github.com/xiaoqiang-lu/DeCo.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
