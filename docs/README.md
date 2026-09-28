@@ -6,26 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-27
-- 运行时间：2026-09-27 21:53:28 UTC
+- 最新运行日期：2026-09-28
+- 运行时间：2026-09-28 23:42:42 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日仅速读1篇，聚焦多任务视觉定位新作《DeCo：高效解耦到耦合学习》，精读为零。
-该文尝试用“先解耦、再耦合”的学习框架统一多任务视觉定位，效率是其主要卖点，但6.0分说明创新与效果仍待验证，适合关注多任务统一建模的读者一瞥。
-普通读者可先看摘要与实验设置，重点判断它相比单任务基线是否真省算力，再决定是否深读。
-- 详情：[/202609/27/README](/202609/27/README)
+2026-09-28日报：精读2篇、速读0篇，焦点锁定鲁棒多模态情感分析与EEG-语音情绪识别。  
+最值得看：9.0分的《Reliability-aware Cross-sample Enhancement for Robust Multimodal Sentiment Analysis》关注可靠性感知的跨样本增强；8.0分的《Differential Attention Unlocks Complementary EEG and Speech Fusion for Emotion Recognition》关注差分注意力融合互补的EEG与语音。  
+普通读者可先读9.0分这篇建立多模态鲁棒性视角，再顺着EEG+语音融合了解情绪识别。
+- 详情：[/202609/28/README](/202609/28/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Reliability-aware Cross-sample Enhancement for Robust Multimodal Sentiment Analysis](/202609/28/2609.30470v1-reliability-aware-cross-sample-enhancement-for-robust-multimodal-sentiment-analysis)  
+   标签：评分：9.0/10、query:mm
+   evidence：噪声与缺失模态下的鲁棒多模态情感分析
+2. [Differential Attention Unlocks Complementary EEG and Speech Fusion for Emotion Recognition](/202609/28/2609.31399v1-differential-attention-unlocks-complementary-eeg-and-speech-fusion-for-emotion-recognition)  
+   标签：评分：8.0/10、query:mm
+   evidence：融合脑电与语音的多模态情感识别
 
 ### 速读区论文标签
-1. [DeCo: Efficient Decouple-to-Couple Learning for Multi-Task Visual Grounding](/202609/27/2609.24409v1-deco-efficient-decouple-to-couple-learning-for-multi-task-visual-grounding)  
-   标签：评分：6.0/10、query:mm
-   evidence：表征解耦与互补耦合
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
