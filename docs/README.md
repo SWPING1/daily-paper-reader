@@ -6,29 +6,39 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-28
-- 运行时间：2026-09-28 23:42:42 UTC
+- 最新运行日期：2026-09-29
+- 运行时间：2026-09-29 22:51:49 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：2
-- 速读区：0
+- 本次总论文数：5
+- 精读区：1
+- 速读区：4
 
 ### 今日简报（AI）
-2026-09-28日报：精读2篇、速读0篇，焦点锁定鲁棒多模态情感分析与EEG-语音情绪识别。  
-最值得看：9.0分的《Reliability-aware Cross-sample Enhancement for Robust Multimodal Sentiment Analysis》关注可靠性感知的跨样本增强；8.0分的《Differential Attention Unlocks Complementary EEG and Speech Fusion for Emotion Recognition》关注差分注意力融合互补的EEG与语音。  
-普通读者可先读9.0分这篇建立多模态鲁棒性视角，再顺着EEG+语音融合了解情绪识别。
-- 详情：[/202609/28/README](/202609/28/README)
+今日完成5篇论文扫读，精读《Structured Latent Modeling for Supervised Multimodal Information Decomposition》（8.0/10），速读覆盖音视频情感识别、多模态测试时适应与表格知识迁移。
+
+最值得看：监督多模态信息分解的结构化潜变量建模，以及“Oracle互补不等于可实现互补”对冻结编码器音视频情感识别的提醒。
+
+普通读者可先读8.0分精读文，再按兴趣看多模态适应和跨模态知识迁移两篇速读。
+- 详情：[/202609/29/README](/202609/29/README)
 
 ### 精读区论文标签
-1. [Reliability-aware Cross-sample Enhancement for Robust Multimodal Sentiment Analysis](/202609/28/2609.30470v1-reliability-aware-cross-sample-enhancement-for-robust-multimodal-sentiment-analysis)  
-   标签：评分：9.0/10、query:mm
-   evidence：噪声与缺失模态下的鲁棒多模态情感分析
-2. [Differential Attention Unlocks Complementary EEG and Speech Fusion for Emotion Recognition](/202609/28/2609.31399v1-differential-attention-unlocks-complementary-eeg-and-speech-fusion-for-emotion-recognition)  
+1. [Structured Latent Modeling for Supervised Multimodal Information Decomposition](/202609/29/2609.35502v1-structured-latent-modeling-for-supervised-multimodal-information-decomposition)  
    标签：评分：8.0/10、query:mm
-   evidence：融合脑电与语音的多模态情感识别
+   evidence：将多模态联合分布分解为共享、模态特有与任务无关变化
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Oracle Complementarity Is Not Realizable Complementarity in Frozen-Encoder Audio-Visual Emotion Recognition](/202609/29/2609.31764v1-oracle-complementarity-is-not-realizable-complementarity-in-frozen-encoder-audio-visual-emotion-recognition)  
+   标签：评分：7.0/10、query:mm
+   evidence：音视频情感识别，多模态互补性与鲁棒性分析
+2. [Representation Editing for Multimodal Test-Time Adaptation](/202609/29/2609.32263v1-representation-editing-for-multimodal-test-time-adaptation)  
+   标签：评分：6.0/10、query:mm
+   evidence：面向分布偏移鲁棒性的多模态测试时自适应
+3. [Learning Through Game: Skewed Transfer of Tabular Knowledge to Strengthen Image Model](/202609/29/2609.32272v1-learning-through-game-skewed-transfer-of-tabular-knowledge-to-strengthen-image-model)  
+   标签：评分：6.0/10、query:mm
+   evidence：测试阶段表格数据不可用，即缺失模态下的知识迁移
+4. [Semantic Modality Compensation for Unsupervised Visible-Infrared Person Re-identification under Unpaired Settings](/202609/29/2609.34294v1-semantic-modality-compensation-for-unsupervised-visible-infrared-person-re-identification-under-unpaired-settings)  
+   标签：评分：6.0/10、query:mm
+   evidence：为缺失模态生成补偿特征，并解耦身份内容与模态风格
 
 
 <div class="dpr-home-promo-card">
