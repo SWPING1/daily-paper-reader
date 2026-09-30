@@ -1,0 +1,130 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-30T23:04:06.949566+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2609.32846v1",
+      "source": "arxiv",
+      "title": "SynCo: Learning Cross-Modal Synergy by Contrasting Interaction Residuals",
+      "abstract": "Multimodal contrastive learning is a dominant paradigm for learning transferable representations from unlabeled data, but standard objectives primarily capture information that is redundant between modalities. Partial Information Decomposition (PID) shows that task-relevant information in multimodal data decomposes into three components: redundancy shared between modalities, uniqueness specific to each modality, and synergy available only from their joint observation. Recent frameworks extend contrastive learning to capture all three components, yet synergy remains undertrained in practice. We propose SynCo (Synergy Contrastive Learning), a method that directly addresses synergy undertraining through dedicated supervision on an interaction residual. SynCo fits a linear projector to predict the fused representation from independently computed unimodal features, and the resulting interaction residual, which removes the linearly unimodal-predictable component, receives dedicated contrastive supervision at negligible computational cost. On the controlled Trifeature benchmark, SynCo achieves state-of-the-art synergy capture with a $+5.98\\%$ gain over the baseline, and on real-world benchmarks from MultiBench, DARai, and MM-IMDb, SynCo consistently outperforms or matches prior methods across diverse modality combinations and task types. The method operates as a plug-in to existing contrastive multimodal frameworks without modifying the underlying fusion architecture and can further improve synergy capture when combined with other methods.",
+      "authors": [
+        "Yavuz Yarici",
+        "Ghassan AlRegib"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-09-26T18:19:41+00:00",
+      "link": "https://arxiv.org/pdf/2609.32846v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decomposing multimodal information into redundancy uniqueness and synergy",
+      "llm_evidence_cn": "将多模态信息分解为冗余、独有与协同",
+      "llm_evidence": "将多模态信息分解为冗余、独有与协同",
+      "canonical_evidence": "将多模态信息分解为冗余、独有与协同",
+      "llm_tldr_en": "Standard multimodal contrastive learning captures only redundant information; SynCo supervises an interaction residual to learn synergy, improving the decomposition of multimodal representations.",
+      "llm_tldr_cn": "多模态对比学习通常只捕捉模态间的冗余信息，难以学到仅在联合观测中出现的协同信息，协同分量在实践中训练不足。本文基于部分信息分解，提出SynCo，通过对交互残差进行专门监督来直接强化协同信息的学习，使冗余、独有与协同三类信息均得到有效表示。实验表明协同表示得到增强，为多模态表示的解耦与信息分解学习提供了新方法。",
+      "llm_tldr": "多模态对比学习通常只捕捉模态间的冗余信息，难以学到仅在联合观测中出现的协同信息，协同分量在实践中训练不足。本文基于部分信息分解，提出SynCo，通过对交互残差进行专门监督来直接强化协同信息的学习，使冗余、独有与协同三类信息均得到有效表示。实验表明协同表示得到增强，为多模态表示的解耦与信息分解学习提供了新方法。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.33394v1",
+      "source": "arxiv",
+      "title": "Cross-modal Translation via Conditional Latent Denoising for Video Deepfake Detection",
+      "abstract": "The growing threat of video deepfakes necessitates multimodal detection. Beyond serving as independent indicators of authenticity, audio and visual signals have intrinsic dependencies that also provide an essential criterion for detection. Previous methods often overlook the cross-modal correspondences, hindering information transfer between domains and leaving crucial detection cues unexplored. To address this challenge, we propose a framework called Cross-modal Translation via Conditional Latent Denoising (CTCLD) for video deepfake detection. It connects the distinct distributions of heterogeneous modalities in latent spaces, enabling smooth cross-domain information transfer to improve detection performance. We first establish a Bayesian foundation by decomposing the audio-visual joint distribution. Subsequently, CTCLD translates both modalities via bidirectional latent denoising conditioned on each other, effectively capturing subtle inconsistencies in the manipulated signals. Experimental results demonstrate that the proposed CTCLD enables comprehensive domain alignment, resulting in a robust video deepfake detection approach with competitive performance.",
+      "authors": [
+        "Xinzhe Li",
+        "Youzhi Tu",
+        "Kong Aik Lee"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-27T09:16:15+00:00",
+      "link": "https://arxiv.org/pdf/2609.33394v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "latent cross-modal translation for modality robustness",
+      "llm_evidence_cn": "潜空间跨模态翻译提升模态鲁棒性",
+      "llm_evidence": "潜空间跨模态翻译提升模态鲁棒性",
+      "canonical_evidence": "潜空间跨模态翻译提升模态鲁棒性",
+      "llm_tldr_en": "Video deepfake detection overlooks cross-modal dependencies between audio and visual signals. CTCLD connects heterogeneous modality distributions in latent space via Bayesian conditional latent denoising, enabling smooth cross-domain information transfer and improving detection.",
+      "llm_tldr_cn": "视频深度伪造检测日益依赖多模态线索，但现有方法往往忽视音视频之间的内在依赖关系，导致跨域信息迁移受阻、关键检测线索未被利用。作者提出跨模态翻译与条件潜变量去噪框架CTCLD，先在潜空间中建立贝叶斯条件去噪模型，连接异质模态的分布，从而实现平滑的跨域信息传递。该框架通过跨模态翻译补全模态间信息，提升了深度伪造检测性能，也表明潜空间跨模态生成与翻译可支撑模态缺失或对应关系薄弱时的鲁棒多模态学习。",
+      "llm_tldr": "视频深度伪造检测日益依赖多模态线索，但现有方法往往忽视音视频之间的内在依赖关系，导致跨域信息迁移受阻、关键检测线索未被利用。作者提出跨模态翻译与条件潜变量去噪框架CTCLD，先在潜空间中建立贝叶斯条件去噪模型，连接异质模态的分布，从而实现平滑的跨域信息传递。该框架通过跨模态翻译补全模态间信息，提升了深度伪造检测性能，也表明潜空间跨模态生成与翻译可支撑模态缺失或对应关系薄弱时的鲁棒多模态学习。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.33800v1",
+      "source": "arxiv",
+      "title": "Binding Multiple Modalities via Multimodal Wasserstein Barycenter",
+      "abstract": "Multimodal learning beyond two modalities commonly leverages a specific modality (e.g., text) to bind other modalities. However, how to establish a more balanced representation space that approximates shared semantics while respecting the holistic geometry of $n$-modal data remains challenging. In this work, we present BaryBind, which aims to transport the specific modality towards the Wasserstein barycenter (WB) optimized across all modalities and introduces a volumetric alignment objective to establish a unified semantic space around the WB embedding. Specifically, we project specific modalities to the WB, which minimizes the average Wasserstein distances to multimodal distributions and serves as the anchor for subsequent alignment. We then construct a barycenter simplex, whose volume is taken as a similarity metric for global alignment centered at the WB. Experiments show that BaryBind achieves competitive performance in text-video-audio retrieval, classification, videoQA, and cross-modal generation tasks, along with robustness under modality absence and scalability to more than three modalities. Code is released at https://github.com/xl-tang3/BaryBind.",
+      "authors": [
+        "Xiaole Tang",
+        "Jiayi Xu",
+        "Xiang Gu",
+        "Yan Yang",
+        "Jian Sun"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-09-27T17:56:13+00:00",
+      "link": "https://arxiv.org/pdf/2609.33800v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Balanced multimodal representation binding via Wasserstein barycenter",
+      "llm_evidence_cn": "基于Wasserstein重心的均衡多模态表征绑定",
+      "llm_evidence": "基于Wasserstein重心的均衡多模态表征绑定",
+      "canonical_evidence": "基于Wasserstein重心的均衡多模态表征绑定",
+      "llm_tldr_en": "BaryBind transports a specific modality toward the Wasserstein barycenter optimized across all modalities, building a balanced shared semantic space for n-modal learning.",
+      "llm_tldr_cn": "现有多模态学习常依赖某一特定模态去绑定其他模态，难以建立兼顾共享语义与整体几何的均衡表征空间。本文提出BaryBind，将特定模态传输到跨所有模态优化的Wasserstein重心，并引入体对齐目标构建统一语义空间。方法在n模态数据上实现更均衡的语义对齐。其贡献在于为多模态融合提供几何均衡的表征绑定框架，对鲁棒多模态学习有借鉴意义。",
+      "llm_tldr": "现有多模态学习常依赖某一特定模态去绑定其他模态，难以建立兼顾共享语义与整体几何的均衡表征空间。本文提出BaryBind，将特定模态传输到跨所有模态优化的Wasserstein重心，并引入体对齐目标构建统一语义空间。方法在n模态数据上实现更均衡的语义对齐。其贡献在于为多模态融合提供几何均衡的表征绑定框架，对鲁棒多模态学习有借鉴意义。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

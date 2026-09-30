@@ -6,39 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-29
-- 运行时间：2026-09-29 22:51:49 UTC
+- 最新运行日期：2026-09-30
+- 运行时间：2026-09-30 23:06:04 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：1
-- 速读区：4
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日完成5篇论文扫读，精读《Structured Latent Modeling for Supervised Multimodal Information Decomposition》（8.0/10），速读覆盖音视频情感识别、多模态测试时适应与表格知识迁移。
-
-最值得看：监督多模态信息分解的结构化潜变量建模，以及“Oracle互补不等于可实现互补”对冻结编码器音视频情感识别的提醒。
-
-普通读者可先读8.0分精读文，再按兴趣看多模态适应和跨模态知识迁移两篇速读。
-- 详情：[/202609/29/README](/202609/29/README)
+2026-09-30日报：3篇速读、0篇精读，三篇均获6.0分，聚焦跨模态协同、视频深伪检测与多模态融合。
+最值得看的是“视频深伪检测”和“跨模态绑定/融合”方向，分别涉及条件潜变量去噪与Wasserstein重心。
+普通读者可先扫这三篇摘要，重点看它们如何对齐、融合不同模态，再决定是否跟进实验细节。
+- 详情：[/202609/30/README](/202609/30/README)
 
 ### 精读区论文标签
-1. [Structured Latent Modeling for Supervised Multimodal Information Decomposition](/202609/29/2609.35502v1-structured-latent-modeling-for-supervised-multimodal-information-decomposition)  
-   标签：评分：8.0/10、query:mm
-   evidence：将多模态联合分布分解为共享、模态特有与任务无关变化
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Oracle Complementarity Is Not Realizable Complementarity in Frozen-Encoder Audio-Visual Emotion Recognition](/202609/29/2609.31764v1-oracle-complementarity-is-not-realizable-complementarity-in-frozen-encoder-audio-visual-emotion-recognition)  
-   标签：评分：7.0/10、query:mm
-   evidence：音视频情感识别，多模态互补性与鲁棒性分析
-2. [Representation Editing for Multimodal Test-Time Adaptation](/202609/29/2609.32263v1-representation-editing-for-multimodal-test-time-adaptation)  
+1. [SynCo: Learning Cross-Modal Synergy by Contrasting Interaction Residuals](/202609/30/2609.32846v1-synco-learning-cross-modal-synergy-by-contrasting-interaction-residuals)  
    标签：评分：6.0/10、query:mm
-   evidence：面向分布偏移鲁棒性的多模态测试时自适应
-3. [Learning Through Game: Skewed Transfer of Tabular Knowledge to Strengthen Image Model](/202609/29/2609.32272v1-learning-through-game-skewed-transfer-of-tabular-knowledge-to-strengthen-image-model)  
+   evidence：将多模态信息分解为冗余、独有与协同
+2. [Cross-modal Translation via Conditional Latent Denoising for Video Deepfake Detection](/202609/30/2609.33394v1-cross-modal-translation-via-conditional-latent-denoising-for-video-deepfake-detection)  
    标签：评分：6.0/10、query:mm
-   evidence：测试阶段表格数据不可用，即缺失模态下的知识迁移
-4. [Semantic Modality Compensation for Unsupervised Visible-Infrared Person Re-identification under Unpaired Settings](/202609/29/2609.34294v1-semantic-modality-compensation-for-unsupervised-visible-infrared-person-re-identification-under-unpaired-settings)  
+   evidence：潜空间跨模态翻译提升模态鲁棒性
+3. [Binding Multiple Modalities via Multimodal Wasserstein Barycenter](/202609/30/2609.33800v1-binding-multiple-modalities-via-multimodal-wasserstein-barycenter)  
    标签：评分：6.0/10、query:mm
-   evidence：为缺失模态生成补偿特征，并解耦身份内容与模态风格
+   evidence：基于Wasserstein重心的均衡多模态表征绑定
 
 
 <div class="dpr-home-promo-card">

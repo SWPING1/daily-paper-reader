@@ -1,0 +1,729 @@
+Title: Cross-modal Translation via Conditional Latent Denoising for Video Deepfake Detection
+
+URL Source: https://arxiv.org/pdf/2609.33394v1
+
+Published Time: Tue, 29 Sep 2026 01:58:48 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+## CROSS-MODAL TRANSLATION VIA CONDITIONAL LATENT DENOISING FOR VIDEO DEEPFAKE DETECTION 
+
+## Xinzhe Li, Youzhi Tu, Kong Aik Lee ∗
+
+## Department of Electrical and Electronic Engineering, The Hong Kong Polytechnic University, Hong Kong SAR 
+
+ABSTRACT 
+
+The growing threat of video deepfakes necessitates multi-modal detection. Beyond serving as independent indicators of authenticity, audio and visual signals have intrinsic depen-dencies that also provide an essential criterion for detection. Previous methods often overlook the cross-modal correspon-dences, hindering information transfer between domains and leaving crucial detection cues unexplored. To address this challenge, we propose a framework called Cross-modal Translation via Conditional Latent Denoising (CT CLD ) for video deepfake detection. It connects the distinct distribu-tions of heterogeneous modalities in latent spaces, enabling smooth cross-domain information transfer to improve detec-tion performance. We first establish a Bayesian foundation by decomposing the audio-visual joint distribution. Subse-quently, CT CLD translates both modalities via bidirectional latent denoising conditioned on each other, effectively captur-ing subtle inconsistencies in the manipulated signals. Experi-mental results demonstrate that the proposed CT CLD enables comprehensive domain alignment, resulting in a robust video deepfake detection approach with competitive performance. 
+
+Index Terms — Multimodal learning, video deepfake de-tection, audio-visual fusion, latent diffusion models 
+
+1. INTRODUCTION 
+
+Deepfakes pose profound societal and economic challenges [1]. Recently, the rapid development of multimodal deep-fakes renders traditional unimodal detection methods ineffec-tive. The strong intrinsic dependencies between audio and visual signals inevitably introduce complex dynamics. Thus, video deepfake detection has emerged as a vital research fo-cus. For instance, [2] proposes cross-modality and within-modality regularization to preserve modality-specific repre-sentations during audio-visual fusion. [3] detects video deep-fakes by comparing predicted next-frame features with actual ones through local window attention. However, current ap-proaches struggle to fully exploit crucial detection cues from the cross-modal correspondences. On the one hand, some 
+
+> ∗Corresponding author.
+
+methods [4, 5] model audio and visual streams independently. On the other hand, some approaches [6, 7] rely on simple mapping to realize transitions between both domains, which inevitably leads to information degradation. Since the cross-modal correspondences provide an essen-tial criterion for detection, bridging the gap between hetero-geneous modalities is important. Audio and visual signals are distinct in form, but both are manifestations of the same video, thus making the joint modeling in their respective fea-ture spaces challenging. To address this, we propose a mul-timodal deepfake detection framework called Cross-modal Translation via Conditional Latent Denoising (CT CLD ), en-abling smooth cross-domain information transfer to improve video deepfake detection. We first understand the intrinsic dependencies between audio and visual modalities through the perspective of Bayesian factorization. Thus, the com-plex audio-visual joint distribution can be mathematically decomposed into a marginal distribution of one modality and a conditional distribution of the other one. Due to limited information interactions between the two modalities caused by the gap between their original feature spaces, we train audio and visual encoders on authentic videos to obtain modality-specific marginal distributions in the latent space. Furthermore, CT CLD models the conditional distribu-tions based on the extracted priors via a bidirectional latent denoising process. Finally, CT CLD integrates and leverages them as the source of retrieving detection criteria to isolate the subtle manipulation artifacts characteristic of multimodal deepfakes. Our contributions are summarized as follows: • We underscore the importance of the cross-modal cor-respondences and explore them to provide the essential video deepfake detection criteria. • We propose a framework called CT CLD , enabling smooth cross-domain information transfer to improve video deepfake detection based on the decomposition of complex audio-visual joint representation. • Experimental results demonstrate that CT CLD better bridges heterogeneous modalities and achieves compet-itive detection performance across datasets. arXiv:2609.33394v1 [cs.AI] 27 Sep 2026 Training 
+
+> V
+
+z 
+
+> Real Fake
+> Mel-spectrogram
+> (0)
+
+zA
+
+> Visual
+> Latent
+> Space
+> Visual-Guided
+> Translation Module
+> |V A
+
+z
+
+> |A V
+
+z
+
+> ( ) t
+
+zA
+
+> (0)
+
+ˆ →z 
+
+> AV
+> (0)
+
+ˆ →z 
+
+> VA
+
+CTCLD   
+
+> …
+> …
+> Visual Frames
+> Deepfaked
+> Heterogeneous Signals
+> Video
+> Audio-Guided
+> Translation Module
+> Visual
+> Encoder V
+
+
+
+> Audio
+> Latent
+> Space
+> A
+
+zAudio  
+
+> Encoder A
+
+ 
+
+> Audio-Conditioned
+> Denoising Network
+> θ→AV
+
+ 
+
+> Visual-Conditioned
+> Denoising Network
+> θ→VA
+
+ 
+
+> Sampling
+> ()
+
+~ (0, ) z ITV   
+
+> Inference
+> …()
+
+z TV 
+
+> …
+> Sampling
+> ()
+
+~ (0, ) z ITA  
+
+> Inference
+> Timestep
+
+t 
+
+> Timestep
+
+t
+
+> →
+
+Ψ A V
+
+> →
+
+ΨV A
+
+> ( ) tV
+
+z 
+
+> Training (0)
+
+=z zV V (0) 
+
+zV 
+
+> (0)
+
+=z zA A   
+
+> ……()
+
+z TA
+
+GAP Fig. 1 . The overall architecture of the Cross-modal Translation via Conditional Latent Denoising (CT CLD ). 
+
+2. METHODOLOGY 2.1. Formulation of Cross-Modal Correspondences 
+
+The correspondences between the audio and visual modalities in videos are governed by a complex joint probability distri-bution p(zA, zV ), where zA and zV denote the latent audio and visual embeddings, respectively. However, directly esti-mating p(zA, zV ) is computationally cost-intensive due to the gap between the heterogeneous modalities. Considering the bidirectional nature of audio-visual correspondences, we de-compose the joint probability distribution via a symmetrized Bayesian factorization: 
+
+p(zA, zV ) = [ p(zV |zA) p(zA|zV ) p(zV ) p(zA) ] 12 , (1) where p(zA) and p(zV ) are the modality-specific marginal distributions which are extracted by audio and visual encoders 
+
+EA and EV in the latent space. p(zV |zA) and p(zA|zV ) are the cross-modal conditional distributions. Building upon this for-mulation, we perform translations between domains based on the underlying mechanisms of cross-modal correspondences. 
+
+2.2. Cross-Modal Translation 
+
+As illustrated in Fig. 1, visual frames and a Mel-spectrogram are first fed into their respective encoders EV and EA to extract the modality-specific latent embeddings zV and zA. Within the visual latent space MV , an audio-guided translation mod-ule ΨA→V is employed to project the audio representation 
+
+zA into an audio-conditioned visual prior ˜zV |A. This prior subsequently serves as the conditioning signal during a latent denoising process to guide the generative reconstruction of the visual embeddings zV . Similarly, a symmetrical trans-lation is simultaneously performed for the audio modality, guided by the visual-conditioned audio prior ˜zA|V . Finally, CT CLD integrates these enriched representations to system-atically expose forgery artifacts, serving as the source for the video deepfake detection. Specifically, we denote z(0)  
+
+> V
+
+:= 
+
+zV ∈ M V and z(0)  
+
+> A
+
+:= zA ∈ M A as the clean visual and au-dio latent representations. A Markovian corruption chain over 
+
+T timesteps progressively injects Gaussian noise into z(0)  
+
+> V
+
+ac-cording to a linear variance schedule β1, . . . , β T :
+
+q
+
+
+
+z(1: T ) 
+
+> V
+
+z(0) 
+
+> V
+
+
+
+= QTt=1 N
+
+
+
+z(t) 
+
+> V
+
+; √1 − βt z(t−1)  
+
+> V
+
+, β tI
+
+
+
+. (2) Defining αt = 1 − βt and ¯αt = Qts=1 αs, the marginal dis-tribution at any arbitrary diffusion timestep t ∈ { 1, . . . , T }
+
+admits a closed-form Gaussian formulation: 
+
+q
+
+
+
+z(t) 
+
+> V
+
+z(0) 
+
+> V
+
+
+
+= N
+
+
+
+z(t) 
+
+> V
+
+; √¯αt z(0)  
+
+> V
+
+, (1 − ¯αt)I
+
+
+
+. (3) To provide domain-aligned conditioning, we formulate the audio-conditioned visual prior as ˜zV |A := Ψ A→V (zA). The reverse process reconstructs the visual latent representation from Gaussian noise z(T ) 
+
+> V
+
+∼ N (0, I), conditioned explicitly on ˜zV |A. We parameterize the reverse Markov chain as: 
+
+pθ
+
+
+
+z(0: T ) 
+
+> V
+
+˜zV |A
+
+
+
+= p
+
+
+
+z(T )
+
+> V
+
+ QTt=1 pθ
+
+
+
+z(t−1)  
+
+> V
+
+z(t) 
+
+> V
+
+, ˜zV |A
+
+
+
+, (4) 
+
+pθ
+
+
+
+z(t−1)  
+
+> V
+
+z(t) 
+
+> V
+
+, ˜zV |A
+
+
+
+= N
+
+
+
+z(t−1)  
+
+> V
+
+; μθ
+
+
+
+z(t) 
+
+> V
+
+, t, ˜zV |A
+
+
+
+, Σθ
+
+
+
+z(t) 
+
+> V
+
+, t, ˜zV |A
+
+ 
+
+.
+
+(5) Since directly maximizing the log pθ (z(0)  
+
+> V
+
+|˜zV |A) is in-tractable, we instead optimize its variational evidence lower bound. By introducing the forward diffusion trajectory 
+
+q(z(1: T ) 
+
+> V
+
+|z(0)  
+
+> V
+
+) and applying Jensen’s inequality, the log-likelihood is bounded as follows: 
+
+log pθ
+
+
+
+z(0)  
+
+> V
+
+˜zV |A
+
+
+
+= log Eq  
+
+> 
+> z(1: T)
+> V|z(0)
+> V
+> 
+
+ pθ
+
+
+
+z(0: T ) 
+
+> V
+
+˜zV |A
+
+
+
+q
+
+
+
+z(1: T ) 
+
+> V
+
+z(0) 
+
+> V
+
+
+
+≥ Eq
+
+log 
+
+pθ
+
+
+
+z(0: T ) 
+
+> V
+
+˜zV |A
+
+
+
+q
+
+
+
+z(1: T ) 
+
+> V
+
+z(0) 
+
+> V
+
+ := −L VLB .
+
+(6) By factorizing the joint distributions via the Markov prop-erty, LVLB can be decomposed into a sum of Kullback-Leibler (KL) divergences and a reconstruction term:                   
+
+> LVLB =Eq
+> "
+> DKL
+> 
+> q
+> 
+> z(T)
+> Vz(0)
+> V
+> 
+> p
+> 
+> z(T)
+> V
+> 
+> +
+> TX
+> t=2
+> DKL
+> 
+> q
+> 
+> z(t−1)
+> Vz(t)
+> V,z(0)
+> V
+> 
+> pθ
+> 
+> z(t−1)
+> Vz(t)
+> V,˜zV|A
+> 
+> −log pθ
+> 
+> z(0)
+> Vz(1)
+> V,˜zV|A
+>  #
+> .
+
+(7) Since the forward schedule βt is fixed and both the forward process posterior and the transitions of the reverse process are Gaussian, minimizing the KL divergence simplifies to match-ing their mean vectors. By reparameterizing z(0)  
+
+> V
+
+, the mean of the forward process posterior ˜μt can be expressed as an affine combination of the current noisy state z(t) 
+
+> V
+
+and the in-jected noise ϵ:
+
+˜μt
+
+
+
+z(t) 
+
+> V
+
+, z(0) 
+
+> V
+
+
+
+= 1√αt
+
+
+
+z(t) 
+
+> V
+
+− βt√1− ¯αt
+
+ϵ
+
+
+
+. (8) During the reverse process, since z(t) 
+
+> V
+
+is explicitly available, estimating ˜μt mathematically reduces to predicting the in-jected noise ϵ. Thus, we parameterize an audio-conditioned denoising network ϵθA→V . The resulting audio-to-visual de-noising objective Ldiff  
+
+> A→V
+
+is formulated as: 
+
+Ldiff  
+
+> A→V
+
+= Ez(0)     
+
+> V,˜zV|A,ϵV∼N (0,I),t
+
+ℓtA→V
+
+ , (9)               
+
+> ℓtA→V=ϵV−ϵθA→V
+> √¯αtz(0)
+> V+√1−¯αtϵV, t, ˜zV|A
+> 22
+> .
+
+(10) Symmetrically, the visual-conditioned denoising network 
+
+ϵθV →A is optimized via the corresponding visual-to-audio denoising objective Ldiff  
+
+> V→A
+
+, which is defined as follows: 
+
+Ldiff   
+
+> V→A
+
+= Ez(0)    
+
+> A,˜zA|V,ϵA∼N (0,I),t
+
+ℓtV →A
+
+ , (11)               
+
+> ℓtV→A=ϵA−ϵθV→A
+> √¯αtz(0)
+> A+√1−¯αtϵA, t, ˜zA|V
+> 22
+> .
+
+(12) Specifically, we first fuse the audio-conditioned visual prior ˜zV |A with the noisy visual state z(t) 
+
+> V
+
+via a token-wise additive projection to obtain the initial hidden state H(0)  
+
+> V
+
+=
+
+Wv z(t) 
+
+> V
+
++ Wv|a˜zV |A, where Wv and Wv|a are learnable linear projection weights. The fused cross-modal represen-tation is then processed through K cascaded diffusion trans-former blocks [8]. The diffusion timestep t is embedded via a multi-layer perceptron to yield the dimension-wise affine modulation parameters [γ(k)1 , β(k)1 , α(k)1 , γ(k)2 , β(k)2 , α(k)2 ] for each block. These parameters adaptively modulate the hidden states as follows:              
+
+> ˜H(k)=H(k−1) +α(k)1⊙MHSA
+> 
+> (1+γ(k)1)⊙LN (H(k−1) ) + β(k)1
+> 
+> ,
+
+(13)             
+
+> H(k)= ˜H(k)+α(k)2⊙FFN
+> 
+> (1+γ(k)2)⊙LN ( ˜H(k)) + β(k)2
+> 
+> ,
+
+(14) where H(k−1) , ˜H(k), and H(k) denote the input, intermedi-ate, and output hidden states of the k-th block, respectively. LN (·), MHSA (·), and FFN (·) represent layer normalization, multi-head self-attention, and the feed-forward network. 1 is an all-ones vector, and the operator ⊙ denotes the element-wise Hadamard product. This adaptive mechanism enables the network to prioritize global cross-modal structural align-ment at high noise scales ( t → T ) while delicately refining localized audio-visual correspondences at low noise scales (t → 0). Finally, the output of the last block is projected back to the input latent dimension to yield the estimated noise: 
+
+ˆϵ = Wout LN (H(K)), (15) where Wout is a learnable projection matrix. CT CLD lever-ages feature-level representations by concatenating embed-dings along the channel dimension. To discriminate between real and fake videos, a detection head D is designed to output predicted forgery score sfake :
+
+sfake = D
+
+
+
+z(0)  
+
+> V
+
+⊕˜zV |A ⊕ˆz(0)  
+
+> A→V
+
+, z(0)  
+
+> A
+
+⊕˜zA|V ⊕ˆz(0)  
+
+> V→A
+
+
+
+, (16) where ⊕ denotes the channel-wise concatenation operator. 
+
+ˆz(0)  
+
+> A→V
+
+and ˆz(0)   
+
+> V→A
+
+represent the final reconstructed visual and audio latent representations at timestep t = 0 , conditioned on their corresponding cross-modal priors. Thus, the overall objective function is defined as: 
+
+Ltotal = LBCE (sfake , y ) + λ  Ldiff  
+
+> A→V
+
++ Ldiff  
+
+> V→A
+
+ , (17) where LBCE (·, ·) denotes the binary cross-entropy loss, y ∈{0, 1} is the ground-truth label, and λ is a hyperparameter balancing forgery detection and cross-modal reconstruction to expose audio-visual inconsistencies. 
+
+3. EXPERIMENTS 3.1. Implementation Details 
+
+We uniformly sample 16 visual frames from a clip duration of 3.2s with a resizing operation to map them into a fixed spa-tial resolution R224 ×224 . Also, we resample the audio to 16 kHz and convert it to Mel-spectrograms of 128 mel-frequency bins with a 20 ms Hann window every 4 ms, where the tem-poral dimension is 768. Our method is trained on an NVIDIA GeForce RTX 5090 GPU. We first pre-train the encoders EV
+
+and EA on the VoxCeleb2 dataset [9] to obtain zV and zA.We further train our CT CLD on FakeAVCeleb [10] and Deep-Fake Detection Challenge (DFDC) [11] datasets. The Ac-curacy (Acc) and Area Under Curve (AUC) are utilized as the metrics in evaluations. We employ the denoising diffu-sion implicit models [12] to accelerate the sampling process. The diffusion loss weight λ and the total number of training timesteps and sampling steps are set to 10 −2, 1000, and 5, respectively. Table 1 . Performance comparison results of video deepfake detection across datasets, where U. and M. denote unimodal and multimodal methods, respectively. Bold and underlined numbers are the best and second-best performance.                                                               
+
+> Method FakeAVCeleb DFDC
+> Acc ↑(%) AUC ↑(%) Acc ↑(%) AUC ↑(%)
+> U.
+> Xception [13] 67.9 70.5 80.5 79.3 LipForensics [14] 80.1 82.4 71.3 73.5 RealForensics [15] 90.1 92.3 89.6 91.5
+> M.
+> Joint-AVD [4] 82.5 83.3 90.2 91.9 AVFakeNet [5] 78.4 83.4 82.8 86.2 MCL [16] 86.0 89.3 97.9 98.3 VFD [17] 81.5 86.1 81.0 85.1 PVASS-MDD [18] 95.7 97.3 96.3 98.9 AVFF [19] 98.6 99.1 N/A N/A AVT 2-DWF [7] 87.6 88.3 88.0 89.2 AVA-CL [6] 86.6 89.5 84.2 88.6 NFFP [3] 94.8 96.3 N/A N/A
+> CT CLD (Ours) 99.4 99.5 98.5 99.9
+
+Table 2 . Results of the ablation study on the FakeAVCeleb.                  
+
+> Model Audio-Conditioned Latent Denoising Visual-Conditioned Latent Denoising Acc ↑(%) AUC ↑(%) 1✓×97.0 92.6 2×✓98.0 97.7
+> Full ✓✓99.4 99.5
+
+3.2. Overall Comparison and Ablation Study 
+
+In Table 1, we compare CT CLD with both unimodal and multimodal methods, where CT CLD achieves the best perfor-mance. On the FakeAVCeleb dataset, CT CLD yields 99.4% in Acc and 99.5% in AUC, outperforming the second-best method by 0.8% and 0.4%, respectively. On the DFDC dataset, CT CLD achieves 98.5% in Acc and 99.9% in AUC. These results demonstrate that CT CLD effectively magnifies cross-modal inconsistencies and exposes subtle audio-visual discrepancies. Furthermore, Table 2 validates the necessity of bidirectional cross-modal translation by separately removing the audio- or visual-conditioned latent denoising modules. Specifically, the Acc and AUC results of Models 1 and 2 both drop. The degradation in both unidirectional settings con-firms that bidirectional translation captures complementary cross-modal inconsistencies essential for deepfake detection. 
+
+3.3. Visualization and Sensitivity Analysis 
+
+To qualitatively validate the discriminative capability of the learned representations, we visualize the latent feature space after concatenation in CT CLD using t-Distributed Stochas-tic Neighbor Embedding (t-SNE) [20]. Fig. 2 demonstrates that CT CLD reveals a clear separation between represen-tations of real and fake videos. Furthermore, we conduct sensitivity analysis on hyperparameters in CT CLD . As shown in Fig. 3 (a), we vary the loss weight λ across Dimension 1     
+
+> Dimension 2
+> -10 -5 0510
+> -7.5
+> -5.0
+> -2.5
+> 0.0
+> 2.5
+> 5.0
+> 7.5
+> Real
+> Fake
+
+Fig. 2 . t-SNE visualization of the learned representations used for video deepfake detection. 10 -3   
+
+> 10 -2 10 -1
+> 1
+> 5
+> 10
+> 20 40
+> 80 99.28
+> 99.54 99.30
+> 47.27
+> 97.83
+> 95.76
+> 95.27
+> 99.54
+> 98.90
+> 10 -4
+> (a) Sensitivity to λ (b) Sensitivity to sampling steps
+> 99.26
+> 40 90
+
+Fig. 3 . AUC sensitivity to loss weight λ and sampling steps. 
+
+{10 −4, 10 −3, 10 −2, 10 −1, 1}. Competitive results are con-sistently achieved when setting λ within a reasonable range, proving the efficacy of Ldiff  
+
+> A→V
+
+and Ldiff  
+
+> V→A
+
+. Also, excessive weighting degrades performance due to the inappropriate shift of the optimization focus. As shown in Fig. 3 (b), we investigate how the denoising trajectory affects the model’s sensitivity to subtle manipulation artifacts. We conduct a sen-sitivity analysis on the sampling steps ∈ { 5, 10 , 20 , 40 , 80 }.Detection performance consistently decreases as the number of sampling steps increases. This trend demonstrates that a denser generative process tends to overly pay attention to manipulation artifacts and reconstruct them, whereas coarse-grained sampling effectively preserves them. 
+
+4. CONCLUSION 
+
+We have proposed CT CLD , a method called Cross-modal Translation via Conditional Latent Denoising, to capture subtle multimodal inconsistencies in video deepfakes. Our framework addresses the challenge of inadequately model-ing complex cross-modal correspondences by bridging the gap between heterogeneous modalities in the latent space. Experimental results demonstrate the competitive detection performance of CT CLD , achieving Acc and AUC scores of 99.4% and 99.5% on the FakeAVCeleb dataset, and 98.5% and 99.9% on the DFDC dataset, respectively. Also, we en-vision this generative translation paradigm inspiring broader applications in other multimodal signal processing. 5. REFERENCES 
+
+[1] Pasquale Lisena, Kong Aik Lee, Yi Wang, Massimil-iano Todisco, Chiara Galdi, Raphael Troncy, Nicholas Evans, Weiwei Lin, Lap-Pui Chau, and Man-Wai Mak, “Future-proofing deepfake detection by integrating au-dio, video, and text,” ACM AI Letters , vol. 1, no. 1, pp. 1–7, 2026. [2] Heqing Zou, Meng Shen, Yuchen Hu, Chen Chen, Eng Siong Chng, and Deepu Rajan, “Cross-modality and within-modality regularization for audio-visual deepfake detection,” in IEEE International Confer-ence on Acoustics, Speech and Signal Processing . IEEE, 2024, pp. 4900–4904. [3] Ashutosh Anshul, Shreyas Gopal, Deepu Rajan, and Eng Siong Chng, “Next-frame feature prediction for multimodal deepfake detection and temporal localiza-tion,” arXiv preprint arXiv:2511.10212 , 2025. [4] Yipin Zhou and Ser-Nam Lim, “Joint audio-visual deep-fake detection,” in IEEE/CVF International Conference on Computer Vision . IEEE, 2021, pp. 14780–14789. [5] Hafsa Ilyas, Ali Javed, and Khalid Mahmood Malik, “Avfakenet: A unified end-to-end dense swin trans-former deep learning model for audio–visual deepfakes detection,” Applied Soft Computing , vol. 136, pp. 110124, 2023. [6] Yibo Zhang, Weiguo Lin, and Junfeng Xu, “Joint audio-visual attention with contrastive learning for more gen-eral deepfake detection,” ACM Transactions on Mul-timedia Computing, Communications and Applications ,vol. 20, no. 5, pp. 1–23, 2024. [7] Rui Wang, Dengpan Ye, Long Tang, Yunming Zhang, and Jiacheng Deng, “Avt 2-dwf: Improving deepfake de-tection with audio-visual fusion and dynamic weighting strategies,” IEEE Signal Processing Letters , vol. 31, pp. 1960–1964, 2024. [8] William Peebles and Saining Xie, “Scalable diffusion models with transformers,” in IEEE/CVF International Conference on Computer Vision . IEEE, 2023, pp. 4172– 4182. [9] Joon Son Chung, Arsha Nagrani, and Andrew Zisser-man, “Voxceleb2: Deep speaker recognition,” in Proc. Interspeech , 2018, pp. 1086–1090. [10] Hasam Khalid, Shahroz Tariq, Minha Kim, and Simon S Woo, “Fakeavceleb: A novel audio-video multimodal deepfake dataset,” arXiv preprint arXiv:2108.05080 ,2021. [11] Brian Dolhansky, Joanna Bitton, Ben Pflaum, Jikuo Lu, Russ Howes, Menglin Wang, and Cristian Canton Fer-rer, “The deepfake detection challenge (dfdc) dataset,” 
+
+arXiv preprint arXiv:2006.07397 , 2020. [12] Jiaming Song, Chenlin Meng, and Stefano Ermon, “De-noising diffusion implicit models,” in International Conference on Learning Representations , 2021. [13] Andreas Rossler, Davide Cozzolino, Luisa Verdoliva, Christian Riess, Justus Thies, and Matthias Nießner, “Faceforensics++: Learning to detect manipulated fa-cial images,” in IEEE/CVF International Conference on Computer Vision , 2019, pp. 1–11. [14] Alexandros Haliassos, Konstantinos Vougioukas, Stavros Petridis, and Maja Pantic, “Lips don’t lie: A generalisable and robust approach to face forgery de-tection,” in IEEE/CVF Conference on Computer Vision and Pattern Recognition . IEEE, 2021, pp. 5037–5047. [15] Alexandros Haliassos, Rodrigo Mira, Stavros Petridis, and Maja Pantic, “Leveraging real talking faces via self-supervision for robust forgery detection,” in IEEE/CVF Conference on Computer Vision and Pattern Recogni-tion . IEEE, 2022, pp. 14930–14942. [16] Xiaolong Liu, Yang Yu, Xiaolong Li, and Yao Zhao, “Mcl: Multimodal contrastive learning for deepfake de-tection,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 34, no. 4, pp. 2803–2813, 2023. [17] Harry Cheng, Yangyang Guo, Tianyi Wang, Qi Li, Xiao-jun Chang, and Liqiang Nie, “Voice-face homogeneity tells deepfake,” ACM Transactions on Multimedia Com-puting, Communications and Applications , vol. 20, no. 3, pp. 1–22, 2024. [18] Yang Yu, Xiaolong Liu, Rongrong Ni, Siyuan Yang, Yao Zhao, and Alex C Kot, “Pvass-mdd: Predictive visual-audio alignment self-supervision for multimodal deepfake detection,” IEEE Transactions on Circuits and Systems for Video Technology , vol. 34, no. 8, pp. 6926– 6936, 2024. [19] Trevine Oorloff, Surya Koppisetti, Nicol` o Bonettini, Di-vyaraj Solanki, Ben Colman, Yaser Yacoob, Ali Shahri-yari, and Gaurav Bharaj, “Avff: Audio-visual feature fusion for video deepfake detection,” in IEEE/CVF Con-ference on Computer Vision and Pattern Recognition .IEEE, 2024, pp. 27092–27102. [20] Laurens Van der Maaten and Geoffrey Hinton, “Visu-alizing data using t-sne.,” Journal of Machine Learning Research , vol. 9, no. 11, 2008.
