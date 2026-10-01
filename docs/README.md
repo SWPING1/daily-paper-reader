@@ -6,32 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-30
-- 运行时间：2026-09-30 23:06:04 UTC
+- 最新运行日期：2026-10-01
+- 运行时间：2026-10-01 23:36:35 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：0
-- 速读区：3
+- 速读区：2
 
 ### 今日简报（AI）
-2026-09-30日报：3篇速读、0篇精读，三篇均获6.0分，聚焦跨模态协同、视频深伪检测与多模态融合。
-最值得看的是“视频深伪检测”和“跨模态绑定/融合”方向，分别涉及条件潜变量去噪与Wasserstein重心。
-普通读者可先扫这三篇摘要，重点看它们如何对齐、融合不同模态，再决定是否跟进实验细节。
-- 详情：[/202609/30/README](/202609/30/README)
+今日成功速读2篇、精读0篇，两篇均7.0分，聚焦情绪概念泛化与对抗式多视图聚类。  
+值得看：视觉语言模型中的情绪概念跨来源、模态与架构泛化，以及对抗一致性引导的多视图聚类表示学习。  
+普通读者可先读这两篇速读摘要，再按兴趣决定是否深入。
+- 详情：[/202610/01/README](/202610/01/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [SynCo: Learning Cross-Modal Synergy by Contrasting Interaction Residuals](/202609/30/2609.32846v1-synco-learning-cross-modal-synergy-by-contrasting-interaction-residuals)  
-   标签：评分：6.0/10、query:mm
-   evidence：将多模态信息分解为冗余、独有与协同
-2. [Cross-modal Translation via Conditional Latent Denoising for Video Deepfake Detection](/202609/30/2609.33394v1-cross-modal-translation-via-conditional-latent-denoising-for-video-deepfake-detection)  
-   标签：评分：6.0/10、query:mm
-   evidence：潜空间跨模态翻译提升模态鲁棒性
-3. [Binding Multiple Modalities via Multimodal Wasserstein Barycenter](/202609/30/2609.33800v1-binding-multiple-modalities-via-multimodal-wasserstein-barycenter)  
-   标签：评分：6.0/10、query:mm
-   evidence：基于Wasserstein重心的均衡多模态表征绑定
+1. [Do Emotion Concepts Generalize Across Sources, Modalities, and Architectures in Vision-Language Models?](/202610/01/2609.34742v1-do-emotion-concepts-generalize-across-sources-modalities-and-architectures-in-vision-language-models)  
+   标签：评分：7.0/10、query:mm
+   evidence：视觉语言模型中跨模态情绪概念
+2. [Adversarial Consistency-Guided Representation Learning for Multi-view Clustering](/202610/01/2609.35212v1-adversarial-consistency-guided-representation-learning-for-multi-view-clustering)  
+   标签：评分：7.0/10、query:mm
+   evidence：解耦视图特有与共享表示
 
 
 <div class="dpr-home-promo-card">

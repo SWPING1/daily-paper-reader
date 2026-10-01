@@ -1,0 +1,340 @@
+Title: Adversarial Consistency-Guided Representation Learning for Multi-view Clustering
+
+URL Source: https://arxiv.org/pdf/2609.35212v1
+
+Published Time: Tue, 29 Sep 2026 04:33:23 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+## ADVERSARIAL CONSISTENCY-GUIDED REPRESENTATION LEARNING FOR MULTI-VIEW CLUSTERING 
+
+## Yuchen Lin 1,2,† Kunpeng Xu 3,† Ying Fang 1,∗ Lifei Chen 1,2,∗ 
+
+> 1
+
+## School of Computer and Cyber Security, Fujian Normal University, Fuzhou 350000, China  
+
+> 2
+
+## Digital Fujian Internet-of-Things Laboratory of Environmental Monitoring, Fujian Normal University, Fuzhou 350000, China  
+
+> 3
+
+## School of Computer Science, McGill University, Montreal H3A 2A7, Quebec, Canada 
+
+ABSTRACT 
+
+Multi-view clustering aims to capture cross-view consistency while exploiting view-specific information. However, shared representa-tions learned to capture cross-view consistency may still retain view-identifying information, potentially compromising the consistency of cross-view clustering structures. To address this issue, we propose ACGRL, an adversarial consistency-guided representation learning framework for multi-view clustering. ACGRL employs a gradient-reversal view discriminator to reduce view identifiability and obtain invariant reference representations. These representations are then frozen to provide fixed references for disentangling view-specific in-formation from cross-view common information in the subsequent learning stage. The fixed reference representations are concatenated with the learned view-specific representations for reconstruction and clustering, with cross-view cluster alignment encouraging consistent clustering assignments. Experiments on four benchmark datasets demonstrate the superior clustering performance of ACGRL com-pared with representative multi-view clustering methods. 
+
+Index Terms — Multi-view Clustering, Disentangled Represen-tation Learning, Adversarial Consistency Learning 
+
+1. INTRODUCTION 
+
+Multi-view clustering aims to discover cluster structure by exploit-ing cross-view consistency and complementary information across heterogeneous views [1]. Existing methods pursue this goal through representation alignment, dependence maximization, or shared-specific decomposition [2, 3]. However, shared representations may still retain view-identifying information, potentially compromising the consistency of cross-view clustering structures. To address this limitation, we propose ACGRL, an adversarial consistency-guided representation learning framework that uses fixed references to guide the separation of common and view-specific information. In Stage I, adversarial training with a gradient reversal layer reduces view identifiability in the reference representations. In Stage II, these references are frozen to guide view-specific learning and con-catenated with the resulting representations for reconstruction and clustering, with cross-view cluster alignment encouraging consistent assignments. Experiments on four benchmark datasets demonstrate ACGRL’s superior clustering performance over representative meth-ods. Our main contributions are summarized as follows: • We introduce adversarial consistency learning with gradient reversal to reduce view identifiability in shared representa-tions.    
+
+> †Equal contribution. ∗Corresponding authors.
+
+• We use frozen shared representations to supervise view-specific representation learning and concatenate both com-ponents for reconstruction and clustering, with cross-view cluster alignment encouraging consistent assignments. • Experiments on four benchmark datasets demonstrate that ACGRL outperforms representative multi-view clustering methods. 
+
+2. RELATED WORK 2.1. Multi-view Clustering 
+
+Multi-view clustering (MVC) seeks a common cluster structure across heterogeneous views. Existing methods model cross-view relations through subspace or graph learning, while deep approaches employ reconstruction, self-expression, and representation align-ment to learn nonlinear latent structures [4, 5]. For example, EPFMVC learns view-specific representations and adaptively fuses them according to inter-view relations [6], whereas self-expressive approaches learn a shared affinity structure in a unified latent space [1]. ACGRL employs adversarial training to encourage cross-view consistency in the learned representations, which are then frozen to provide fixed supervision for view-specific representation learning, with the aim of separating view-specific information from cross-view common information. 
+
+2.2. Multi-view Representation Disentanglement 
+
+Multi-view representation disentanglement aims to separate shared and view-specific information to improve clustering performance [3]. Multi-VAE disentangles shared and view-specific factors through variational modeling [7], while MRDD reduces their re-dundancy through distilled disentangling [8]. However, separating shared and view-specific information does not necessarily eliminate view-identifying information from the shared component. ACGRL explicitly targets such information through adversarial consistency learning and uses the resulting frozen representations to guide view-specific representation learning. 
+
+3. METHOD Notation : We introduce Adversarial Consistency-Guided Represen-tation Learning (ACGRL) for multi-view clustering, as illustrated in Figure 1. Let X = {X(v)}Vv=1 denote a multi-view dataset, where 
+
+X(v) ∈ Rn×d(v)
+
+is the feature matrix of the v-th view. ACGRL learns consistent and complementary representations for clustering. arXiv:2609.35212v1 [cs.LG] 28 Sep 2026 Fig. 1 : Overview of ACGRL. Stage I adversarially learns view-invariant representations, which are frozen to provide consistency supervision for view-specific learning in Stage II. The resulting representations are integrated for reconstruction and clustering. 
+
+3.1. Adversarial Consistency Learning 
+
+In Stage I, we learn shared representations whose source views are difficult to identify. For each view, the consistency representation extractor maps the input into a latent representation: 
+
+C(v) = f (v) 
+
+> c
+
+(X(v)), v = 1 , . . . , V, (1) where f (v) 
+
+> c
+
+denotes the Consistency Representation Extractor (ConRE), which comprises an input encoder, an SE-based fea-ture recalibration block, and a multi-head self-attention block with residual connections. To explicitly reduce view-identifiable information, we introduce a shared discriminator gd coupled with the consistency extractors through a gradient reversal layer (GRL). The adversarial objective is 
+
+LCon = 1
+
+N V 
+
+> V
+
+X
+
+> v=1
+> N
+
+X
+
+> i=1
+
+CE 
+
+
+
+gd(Rλ(c(v) 
+
+> i
+
+)) , v 
+
+
+
+, (2) where Rλ acts as an identity mapping during forward propagation but reverses the gradient during backpropagation: ∂Rλ/∂ x = −λI.Consequently, the discriminator learns to identify the source view, whereas the consistency extractors are optimized to make this iden-tification difficult, thereby encouraging view-invariant representa-tions. The reversal coefficient is progressively increased as 
+
+λ(p) = 21 + exp( −βp ) − 1, (3) where p ∈ [0 , 1] denotes the normalized training progress and β
+
+controls the growth rate of the adversarial signal. 
+
+3.2. Consistency-Supervised View-Specific Learning 
+
+After Stage I, we freeze the consistency extractors to keep the learned representations C(v) fixed, allowing them to serve as anchors that supervise the subsequent learning of view-specific representations. For each view, an independently parameterized view-specific extractor maps the original input to 
+
+S(v) = f (v) 
+
+> s
+
+(X(v)), v = 1 , . . . , V, (4) where f (v) 
+
+> s
+
+represents the Complementarity Representation Extrac-tor (ComRE), which employs an independent view-specific encoder and the same types of SE and multi-head attention blocks as fc.It further combines the recalibrated and attention-enhanced features using a learnable weight αv .To distinguish view-specific variations from the fixed shared an-chors, we introduce an auxiliary classifier hs.The auxiliary classifier 
+
+hs assigns the frozen shared representations to class 0 and the view-specific representations to their respective view classes 1, . . . , V . Its objective is 
+
+LCom = 1
+
+V
+
+> V
+
+X
+
+> v=1
+
+h
+
+ϵ CE  hs(S(v)), v  + (1 − ϵ) CE  hs(C(v)), 0
+
++ η H hs(S(v))i
+
+.
+
+(5) The fixed representations C(v) provide a common reference, while the view labels encourage S(v) to retain variations specific to each view. The entropy term further encourages confident view assign-ments. Reconstruction and clustering objectives are subsequently introduced to preserve task-relevant information in these representa-tions. 
+
+3.3. Reconstruction and Clustering Objectives 
+
+For each view, the view-invariant and view-specific representations are concatenated to form the comprehensive representation H(v) =[C(v), S(v)] ∈ RN ×2o. To retain the information required to char-acterize each view, a decoder reconstructs the original input from 
+
+H(v):
+
+LJRM = 1
+
+V
+
+> V
+
+X
+
+> v=1
+
+D(v)(H(v)) − X(v) 2
+
+> F
+
+. (6) A set of independently parameterized view-specific clustering heads 
+
+{g(v) 
+
+> p
+
+}Vv=1 produces the soft cluster assignments: 
+
+Q(v) = g(v) 
+
+> p
+
+(H(v)) ∈ RN ×K , v = 1 , . . . , V, (7) where the final layer of each g(v) 
+
+> p
+
+applies a softmax operation, and 
+
+q(v) 
+
+> j
+
+= Q(v):,j ∈ RN denotes the assignment vector of the j-th clus-ter across all instances in view v. To align the clustering structures across views, assignment vectors corresponding to the same cluster are treated as positive pairs, while those corresponding to different clusters are treated as negative pairs. For a pair of views (v, u ), the contrastive clustering loss is defined as 
+
+ℓ(v,u ) 
+
+> vc
+
+= − 1
+
+K
+
+> K
+
+X
+
+> j=1
+
+log esim (Q(v):,j ,Q(u):,j )/τ 
+
+P
+
+> m=v,u
+
+PKk=1 ,k ̸ =j esim (Q(v):,j ,Q(m):,k )/τ 
+
+, (8) where sim( ·, ·) denotes cosine similarity and τ is the tempera-ture parameter. The loss is averaged over all ordered view pairs: 
+
+Lclu = 1
+
+V (V − 1) 
+
+> V
+
+X
+
+> v=1
+> V
+
+X
+
+> u=1 ,u ̸=v
+
+ℓ(v,u )vc . (9) Finally, the view-specific assignment matrices are uniformly aver-aged to obtain the consensus cluster assignment: 
+
+¯Q = 1
+
+V
+
+> V
+
+X
+
+> v=1
+
+Q(v). (10) The predicted cluster label of the i-th instance is then given by 
+
+ˆyi = arg max 
+
+> 1≤j≤K
+
+¯Qij , (11) where ¯Qi, : ∈ RK denotes the consensus assignment probabilities of the i-th instance over the K clusters. 
+
+4. EXPERIMENTS 4.1. Datasets and Baseline 
+
+We evaluate ACGRL on four widely used multi-view datasets. NGs [9] contains 500 samples described by 3 views and grouped into 5 classes. BBCSport [10] contains 544 samples described by 2 views and grouped into 5 classes. Cora [11] contains 2,708 samples de-scribed by 2 views and grouped into 7 classes. Hdigit [12] contains 10,000 samples described by 2 views and grouped into 10 classes. We compare ACGRL with nine representative methods. MFLVC [13] separates reconstruction and contrastive consistency learn-ing into different feature levels. DCP [14] combines mutual-information-based contrastive learning with cross-view prediction. MetaViewer [15] learns unified representations through a meta-learning-based uniform-to-specific framework. DealMVC [16] captures cross-view consistency through global and local contrastive calibration. GCFAggMVC [17] combines global and cross-view feature aggregation with structure-guided contrastive learning. DFL-Net [3] learns consistent and complementary representations through contrastive and complementarity regularization. DDMVC [18] com-bines contrastive consistency learning with sample diversity and fea-ture decorrelation. GAVIM [19] integrates variational information maximization, local geometry preservation, and Gramian alignment for imputation-free incomplete multi-view clustering. DMVCS [2] combines representation disentanglement with semantic relevance alignment and multi-hop neighbor contrastive learning. All base-lines are evaluated using the parameter settings recommended in their respective papers. 
+
+4.2. Experimental Setup 
+
+We evaluate clustering performance using clustering accuracy (ACC), adjusted Rand index (ARI), and normalized mutual in-formation (NMI). ACGRL is optimized using Adam with a cosine-annealing learning-rate schedule. The initial learning rate is set to 
+
+10 −4, except for the clustering module, which uses 10 −3. Stages I and II are trained for 300 and 400 epochs, respectively. 
+
+4.3. Experimental Results and Analysis 
+
+We compare ACGRL with nine representative multi-view cluster-ing methods as shown in Table 1. ACGRL achieves the highest ACC on all four datasets, exceeding the strongest baseline on each dataset by 5.40, 0.15, 12.88, and 9.34 percentage points on NGs, Hdigit, BBCSport, and Cora, respectively. The improvements vary across datasets, with larger gains on NGs, BBCSport, and Cora and a marginal gain on Hdigit. 
+
+4.4. Ablation Study Loss Function : As shown in Table 2, removing any of the four ob-jectives reduces ACC, ARI, and NMI on both Cora and BBCSport. These results support the contribution of each objective to clustering performance within the complete two-stage framework. 
+
+Component analysis. We evaluate three variants on NGs and BBCSport (Figure 2). The MSE- and MI-based variants replace adversarial consistency learning in Stage I with direct representa-tion alignment and mutual-information maximization, respectively. The w/o Consistency Supervision variant removes fixed-reference guidance in Stage II. Full ACGRL outperforms all three variants on both datasets, supporting the effectiveness of adversarial consistency learning and fixed-reference guidance within our framework. MSE-based MI-based w/o Consistency Supervision Ours   
+
+> 60.00 66.67 73.33 80.00 86.67 93.33 100.00
+> Performance(%)
+> ACC ARI NMI
+
+(a) NGs MSE-based MI-based w/o Consistency Supervision Ours    
+
+> 50.00 57.67 65.33 73.00 80.67 88.33 96.00
+> Performance(%)
+> ACC ARI NMI
+
+(b) BBCSport 
+
+Fig. 2 : Ablation study on different components. Table 1 : Clustering performance comparison on four multi-view datasets (%). The best results are highlighted in bold with a pink background, while the second-best results are underlined with a gray background. 
+
+Method NGs Hdigit BBCSport Cora 
+
+ACC ARI NMI ACC ARI NMI ACC ARI NMI ACC ARI NMI MFLVC (CVPR 2022) 49.00 38.28 50.20 99.74 99.42 99.17 64.52 38.77 46.22 46.42 26.31 37.00 DCP (TPAMI 2022) 22.52 0.14 4.64 99.62 99.16 98.78 42.65 5.53 13.96 23.46 -1.18 3.84 MetaViewer (CVPR 2023) 31.30 3.61 17.25 82.35 72.22 77.19 43.24 13.44 17.40 41.07 14.92 21.83 DealMVC (ACM MM 2023) 91.60 79.84 78.51 99.80 99.34 99.33 80.70 60.05 65.59 52.70 27.82 36.96 GCFAggMVC (CVPR 2023) 68.20 44.52 50.94 97.44 94.34 92.96 66.54 40.18 55.71 49.34 23.31 30.98 DFL-Net (TKDE 2025) 90.40 78.00 77.39 98.90 97.57 96.74 61.03 38.85 43.36 54.91 31.72 39.74 DDMVC (PR 2025) 90.40 78.47 79.19 99.43 98.74 98.19 69.67 46.46 53.41 55.24 30.80 36.20 GAVIM (AAAI 2026) 49.20 21.92 27.16 81.33 84.30 78.37 31.25 2.07 3.08 23.97 0.20 0.54 DMVCS (TKDE 2026) 47.20 13.78 17.37 89.96 86.79 91.05 37.68 2.28 8.08 30.58 0.32 1.34 
+
+Ours 97.00 92.26 93.31 99.95 99.89 99.86 93.58 87.34 85.10 64.58 39.58 43.61 Table 2 : Comparison of different loss-function combinations on the clustering task. 
+
+Dataset Metric (%) w/o LCon w/o LCom w/o LJRM w/o LClu Ours BBCSport 
+
+ACC 87.16 92.66 39.45 35.78 93.58 
+
+ARI 71.69 81.95 2.17 0.00 87.34 
+
+NMI 77.59 81.47 6.64 0.00 85.10 Cora 
+
+ACC 59.04 58.30 31.37 40.22 64.58 
+
+ARI 32.49 32.02 2.31 11.56 39.58 
+
+NMI 39.42 36.61 4.34 15.36 43.61 4.5. Representation Separation Analysis 
+
+We assess representational similarity using centered kernel align-ment (CKA) [20] and canonical correlation analysis (CCA) [21]. For a compact summary, we define the CKA–CCA Separation In-dex (CCSI) as 
+
+CCSI( A, B) = 1 − CKA( A, B) + ρ2(A, B)2 , (12) where ρ2 denotes the mean squared canonical correlation. Higher CCSI values indicate lower average similarity under the two mea-sures, rather than directly establishing semantic disentanglement. We compute CCSI between C(v) and S(v) within each view, and between S(v) and S(u) across views ( v̸ = u). As shown in Figure 3, ACGRL achieves higher CCSI values than DMVCS and DFL-NET in both settings across all four datasets. These results indicate lower average representational similarity under the selected measures, complementing the clustering and ablation analyses. 
+
+4.6. Visualization Analysis 
+
+We employ t-SNE to qualitatively assess the representations learned by ACGRL. As shown in Figure 4, for both Cora and Hdigit, the left and right plots visualize the raw features and the learned rep-resentations, respectively. Compared with the highly overlapping distributions of the raw features, the learned representations exhibit clearer cluster structures, with improved inter-cluster separation on Cora and more compact and distinguishable clusters on Hdigit. These observations qualitatively demonstrate that ACGRL learns more cluster-discriminative representations. ACGRL DMVCS DFL-NET    
+
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Cora Hdigit BBCSport NGs
+> CCSI( C(v) , S(v) )
+
+(a) Intra-view consistency–specific separation. ACGRL DMVCS DFL-NET    
+
+> 0.0 0.2 0.4 0.6 0.8 1.0
+> Cora Hdigit BBCSport NGs
+> CCSI( S(v) , S(u) )
+
+(b) Cross-view specific-feature sepa-ration. 
+
+Fig. 3 : Disentanglement comparison using CCSI. 
+
+(a) Cora: raw (left) and learned (right) features. 
+
+(b) Hdigit: raw (left) and learned (right) features. 
+
+Fig. 4 : t-SNE visualizations of the raw features and learned cluster-ing representations on the Cora and Hdigit datasets. 
+
+5. CONCLUSION 
+
+This paper presented ACGRL, a two-stage framework for disentan-gling consistent and complementary representations in multi-view clustering. ACGRL employs a view discriminator with a gradient reversal layer to suppress view-identifying information in shared representations. These representations are then frozen and used as fixed guidance for separating shared and view-specific informa-tion in the second stage. Experiments on four benchmark datasets demonstrate that ACGRL consistently outperforms representative baselines, while ablation and representation separation analyses further support the effectiveness of its core designs. 
+
+Compliance with Ethical Standards 
+
+This study uses publicly available benchmark datasets and does not involve human or animal subjects; no ethical approval was required. Acknowledgments 
+
+This work was supported by the Natural Science Foundation of Fu-jian Province, China, under Grants 2026J001408 and 2024J01067, and by the National Natural Science Foundation of China under Grant U1805263. The authors have no relevant financial or non-financial interests to disclose. 
+
+6. REFERENCES 
+
+[1] Shangzhi Zhang, Chong You, Ren´ e Vidal, and Chun-Guang Li, “Learning a self-expressive network for subspace clustering,” in Proceedings of the IEEE/CVF Conference on Computer Vi-sion and Pattern Recognition , 2021, pp. 12393–12403. [2] Pengyuan Li, Dongxia Chang, Yiming Wang, Zisen Kong, Lin-hua Kong, and Yao Zhao, “Disentangled contrastive multi-view clustering via semantic relevance invariance,” IEEE Transactions on Knowledge and Data Engineering , 2026. [3] Zhe Chen, Xiao-Jun Wu, Tianyang Xu, and Josef Kittler, “Dfl-net: Disentangled feature learning network for multi-view clustering,” IEEE Transactions on Knowledge and Data En-gineering , 2025. [4] Zhepeng Wang, Zhenghao Zhang, Tianyu Zong, Feng Chen, and Jun Xie, “Graph-guided contrastive learning for incom-plete multi-view clustering with consistent global graph,” in 
+
+ICASSP 2026-2026 IEEE International Conference on Acous-tics, Speech and Signal Processing (ICASSP) . IEEE, 2026, pp. 2581–2585. [5] Nan Li and Songlin Du, “Underlying-complementarity and surrounding-correspondence for multi-view clustering,” in 
+
+IEEE International Conference on Acoustics, Speech and Sig-nal Processing, ICASSP 2024, Seoul, Republic of Korea, April 14-19, 2024 . 2024, pp. 7975–7979, IEEE. [6] Zhibin Dong, Meng Liu, Siwei Wang, Ke Liang, Yi Zhang, Suyuan Liu, Jiaqi Jin, Xinwang Liu, and En Zhu, “Enhanced then progressive fusion with view graph for multi-view clus-tering,” in Proceedings of the Computer Vision and Pattern Recognition Conference , 2025, pp. 15518–15527. [7] Jie Xu, Yazhou Ren, Huayi Tang, Xiaorong Pu, Xiaofeng Zhu, Ming Zeng, and Lifang He, “Multi-vae: Learning disentan-gled view-common and view-peculiar visual representations for multi-view clustering,” in Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 9234– 9243. [8] Guanzhou Ke, Bo Wang, Xiaoli Wang, and Shengfeng He, “Rethinking multi-view representation learning via distilled disentangling,” in Proceedings of the IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition , 2024, pp. 26774–26783. [9] Syed Fawad Hussain, Gilles Bisson, and Cl´ ement Grimal, “An improved co-similarity measure for document clustering,” in 
+
+2010 ninth international conference on machine learning and applications . IEEE, 2010, pp. 190–197. [10] Dino Ienco, C´ eline Robardet, Ruggero G. Pensa, and Rosa Meo, “Parameter-less co-clustering for star-structured hetero-geneous data,” Data Min. Knowl. Discov. , vol. 26, no. 2, pp. 217–254, 2013. [11] Gilles Bisson and Cl´ ement Grimal, “Co-clustering of multi-view datasets: a parallelizable approach,” in 2012 IEEE 12th international conference on data mining . IEEE, 2012, pp. 828– 833. [12] Jinrong Cui, Yuting Li, Han Huang, and Jie Wen, “Dual contrast-driven deep multi-view clustering,” IEEE Transac-tions on Image Processing , vol. 33, pp. 4753–4764, 2024. [13] Jie Xu, Huayi Tang, Yazhou Ren, Liang Peng, Xiaofeng Zhu, and Lifang He, “Multi-level feature learning for contrastive multi-view clustering,” in Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , 2022, pp. 16051–16060. [14] Yijie Lin, Yuanbiao Gou, Xiaotian Liu, Jinfeng Bai, Jiancheng Lv, and Xi Peng, “Dual contrastive prediction for incomplete multi-view representation learning,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 45, no. 4, pp. 4447–4461, 2022. [15] Ren Wang, Haoliang Sun, Yuling Ma, Xiaoming Xi, and Yi-long Yin, “Metaviewer: Towards a unified multi-view repre-sentation,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2023, pp. 11590– 11599. [16] Xihong Yang, Jin Jiaqi, Siwei Wang, Ke Liang, Yue Liu, Yi Wen, Suyuan Liu, Sihang Zhou, Xinwang Liu, and En Zhu, “Dealmvc: Dual contrastive calibration for multi-view cluster-ing,” in Proceedings of the 31st ACM international conference on multimedia , 2023, pp. 337–346. [17] Weiqing Yan, Yuanyang Zhang, Chenlei Lv, Chang Tang, Guanghui Yue, Liang Liao, and Weisi Lin, “Gcfagg: Global and cross-view feature aggregation for multi-view clustering,” in Proceedings of the IEEE/CVF conference on computer vi-sion and pattern recognition , 2023, pp. 19863–19872. [18] Junpeng Xu, Min Meng, Jigang Liu, and Jigang Wu, “Deep multi-view clustering with diverse and discriminative feature learning,” Pattern Recognition , vol. 161, pp. 111322, 2025. [19] Wenlan Chen, Lu Gao, Daoyuan Wang, Fei Guo, and Cheng Liang, “Geometry-aware variational information maximiza-tion for deep incomplete multi-view clustering,” in Proceed-ings of the AAAI Conference on Artificial Intelligence , 2026, vol. 40, pp. 20289–20297. [20] Arthur Gretton, Olivier Bousquet, Alex Smola, and Bernhard Sch¨ olkopf, “Measuring statistical dependence with hilbert-schmidt norms,” in International conference on algorithmic learning theory . Springer, 2005, pp. 63–77. [21] Harold Hotelling, “Relations between two sets of variates,” in 
+
+Breakthroughs in statistics: methodology and distribution , pp. 162–190. Springer, 1992.
