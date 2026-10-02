@@ -1,0 +1,490 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-02T23:19:07.687587+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 9,
+    "quick_skim_target": 11,
+    "quick_selected": 9
+  },
+  "deep_dive": [
+    {
+      "id": "2609.39413v1",
+      "source": "arxiv",
+      "title": "Aligning the Incomplete: Joint Distribution Calibration for Multimodal EEG-Eye Emotion Recognition",
+      "abstract": "The success of cross-subject multimodal emotion recognition hinges on maintaining the consistency of the joint data distribution across individuals. However, real-world deployment frequently triggers the \\emph{asymmetric joint distribution collapse}: EEG signals suffer from severe cross-subject distribution shifts, while eye movements sensors are susceptible to packet loss and tracking failures. Existing methods treat domain adaptation and missing-modality imputation as disjoint tasks. Consequently, they fail to resolve the compounded errors when both degradations co-occur, either propagating domain shifts through imputed signals or destroying the joint decision boundary. To tackle this unified challenge, we propose GUARD (\\textbf{G}radient-guided \\textbf{U}nsupervised \\textbf{A}symmetric \\textbf{R}ecovery of \\textbf{D}istributions). First, GUARD establishes a reliable anchor manifold in the source domain by employing a theoretically grounded gradient-weighted objective, which forces the robust EEG modality to preemptively entangle task-discriminative ocular features. Next, to structurally recover the collapsed joint distribution, we constrain a generative module with downstream perceptual losses, prioritizing emotion-discriminative semantics over mere signal fidelity. Finally, we formulate target-domain adaptation as an ill-posed inverse problem. By driving a cycle-consistent flow, we achieve unsupervised calibration of the recovered joint distribution directly on the target-domain manifold. Extensive experiments demonstrate that GUARD significantly outperforms state-of-the-art methods, maintaining resilient discriminative performance even under complete auxiliary modality failure. Our code and models are made publicly available to ensure complete reproducibility.",
+      "authors": [
+        "Yang Wu",
+        "Jinpeng Li"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC"
+      ],
+      "published": "2026-09-30T09:53:16+00:00",
+      "link": "https://arxiv.org/pdf/2609.39413v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "unifies domain adaptation and missing-modality imputation for emotion recognition",
+      "llm_evidence_cn": "统一域适应与缺失模态填补的多模态情感识别",
+      "llm_evidence": "统一域适应与缺失模态填补的多模态情感识别",
+      "canonical_evidence": "统一域适应与缺失模态填补的多模态情感识别",
+      "llm_tldr_en": "Cross-subject EEG-eye emotion recognition faces asymmetric joint distribution collapse; GUARD unifies domain adaptation and missing-modality imputation into a joint distribution calibration framework.",
+      "llm_tldr_cn": "跨被试多模态情感识别依赖个体间联合数据分布的一致性，但实际部署常出现非对称联合分布崩塌：脑电存在严重跨被试漂移，眼动则易丢包与跟踪失败。现有方法将域适应与缺失模态填补视为彼此独立的任务，二者并发时误差叠加，导致漂移经填补信号传播或决策边界被破坏。本文提出GUARD，将两类退化统一为联合分布校准问题。该框架为不完整多模态情感识别的鲁棒对齐提供了新思路。",
+      "llm_tldr": "跨被试多模态情感识别依赖个体间联合数据分布的一致性，但实际部署常出现非对称联合分布崩塌：脑电存在严重跨被试漂移，眼动则易丢包与跟踪失败。现有方法将域适应与缺失模态填补视为彼此独立的任务，二者并发时误差叠加，导致漂移经填补信号传播或决策边界被破坏。本文提出GUARD，将两类退化统一为联合分布校准问题。该框架为不完整多模态情感识别的鲁棒对齐提供了新思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.37324v1",
+      "source": "arxiv",
+      "title": "VISTA: Value-Informed Event Appraisal for Multimodal Emotion Conflict",
+      "abstract": "Conflicting emotional cues can be individually valid: a subdued voice may reflect a blocked goal while a smile satisfies a social obligation. Their interpretation depends on what the event means to the person. We introduce VISTA (Value-Informed Semantic Trust Arbitration), a learned seven-field appraisal interface that conditions modality arbitration on concerns, event relations, and expression conditions while retaining a joint-evidence residual. A log-odds decomposition separates emotion expectation from cue diagnosticity, motivating an interface that lets appraisal change how evidence is interpreted. With a shared Qwen2.5-Omni-7B backbone and matched training examples and steps, VISTA reaches 64.5% conflict accuracy on CA-MER, improving on modality gating by 2.5 percentage points on conflict and 0.2 on consistency. Shuffling appraisal across scenes or removing its decision connection reduces this benefit. A common frozen-backbone probe reaches 0.600 macro CCC for appraisal readout, compared with 0.505 for emotion-only fine-tuning. Evaluations across five benchmarks connect recognition under increasing conflict with appraisal readout and downstream decision use. Together, the analyses and experiments support scene-specific appraisal as an intermediate representation that helps interpret conflicting emotional evidence.",
+      "authors": [
+        "Jiale Dai",
+        "Liuxian Ma",
+        "Xiaoke Niu",
+        "Wenjing Zhang",
+        "Huiying Zhao",
+        "Zhaoxiang Liu",
+        "Shiguo Lian",
+        "Guojie Song"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-29T12:01:15+00:00",
+      "link": "https://arxiv.org/pdf/2609.37324v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "multimodal emotion recognition with conflicting modality cues",
+      "llm_evidence_cn": "面向冲突模态线索的多模态情感识别",
+      "llm_evidence": "面向冲突模态线索的多模态情感识别",
+      "canonical_evidence": "面向冲突模态线索的多模态情感识别",
+      "llm_tldr_en": "VISTA introduces a learned seven-field appraisal interface that conditions modality arbitration on concerns, event relations and expression conditions, reaching 64.5% conflict accuracy on CA-MER with a shared Qwen2.5-Omni-7B backbone.",
+      "llm_tldr_cn": "多模态情感识别中，冲突情感线索可能各自有效，其解读依赖事件对个体的意义，而现有模型缺乏此类评估机制。本文提出VISTA，一种价值知情语义信任仲裁方法，用七字段评估接口将模态仲裁条件化于关切、事件关系与表达条件，并保留联合证据残差，通过log-odds分解区分情感期望与线索诊断性。在共享Qwen2.5-Omni-7B骨干下，该方法在CA-MER上取得64.5%冲突准确率，优于模态门控基线，表明价值知情评估能更合理地解释冲突情感线索。",
+      "llm_tldr": "多模态情感识别中，冲突情感线索可能各自有效，其解读依赖事件对个体的意义，而现有模型缺乏此类评估机制。本文提出VISTA，一种价值知情语义信任仲裁方法，用七字段评估接口将模态仲裁条件化于关切、事件关系与表达条件，并保留联合证据残差，通过log-odds分解区分情感期望与线索诊断性。在共享Qwen2.5-Omni-7B骨干下，该方法在CA-MER上取得64.5%冲突准确率，优于模态门控基线，表明价值知情评估能更合理地解释冲突情感线索。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.39072v1",
+      "source": "arxiv",
+      "title": "Beyond Text: LLM-Based Dimensional Emotion Evaluation in Multimodal Dialogue",
+      "abstract": "Emotion recognition in conversation has been widely studied, but applying Large Language Models (LLMs) to continuous dimensional emotion evaluation in multimodal dialogue remains largely unexplored. We propose an LLM-based framework that performs discrete emotion recognition and Valence-Arousal-Dominance (VAD) dimensional evaluation on IEMOCAP, incorporating acoustic cues as natural language descriptions following the SpeechCueLLM approach. We evaluate six models spanning the LLaMA, GPT, and Qwen families under zero-shot prompting, few-shot prompting, and LoRA fine-tuning. LoRA fine-tuned LLaMA models substantially outperform prompt-engineered GPT models on both tasks despite GPT's larger scale, a gap we attribute to domain adaptation rather than model capacity. Our best model achieves a Valence CCC of 0.7822, a new state-of-the-art on IEMOCAP. Ablation studies confirm that textual audio descriptions meaningfully improve smaller models (+3.5 to 3.6 weighted F1) while contributing little for the largest model, suggesting audio cues are most valuable when linguistic capacity is limited. The performance asymmetry across VAD dimensions closely mirrors the annotator agreement hierarchy in IEMOCAP's own annotations.",
+      "authors": [
+        "Yutong Hu",
+        "Jinho Choi"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI",
+        "cs.LG",
+        "cs.MM"
+      ],
+      "published": "2026-09-30T06:09:48+00:00",
+      "link": "https://arxiv.org/pdf/2609.39072v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Multimodal emotion recognition in dialogue via LLM",
+      "llm_evidence_cn": "基于大语言模型的多模态对话情感识别",
+      "llm_evidence": "基于大语言模型的多模态对话情感识别",
+      "canonical_evidence": "基于大语言模型的多模态对话情感识别",
+      "llm_tldr_en": "Proposes an LLM-based framework for discrete emotion recognition and VAD dimensional evaluation in multimodal dialogue, converting acoustic cues into text; LoRA-tuned LLaMA beats larger GPT models.",
+      "llm_tldr_cn": "该研究针对多模态对话中连续维度情感评估研究不足的问题，提出一个基于大语言模型的框架，将声学线索转为自然语言描述，在IEMOCAP上同时进行离散情感识别与VAD维度评估。实验在零样本、少样本提示及LoRA微调三种设定下评测LLaMA、GPT、Qwen六种模型，结果显示微调后的LLaMA显著优于更大规模的提示工程GPT。该工作揭示领域自适应而非模型规模是性能关键，为多模态对话维度情感评估开辟了新方向。",
+      "llm_tldr": "该研究针对多模态对话中连续维度情感评估研究不足的问题，提出一个基于大语言模型的框架，将声学线索转为自然语言描述，在IEMOCAP上同时进行离散情感识别与VAD维度评估。实验在零样本、少样本提示及LoRA微调三种设定下评测LLaMA、GPT、Qwen六种模型，结果显示微调后的LLaMA显著优于更大规模的提示工程GPT。该工作揭示领域自适应而非模型规模是性能关键，为多模态对话维度情感评估开辟了新方向。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2609.36866v1",
+      "source": "arxiv",
+      "title": "S2T-Unet: A Structure-to-Style Framework for Inter-Modality MRI Translation",
+      "abstract": "Inter-modality MRI translation aims to synthesize missing MRI modalities from available acquisitions, reducing the need for additional scanning while preserving clinically relevant anatomical information. However, existing image translation methods often learn intensity mappings without explicitly separating modality-invariant structural information from modality-specific appearance, which may lead to structural information loss or unrealistic image details. In this work, we propose S2T-Unet, a structure-to-style framework that explicitly models these two aspects. Specifically, vector quantization is introduced at the lower-level bottleneck to encode modality-invariant structural information using a learned discrete codebook. At higher levels, a modality transformation module uses decoder features to condition and transform encoder representations toward the target modality, thereby recovering modality-specific intensity and contrast information. Experiments on the IXI multi-contrast MRI dataset across four translation tasks demonstrate that S2T-Unet is comparable or outperform with state-of-art method.",
+      "authors": [
+        "Yichao Liu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-29T07:06:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.36866v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Synthesize missing modality with structure-style disentanglement",
+      "llm_evidence_cn": "以结构-风格解耦合成缺失模态",
+      "llm_evidence": "以结构-风格解耦合成缺失模态",
+      "canonical_evidence": "以结构-风格解耦合成缺失模态",
+      "llm_tldr_en": "S2T-Unet explicitly disentangles modality-invariant structure via vector-quantized codebook from modality-specific style to synthesize missing MRI modalities with better structural fidelity.",
+      "llm_tldr_cn": "跨模态MRI转换旨在从已有采集合成缺失模态，但现有图像转换方法往往只学习强度映射，未显式分离模态不变结构与模态特有外观，导致结构信息丢失。为此提出S2T-Unet结构到风格框架，在低层瓶颈用向量量化与离散码本编码模态不变结构，高层建模模态特有风格。实验表明该方法能更好保留解剖结构并生成更真实的细节。该工作将缺失模态重建与解耦表示结合，对多模态缺失场景具有借鉴意义。",
+      "llm_tldr": "跨模态MRI转换旨在从已有采集合成缺失模态，但现有图像转换方法往往只学习强度映射，未显式分离模态不变结构与模态特有外观，导致结构信息丢失。为此提出S2T-Unet结构到风格框架，在低层瓶颈用向量量化与离散码本编码模态不变结构，高层建模模态特有风格。实验表明该方法能更好保留解剖结构并生成更真实的细节。该工作将缺失模态重建与解耦表示结合，对多模态缺失场景具有借鉴意义。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Reconstructing missing modalities before feature decoupling in multimodal learning",
+      "matched_requirement_id": "req-10",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.30890v1",
+      "source": "arxiv",
+      "title": "From Segments to Trajectories: Evolving Affective Graphs with Evidence Retrieval for Continuous EEG Emotion Recognition",
+      "abstract": "Electroencephalography (EEG)-based emotion recognition is important for affective computing and human-computer interaction, yet most existing methods divide a long trial into short segments and assign each segment the label of its source trial. Although this strategy increases the number of training samples, it reduces an evolving emotional response to a segment-level, coarse-grained, and static prediction problem. In reality, emotion may continuously emerge, intensify, weaken, and fluctuate as a stimulus unfolds, motivating the prediction of a time-aligned affective trajectory from the complete EEG trial. This task requires coordinated modeling of how spatial neural organization evolves throughout the trial and how local emotional fluctuations interact with longer-term trends. In this work, we formally define and systematically investigate continuous EEG emotion recognition as whole-trial affective trajectory prediction. We propose EAGER, an Evolving Affective Graph framework with Evidence Retrieval for continuous EEG emotion recognition. EAGER comprises two complementary modules: Affective State-guided Topology Evolution models the evolving spatial organization of EEG activity, while Multi-scale Temporal Evidence Retrieval integrates short-term fluctuations with longer-range temporal trends for time-aligned prediction. Experiments on MAHNOB-HCI, SEED-VII, and REFED show consistent gains in trajectory-tracking metrics over representative methods, with competitive pointwise errors.",
+      "authors": [
+        "Chi Yang",
+        "Jihong Wang",
+        "Chengxi Xie",
+        "Kai He",
+        "Huan Liu",
+        "Man Yao",
+        "Shile Qi",
+        "Yuzhe Zhang"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC"
+      ],
+      "published": "2026-09-25T06:53:59+00:00",
+      "link": "https://arxiv.org/pdf/2609.30890v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "continuous EEG-based emotion recognition modeling affective trajectories",
+      "llm_evidence_cn": "基于脑电的连续情感轨迹识别",
+      "llm_evidence": "基于脑电的连续情感轨迹识别",
+      "canonical_evidence": "基于脑电的连续情感轨迹识别",
+      "llm_tldr_en": "EEG emotion recognition typically assigns trial labels to short segments, reducing evolving emotion to coarse static prediction. This work models continuous affective trajectories from full EEG trials using evolving affective graphs with evidence retrieval, better capturing how emotion emerges and fluctuates over time.",
+      "llm_tldr_cn": "现有脑电情感识别多将长试次切分为短片段并赋予试次标签，把连续演变的情感简化为粗粒度、静态的片段级预测。本文提出演化情感图与证据检索方法，对完整脑电试次建模，预测与时间对齐的情感轨迹，从而刻画情绪随刺激展开而涌现、增强、减弱与波动的过程。该工作推动情感识别从静态分类走向连续动态建模，为情感计算与人机交互提供更细粒度的时序建模思路。",
+      "llm_tldr": "现有脑电情感识别多将长试次切分为短片段并赋予试次标签，把连续演变的情感简化为粗粒度、静态的片段级预测。本文提出演化情感图与证据检索方法，对完整脑电试次建模，预测与时间对齐的情感轨迹，从而刻画情绪随刺激展开而涌现、增强、减弱与波动的过程。该工作推动情感识别从静态分类走向连续动态建模，为情感计算与人机交互提供更细粒度的时序建模思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.37100v1",
+      "source": "arxiv",
+      "title": "Prediction-Layer Branch Calibration for Multimodal Sentiment Analysis",
+      "abstract": "Multimodal sentiment analysis integrates textual, acoustic and visual cues, yet current language-model-based fusion methods typically leave prediction-layer branch allocation implicit. We introduce Branch-Calibrated Multimodal Language Fusion (BC-MLF), which explicitly models prediction-layer branch allocation through a Branch-Calibrated Task Head (BCHead), complemented by Fusion Token Contrastive Learning (FTCL) for sentiment-aware fusion-token regularization. FTCL organizes mean-pooled fusion-token representations according to continuous sentiment affinity, while BCHead combines fusion, text and audiovisual predictions through a lightweight sample-adaptive constrained mixture. Without modifying the fusion backbone, BC-MLF consistently improves the reproduced DeepMLF baseline and achieves the strongest results among the compared methods on CMU-MOSEI and CH-SIMS across classification and regression metrics. The controlled ablations show that sample-adaptive prediction-layer branch allocation consistently outperforms static branch aggregation. Code is available at https://github.com/sunyulin0421/BC-MLF.",
+      "authors": [
+        "Yulin Sun",
+        "Kele Xu",
+        "Yong Dou"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.MM"
+      ],
+      "published": "2026-09-29T09:20:55+00:00",
+      "link": "https://arxiv.org/pdf/2609.37100v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "robust multimodal sentiment analysis via prediction-layer branch calibration",
+      "llm_evidence_cn": "通过预测层分支校准实现鲁棒多模态情感分析",
+      "llm_evidence": "通过预测层分支校准实现鲁棒多模态情感分析",
+      "canonical_evidence": "通过预测层分支校准实现鲁棒多模态情感分析",
+      "llm_tldr_en": "Language-model-based multimodal sentiment fusion leaves prediction-layer branch allocation implicit. BC-MLF explicitly models it with a Branch-Calibrated Task Head and Fusion Token Contrastive Learning, improving sentiment prediction without modifying the fusion backbone.",
+      "llm_tldr_cn": "多模态情感分析融合文本、声学与视觉线索，但基于语言模型的融合方法通常未显式建模预测层的分支分配。本文提出分支校准多模态语言融合BC-MLF，通过分支校准任务头BCHead显式建模预测层分支，并用融合令牌对比学习FTCL按连续情感亲和度组织融合表示。在不修改融合骨干的前提下，方法一致提升情感预测性能。该工作为多模态情感分析提供了有效的预测层校准思路。",
+      "llm_tldr": "多模态情感分析融合文本、声学与视觉线索，但基于语言模型的融合方法通常未显式建模预测层的分支分配。本文提出分支校准多模态语言融合BC-MLF，通过分支校准任务头BCHead显式建模预测层分支，并用融合令牌对比学习FTCL按连续情感亲和度组织融合表示。在不修改融合骨干的前提下，方法一致提升情感预测性能。该工作为多模态情感分析提供了有效的预测层校准思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.33431v1",
+      "source": "arxiv",
+      "title": "MoGround: Measuring and Mitigating Modality Distraction in Vision-Language Models",
+      "abstract": "We release MoGround, a vision-language dataset spanning four visual domains in which the answer to every question is guaranteed to be available from exactly one modality. This guarantee enables us to measure modality distraction, the failure in which a model answers a question correctly from one modality alone and then flips to a wrong answer once irrelevant content from the other modality is added. Existing probes rarely establish single-modality answerability this way, making it hard to isolate distraction in the first place. Across seven open-source VLMs, we find that modality distraction is not universal but model-dependent. The weaker-grounded modality is the more distracted one (r = +0.86), and distraction scales inversely with grounding strength (r = -0.90). The single-modality guarantee also enables a mitigation method that needs to distinguish between relevant and irrelevant context. Trained on one split of MoGround alone, a weight-space robustness vector reduces distraction on all seven models by 9% to 51%, at a cost of only 0.1 average points of accuracy on standard multimodal tasks.",
+      "authors": [
+        "Luca Zhou",
+        "Bo Zhao",
+        "Rose Yu",
+        "Emanuele Rodolà",
+        "Roberto Dessì"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-09-27T10:29:40+00:00",
+      "link": "https://arxiv.org/pdf/2609.33431v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "measuring and mitigating modality distraction in multimodal models",
+      "llm_evidence_cn": "测量与缓解多模态模型中的模态干扰",
+      "llm_evidence": "测量与缓解多模态模型中的模态干扰",
+      "canonical_evidence": "测量与缓解多模态模型中的模态干扰",
+      "llm_tldr_en": "MoGround is a vision-language dataset where each question is answerable from exactly one modality, enabling measurement of modality distraction. Across seven VLMs, distraction is model-dependent, with the weaker-grounded modality more distracted and distraction scaling inversely with grounding quality.",
+      "llm_tldr_cn": "多模态模型可能因另一模态的无关内容而从正确答案翻转为错误答案，即模态干扰，但现有评测难以隔离该现象。本文发布MoGround数据集，保证每个问题恰好可由单一模态回答，从而可靠测量模态干扰。在七个开源视觉-语言模型上，研究发现模态干扰并非普遍存在而依赖具体模型，基础更弱的模态更易受干扰，干扰程度与基础质量负相关。该工作为多模态鲁棒性评估提供诊断工具。",
+      "llm_tldr": "多模态模型可能因另一模态的无关内容而从正确答案翻转为错误答案，即模态干扰，但现有评测难以隔离该现象。本文发布MoGround数据集，保证每个问题恰好可由单一模态回答，从而可靠测量模态干扰。在七个开源视觉-语言模型上，研究发现模态干扰并非普遍存在而依赖具体模型，基础更弱的模态更易受干扰，干扰程度与基础质量负相关。该工作为多模态鲁棒性评估提供诊断工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.39051v1",
+      "source": "arxiv",
+      "title": "TSMD: Temporal-Stream Modality Dropout for Robust Video Highlight Detection",
+      "abstract": "Existing multimodal video highlight detectors typically assume that visual, audio, and textual streams are continuously available. In practice, however, inputs may suffer from localized frame missingness or complete-stream outage. We formulate this robustness challenge along two dimensions: temporal missingness, where frames are missing independently in each modality, and stream-level missingness, where one modality is unavailable throughout a video. Moreover, we find that the mean squared error (MSE) loss is misaligned with both the evaluation metrics and the peak-driven nature of highlights. Therefore, we propose Temporal-Stream Modality Dropout (TSMD), which combines structured missingness simulation with a joint objective comprising pointwise MSE, per-video Pearson correlation, and peak-oriented RankNet loss terms. TSMD has three variants: temporal, stream-level, and mixed dropout. On the MoSu and Mr. HiSum datasets, TSMD-Temporal improves mAP@15 by 7.06 and 3.41 points over TripleSumm under 50% independent temporal removal, whereas TSMD-Stream performs the best under complete-stream removal. TSMD-Mix retains most of these complementary benefits and ranks the best or the second-best across the evaluated temporal and stream-level conditions.",
+      "authors": [
+        "Bo-Yuan Cheng",
+        "Kuan-Yu Chen",
+        "Po-Han Huang",
+        "Jeng-Lin Li",
+        "Jian-Jiun Ding"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-09-30T05:58:00+00:00",
+      "link": "https://arxiv.org/pdf/2609.39051v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "structured modality dropout for temporal and stream-level missingness",
+      "llm_evidence_cn": "针对时序与整流通路缺失的模态丢弃建模",
+      "llm_evidence": "针对时序与整流通路缺失的模态丢弃建模",
+      "canonical_evidence": "针对时序与整流通路缺失的模态丢弃建模",
+      "llm_tldr_en": "Existing multimodal highlight detectors assume all streams are available; TSMD simulates temporal and stream-level missingness with a joint objective to improve robustness.",
+      "llm_tldr_cn": "现有视频精彩片段检测器通常假设视觉、音频与文本流始终可用，但真实场景存在帧级缺失或整条模态缺失。本文提出时序-流模态丢弃TSMD，通过结构化缺失模拟与联合目标函数，同时处理时序缺失与整流通路缺失，并指出MSE损失与峰值驱动的评价目标不一致。实验表明该方法在缺失条件下更鲁棒，为多模态缺失鲁棒性提供了可迁移的训练策略。",
+      "llm_tldr": "现有视频精彩片段检测器通常假设视觉、音频与文本流始终可用，但真实场景存在帧级缺失或整条模态缺失。本文提出时序-流模态丢弃TSMD，通过结构化缺失模拟与联合目标函数，同时处理时序缺失与整流通路缺失，并指出MSE损失与峰值驱动的评价目标不一致。实验表明该方法在缺失条件下更鲁棒，为多模态缺失鲁棒性提供了可迁移的训练策略。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.40079v1",
+      "source": "arxiv",
+      "title": "LongEmo: Towards Emotion Understanding and Reasoning in Long Videos",
+      "abstract": "While recent Multimodal Large Language Models (MLLMs) have shown promise in affective computing, their reasoning capabilities are largely confined to short video clips with limited interactions. However, real-world emotions are not merely isolated instantaneous reactions but dynamic and cumulative processes deeply shaped by past experiences and ongoing events. To bridge this gap, we introduce LongEmoBench, a benchmark dedicated to emotion understanding and reasoning in long videos. It assesses progressive capabilities scaling from continuous scene interactions to complex episodic developments. Furthermore, we propose LongEmo, a novel memory-augmented agentic framework designed to tackle the immense challenges of long-range affective reasoning. LongEmo processes continuous video streams to construct an Event Memory Graph, explicitly modeling long-range dependencies and capturing emotional dynamics across discrete events. Given a question, the agent retrieves a query-relevant event stream from the graph, iteratively integrating multimodal memories and relational dependencies to deduce the final answer. Extensive evaluations of 17 representative methods reveal that they struggle significantly with emotion understanding and reasoning in long videos. In contrast, LongEmo achieves state-of-the-art performance, demonstrating the efficacy of its event-centric memory architecture.",
+      "authors": [
+        "Shuo Zhang",
+        "Yifan Zhou",
+        "Han Wang",
+        "Jinsong Zhang",
+        "Jingyu Li",
+        "Hongbing Li",
+        "Zhejun Zhang",
+        "Chengyi Zhao",
+        "Yuquan Hao",
+        "Yitong Liu",
+        "Jiyin Li",
+        "Ruiqi Tang",
+        "Zixuan Lin",
+        "Yi Luo",
+        "Xurui Zhang",
+        "Ronghao Chen",
+        "Huacan Wang",
+        "Lei Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-09-30T16:27:25+00:00",
+      "link": "https://arxiv.org/pdf/2609.40079v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal emotion understanding and reasoning in long videos",
+      "llm_evidence_cn": "长视频中的多模态情感理解与推理",
+      "llm_evidence": "长视频中的多模态情感理解与推理",
+      "canonical_evidence": "长视频中的多模态情感理解与推理",
+      "llm_tldr_en": "MLLM affective reasoning is limited to short clips. LongEmo introduces a long-video emotion benchmark and a memory-augmented agentic framework for long-range affective reasoning.",
+      "llm_tldr_cn": "现有多模态大模型的情感推理多局限于短片段，难以刻画真实世界中累积演化的情绪过程。本文提出LongEmoBench长视频情感理解与推理基准，并设计记忆增强的智能体框架LongEmo以应对长程情感推理挑战。实验覆盖从连续场景交互到复杂情节发展的递进能力评估。该工作拓展了多模态情感识别的任务边界，对情感计算研究具有推动意义。",
+      "llm_tldr": "现有多模态大模型的情感推理多局限于短片段，难以刻画真实世界中累积演化的情绪过程。本文提出LongEmoBench长视频情感理解与推理基准，并设计记忆增强的智能体框架LongEmo以应对长程情感推理挑战。实验覆盖从连续场景交互到复杂情节发展的递进能力评估。该工作拓展了多模态情感识别的任务边界，对情感计算研究具有推动意义。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2609.39421v1",
+      "source": "arxiv",
+      "title": "IDEAL: A Multimodal Domain Adaptation Framework for EEG-Eye Emotion Recognition",
+      "abstract": "Electroencephalography (EEG) emotion recognition serves as a pivotal interface for human-computer interaction, yet the physiological variability across individuals complicates the already challenging task of fusing heterogeneous physiological signals (e.g., EEG and eye movements). However, most prevalent domain adaptation paradigms are tailored for unimodal scenarios, failing to address the heterogeneity of multimodal signals. Furthermore, they predominantly rely on feature-level alignment, overlooking the fundamental data-level discrepancy, which risks compromising fine-grained discriminative information during aggressive adaptation. To bridge these coupled gaps, we propose Instance-based Domain Expansion and Adversarial Learning (IDEAL), a unified framework that synergizes instance-level curriculum expansion with feature-level hierarchical adversarial alignment. IDEAL first introduces a multi-model collaborative screening mechanism, which propagates high-confidence target samples to explicitly bridge the distributional gap at the data level via a quantity-quality equilibrium strategy. We provide a theoretical analysis that this instance expansion strategy strictly tightens the upper bound of the target risk. Subsequently, a hierarchical adversarial network, augmented with the angular-contrastive constraints, progressively aligns representations from low-level statistics to high-level semantics while preserving class separability. Extensive experiments on four benchmark datasets demonstrate that IDEAL significantly outperforms state-of-the-art methods. To facilitate reproducibility and future research, our source code is publicly available at https://github.com/WY-BCI-Club/IDEAL.",
+      "authors": [
+        "Yang Wu",
+        "Jinpeng Li"
+      ],
+      "primary_category": "cs.HC",
+      "categories": [
+        "cs.HC"
+      ],
+      "published": "2026-09-30T10:02:11+00:00",
+      "link": "https://arxiv.org/pdf/2609.39421v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal EEG-eye emotion recognition with cross-subject robustness",
+      "llm_evidence_cn": "面向跨被试鲁棒性的多模态脑电-眼动情感识别",
+      "llm_evidence": "面向跨被试鲁棒性的多模态脑电-眼动情感识别",
+      "canonical_evidence": "面向跨被试鲁棒性的多模态脑电-眼动情感识别",
+      "llm_tldr_en": "EEG-eye emotion recognition suffers from cross-subject variability and heterogeneous multimodal signals, yet most domain adaptation methods target unimodal feature-level alignment. IDEAL uses instance-based domain expansion and adversarial learning to address data-level discrepancy while preserving fine-grained discriminative information.",
+      "llm_tldr_cn": "脑电情感识别是人机交互的重要接口，但个体生理差异使异质生理信号融合更加困难，而主流域适应方法多面向单模态且仅做特征级对齐，忽略数据级差异。本文提出IDEAL框架，采用基于实例的域扩展与对抗学习，在缓解数据级差异的同时保留细粒度判别信息。该方法面向多模态情感识别的跨被试泛化问题，为异质多模态情感建模提供鲁棒性方案。",
+      "llm_tldr": "脑电情感识别是人机交互的重要接口，但个体生理差异使异质生理信号融合更加困难，而主流域适应方法多面向单模态且仅做特征级对齐，忽略数据级差异。本文提出IDEAL框架，采用基于实例的域扩展与对抗学习，在缓解数据级差异的同时保留细粒度判别信息。该方法面向多模态情感识别的跨被试泛化问题，为异质多模态情感建模提供鲁棒性方案。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust multimodal sentiment analysis and emotion recognition under incomplete modalities",
+      "matched_requirement_id": "req-7",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.39453v1",
+      "source": "arxiv",
+      "title": "From Speech to Editable Concepts: Probing Emotion Recognition with Concept Bottleneck Models",
+      "abstract": "Speech emotion recognition (SER) is the task of assigning emotion labels to utterances. Early systems relied on acoustic features, whereas recent approaches combine multiple modalities, most commonly speech and text. Still, performance remains poor on many datasets. Large language models (LLMs) have therefore attracted interest for SER, as they can process diverse inputs jointly with instructions. However, direct audio input raises questions of explainability. To address similar questions in image classification, concept bottleneck models were introduced. This work adapts concept bottlenecks to SER to examine how individual predictions depend on transcripts, acoustic descriptions and speaker attributes. Experiments test three LLMs on CREMA-D, IEMOCAP and MELD, with concepts extracted by separate tools. On scripted corpora, LLMs are strongly biased towards the transcript in the zero-shot setting, which lowers Macro-F1 from 27.8 to 5.8 on CREMA-D. Fine-tuning removes this bias, and the transcript raises Macro-F1 from 41.8 to 45.1. Removing speech rate changes 48% of Neutral predictions to Disgust on CREMA-D; removing intensity level on MELD changes predictions despite little change in Macro-F1. These findings show that aggregate performance changes alone do not capture the effects of concept removal on individual predictions.",
+      "authors": [
+        "Hezhao Zhang",
+        "Thomas Hain"
+      ],
+      "primary_category": "cs.SD",
+      "categories": [
+        "cs.SD",
+        "cs.AI",
+        "cs.CL",
+        "eess.AS"
+      ],
+      "published": "2026-09-30T10:26:18+00:00",
+      "link": "https://arxiv.org/pdf/2609.39453v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "multimodal speech emotion recognition with concept bottleneck probing",
+      "llm_evidence_cn": "结合概念瓶颈探查的多模态语音情感识别",
+      "llm_evidence": "结合概念瓶颈探查的多模态语音情感识别",
+      "canonical_evidence": "结合概念瓶颈探查的多模态语音情感识别",
+      "llm_tldr_en": "This work adapts concept bottleneck models to speech emotion recognition to probe how predictions depend on transcripts, acoustic descriptions and speaker attributes.",
+      "llm_tldr_cn": "语音情感识别性能仍不理想，近期方法结合语音与文本等多模态输入并引入大语言模型，但直接音频输入带来可解释性问题。本文把概念瓶颈模型迁移到语音情感识别，用可编辑概念探查预测如何依赖转录、声学描述与说话人属性。作者在三个大语言模型上开展实验，分析多模态线索对情感预测的贡献。该工作为多模态情感识别提供了可解释的探针式分析框架。",
+      "llm_tldr": "语音情感识别性能仍不理想，近期方法结合语音与文本等多模态输入并引入大语言模型，但直接音频输入带来可解释性问题。本文把概念瓶颈模型迁移到语音情感识别，用可编辑概念探查预测如何依赖转录、声学描述与说话人属性。作者在三个大语言模型上开展实验，分析多模态线索对情感预测的贡献。该工作为多模态情感识别提供了可解释的探针式分析框架。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Multimodal Emotion Recognition",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.39484v1",
+      "source": "arxiv",
+      "title": "CAMOS: Coupled Oscillatory State-Space Model for Multimodal Clinical Time-Series",
+      "abstract": "Longitudinal clinical cohorts are multimodal, irregularly sampled and pervasively incomplete: in ADNI, positron emission tomography and cerebrospinal fluid assays are absent from roughly half of all visits. Linear state-space models handle irregular sampling gracefully but treat a missing modality by masking the input, leaving the transition operator untouched. We prove that this is a representational limitation: the latent state of any linear state-space layer whose transition operator does not depend on the availability pattern is an additive function of the availability indicators, so no such layer can represent an interaction between two modalities being jointly present or jointly absent. We propose CAMOS, which gives each modality a bank of second-order oscillators coupled through a matrix that sits inside the differential equation and is gated by availability, so the transition operator itself becomes a function of which measurements were taken. Coupling invalidates the analysis of uncoupled oscillatory models, and we restore it: a per-channel Gershgorin budget makes the effective stiffness positive definite uniformly over all $2^M$ availability patterns and all gaps, an energy argument charges amplification to availability transitions rather than sequence length, and a channel factorization preserves exact associative parallel scans. On ADNI, CAMOS outperforms uncoupled oscillatory state-space models and clinical fusion models on same-visit staging, landmark prediction and longitudinal forecasting, and under zero-shot transfer to OASIS-3 it is the only model that avoids collapse to the majority class.",
+      "authors": [
+        "Maxx Richard Rahman",
+        "Mostafa Hammouda",
+        "Wolfgang Maass"
+      ],
+      "primary_category": "stat.ML",
+      "categories": [
+        "stat.ML",
+        "cs.AI"
+      ],
+      "published": "2026-09-30T10:47:01+00:00",
+      "link": "https://arxiv.org/pdf/2609.39484v1",
+      "tags": [
+        "keyword:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "handles pervasively incomplete multimodal clinical time-series with missing modality",
+      "llm_evidence_cn": "处理普遍不完整多模态临床时间序列中的缺失模态",
+      "llm_evidence": "处理普遍不完整多模态临床时间序列中的缺失模态",
+      "canonical_evidence": "处理普遍不完整多模态临床时间序列中的缺失模态",
+      "llm_tldr_en": "Clinical cohorts are multimodal and pervasively incomplete; CAMOS gives each modality its own oscillatory state bank so missingness patterns affect transitions, unlike masking linear models.",
+      "llm_tldr_cn": "纵向临床队列是多模态、不规则采样且普遍不完整的，如ADNI中约一半访视缺少PET或脑脊液检测。线性状态空间模型通过掩码处理缺失模态却不改变转移算子，本文证明此类层无法表达模态联合存在或缺失的交互。为此提出CAMOS，为每个模态配备振荡状态库，使状态转移依赖可用性模式。实验表明其能更好建模缺失模态下的跨模态交互，对不完整多模态学习具有方法学价值。",
+      "llm_tldr": "纵向临床队列是多模态、不规则采样且普遍不完整的，如ADNI中约一半访视缺少PET或脑脊液检测。线性状态空间模型通过掩码处理缺失模态却不改变转移算子，本文证明此类层无法表达模态联合存在或缺失的交互。为此提出CAMOS，为每个模态配备振荡状态库，使状态转移依赖可用性模式。实验表明其能更好建模缺失模态下的跨模态交互，对不完整多模态学习具有方法学价值。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
