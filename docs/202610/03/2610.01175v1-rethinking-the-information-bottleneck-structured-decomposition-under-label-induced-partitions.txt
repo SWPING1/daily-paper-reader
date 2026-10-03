@@ -1,0 +1,2167 @@
+Title: Rethinking the Information Bottleneck: Structured Decomposition under Label-Induced Partitions
+
+URL Source: https://arxiv.org/pdf/2610.01175v1
+
+Published Time: Fri, 02 Oct 2026 01:08:08 GMT
+
+Number of Pages: 42
+
+Markdown Content:
+# Rethinking the Information Bottleneck: Structured Decomposition under Label-Induced Partitions 
+
+Jingyao Zhang Yuxuan Li Lu Han Ali Anaissi Nguyen H. Tran 
+
+School of Computer Science, The University of Sydney Sydney, NSW 2006, Australia 
+
+## Abstract 
+
+Standard information bottleneck (IB) regularization constrains representations via a single scalar I(Z; X), implicitly treating all information as homogeneous. However, a single global compression control couples label-relevant structure with residual within-condition variation, rather than regulating their allocation indepen-dently, allowing nuisance information to persist in learned representations. For example, in medical imaging applications, residual variation often stems from acquisition conditions, background factors, or subject-specific appearance. This issue becomes particularly pronounced in data-limited settings, where models tend to overfit such variation, hindering generalization. While existing regularization methods can stabilize training, control capacity, or shape representation geometry, they do not explicitly separate nuisance-like variation from task-supporting struc-ture. To address this limitation, we revisit IB from a structured perspective based on a label-induced partition, where condition-level structure and within-condition information play distinct roles. This leads to a dual-bottleneck formulation: a stan-dard KL term controls global information capacity, while a conditional KL term targets within-condition information. We show that the conditional KL admits an exact decomposition into a within-condition information term and a prior-mismatch term, explaining its alignment with the design objective. With a simplex-structured conditional prior, the method provides controllable latent geometry and integrates seamlessly into existing pipelines. Experiments on classification and segmentation show the clearest gains in low-data classification and consistent improvements across dense prediction benchmarks. 
+
+## 1 Introduction 
+
+Learning latent representations with strong generalization is a central goal in supervised learning. Not all encoded information should be treated equally: some components support label-induced separability, while others merely reflect residual within-condition variation that is easy to memorize but unreliable for prediction. This is especially salient in medical imaging, where acquisition condi-tions, background factors, and subject-specific appearance contribute substantial residual variation. In this work, we formalize this distinction under a label-induced condition variable C = π(Y ),where Y denotes the class label and π maps labels to condition groups, and study how to preserve condition-level structure while more directly constraining within-condition information. Among principled approaches, the Information Bottleneck (IB) principle and its variational formu-lation, the Variational Information Bottleneck (VIB), view regularization as balancing predictive relevance against compression [1, 2, 3]. In standard VIB, this is implemented by constraining 
+
+I(Z; X). However, under the label-induced partition, the total information admits 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+This reveals a regularizer-level structural coupling: a single global compression control jointly penalizes condition-level structure and within-condition variation, leaving their allocation without 
+
+> Preprint. arXiv:2610.01175v1 [cs.LG] 1 Oct 2026
+
+an independent control axis. Encoders with the same global budget may therefore retain different amounts of residual information, a limitation formalized in Sec. 4.2. This issue is especially relevant in medical imaging, where acquisition and subject-specific variation can be substantial, but it also applies more broadly when residual variation is easy to memorize yet weakly aligned with label-induced separability [4]; see Sec. 3.1. We therefore introduce a dual-bottleneck objective, where a standard KL term controls global capacity and a conditional KL term targets within-condition information under C = π(Y ).To instantiate this realization in a structured way, we further introduce a class-conditional prior con-strained by regular-simplex geometry. This design provides a symmetric and controllable geometric scaffold for the conditional prior, injects a separability-oriented inductive bias into the latent space, and reduces direct reliance on empirical prototype construction at initialization. The main contributions of this paper are summarized as follows: • We present a structured information-control view under a label-induced partition, showing that global compression controls the aggregate information budget but not its allocation between condition-level and within-condition information. • We propose a dual-bottleneck objective as a direct operational realization of this view, and derive an exact decomposition of the conditional KL term into a within-condition information component and a condition-wise prior-mismatch component—a closure property that makes the conditional KL a principled surrogate for constraining I(Z; X | C).• We establish a task-constrained two-axis upper-bound result: the dual regularizer simulta-neously upper-bounds visible within-condition nuisance dependence (through Jcond ) and conditional-invisible condition-level encoding (through Jstd ), neither of which is controlled by the other surrogate alone; the corresponding family-inclusion property follows as an immediate corollary. • We introduce a simplex-constrained conditional prior with fixed shared variance for practical instantiation, and experiments on supervised classification and segmentation, including medical-image benchmarks, demonstrate consistent improvements over the unregularized baseline, with the clearest gains in data-limited regimes. 
+
+## 2 Related work 
+
+Information bottleneck and variational formulations. The Information Bottleneck (IB) princi-ple formalizes supervised representation learning as a trade-off between predictive relevance and compression [1]. This view was later extended to deep models [2] and made practical through variational objectives such as the Variational Information Bottleneck (VIB) [3]. However, a single global bottleneck on I(Z; X) can be too coarse for deep classification, especially in deterministic or continuous-input regimes [5]. Related work also suggests that a single principle may be insufficient in complex representation-learning settings [6]. Our work addresses a different limitation: under a label-induced partition, the global budget conflates condition-level structure with within-condition variation, motivating a dual bottleneck. 
+
+Conditional bottlenecks and conditional priors. Our conditional term is related to prior condi-tional information-control objectives, including conditional VIB-style formulations for multi-view representation learning [7], conditional compression objectives for self-supervised visual represen-tations [8], and recent conditional information-bottleneck formulations for sequence modeling and time-series imputation [9, 10]. These works show that conditioning the bottleneck can be useful, but their conditions arise from views or augmentations rather than from a supervised label-induced partition. In contrast, our condition variable is C = π(Y ), which is used to separate condition-level structure I(Z; C) from within-condition information I(Z; X | C). Moreover, we retain both Jstd and 
+
+Jcond , so global capacity control is not replaced by conditional control. Condition-dependent priors also appear in CVAEs and semi-supervised generative models [11, 12], where they serve generative likelihoods or ELBOs. Here, the conditional prior instead acts as a supervised information-control prior whose KL term decomposes into I(Z; X | C) plus condition-wise prior mismatch, with simplex geometry providing a symmetric instantiation. 
+
+Representation geometry and class structure. A complementary line of work improves su-pervised representations by shaping their geometry. Center loss, prototype learning, supervised 2contrastive learning, and MCR 2 promote intra-class compactness, inter-class separation, or class-wise compressibility through empirical centers, prototypes, pairwise objectives, or coding-rate criteria [13, 14, 15, 16]. In contrast, we impose geometric structure directly at the conditional prior, and ground it in an information-theoretic decomposition that enables targeted control of within-condition information without empirical centers. Table 1: Objective-level comparison. Jstd and Jcond denote global and label-conditioned KL controls.                             
+
+> Method Global Cond. Geometry / prior Main distinction VIB / S TD KL Jstd –global prior only global bottleneck COND KL (cond-only) –Jcond conditional prior no label-induced dual control Center / prototype –implicit empirical centers feature-space geometry SupCon –implicit contrastive pairs pairwise geometry Generic regularizers generic –none orthogonal heuristics DUAL KL (ours) Jstd Jcond simplex conditional prior joint two-axis control
+
+Simplex geometry and neural collapse. Neural Collapse studies show that deep classifiers often approach highly symmetric Simplex ETF configurations, and that such geometry can be optimal under simplified feature models [17, 18]. Inspired by this line of work, we adopt simplex geometry as a structured prior template for class-conditioned regularization. In our setting, this choice provides a symmetric and analytically transparent starting geometry while reducing reliance on empirical center construction at initialization. 
+
+## 3 Problem description, basic assumptions, and design goal 
+
+3.1 Residual variation as a representation concern 
+
+In this work, we treat regularization not as generic capacity control alone, but as representation-level selection of what to preserve and what to suppress. Classical regularizers mainly control capacity or stabilize optimization [19, 20, 21, 22], while information-bottleneck methods make this selection explicit through compression-oriented objectives [1, 3]. Our specific concern is residual variation that is easy to memorize yet weakly aligned with label-induced separability [4]. 0.1 0.2 0.3 0.4 0.5 
+
+> Inter-sample sep.
+> 012345678
+> Label sep.
+> 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> Feat-Label
+
+Figure 1: BloodMNIST feature hetero-geneity. Points denote low-level statis-tics with sample separation on the x-axis and label separation on the y-axis. Lower-right points correspond to high variation but weak label relevance. This concern is especially salient in medical-image set-tings, where acquisition conditions, background factors, and subject-specific appearance can vary substantially. At the same time, the underlying issue is not domain-specific: in supervised representation learning more broadly, residual within-condition variation can coexist with task-supporting structure and therefore requires ex-plicit control. This view is consistent with prior information-theoretic analysis. Under the assumptions that N is a nuisance for Y (i.e., I(N ; Y ) = 0 ), Z is sufficient for Y so that 
+
+I(Z; Y ) = I(X; Y ), and N → X → Z, Achille and Soatto [23] derive 
+
+I(Z; N ) ≤ I(Z; X) − I(X; Y ).
+
+Equivalently, under sufficiency this can be read as 
+
+I(Z; N ) ≤ I(Z; X) − I(Z; Y ). We use this result only as motivation: information retained beyond what is needed for the task can carry nuisance dependence, so residual variation is a meaningful object of control. Thus, retaining more input information than the task strictly requires does not guarantee that nuisance-related dependence vanishes. Fig. 1 provides dataset-level evidence on BloodMNIST: some low-level statistics vary strongly across samples but separate labels weakly. Although this analysis is not an information-plane estimate, it supports treating residual variation as a distinct object of control. 
+
+3.2 Information categories under a label-induced partition 
+
+We now formalize the above concern in a standard supervised representation learning setting. Let 
+
+X ∈ X denote the observed input, Y ∈ Y the supervised target, and Z ∈ Rd the latent representation 3produced by a stochastic encoder qθ (z | x). We further introduce a finite condition variable induced by the supervised target, C = π(Y ), where π maps labels to condition groups. This condition variable is not intended to exhaust all task semantics; rather, it serves as an analytical coordinate for distinguishing different informational roles in the learned representation. Under this coordinate system, we distinguish two categories of information. The first is condition-level structure I(Z; C), namely the component aligned with the label-induced partition and supportive of separability across conditions. The second is within-condition information I(Z; X | C), namely the dependence that remains between the representation and the input after conditioning on the partition. The former is the structure we aim to preserve relatively, while the latter is the component we aim to constrain more directly. Accordingly, the design goal is to realize a more selective form of representation control: 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+This decomposition follows from the chain rule and the encoder-induced independence Z ⊥ C | X;see Appendix A.1–A.2 (Theorem 2). We use it to separate condition-level from within-condition information. 
+
+3.3 Assumptions and interpretation scope 
+
+We conduct the analysis in a clean supervised learning setting. For interpretation, we assume that the observed input can be written as 
+
+X = T (S, N ), Y = f (S), (1) where S denotes the semantic pattern supporting the supervised target, N denotes additional pertur-bation or background variation, and T combines them into the observed input. This setup allows us to focus on input complexity and residual variation, rather than confounding effects from noisy or corrupted labels. Let C = π(Y ) denote the label-induced condition variable introduced above. We treat labels as reliable so that the decomposition and conditional modelling are well defined, and use C as the coordinate for separating condition-level structure from within-condition information. While medical imaging provides a motivating regime with substantial residual variation, the formulation is domain-agnostic and applies broadly to supervised representation learning settings where residual variation coexists with task-relevant structure. These assumptions are introduced for interpretability; the proposed method does not depend on them in practice. Minimally, I(Z; X | C) is the residual dependence between Z and X after conditioning on C. A stronger nuisance-based interpretation requires additional conditional-independence structure and is introduced later as a complementary view rather than as a prerequisite for the method; see Sec. 4.2 and Appendix A.5 (Proposition 1). 
+
+## 4 Theory: information-control view 
+
+4.1 Label-induced information coordinates 
+
+We analyze representation control under C = π(Y ), introduced in Sec. 3.2, as a coordinate for two informational roles. Since the posterior encoder is qθ (z | x), Z ⊥ C | X; Theorem 2 gives 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+The first term captures condition-level structure aligned with the label-induced partition, while the second term captures residual dependence on the input after conditioning on that partition. Thus, the central control question is not merely how much information Z retains from X, but how the total information budget is allocated between condition-level structure and within-condition residual variation. A formal proof of the decomposition is given in Appendix A.2 (Theorem 2); see Fig. 2 for a schematic illustration. 4(a) Information decomposition view     
+
+> (b) Effect of global control (c) Effect of conditional control
+> (d) Effect of dual control
+
+Figure 2: Information-plane view of representation control. Panel (a) illustrates the decomposition 
+
+I(Z; X) = I(Z; C) + I(Z; X | C). Panels (b)–(d) schematically compare global-only, conditional-only, and dual control directions. 
+
+4.2 Why single-axis control is insufficient 
+
+Even when C = Y , where the exact IB objective can be rewritten in these coordinates, its single com-pression coefficient couples the reward on I(Z; Y ) with the penalty on I(Z; X | Y ). More generally, a global-only bottleneck penalizes the aggregate I(Z; X), but does not provide an independent axis for regulating its split between I(Z; C) and I(Z; X | C). Indeed, Appendix A.3 constructs encoders with identical I(Z; X) but different I(Z; X | C) (Theorems 3–4). Therefore, global information control alone is insufficient for selectively suppressing within-condition residual variation. Conversely, conditional control alone is also incomplete. It can target within-condition dependence, but it does not by itself constrain global or condition-level encoding. Appendix A.7 gives a structural regime in which a condition-level component B is invisible to I(Z; X | C), while still occupying positive global information capacity (Proposition 3). This shows that a purely conditional bottleneck can miss information aligned with the condition variable, making a global control axis still necessary. The within-condition term also admits an optional nuisance interpretation. Suppose that 
+
+X = T (S, N ), Y = f (S), C = π(Y ),
+
+where S denotes task-relevant signal and N denotes within-condition nuisance variation. If, condi-tioned on C, the variables satisfy the Markov chain 
+
+N → X → Z, 
+
+then the conditional data-processing inequality gives 
+
+I(Z; N | C) ≤ I(Z; X | C).
+
+Thus, when residual variation can be modeled as N , controlling I(Z; X | C) also controls a visible nuisance-dependence axis. This nuisance reading is optional: I(Z; X | C) is not nuisance information in general, but it upper-bounds nuisance dependence under the stated conditional Markov assumption. A formal statement is provided in Appendix A.5 (Proposition 1). Taken together, the theory identifies two complementary residual-information axes: a visible within-condition nuisance axis, controlled through I(Z; X | C), and a conditional-invisible condition-level axis, controlled through global information capacity. This motivates a dual control view rather than a single-axis bottleneck, as illustrated schematically in Fig. 2(b)–(d) and visualized in latent space in Fig. 3.         
+
+> (a) NOREG (b) Global control (c) Conditional control (d) Dual control
+
+Figure 3: Visual illustration of complementary control in latent space. Global control mainly contracts overall spread, conditional control tightens within-condition structure, and dual control combines both effects in this illustrative example. 54.3 Main theorem: task-constrained two-axis upper-bound control 
+
+We now collect the preceding information-control arguments into the main formal statement. The goal is to characterize the regularizer-level control capacity of dual regularization under task adequacy, rather than to claim universal improvement for every optimized model. Let 
+
+Fε = {(θ, ω, ψ ) : Rtask (θ, ω ) ≤ ε}, Rtask (θ, ω ) = Ep(x,y )qθ (z|x)[ℓtask (gω (z), y )] .
+
+Under the nuisance interpretation of Appendix A.5 (Proposition 1) and the structural refinement regime of Appendix A.7 (Proposition 3), define 
+
+Hλ(θ) = λvis Iθ (Z; N | C) + λinv Iθ (Z; B), Uλ(θ, ψ ) = λvis Jcond (θ, ψ ) + λinv Jstd (θ),
+
+with λvis , λ inv > 0. Here Hλ measures visible nuisance dependence and conditional-invisible condition-level encoding, while Uλ is its KL-regularizer surrogate; Jcond and Jstd are defined in Sec. 5.1 and Appendix A.10. 
+
+Theorem 1 (Task-constrained upper-bound dominance of dual control) . For every (θ, ω, ψ ) ∈ F ε,
+
+Hλ(θ) ≤ Uλ(θ, ψ ).
+
+The theorem states a pointwise upper bound: Uλ jointly controls the two residual-information axes identified in Sec. 4.2. This is a regularizer-level statement, not a claim that every optimized dual model universally improves task accuracy or realized nuisance information. A complete proof is given in Appendix A.10 (Theorem 8). 
+
+Corollary 1 (Family inclusion) . Let Φ⋆
+
+> dual
+
+(ε; λ), Φ⋆
+
+> std
+
+(ε; λ), and Φ⋆
+
+> cond
+
+(ε; λ) denote the task-feasible optimal values of Uλ over the supported dual, std-only, and cond-only families, respectively. Then 
+
+Φ⋆
+
+> dual
+
+(ε; λ) ≤ min {Φ⋆
+
+> std
+
+(ε; λ), Φ⋆
+
+> cond
+
+(ε; λ)}.
+
+This corollary records the family-level consequence that std-only and cond-only objectives are degenerate subfamilies of the dual family. It is therefore a non-strict objective-family dominance statement under the same task-feasibility constraint. 
+
+Tightness. The pointwise bound becomes tight only when both data-processing gaps and variational prior-mismatch gaps vanish. For the visible axis, this requires I(Z; X | N, C ) = 0 and exact conditional prior calibration rψ (z | c) = ¯ qθ (z | c) for p(c)-a.e. c. For the conditional-invisible condition-level axis controlled through global capacity, it requires I(Z; X | B) = 0 and exact global prior calibration r0(z) = ¯ qθ (z). Thus, Theorem 1 should be read as a controllable upper-bound result with strong equality conditions. 
+
+## 5 Engineering instantiation 
+
+5.1 From mutual-information control to KL surrogates 
+
+The theory in Sec. 4 identifies the information quantities that should be controlled, but the mutual informations I(Z; X) and I(Z; X | C) are not directly optimized in our neural training pipeline. We therefore instantiate the information-control view through variational KL upper bounds. Define the global KL control Jstd (θ) = Ep(x)KL  qθ (z | x) ∥ r0(z), where r0(z) is an unconditional prior, and let ¯qθ (z) = R qθ (z | x)p(x) dx be the aggregated posterior. Then 
+
+Jstd (θ) = Iθ (Z; X) + KL  ¯qθ (z) ∥ r0(z). (2) Thus Jstd upper-bounds the global information budget Iθ (Z; X); see Appendix A.6 (Lemma 1). The bound is tight under exact global prior calibration r0(z) = ¯ qθ (z), as stated in Appendix A.6 (Proposition 2). Similarly, define the conditional KL control Jcond (θ, ψ ) = Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c), where 
+
+rψ (z | c) is a condition-dependent prior, and let ¯qθ (z | c) = R qθ (z | x)p(x | c) dx be the condition-wise aggregated posterior. Then the conditional KL admits the exact decomposition 
+
+Jcond (θ, ψ ) = Iθ (Z; X | C) + Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c). (3) 6XFigure 4: Engineering instantiation of the dual-bottleneck objective. The encoder produces a stochastic latent representation Z, the task head optimizes the supervised loss, and two KL surrogates implement global and condition-aware information control. A formal derivation is provided in Appendix A.4 (Theorem 5). Consequently, 
+
+Iθ (Z; X | C) ≤ Jcond (θ, ψ ). (4) Equation (3) is the key closure property used by the engineering instantiation: the conditional KL is not merely a heuristic penalty, but an exact decomposition into within-condition information plus a condition-wise prior-mismatch term. Under exact conditional prior calibration rψ (z | c) = ¯ qθ (z | c)
+
+for p(c)-a.e. c, the mismatch term vanishes and Jcond (θ, ψ ) = Iθ (Z; X | C).We therefore optimize the following dual-bottleneck objective: 
+
+L(θ, ω, ψ ) = Ep(x,y )qθ (z|x)
+
+ℓtask (gω (z), y ) + βstd Jstd (θ) + βcond Jcond (θ, ψ ). (5) Equivalently, expanding the two KL controls gives 
+
+L = Ltask + βstd Ep(x)KL  qθ (z | x) ∥ r0(z) + βcond Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c).
+
+Here c = π(y) indexes the conditional prior, not the posterior encoder. The standard KL implements global capacity control, while the conditional KL implements condition-aware residual control through Eq. (3); Fig. 4 summarizes the instantiation. 
+
+5.2 Structured conditional prior 
+
+For the default simplex-constrained instantiation, we use a Gaussian conditional prior 
+
+rψ (z | c) = N (μc, τ 2Id), μc = ρQs c + b0,
+
+where sc is the c-th vertex of a regular simplex, ρ = softplus( ρraw ) > 0, ρraw , Rraw , and b0 are learned, and τ = 1 is fixed by default. We take the simplex coordinates to satisfy sc ∈ RK−1, c ∈ { 1, . . . , K }, and assume d ≥ K − 1.Accordingly, Q = qf( Rraw ) satisfies Q⊤Q = IK−1. Thus Q acts as an isometric embedding of the simplex coordinates into the latent space. In particular, the pairwise center distance is constant: 
+
+∥μc − μc′ ∥2 = 2 ρ2 KK − 1 , c̸ = c′. (6) This prior does not introduce an additional theoretical assumption for the decomposition in Sec. 4. Instead, it provides a symmetric and controllable parameterization of rψ (z | c), avoiding direct dependence on empirical class centers at initialization. The induced symmetric separability property is proved in Appendix A.8 (Proposition 4). 
+
+5.3 Shared variance and operational training 
+
+In practice, we use a shared isotropic variance τ 2Id across conditions. This choice is motivated by control and interpretability rather than by a universal noise model. Under a Gaussian posterior family 
+
+qθ (z | x) = N (mx, Σx), the average conditional KL given current centers takes the form 
+
+J(τ 2) = 12
+
+ Aτ 2 + d log τ 2
+
+
+
++ const , (7) where 
+
+A = Ep(x,c )
+
+tr(Σ x) + ∥mx − μc∥2.
+
+7In the nondegenerate case A > 0, its unique minimizer is 
+
+τ 2 
+
+> ⋆
+
+= Ad .
+
+Thus, under a shared isotropic parameterization, learning τ mainly adjusts a single global dispersion scale. Fixing τ = 1 provides a controlled way to decouple condition-center geometry from variance adaptation during regularization. The corrected minimization argument is given in Appendix A.9 (Proposition 5). Operationally, the method follows a standard variational pipeline with minimal changes. The backbone fenc , task head gω , and supervised loss ℓtask are unchanged. The encoder parameterizes a stochastic posterior qθ (z | x), and the latent representation Z is used by the task head as shown in Fig. 4. Under Gaussian posterior and prior families, both KL terms admit closed-form evaluation, so the additional computational overhead is negligible relative to standard variational objectives. The two weights βstd and βcond tune the two controls independently. Together with the simplex-structured conditional prior in Sec. 5.2 and the shared-variance setting above, Eq. (5) gives a sym-metric and operationally interpretable regularization scheme that can be integrated into existing classification or segmentation pipelines without architectural changes. The loss-agnostic representa-tional interpretation of this regularizer is summarized in Appendix A.11 (Proposition 6). 
+
+## 6 Experiments 
+
+We structure the main experiments as an objective-level ablation motivated by the two control axes in our theory. Under the same backbone, data split, optimizer, schedule, and task loss, we compare NO REG , S TD KL, C OND KL, and D UAL KL, isolating global control, conditional within-condition control, and their combination. We report BAcc/Macro-F1 for classification and IoU/Dice for segmentation, and evaluate both full-data and low-data regimes. A separate instantiation ablation studies the conditional-prior geometry and τ parameterization. On BloodMNIST [24, 25], detailed results are reported in Tab. 3. Both single-KL variants already improve over the no-regularization baseline, but D UAL KL consistently achieves the best BAcc and Macro-F1 across all regimes. The improvement is visible even in the standard regime, where BAcc/Macro-F1 increase from 92.90/93.14 to 94.52/94.72, and becomes substantially larger when supervision is limited: under 1% training data, BAcc/Macro-F1 increases from 63.49/61.43 to 72.22/69.98, and under 4-shot training, they increase from 45.31/43.19 to 48.72/46.57. This pattern supports our motivation that, when supervision is scarce, models are more vulnerable to unstable residual cues, so representation-level regularization, and especially the additional structured control in D UAL KL, becomes more beneficial (Fig. 5). Compared with external regularization and geometry baselines, the strongest baseline is Center Loss, while D UAL KL remains higher by 2.44 BAcc and 1.99 Macro-F1 points in the 1% regime; see Appendix B.1, Tab. 4. Appendix B.1.3 further reports a CIFAR-100 [26] low-data natural-image check, where KL-regularized variants improve over N O
+
+REG and D UAL KL gives the best mean scores. 
+
+Figure 5: BloodMNIST, 1% training data. N O REG (left two panels) versus D UAL KL (right two panels), shown in PCA and latent-statistics views. Full four-way comparisons are in Appendix B.3.2. For retinal vessel segmentation [27, 28, 29], Tab. 9 shows a consistent cross-dataset pattern. D UAL KL obtains the best IoU and Dice on DRIVE, STARE, and CHASEDB1, while both single-KL variants also improve over the unregularized baseline. The consistent gains across KL variants suggest that dense prediction benefits from both forms of information control, with their combination giving the strongest overall setting. On GLAS [30], Tab. 10 further shows that D UAL KL improves over the unregularized baseline in both full-data and few-shot regimes, with the clearest gain appearing in the 4-shot setting (IoU 0.5368 to 0.5478; Dice 0.6958 to 0.7049). Representative latent-geometry 8Figure 6: CHASEDB1. N O REG versus D UAL KL in PCA and latent-statistics views; full four-way comparisons are in Appendix B.3.2. comparisons on CHASEDB1 are shown in Fig. 6, where D UAL KL yields a more compact and separable structure than the unregularized baseline. Exact experimental protocols are provided in Appendix B.2. Additional BloodMNIST ablations further support the default practical instantiation of our method. In the 1% training-data regime, Tab. 2 shows that the default configuration, D UAL KL + simplex + shared fixed τ , achieves the best mean BAcc and Macro-F1 among the tested variants. The same qualitative pattern also appears in the 4-shot and full-training settings (Appendix B.1.5, Tabs. 7 and 8), where the default configuration reaches 48.66/46.59 and 94.74/94.86 in BAcc/Macro-F1, respectively. The margin is clearest in the low-data settings and remains positive in the full-training regime, supporting the simplex prior with shared fixed τ as a stable and interpretable default among the tested variants. Table 2: BloodMNIST 1% training-data ablation results reported as mean ± standard deviation.                               
+
+> Configuration BAcc Macro-F1 DUAL KL + simplex + shared fixed τ72.11 ±1.42 69.97 ±1.71
+> DUAL KL + random + shared fixed τ71.42 ±1.53 69.11 ±1.37 DUAL KL + empirical + shared fixed τ71.63 ±1.72 69.94 ±2.08 DUAL KL + simplex + classwise learned τ71.88 ±2.62 69.65 ±2.54
+
+As an auxiliary check, we vary π in segmentation using local mask-derived conditions. Appendix Tab. 14 shows that the average IoU/Dice over CHASEDB1, DRIVE, GLAS, and STARE changes from 62.40/76.24 under direct label conditioning ( K = 2 ) to 62.66/76.44 under foreground-count conditioning ( K = 10 ) and 62.75/76.52 under local-pattern conditioning ( K = 512 ). This indicates that C = π(Y ) is not merely a notational generalization; full details and sensitivity analyses are in Appendices B.4–B.5. 
+
+## 7 Conclusion, limitation, and future work 
+
+We introduced a structured information-control view of bottleneck regularization under label-induced partitions. Unlike standard IB/VIB objectives that constrain a single global information quantity, our formulation separates global capacity control from within-condition residual control. The main theorem shows that this dual regularizer simultaneously upper-bounds two structurally distinct residual-information axes — visible within-condition nuisance dependence and conditional-invisible condition-level encoding — neither of which is controlled by either single-term bottleneck alone. Operationally, we instantiate this view through KL upper bounds, a simplex-structured conditional prior, and a shared-variance parameterization, yielding a regularizer that can be integrated into existing supervised learning pipelines. Across classification and segmentation benchmarks, the method shows consistent improvements over the unregularized baseline, with the strongest gains in low-data classification and stable improvements across dense prediction benchmarks. The proposed method is best viewed as a representation-level regularizer for settings where label-relevant structure coexists with residual within-condition variation, consistent with prior analyses showing that the benefit of information constraints depends on the data-generating structure [31, 32]. Its empirical benefit can depend on the model family, optimization, task loss, and whether within-condition variation is residual rather than task-relevant; gains may be smaller when classes are already highly separable or intra-class variation itself carries task semantics. Beyond medical imaging, related settings such as PCB defect inspection may also benefit when similar residual variation is present. Future work may explore richer conditional-prior families, more flexible geometries, and heterogeneous or condition-dependent residual structures. 9References 
+
+[1] Naftali Tishby, Fernando C. Pereira, and William Bialek. The information bottleneck method. In 
+
+Proceedings of the 37th Annual Allerton Conference on Communication, Control, and Computing , pages 368–377, 1999. [2] Naftali Tishby and Noga Zaslavsky. Deep learning and the information bottleneck principle. In 2015 IEEE Information Theory Workshop (ITW) , pages 1–5, 2015. [3] Alexander A. Alemi, Ian Fischer, Joshua V. Dillon, and Kevin Murphy. Deep variational information bottleneck. In International Conference on Learning Representations , 2017. [4] Devansh Arpit, Stanisław Jastrz˛ ebski, Nicolas Ballas, David Krueger, Emmanuel Bengio, Maxinder S. Kanwal, Tegan Maharaj, Asja Fischer, Aaron Courville, Yoshua Bengio, and Simon Lacoste-Julien. A closer look at memorization in deep networks. In Doina Precup and Yee Whye Teh, editors, Proceedings of the 34th International Conference on Machine Learning , volume 70 of Proceedings of Machine Learning Research , pages 233–242. PMLR, 06–11 Aug 2017. [5] Rana Ali Amjad and Bernhard C. Geiger. Learning representations for neural network-based classification using the information bottleneck principle. IEEE Trans. Pattern Anal. Mach. Intell. , 42(9):2225–2239, September 2020. [6] Kartik Ahuja, Ethan Caballero, Dinghuai Zhang, Jean-Christophe Gagnon-Audet, Yoshua Bengio, Ioannis Mitliagkas, and Irina Rish. Invariance principle meets information bottleneck for out-of-distribution generalization. In M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. Wortman Vaughan, editors, 
+
+Advances in Neural Information Processing Systems , volume 34, pages 3438–3450. Curran Associates, Inc., 2021. [7] HyeongJoo Hwang, Geon-Hyeong Kim, Seunghoon Hong, and Kee-Eung Kim. Multi-view representation learning via total correlation objective. In M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. Wortman Vaughan, editors, Advances in Neural Information Processing Systems , volume 34, pages 12194–12207. Curran Associates, Inc., 2021. [8] Kuang-Huei Lee, Anurag Arnab, Sergio Guadarrama, John Canny, and Ian Fischer. Compressive visual representations. In M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. Wortman Vaughan, editors, 
+
+Advances in Neural Information Processing Systems , volume 34, pages 19538–19552. Curran Associates, Inc., 2021. [9] Damjan Kalajdzievski, Ximeng Mao, Pascal Fortier-Poisson, Guillaume Lajoie, and Blake Aaron Richards. Transfer entropy bottleneck: Learning sequence to sequence information transfer. Transactions on Machine Learning Research , 2023. [10] MinGyu Choi and Changhee Lee. Conditional information bottleneck approach for time series imputation. In The Twelfth International Conference on Learning Representations , 2024. [11] Kihyuk Sohn, Honglak Lee, and Xinchen Yan. Learning structured output representation using deep conditional generative models. In C. Cortes, N. Lawrence, D. Lee, M. Sugiyama, and R. Garnett, editors, 
+
+Advances in Neural Information Processing Systems , volume 28. Curran Associates, Inc., 2015. [12] Diederik P. Kingma, Danilo J. Rezende, Shakir Mohamed, and Max Welling. Semi-supervised learning with deep generative models. In Z. Ghahramani, M. Welling, C. Cortes, N. Lawrence, and K. Weinberger, editors, Advances in Neural Information Processing Systems , volume 27. Curran Associates, Inc., 2014. [13] Yandong Wen, Kaipeng Zhang, Zhifeng Li, and Yu Qiao. A discriminative feature learning approach for deep face recognition. In Bastian Leibe, Jiri Matas, Nicu Sebe, and Max Welling, editors, Computer Vision – ECCV 2016 , pages 499–515, Cham, 2016. Springer International Publishing. [14] Hong-Ming Yang, Xu-Yao Zhang, Fei Yin, and Cheng-Lin Liu. Robust classification with convolutional prototype learning. In 2018 IEEE/CVF Conference on Computer Vision and Pattern Recognition , pages 3474–3482, 2018. [15] Prannay Khosla, Piotr Teterwak, Chen Wang, Aaron Sarna, Yonglong Tian, Phillip Isola, Aaron Maschinot, Ce Liu, and Dilip Krishnan. Supervised contrastive learning. In H. Larochelle, M. Ranzato, R. Hadsell, M.F. Balcan, and H. Lin, editors, Advances in Neural Information Processing Systems , volume 33, pages 18661–18673. Curran Associates, Inc., 2020. [16] Yaodong Yu, Kwan Ho Ryan Chan, Chong You, Chaobing Song, and Yi Ma. Learning diverse and discriminative representations via the principle of maximal coding rate reduction. In H. Larochelle, M. Ranzato, R. Hadsell, M.F. Balcan, and H. Lin, editors, Advances in Neural Information Processing Systems , volume 33, pages 9422–9434. Curran Associates, Inc., 2020. [17] Vardan Papyan, X. Y. Han, and David L. Donoho. Prevalence of neural collapse during the terminal phase of deep learning training. Proceedings of the National Academy of Sciences , 117(40):24652–24663, 2020. [18] Zhihui Zhu, Tianyu Ding, Jinxin Zhou, Xiao Li, Chong You, Jeremias Sulam, and Qing Qu. A geometric analysis of neural collapse with unconstrained features. In M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. Wortman Vaughan, editors, Advances in Neural Information Processing Systems , volume 34, pages 29820–29834. Curran Associates, Inc., 2021. [19] Anders Krogh and John Hertz. A simple weight decay can improve generalization. In J. Moody, S. Hanson, and R.P. Lippmann, editors, Advances in Neural Information Processing Systems , volume 4. Morgan-Kaufmann, 1991. 
+
+10 [20] Nitish Srivastava, Geoffrey Hinton, Alex Krizhevsky, Ilya Sutskever, and Ruslan Salakhutdinov. Dropout: A simple way to prevent neural networks from overfitting. Journal of Machine Learning Research ,15(56):1929–1958, 2014. [21] Lutz Prechelt. Automatic early stopping using cross validation: quantifying the criteria. Neural Networks ,11(4):761–767, 1998. [22] Ekin D. Cubuk, Barret Zoph, Dandelion Mané, Vijay Vasudevan, and Quoc V. Le. Autoaugment: Learning augmentation strategies from data. In 2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , pages 113–123, 2019. [23] Alessandro Achille and Stefano Soatto. Emergence of invariance and disentanglement in deep representa-tions. Journal of Machine Learning Research , 19(50):1–34, 2018. [24] Jiancheng Yang, Rui Shi, Donglai Wei, Zequan Liu, Lin Zhao, Bilian Ke, Hanspeter Pfister, and Bingbing Ni. MedMNIST v2 - a large-scale lightweight benchmark for 2d and 3d biomedical image classification. 
+
+Scientific Data , 10(1):41, January 2023. [25] Andrea Acevedo, Anna Merino, Santiago Alférez, Ángel Molina, Laura Boldú, and José Rodellar. A dataset of microscopic peripheral blood cell images for development of automatic recognition systems. 
+
+Data in Brief , 30:105474, 2020. [26] Alex Krizhevsky. Learning multiple layers of features from tiny images. Technical report, University of Toronto, 2009. [27] J. Staal, M.D. Abramoff, M. Niemeijer, M.A. Viergever, and B. van Ginneken. Ridge-based vessel segmentation in color images of the retina. IEEE Transactions on Medical Imaging , 23(4):501–509, 2004. [28] A.D. Hoover, V. Kouznetsova, and M. Goldbaum. Locating blood vessels in retinal images by piecewise threshold probing of a matched filter response. IEEE Transactions on Medical Imaging , 19(3):203–210, 2000. [29] Muhammad Moazam Fraz, Paolo Remagnino, Andreas Hoppe, Bunyarit Uyyanonvara, Alicja R. Rudnicka, Christopher G. Owen, and Sarah A. Barman. An ensemble classification-based approach applied to retinal blood vessel segmentation. IEEE Transactions on Biomedical Engineering , 59(9):2538–2548, 2012. [30] Korsuk Sirinukunwattana, Josien P.W. Pluim, Hao Chen, Xiaojuan Qi, Pheng-Ann Heng, Yun Bo Guo, Li Yang Wang, Bogdan J. Matuszewski, Elia Bruni, Urko Sanchez, Anton Böhm, Olaf Ronneberger, Bassem Ben Cheikh, Daniel Racoceanu, Philipp Kainz, Michael Pfeiffer, Martin Urschler, David R.J. Snead, and Nasir M. Rajpoot. Gland segmentation in colon histology images: The glas challenge contest. 
+
+Medical Image Analysis , 35:489–502, 2017. [31] Marco Federici, Ryota Tomioka, and Patrick Forré. An information-theoretic approach to distribution shifts. In M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. Wortman Vaughan, editors, Advances in Neural Information Processing Systems , volume 34, pages 17628–17641. Curran Associates, Inc., 2021. [32] Kenji Kawaguchi, Zhun Deng, Xu Ji, and Jiaoyang Huang. How does information bottleneck help deep learning? In Andreas Krause, Emma Brunskill, Kyunghyun Cho, Barbara Engelhardt, Sivan Sabato, and Jonathan Scarlett, editors, Proceedings of the 40th International Conference on Machine Learning , volume 202 of Proceedings of Machine Learning Research , pages 16049–16096. PMLR, 23–29 Jul 2023. [33] Christian Szegedy, Vincent Vanhoucke, Sergey Ioffe, Jon Shlens, and Zbigniew Wojna. Rethinking the inception architecture for computer vision. In 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 2818–2826, 2016. [34] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, Alban Desmaison, Andreas Kopf, Edward Yang, Zachary DeVito, Martin Raison, Alykhan Tejani, Sasank Chilamkurthy, Benoit Steiner, Lu Fang, Junjie Bai, and Soumith Chintala. Pytorch: An imperative style, high-performance deep learning library. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-Buc, E. Fox, and R. Garnett, editors, Advances in Neural Information Processing Systems , volume 32. Curran Associates, Inc., 2019. [35] Paulius Micikevicius, Sharan Narang, Jonah Alben, Gregory Diamos, Erich Elsen, David Garcia, Boris Ginsburg, Michael Houston, Oleksii Kuchaiev, Ganesh Venkatesh, and Hao Wu. Mixed precision training. In International Conference on Learning Representations , 2018. [36] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Deep residual learning for image recognition. In 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , pages 770–778, 2016. [37] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization. In ICLR (Poster) , 2015. [38] Ilya Loshchilov and Frank Hutter. SGDR: Stochastic gradient descent with warm restarts. In International Conference on Learning Representations , 2017. [39] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. U-net: Convolutional networks for biomedical image segmentation. In Nassir Navab, Joachim Hornegger, William M. Wells, and Alejandro F. Frangi, editors, Medical Image Computing and Computer-Assisted Intervention – MICCAI 2015 , pages 234–241, Cham, 2015. Springer International Publishing. 
+
+11 A Detailed proofs for the label-induced conditional bottleneck 
+
+This appendix provides detailed derivations for the mathematical claims used in the main method. Our goal is not only to state the final objective, but also to make explicit: (i) which statements are exact identities, (ii) which statements are upper bounds, (iii) which statements are existence/insufficiency results, and (iv) which parts specify practical geometric or initialization choices used to instantiate the regularizer. 
+
+A.1 Notation and proof roadmap Standing regularity assumptions. Throughout this note, we work with stochastic encoder families 
+
+qθ (z | x). We assume that the KL divergences and mutual informations appearing below are well-defined and finite, and that the relevant aggregated posteriors ¯qθ (z) and ¯qθ (z | c) exist. In the continuous setting, this excludes degenerate deterministic limits of the encoder for the purpose of the stated identities and bounds. Let X ∈ X be the input, Y ∈ Y the supervised target, and Z ∈ Rd the stochastic latent variable generated by the encoder qθ (z | x).We use a label-induced finite condition random variable 
+
+C = π(Y ),
+
+where 
+
+π : Y → C , C = {1, . . . , K },
+
+is a finite partition map. In the clean supervised interpretation used in Sec. 3.3, one may write 
+
+Y = y⋆(X), and hence C = π(y⋆(X)) . This deterministic clean-label case is a concrete instance of our setting, but the Markov-based decomposition in Theorem 2 only requires the encoder-induced conditional independence stated below. 
+
+Encoder-induced Markov convention. All information quantities involving Z are evaluated under the joint law induced by the data distribution and the stochastic encoder. For any upstream variable 
+
+W that is not directly provided as an encoder input, 
+
+pθ (w, x, z ) = p(w, x )qθ (z | x),
+
+and hence 
+
+pθ (z | x, w ) = qθ (z | x) = pθ (z | x).
+
+Thus W → X → Z forms a Markov chain. We use this convention with W = C in Theorem 2, with 
+
+W = N in the conditional nuisance interpretation of Proposition 1, and with W = B in the proof of Theorem 8. 
+
+Proof roadmap. The proof chain is organized into four layers according to their role in the paper. 1. Core justification. These results establish the main theoretical backbone of the method: • Theorem 2: exact decomposition of I(Z; X) under a label-induced condition. • Theorems 3 and 4: insufficiency of a global-only bottleneck for the stated design goal. • Theorem 5: exact decomposition of the conditional KL term. • Theorems 6 and 7: insufficiency of a purely conditional bottleneck for controlling total global capacity. 2. Supporting calibration results. These results clarify how the two KL terms relate to their corresponding information quantities under variational parameterization: • Lemma 1: exact decomposition of the standard KL term. • Proposition 2: tightness statements under exact prior calibration. 3. Optional structural interpretations. These results are not required for the main dual-bottleneck justification, but provide additional structural readings of the framework: • Proposition 1: a nuisance-suppression interpretation under an additional conditional Markov assumption. • Proposition 3: a structural regime in which condition-level encoding is invisible to the conditional term. 12 4. Instantiation results. These results concern the specific parameterization used to opera-tionalize the framework: • Proposition 4: the symmetric separability induced by the simplex prior. • Proposition 5: the corrected minimization argument for the shared variance parameter 
+
+τ .
+
+A.2 Exact decomposition under a label-induced condition Theorem 2 (Exact decomposition under encoder-induced Markovity) . Suppose that the representation is generated from the input through the stochastic encoder qθ (z | x), so that C → X → Z forms a Markov chain as in Appendix A.1. Then 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+Proof. Start from the chain rule for mutual information: 
+
+I(Z; X, C ) = I(Z; C) + I(Z; X | C).
+
+On the other hand, the chain rule also gives 
+
+I(Z; X, C ) = I(Z; X) + I(Z; C | X).
+
+By the encoder-induced Markov chain C → X → Z,
+
+I(Z; C | X) = 0 .
+
+Hence I(Z; X, C ) = I(Z; X). Combining the two identities yields 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+This proves the claim. In the clean supervised setting described in Appendix A.1 and Sec. 3.3, 
+
+C = π(y⋆(X)) is a sufficient concrete instance of this Markov condition, but determinism of C is not required for the decomposition. 
+
+Interpretation. The decomposition is exact. It shows that the total information budget I(Z; X)
+
+mixes: 
+
+I(Z; C)
+
+| {z }
+
+> condition-level / label-induced structure
+
+and I(Z; X | C)
+
+| {z }
+
+> within-condition information
+
+.
+
+Therefore, a single global information budget does not by itself distinguish these two roles. 
+
+A.3 Why a single global bottleneck is insufficient Theorem 3. There exist two encoders q1(z | x) and q2(z | x) such that 
+
+Iq1 (Z; X) = Iq2 (Z; X), Iq1 (Z; X | C)̸ = Iq2 (Z; X | C).
+
+Hence, any regularizer depending only on I(Z; X) cannot, in general, separately control within-condition information. Proof. Let C ∼ Bernoulli(1 /2) and N ∼ Bernoulli(1 /2) be independent random variables. Define the input 
+
+X = ( C, N ).
+
+Now define two deterministic encoders: 
+
+Z1 = C, Z2 = N. 
+
+Since Z1 is a deterministic one-bit function of X,
+
+I(Z1; X) = H(Z1) − H(Z1 | X) = H(Z1) = 1 .
+
+Similarly, since Z2 is also a deterministic one-bit function of X,
+
+I(Z2; X) = H(Z2) − H(Z2 | X) = H(Z2) = 1 .
+
+13 Therefore, 
+
+I(Z1; X) = I(Z2; X).
+
+We next compare the conditional mutual informations. For Z1 = C, once we condition on C, the latent variable Z1 is fully determined. Hence 
+
+H(Z1 | C) = 0 , H(Z1 | X, C ) = 0 ,
+
+and therefore 
+
+I(Z1; X | C) = H(Z1 | C) − H(Z1 | X, C ) = 0 .
+
+For Z2 = N , independence of N and C gives 
+
+H(Z2 | C) = H(N | C) = H(N ) = 1 .
+
+Moreover, since Z2 = N is determined by X = ( C, N ),
+
+H(Z2 | X, C ) = 0 .
+
+Thus 
+
+I(Z2; X | C) = H(Z2 | C) − H(Z2 | X, C ) = 1 .
+
+We have shown 
+
+I(Z1; X) = I(Z2; X) = 1 , I(Z1; X | C) = 0 , I(Z2; X | C) = 1 .
+
+Hence, two encoders can have the same global information budget but different within-condition information. Therefore, a regularizer depending only on I(Z; X) cannot, in general, distinguish them. 
+
+Scope. The theorem establishes that a condition-aware term is necessary for separately controlling within-condition variation under the stated design goal. It does not imply that the conditional KL term is the unique possible realization of such a term; that point is addressed by Theorem 5. 
+
+Theorem 4 (Product-space necessity beyond the minimal discrete example) . Let X = ( C, N ), where 
+
+C and N are independent random variables defined on arbitrary measurable spaces. Suppose there exist two encoder channels TC (z | c) and TN (z | n) such that 
+
+ITC (Z; C) = ITN (Z; N ) = γ ∈ (0 , ∞).
+
+Define two encoders on X by 
+
+q1(z | x) = TC (z | c), q2(z | x) = TN (z | n).
+
+Then 
+
+Iq1 (Z; X) = Iq2 (Z; X) = γ, 
+
+but 
+
+Iq1 (Z; X | C) = 0 , Iq2 (Z; X | C) = γ. 
+
+Therefore, any regularizer depending only on I(Z; X) cannot, in general, separately control within-condition information in a broad product-space setting covering both discrete and continuous instantiations. Proof. For q1(z | x) = TC (z | c), the encoder depends on x only through C. Hence 
+
+Iq1 (Z; X | C) = 0 .
+
+Using the chain rule, 
+
+Iq1 (Z; X) = Iq1 (Z; C) + Iq1 (Z; X | C) = ITC (Z; C) = γ. 
+
+For q2(z | x) = TN (z | n), the encoder depends on x only through N . Since C and N are independent, Z is independent of C under q2. Therefore, 
+
+Iq2 (Z; X) = Iq2 (Z; N ) = ITN (Z; N ) = γ. 
+
+Moreover, 
+
+Iq2 (Z; X | C) = Iq2 (Z; N | C) = Iq2 (Z; N ) = γ. 
+
+This proves the claim. 14 A.4 Exact decomposition of the conditional KL term 
+
+Define the condition-wise aggregated posterior 
+
+¯qθ (z | c) = 
+
+Z
+
+qθ (z | x) p(x | c) dx. 
+
+Theorem 5. For any encoder qθ (z | x) and any conditional prior family rψ (z | c),
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Iθ (Z; X | C) + Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c).
+
+Consequently, 
+
+Iθ (Z; X | C) ≤ Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c).
+
+Proof. Start from the definition: 
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Ep(x,c )Eqθ (z|x)
+
+
+
+log qθ (z | x)
+
+rψ (z | c)
+
+
+
+.
+
+Add and subtract log ¯ qθ (z | c):
+
+log qθ (z | x)
+
+rψ (z | c) = log qθ (z | x)¯qθ (z | c) + log ¯qθ (z | c)
+
+rψ (z | c) .
+
+Therefore, 
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c)
+
+= Ep(x,c )Eqθ (z|x)
+
+
+
+log qθ (z | x)¯qθ (z | c)
+
+
+
++ Ep(x,c )Eqθ (z|x)
+
+
+
+log ¯qθ (z | c)
+
+rψ (z | c)
+
+
+
+.
+
+The first term is exactly 
+
+Iθ (Z; X | C).
+
+For the second term, once c is fixed, the integrand no longer depends on x except through the averaging induced by qθ (z | x). Integrating out x conditional on c yields 
+
+Ep(c)E¯qθ (z|c)
+
+
+
+log ¯qθ (z | c)
+
+rψ (z | c)
+
+
+
+= Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c).
+
+Combining the two terms gives 
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Iθ (Z; X | C) + Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c).
+
+Finally, KL divergence is nonnegative, so 
+
+Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c) ≥ 0,
+
+which implies 
+
+Iθ (Z; X | C) ≤ Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c).
+
+Remark. This is the key closure property of the method: conditional KL = within-condition information + prior mismatch .
+
+Thus the conditional KL term is not merely heuristic; it is an exact decomposition plus a tractable upper bound on I(Z; X | C).15 A.5 Nuisance interpretation 
+
+We now add an optional structural interpretation. Assume there exist latent variables S and N such that 
+
+X = T (S, N ), Y = f (S), C = π(Y ).
+
+Here S denotes task-relevant signal and N denotes within-condition nuisance variation. This structural reading uses the same encoder-induced convention stated in Appendix A.1. In particular, whenever N affects the representation only through the observed input X after conditioning on C, the encoder qθ (z | x) induces the conditional Markov chain N → X → Z given C.
+
+Proposition 1. Suppose that, conditioned on C, the encoder-induced Markov chain 
+
+N → X → Z
+
+holds. Then 
+
+I(Z; N | C) ≤ I(Z; X | C).
+
+Combining this with Theorem 5 in Appendix A.4 yields 
+
+I(Z; N | C) ≤ I(Z; X | C) ≤ Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c).
+
+Proof. Fix any value c of C. Under the conditional Markov chain 
+
+N → X → Z given C = c, 
+
+the conditional data processing inequality gives 
+
+I(Z; N | C = c) ≤ I(Z; X | C = c).
+
+Taking expectation over c yields 
+
+I(Z; N | C) ≤ I(Z; X | C).
+
+The second inequality follows directly from Theorem 5. 
+
+Scope. The proposition does not identify I(Z; X | C) with nuisance information in full generality. Under the stated structural assumption, it yields an upper bound on nuisance dependence through 
+
+I(Z; X | C).
+
+A.6 Exact decomposition of the standard KL term 
+
+The standard VIB term also admits an exact decomposition, completely parallel to the conditional case. 
+
+Lemma 1. Let 
+
+¯qθ (z) = 
+
+Z
+
+qθ (z | x)p(x) dx 
+
+be the aggregated posterior. Then for any unconditional prior r0(z),
+
+Ep(x)KL  qθ (z | x) ∥ r0(z) = Iθ (Z; X) + KL  ¯qθ (z) ∥ r0(z).
+
+Consequently, 
+
+Iθ (Z; X) ≤ Ep(x)KL  qθ (z | x) ∥ r0(z).
+
+Proof. We expand: 
+
+Ep(x)KL  qθ (z | x) ∥ r0(z) = Ep(x)Eqθ (z|x)
+
+
+
+log qθ (z | x)
+
+r0(z)
+
+
+
+.
+
+Add and subtract log ¯ qθ (z):
+
+log qθ (z | x)
+
+r0(z) = log qθ (z | x)¯qθ (z) + log ¯qθ (z)
+
+r0(z) .
+
+16 Therefore, 
+
+Ep(x)KL  qθ (z | x) ∥ r0(z)
+
+= Ep(x)Eqθ (z|x)
+
+
+
+log qθ (z | x)¯qθ (z)
+
+
+
++ Ep(x)Eqθ (z|x)
+
+
+
+log ¯qθ (z)
+
+r0(z)
+
+
+
+.
+
+The first term is 
+
+Iθ (Z; X).
+
+The second term becomes, after integrating out x,
+
+E¯qθ (z)
+
+
+
+log ¯qθ (z)
+
+r0(z)
+
+
+
+= KL  ¯qθ (z) ∥ r0(z).
+
+Combining the two terms proves the identity. The inequality follows from the non-negativity of KL. 
+
+Interpretation. The standard KL term controls global bandwidth: standard KL = global information + global prior mismatch .
+
+This makes its role fully parallel to the conditional KL term. 
+
+Proposition 2 (Tightness under exact prior calibration) . Let 
+
+¯qθ (z) = 
+
+Z
+
+qθ (z | x)p(x) dx 
+
+and 
+
+¯qθ (z | c) = 
+
+Z
+
+qθ (z | x)p(x | c) dx. 
+
+Then the following hold. 1. If the unconditional prior is chosen as 
+
+r0(z) = ¯ qθ (z),
+
+then 
+
+Ep(x)KL  qθ (z | x) ∥ r0(z) = Iθ (Z; X).
+
+2. If the conditional prior is chosen as 
+
+rψ (z | c) = ¯ qθ (z | c) for p(c)-a.e. c, 
+
+then 
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Iθ (Z; X | C).
+
+Proof. The first claim follows directly from Lemma 1: 
+
+Ep(x)KL  qθ (z | x) ∥ r0(z) = Iθ (Z; X) + KL  ¯qθ (z) ∥ r0(z).
+
+Setting r0(z) = ¯ qθ (z) makes the mismatch term vanish. The second claim follows directly from Theorem 5: 
+
+Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Iθ (Z; X | C) + Ep(c)KL  ¯qθ (z | c) ∥ rψ (z | c).
+
+Setting rψ (z | c) = ¯ qθ (z | c) for p(c)-a.e. c makes the second mismatch term vanish. 17 Scope. Proposition 2 identifies the ideal calibration regime under which the KL surrogates coincide with the corresponding information quantities. In the main method, the structured Gaussian/simplex prior is not introduced to exactly realize the aggregated posterior, but to provide a stable and interpretable parameterized prior family for regularization and initialization. 
+
+Theorem 6 (Insufficiency of a purely conditional bottleneck) . There exist two encoders q1(z | x)
+
+and q2(z | x) such that 
+
+Iq1 (Z; X | C) = Iq2 (Z; X | C), Iq1 (Z; X)̸ = Iq2 (Z; X).
+
+Therefore, any regularizer depending only on I(Z; X | C) cannot, in general, control the total global information capacity. Proof. Let X = ( C, N ), where C and N are independent and H(C) > 0. Consider two encoders: 
+
+Z1 ≡ z0, Z2 = C. 
+
+For Z1,
+
+I(Z1; X) = 0 , I(Z1; X | C) = 0 .
+
+For Z2 = C, conditioning on C fully determines Z2, so 
+
+I(Z2; X | C) = 0 .
+
+However, 
+
+I(Z2; X) = I(C; X) = H(C) > 0.
+
+Thus the two encoders have the same conditional information but different global information. Hence a regularizer depending only on I(Z; X | C) cannot in general control total global capacity. 
+
+Theorem 7 (Product-space insufficiency of a purely conditional bottleneck) . Let X = ( C, N ), where 
+
+C and N are independent random variables on arbitrary measurable spaces. Suppose there exists an encoder channel TC (z | c) such that 
+
+0 < I TC (Z; C) < ∞.
+
+Define two encoders 
+
+q1(z | x) = δz0 (z), q2(z | x) = TC (z | c).
+
+Then 
+
+Iq1 (Z; X | C) = Iq2 (Z; X | C) = 0 ,
+
+but 
+
+Iq1 (Z; X) = 0 , Iq2 (Z; X) = ITC (Z; C) > 0.
+
+Therefore, any regularizer depending only on I(Z; X | C) cannot, in general, control total global information capacity in a broad product-space setting. Proof. For q1, the latent variable is deterministic: Z ≡ z0. Hence 
+
+Iq1 (Z; X | C) = 0 , Iq1 (Z; X) = 0 .
+
+For q2, the encoder depends on x only through C. Therefore, 
+
+Iq2 (Z; X | C) = 0 .
+
+Using the chain rule, 
+
+Iq2 (Z; X) = Iq2 (Z; C) + Iq2 (Z; X | C) = ITC (Z; C) > 0.
+
+Thus q1 and q2 have the same conditional information but different global information. Hence any regularizer depending only on I(Z; X | C) cannot, in general, control total global information capacity. 18 A.7 A structural regime where condition-level encoding is invisible to the conditional term 
+
+We now introduce a second optional structural regime, separate from the within-condition nuisance interpretation in Proposition 1. The purpose of this subsection is to show that, even when the conditional KL term correctly regularizes the within-condition information that it can see, there may still exist condition-level encoding that does not appear in I(Z; X | C) at all. In such a case, a purely conditional bottleneck is insufficient, and the standard KL term remains necessary as a global-capacity regularizer. Assume that the input admits a decomposition 
+
+X = T (S, N, B ), Y = f (S), C = π(Y ),
+
+where: (i) N denotes within-condition nuisance variation, and (ii) B denotes a class-predictable / condition-level component. We keep the visible within-condition assumption from Proposition 1 for 
+
+N , and now add the following stronger condition for the invisible condition-level component: 
+
+H(B | C) = 0 , H(B) > 0.
+
+Thus, B is a non-trivial measurable function of C.
+
+Proposition 3 (Invisible condition-level encoding under X = T (S, N, B )). Assume 
+
+X = T (S, N, B ), Y = f (S), C = π(Y ),
+
+and suppose 
+
+H(B | C) = 0 , H(B) > 0.
+
+Then there exist a stochastic encoder qθ (z | x) and a conditional prior rψ (z | c) such that: 
+
+Ep(x,c ) KL  qθ (z | x) ∥ rψ (z | c) = 0 , (8) 
+
+Iθ (Z; X | C) = 0 , (9) 
+
+Iθ (Z; C) > 0, (10) 
+
+Iθ (Z; X) = Iθ (Z; C) > 0. (11) 
+
+Consequently, there exists a valid structural regime in which some condition-level encoding is completely invisible to the conditional term, yet still occupies positive global information capacity. Proof. Since H(B | C) = 0 , there exists a measurable map m(·) such that 
+
+B = m(C) almost surely. Choose any non-degenerate stochastic channel κZ|B (z | b) satisfying 
+
+0 < I κZ|B (Z; B) < ∞.
+
+Now, define the encoder by 
+
+qθ (z | x) := κZ|B
+
+ z | m(cπ (x)) ,
+
+where cπ (x) := π(y⋆(x)) . That is, the encoder depends on x only through the induced condition 
+
+C = cπ (x) (equivalently, through B = m(C)). Define the conditional prior by 
+
+rψ (z | c) := κZ|B (z | m(c)) .
+
+Then for every pair (x, c ) in the support of p(x, c ) with c = cπ (x), we have 
+
+qθ (z | x) = rψ (z | c).
+
+Therefore, the pointwise KL divergence is zero: 
+
+KL  qθ (z | x) ∥ rψ (z | c) = 0 .
+
+Taking expectation over (x, c ) yields 
+
+Ep(x,c ) KL  qθ (z | x) ∥ rψ (z | c) = 0 ,
+
+which proves (8). 19 Next, because qθ (z | x) = qθ (z | cπ (x)) , the conditional distribution of Z depends only on C and not on any residual variation of X once C is fixed. Hence 
+
+Z ⊥ X | C, 
+
+and therefore 
+
+Iθ (Z; X | C) = 0 ,
+
+which proves (9). Now observe that B = m(C) and Z is generated from B through the non-degenerate channel κZ|B .Hence 
+
+C → B → Z. 
+
+Moreover, because B is a deterministic function of C, we have 
+
+Iθ (Z; B | C) = 0 .
+
+And since Z is generated from B, we also have 
+
+Iθ (Z; C | B) = 0 .
+
+Applying the chain rule to the joint pair (B, C ) in two ways gives 
+
+Iθ (Z; B, C ) = Iθ (Z; C) + Iθ (Z; B | C) = Iθ (Z; C),
+
+and also 
+
+Iθ (Z; B, C ) = Iθ (Z; B) + Iθ (Z; C | B) = Iθ (Z; B).
+
+Thus 
+
+Iθ (Z; C) = Iθ (Z; B).
+
+Since the channel κZ|B was chosen to be non-degenerate with IκZ|B (Z; B) > 0, it follows that 
+
+Iθ (Z; C) > 0,
+
+which proves (10). Finally, by Theorem 2, 
+
+Iθ (Z; X) = Iθ (Z; C) + Iθ (Z; X | C).
+
+Substituting (9) gives 
+
+Iθ (Z; X) = Iθ (Z; C).
+
+Combining this with (10) yields 
+
+Iθ (Z; X) = Iθ (Z; C) > 0,
+
+which proves (11). 
+
+Interpretation. This proposition is an existence result, not a universal statement about all datasets or all nuisance decompositions. Its precise meaning is narrower and sufficient for our purpose: the conditional KL term regularizes the within-condition information that is visible through I(Z; X | C),but there exist valid structural regimes in which some class-predictable, condition-level encoding does not appear in I(Z; X | C) at all. In such cases, the remaining encoding lives entirely in the global / condition-level part I(Z; C), and therefore still contributes to the total information budget 
+
+I(Z; X). By Lemma 1, the standard KL term upper-bounds Iθ (Z; X) up to a global prior mismatch, so it remains the mechanism that regularizes this otherwise invisible condition-level capacity. 
+
+Connection to the dual-bottleneck objective. Together with Proposition 1 and Lemma 1, the picture is now explicit: • Proposition 1 explains why the conditional KL term regularizes visible within-condition nuisance dependence through I(Z; X | C).• Proposition 3 shows that a purely conditional bottleneck cannot, in general, exclude all condition-level encoding, because some of it may be invisible to I(Z; X | C).• Lemma 1 explains why the standard KL term remains necessary: it controls the total global information bandwidth, including condition-level encoding that does not show up in the conditional term. Hence, the dual-bottleneck objective is justified not only by the visible within-condition role of the conditional term, but also by the existence of hidden condition-level capacity that requires a global regularizer. 20 A.8 A structured conditional prior and its induced geometry 
+
+We choose 
+
+rψ (z | c) = N (μc, τ 2Id), μc = ρQs c + b0,
+
+where: • s1, . . . , s K ∈ RK−1 are regular simplex vertices, • Q⊤Q = IK−1,• ρ > 0, b0 ∈ Rd, and τ > 0.For a regular simplex, 
+
+∥sc∥ = 1 , s⊤ 
+
+> c
+
+sc′ = − 1
+
+K − 1 (c̸ = c′).
+
+Dimensional assumption for the simplex construction. Throughout the simplex-prior analysis, we assume 
+
+sc ∈ RK−1, Q ∈ Rd×(K−1) , Q⊤Q = IK−1,
+
+which requires 
+
+d ≥ K − 1.
+
+Proposition 4. For any c̸ = c′,
+
+∥μc − μc′ ∥2 = 2 ρ2 KK − 1 .
+
+Hence all condition centers are equally separated. Proof. By definition, 
+
+μc − μc′ = ρQ (sc − sc′ ).
+
+Therefore, 
+
+∥μc − μc′ ∥2 = ρ2∥Q(sc − sc′ )∥2.
+
+Since Q⊤Q = IK−1, the linear map Q preserves Euclidean norm on the simplex subspace, so 
+
+∥Q(sc − sc′ )∥2 = ∥sc − sc′ ∥2.
+
+Now expand: 
+
+∥sc − sc′ ∥2 = ∥sc∥2 + ∥sc′ ∥2 − 2s⊤ 
+
+> c
+
+sc′ = 1 + 1 − 2
+
+
+
+− 1
+
+K − 1
+
+
+
+= 2 KK − 1 .
+
+Hence 
+
+∥μc − μc′ ∥2 = 2 ρ2 KK − 1 .
+
+Interpretation. This proposition shows that the simplex prior induces a symmetric separability pattern among the condition centers. In our method, this property justifies using simplex geometry as a constrained prior parameterization, offering a balanced and analytically transparent prior for conditional regularization. 
+
+A.9 A corrected minimization argument for the shared variance Proposition 5. Suppose the encoder family qθ (z | x) = N (mx, Σx), the centers {μc}, and the data distribution p(x, c ) are temporarily fixed. Define 
+
+A := Ep(x,c )
+
+tr(Σ x) + ∥mx − μc∥2.
+
+Let 
+
+J(τ 2) := Ep(x,c )KL  N (mx, Σx) ∥ N (μc, τ 2Id) .
+
+Then 
+
+J(τ 2) = 12
+
+ Aτ 2 + d log τ 2
+
+
+
++ const ,
+
+where const does not depend on τ . Furthermore, A ≥ 0. In the nondegenerate case A > 0, the unique minimizer is 
+
+τ 2 
+
+> ⋆
+
+= Ad .
+
+21 Remark. The quantity A is nonnegative because both tr(Σ x) and ∥mx − μc∥2 are nonnegative. Moreover, A = 0 can occur only in the degenerate case where 
+
+Σx = 0 and mx = μc almost surely ,
+
+namely, when the posterior collapses to condition-wise point masses. Hence, under any nondegenerate Gaussian posterior family, the condition A > 0 is natural. 
+
+Proof. For Gaussian distributions, 
+
+KL  N (mx, Σx) ∥ N (μc, τ 2Id) = 12
+
+h
+
+τ −2tr(Σ x) + τ −2∥mx − μc∥2 − d + d log τ 2 − log det Σ x
+
+i
+
+.
+
+Taking expectation over p(x, c ), we obtain 
+
+J(τ 2) = 12
+
+ Aτ 2 + d log τ 2
+
+
+
++ 12 Ep(x,c )[−d − log det Σ x].
+
+The second term is independent of τ , so we may write 
+
+J(τ 2) = 12
+
+ Aτ 2 + d log τ 2
+
+
+
++ const .
+
+Now let u = τ 2 > 0. Then 
+
+J(u) = 12
+
+ Au + d log u
+
+
+
++ const .
+
+Differentiate with respect to u:
+
+J′(u) = 12
+
+
+
+− Au2 + du
+
+
+
+= du − A
+
+2u2 .
+
+If A = 0 , then 
+
+J′(u) = d
+
+2u > 0 for all u > 0,
+
+so J is strictly increasing on (0 , ∞) and has no interior minimizer there; its infimum is approached only in the boundary limit u → 0+. Now consider the nondegenerate case A > 0. Since 2u2 > 0 for all u > 0, the sign of J′(u) is determined entirely by du − A:
+
+J′(u) < 0 if u < Ad , J′(u) > 0 if u > Ad .
+
+Therefore u = A/d is the unique stationary point, and the derivative changes from negative to positive at that point. Hence, it is the unique global minimizer: 
+
+u⋆ = Ad .
+
+Returning to u = τ 2, we obtain 
+
+τ 2 
+
+> ⋆
+
+= Ad .
+
+Interpretation. This proposition clarifies the role of the shared-scale parameterization. When one adopts a common isotropic variance across conditions, learning τ mainly adjusts a global average dispersion level. This makes fixed τ a practical and interpretable choice for keeping center geometry and variance adaptation disentangled. 
+
+A.10 Task-constrained Pareto synthesis theorem 
+
+We now synthesize the preceding results into a single task-constrained Pareto statement. The purpose of this subsection is not to introduce a new primitive ingredient, but to collect the earlier decomposition, upper-bound, and insufficiency results into one sharpened theorem that formalizes the control advantage of the dual objective. 22 Task-feasible set. Define the supervised task risk 
+
+Rtask (θ, ω ) = Ep(x,y )qθ (z|x)
+
+ℓtask (gω (z), y ),
+
+and for any tolerance ε > 0, define the task-feasible set 
+
+Fε = (θ, ω, ψ ) : Rtask (θ, ω ) ≤ ε .
+
+Two residual-information axes. Under the conditional nuisance regime of Proposition 1, define the visible nuisance dependence 
+
+Hvis (θ) = Iθ (Z; N | C).
+
+Under the optional refinement regime of Proposition 3, define the conditional-invisible condition-level encoding 
+
+Hinv (θ) = Iθ (Z; B).
+
+For any positive weights λvis , λ inv > 0, let 
+
+Hλ(θ) = λvis Hvis (θ) + λinv Hinv (θ).
+
+Provable upper-bound surrogate. Define 
+
+Jstd (θ) = Ep(x)KL  qθ (z | x) ∥ r0(z), Jcond (θ, ψ ) = Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c),
+
+and 
+
+Uλ(θ, ψ ) = λvis Jcond (θ, ψ ) + λinv Jstd (θ).
+
+Supported families. Define the dual supported family 
+
+Adual  
+
+> ε
+
+= [
+
+> βstd ,β cond ≥0
+> βstd +βcond >0
+
+arg min 
+
+> (θ,ω,ψ )∈F ε
+
+h
+
+βstd Jstd (θ) + βcond Jcond (θ, ψ )
+
+i
+
+.
+
+Likewise, define the two degenerate single-term subfamilies 
+
+Astd  
+
+> ε
+
+= [
+
+> βstd >0
+
+arg min 
+
+> (θ,ω,ψ )∈F ε
+
+h
+
+βstd Jstd (θ)
+
+i
+
+,
+
+Acond  
+
+> ε
+
+= [
+
+> βcond >0
+
+arg min 
+
+> (θ,ω,ψ )∈F ε
+
+h
+
+βcond Jcond (θ, ψ )
+
+i
+
+.
+
+Assume these supported families are nonempty for the weight ranges considered. (If minimizers are not attained, the same comparison may be stated at the level of infimizing sequences.) 
+
+Theorem 8 (Task-constrained Pareto upper-bound dominance of dual regularization) . Under the standing assumptions and encoder-induced Markov convention in Appendix A.1, together with the nuisance assumption in Appendix A.5 (Proposition 1) and the structural refinement regime in Appendix A.7 (Proposition 3), the following hold. 1. For every (θ, ω, ψ ) ∈ F ε,
+
+Hλ(θ) ≤ Uλ(θ, ψ ). (12) 
+
+2. Define the optimal provable upper bounds on residual information 
+
+Φ⋆
+
+> dual
+
+(ε; λ) = inf 
+
+> (θ,ω,ψ )∈A dual
+> ε
+
+Uλ(θ, ψ ),
+
+Φ⋆
+
+> std
+
+(ε; λ) = inf 
+
+> (θ,ω,ψ )∈A std
+> ε
+
+Uλ(θ, ψ ), Φ⋆
+
+> cond
+
+(ε; λ) = inf 
+
+> (θ,ω,ψ )∈A cond
+> ε
+
+Uλ(θ, ψ ).
+
+Then 
+
+Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> std
+
+(ε; λ), Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> cond
+
+(ε; λ). (13) 
+
+Proof. We prove the two claims in order. 23 Step 1: visible nuisance dependence is upper-bounded by the conditional KL term. By Propo-sition 1, under the conditional Markov assumption 
+
+N → X → Z given C, 
+
+we have 
+
+Iθ (Z; N | C) ≤ Iθ (Z; X | C). (14) By Theorem 5, 
+
+Iθ (Z; X | C) ≤ Ep(x,c )KL  qθ (z | x) ∥ rψ (z | c) = Jcond (θ, ψ ). (15) Combining (14) and (15), we obtain 
+
+Hvis (θ) = Iθ (Z; N | C) ≤ Jcond (θ, ψ ). (16) 
+
+Step 2: conditional-invisible condition-level encoding is upper-bounded by the standard KL term. Under the structural regime of Appendix A.7 (Proposition 3), the condition 
+
+H(B | C) = 0 
+
+specifies that B is a condition-level component determined by C. This condition explains why such a component can be invisible to the conditional axis I(Z; X | C), but it is not needed to establish the data-processing step. By the encoder-induced Markov convention in Appendix A.1, the stochastic encoder qθ (z | x) gives 
+
+B → X → Z. 
+
+Therefore, by the data processing inequality, 
+
+Iθ (Z; B) ≤ Iθ (Z; X). (17) By Lemma 1, 
+
+Iθ (Z; X) ≤ Ep(x)KL  qθ (z | x) ∥ r0(z) = Jstd (θ). (18) Combining (17) and (18), we obtain 
+
+Hinv (θ) = Iθ (Z; B) ≤ Jstd (θ). (19) 
+
+Step 3: weighted combination of the two axes. Multiply (16) by λvis > 0 and (19) by λinv > 0,then add the two inequalities: 
+
+λvis Hvis (θ) + λinv Hinv (θ) ≤ λvis Jcond (θ, ψ ) + λinv Jstd (θ)= Uλ(θ, ψ ). (20) By the definition of Hλ(θ), this is exactly 
+
+Hλ(θ) ≤ Uλ(θ, ψ ),
+
+which proves (12). 
+
+Step 4: family inclusions. By construction, the std-only family is obtained from the dual scalariza-tion by setting βcond = 0 , and the cond-only family is obtained by setting βstd = 0 . Therefore, 
+
+Astd  
+
+> ε
+
+⊆ A dual  
+
+> ε
+
+, Acond  
+
+> ε
+
+⊆ A dual  
+
+> ε
+
+. (21) 
+
+Step 5: infimum comparison over nested families. A basic property of the infimum is the following: if A ⊆ D and f is any extended-real-valued function, then 
+
+inf  
+
+> x∈D
+
+f (x) ≤ inf  
+
+> x∈A
+
+f (x). (22) Apply (22) first with 
+
+D = Adual  
+
+> ε
+
+, A = Astd  
+
+> ε
+
+, f (θ, ω, ψ ) = Uλ(θ, ψ ).
+
+Using (21), we obtain 
+
+inf 
+
+> (θ,ω,ψ )∈A dual
+> ε
+
+Uλ(θ, ψ ) ≤ inf 
+
+> (θ,ω,ψ )∈A std
+> ε
+
+Uλ(θ, ψ ),
+
+24 that is, 
+
+Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> std
+
+(ε; λ).
+
+Apply (22) again with 
+
+D = Adual  
+
+> ε
+
+, A = Acond  
+
+> ε
+
+, f (θ, ω, ψ ) = Uλ(θ, ψ ).
+
+Using (21), we obtain 
+
+inf 
+
+> (θ,ω,ψ )∈A dual
+> ε
+
+Uλ(θ, ψ ) ≤ inf 
+
+> (θ,ω,ψ )∈A cond
+> ε
+
+Uλ(θ, ψ ),
+
+that is, 
+
+Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> cond
+
+(ε; λ).
+
+Combining the two displayed inequalities proves (13). 
+
+Tightness and equality cases. The pointwise bound in Theorem 8 is tight only when both the data-processing gaps and the variational prior-mismatch gaps vanish. For the visible nuisance axis, the proof uses the chain 
+
+Iθ (Z; N | C) ≤ Iθ (Z; X | C) ≤ Jcond (θ, ψ ).
+
+Under the conditional Markov chain N → X → Z given C, the first inequality is tight when 
+
+Iθ (Z; X | N, C ) = 0 .
+
+The second inequality is tight when the conditional prior is exactly calibrated to the condition-wise aggregated posterior, 
+
+rψ (z | c) = ¯ qθ (z | c) for p(c)-a.e. c. 
+
+For the conditional-invisible axis controlled through global capacity, the proof uses 
+
+Iθ (Z; B) ≤ Iθ (Z; X) ≤ Jstd (θ).
+
+Under the encoder-induced Markov chain B → X → Z from Appendix A.1, the first inequality is tight when 
+
+Iθ (Z; X | B) = 0 .
+
+The second inequality is tight when the global prior is exactly calibrated to the aggregated posterior, 
+
+r0(z) = ¯ qθ (z).
+
+Therefore, equality in the weighted pointwise bound 
+
+Hλ(θ) = Uλ(θ, ψ )
+
+requires the corresponding tightness conditions on both axes, since λvis , λ inv > 0. The value comparison 
+
+Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> std
+
+(ε; λ), Φ⋆
+
+> dual
+
+(ε; λ) ≤ Φ⋆
+
+> cond
+
+(ε; λ)
+
+is instead a family-inclusion statement. Equality there occurs only when enlarging the supported family from the single-term subfamily to the dual family does not reduce the infimum of Uλ.
+
+Interpretation. The theorem should be read as a statement about provable upper bounds on residual information , not as a universal claim about realized residual information or realized task performance. Its content is the following: under a task-adequacy constraint, the dual objective provides provable upper bounds of two residual-information axes: visible nuisance dependence and conditional-invisible condition-level encoding, whereas the two single-term families are only degenerate subfamilies of that Pareto control class. 
+
+Connection to the dual objective. The theorem sharpens the earlier synthesis logic in three ways. First, it makes explicit the two residual-information axes behind the dual objective: visible nuisance dependence and conditional-invisible condition-level encoding. Second, it turns the earlier qualitative complementarity argument into the pointwise upper-bound statement Hλ(θ) ≤ Uλ(θ, ψ ). Third, it formalizes the family-level advantage of dual regularization through the value comparison (13), which is a constrained Pareto statement under task adequacy. 25 A.11 Loss-agnostic interpretation of the dual regularizer 
+
+This subsection clarifies the sense in which the proposed dual-bottleneck objective admits a loss-agnostic information-theoretic interpretation. A central observation is that the two KL terms play consistent representational roles across supervised objectives: the standard KL regularizes global information capacity, whereas the conditional KL regularizes within-condition information relative to the label-induced partition. 
+
+Proposition 6 (Regularizer-level universality) . Consider any supervised objective with target Y , and suppose: (i) there exists a finite label-induced partition C = π(Y ); (ii) the encoder/prior families are such that the displayed KL terms are well-defined; (iii) the aggregated posteriors ¯qθ (z) and ¯qθ (z | c)
+
+exist; (iv) the task loss ℓtask (gω (z), y ) is well-defined. Then the dual-bottleneck objective is a well-defined regularized supervised objective. Moreover, the information-theoretic roles of the two KL regularizers are independent of the specific choice of ℓtask :the standard KL controls global information bandwidth up to prior mismatch, while the conditional KL controls within-condition information up to condition-wise prior mismatch. Proof. Well-definedness follows directly from assumptions (i)–(iv): a finite label-induced partition 
+
+C = π(Y ), well-defined KL terms, existing aggregated posteriors, and a well-defined task loss together ensures that each term in the dual-bottleneck objective is properly defined. For the regularizer-level loss-agnostic interpretation, apply the decomposition identities for the two KL terms. By Lemma 1, the unconditional KL controls Iθ (Z; X) up to a global prior mismatch; by Theorem 5, the conditional KL controls Iθ (Z; X | C) up to a condition-wise prior mismatch. These identities depend on the encoder and prior families rather than on the specific form of ℓtask .Therefore, the representational roles of the two KL regularizers are independent of the supervised loss choice at the regularizer level. 
+
+Remark on loss dependence. The information-theoretic interpretation above concerns the reg-ularizing action imposed on the encoded representation. The eventual task-level behaviour of a learned model is jointly determined by the regularizer, the predictive loss, the model family, and the optimization setting. In particular, a well-defined supervised loss can still be task-agnostic; for example, 
+
+ℓtask (g(z), y ) ≡ 0,
+
+or more generally ℓtask (g(z), y ) = h(g(z)) , which is independent of y. Such losses satisfy well-definedness but provide no task-discriminative learning signal. Hence, this proposition is a regularizer-level universality statement, not a task-performance invariance guarantee. 
+
+Interpretation. These results characterize the proposed method as a loss-agnostic representation regularizer in the following precise sense: the two KL terms preserve stable information-theoretic roles across supervised objectives, thereby defining a structured mutual-information-based mechanism for constraining encoded features. This interpretation is centered on how the regularizer shapes the learned representation through complementary control of global capacity and within-condition variability. 
+
+A.12 Scope and non-claims 
+
+For clarity, we explicitly state what the present theory does and does not establish. 
+
+Established in this note. 
+
+• Exact decomposition of I(Z; X) under a label-induced partition. • Existence-level insufficiency of a single global bottleneck for the stated design goal. • Exact decomposition of the conditional KL term into within-condition mutual information and prior mismatch. • A symmetric structured conditional prior with explicit center separation. • An objective-level justification of the dual-bottleneck training criterion. 26 Not established in this note. 
+
+• Universal superiority of the conditional KL term over all possible condition-aware regulariz-ers. • A direct task-specific performance analysis under particular loss families, model classes, and optimization regimes. • Optimization consistency or estimator optimality in minibatch finite-sample training. • A task-specific comparative analysis of alternative prior geometries and initialization schemes. Stating these non-claims explicitly improves the credibility of the method by aligning the theorem strength with the actual proof strength. 
+
+A.13 Family-restricted ∆opt -optimality under a weighted target criterion 
+
+We now restate the comparison result in a form that makes its scope precise. The result below is a family-restricted ∆opt -optimality statement on a nonempty local feasible family. It is not a global optimality theorem over all encoders. 
+
+Standing assumptions. Throughout this subsection, we inherit the standing regularity assumptions from Appendix A.1: all mutual informations and KL divergences below are assumed to be well-defined and finite, and the aggregated posteriors ¯q(z) and ¯q(z | c) are assumed to exist. 
+
+Feasible family and target criterion. Fix a semantic floor κ ≥ 0, and define 
+
+Qκ := {q : Iq (Z; C) ≥ κ} .
+
+Let 
+
+∅̸ = Fκ ⊆ Q κ
+
+be a nonempty local feasible family. For q ∈ F κ, define 
+
+b(q) := Iq (Z; B), u(q) := Iq (Z; N | C),
+
+and for weights satisfying 
+
+0 ≤ λB ≤ λU ,
+
+define 
+
+J λB ,λ U 
+
+> κ
+
+(q) := λB b(q) + λU u(q).
+
+Local assumptions. We assume the following. 1. Refined decomposition. 
+
+X = T (S, N, B ), Y = f (S), C = π(Y ) = π(y⋆(X)) .
+
+By the encoder-induced Markov convention in Appendix A.1, the decomposition 
+
+Iq (Z; X) = Iq (Z; C) + Iq (Z; X | C) applies. 2. Condition-level component. The variable B denotes the conditional-invisible condition-level component from Appendix A.7. We assume B is C-measurable, i.e., 
+
+H(B | C) = 0 .
+
+Thus b(q) = Iq (Z; B) measures condition-level encoding rather than within-condition residual information. 3. Interpretive nuisance visibility only. Conditioned on C, the variables satisfy 
+
+N → X → Z. 
+
+This assumption is used only to justify the interpretation of u(q) = Iq (Z; N | C) as a within-condition nuisance-retention quantity. It is not used in the algebraic proof below. 27 4. Bounded identification error. There exist functions δB (q) and δU (q) such that for every 
+
+q ∈ F κ,
+
+Iq (Z; C) = κ + b(q) + δB (q), Iq (Z; X | C) = u(q) + δU (q),
+
+with 
+
+|δB (q)| ≤ ηB , |δU (q)| ≤ ηU ∀q ∈ F κ.
+
+5. Bounded mismatch oscillation. Define 
+
+m0(q) := KL  ¯q(z) ∥ r0(z), mc(q) := Ep(c)KL  ¯q(z | c) ∥ rψ (z | c),
+
+and 
+
+M (q) := λB m0(q) + ( λU − λB ) mc(q).
+
+Assume 
+
+osc Fκ (M ) := sup 
+
+> q∈F κ
+
+M (q) − inf 
+
+> q∈F κ
+
+M (q) ≤ ξ
+
+for some ξ ≥ 0.6. Existence of constrained minimizers. Assume that Fκ is compact under the chosen topology and that the objectives defined below are lower semicontinuous on Fκ.
+
+Dual and scalar regularizers. Set 
+
+βstd = λB , βcond = λU − λB .
+
+Define 
+
+Rdual (q) := βstd Ep(x)KL( q(z | x) ∥ r0(z)) + βcond Ep(x,c )KL( q(z | x) ∥ rψ (z | c)) ,
+
+and 
+
+Rstd (q) := Ep(x)KL( q(z | x) ∥ r0(z)) .
+
+Let 
+
+qdual ∈ arg min 
+
+> q∈F κ
+
+Rdual (q), qstd ∈ arg min 
+
+> q∈F κ
+
+Rstd (q).
+
+Proposition 7 (Family-restricted ∆opt -optimality) . Define 
+
+∆opt := 2( λB ηB + λU ηU ) + ξ. 
+
+Then, for every q ∈ F κ,
+
+J λB ,λ U 
+
+> κ
+
+(qdual ) ≤ J λB ,λ U 
+
+> κ
+
+(q) + ∆ opt .
+
+In particular, 
+
+J λB ,λ U 
+
+> κ
+
+(qdual ) ≤ J λB ,λ U 
+
+> κ
+
+(qstd ) + ∆ opt .
+
+Thus qdual is a ∆opt -optimal solution of the weighted target criterion on the local feasible family Fκ.Proof. By the exact KL decompositions, 
+
+Ep(x)KL( q(z | x) ∥ r0(z)) = Iq (Z; X) + m0(q),
+
+and 
+
+Ep(x,c )KL( q(z | x) ∥ rψ (z | c)) = Iq (Z; X | C) + mc(q).
+
+Hence 
+
+Rdual (q) = λB
+
+ Iq (Z; X) + m0(q) + ( λU − λB ) Iq (Z; X | C) + mc(q).
+
+Using 
+
+Iq (Z; X) = Iq (Z; C) + Iq (Z; X | C),
+
+we obtain 
+
+Rdual (q) = λB Iq (Z; C) + λU Iq (Z; X | C) + M (q).
+
+Substituting 
+
+Iq (Z; C) = κ + b(q) + δB (q), Iq (Z; X | C) = u(q) + δU (q),
+
+gives 
+
+Rdual (q) = λB κ + J λB ,λ U 
+
+> κ
+
+(q) + E(q),
+
+28 where 
+
+E(q) := λB δB (q) + λU δU (q) + M (q).
+
+Therefore 
+
+osc Fκ (E) ≤ 2( λB ηB + λU ηU ) + osc Fκ (M ) ≤ 2( λB ηB + λU ηU ) + ξ = ∆ opt .
+
+Since qdual minimizes Rdual on Fκ, for every q ∈ F κ,
+
+λB κ + J λB ,λ U 
+
+> κ
+
+(qdual ) + E(qdual ) ≤ λB κ + J λB ,λ U 
+
+> κ
+
+(q) + E(q).
+
+Canceling λB κ yields 
+
+J λB ,λ U 
+
+> κ
+
+(qdual ) ≤ J λB ,λ U 
+
+> κ
+
+(q) + E(q) − E(qdual ).
+
+Finally, 
+
+E(q) − E(qdual ) ≤ osc Fκ (E) ≤ ∆opt ,
+
+which proves 
+
+J λB ,λ U 
+
+> κ
+
+(qdual ) ≤ J λB ,λ U 
+
+> κ
+
+(q) + ∆ opt .
+
+Taking q = qstd gives the second inequality. 
+
+Corollary 2 (Argmin invariance under constant mismatch remainder) . Assume in addition that 
+
+ηB = 0 , ηU = 0 ,
+
+and that there exists a constant M∗ ∈ R such that 
+
+M (q) ≡ M∗ ∀q ∈ F κ.
+
+Then 
+
+Rdual (q) = λB κ + J λB ,λ U 
+
+> κ
+
+(q) + M∗ ∀q ∈ F κ,
+
+and therefore 
+
+arg min 
+
+> q∈F κ
+
+Rdual (q) = arg min 
+
+> q∈F κ
+
+J λB ,λ U 
+
+> κ
+
+(q).
+
+Proof. Under ηB = ηU = 0 , we have 
+
+Iq (Z; C) = κ + b(q), Iq (Z; X | C) = u(q)
+
+for all q ∈ F κ. The identity then follows from the proof of Proposition 7. Since λB κ + M∗ is constant on Fκ, adding it does not change the minimizer set. 
+
+Corollary 3 (Exact reduction under zero mismatch) . Assume in addition that 
+
+ηB = 0 , ηU = 0 ,
+
+and 
+
+m0(q) = 0 , mc(q) = 0 ∀q ∈ F κ.
+
+Then 
+
+Rdual (q) = λB κ + J λB ,λ U 
+
+> κ
+
+(q) ∀q ∈ F κ,
+
+and consequently 
+
+arg min 
+
+> q∈F κ
+
+Rdual (q) = arg min 
+
+> q∈F κ
+
+J λB ,λ U 
+
+> κ
+
+(q).
+
+Proof. Under the stated assumptions, M (q) ≡ 0 on Fκ, so this is the special case M∗ = 0 of Corollary 2. 
+
+Interpretation. The main proposition is a local feasible-family result, not a global optimality theorem. Its force is the following: on a nonempty local family where the B/N identification error and prior-mismatch variation are controlled, the representation selected by the dual regularizer is ∆opt -optimal for the weighted target criterion. When the identification error vanishes, and the mismatch remainder is constant, one obtains argmin invariance; when the mismatch remainder vanishes pointwise, one obtains the exact reduction 
+
+Rdual = λB κ + J λB ,λ U 
+
+> κ
+
+.
+
+29 B Full experimental results 
+
+This appendix is organized into three parts: experimental results, experimental setup, and visualization-based interpretation. 
+
+B.1 Experimental results 
+
+Exact protocol details for all tables in this subsection are centralized in Appendix B.2. 
+
+B.1.1 BloodMNIST. 
+
+Tab. 3 reports the full classification results under standard, 1%-training-data, and 4-shot regimes. Exact protocol details for this table are provided in Appendix B.2.1. Both single-KL variants improve over the N O REG baseline in all three settings, while D UAL KL consistently gives the best BAcc and Macro-F1. The improvement is already visible in the standard regime and becomes substantially larger in the low-data settings, especially for 1% training data, which is consistent with the view that limited supervision makes the model more vulnerable to unstable residual cues and increases the value of representation-level regularization. Table 3: BloodMNIST classification results reported as mean ± standard deviation. 
+
+Setting Metric NO REG COND KL STD KL DUAL KL Standard BAcc 92.90 ± 0.34 94.36 ± 0.53 94.35 ± 0.17 94.52 ± 0.22 
+
+Macro-F1 93.14 ± 0.26 94.51 ± 0.50 94.53 ± 0.18 94.72 ± 0.19 
+
+1% Training Data BAcc 63.49 ± 1.07 71.84 ± 1.78 68.11 ± 2.65 72.22 ± 1.38 
+
+Macro-F1 61.43 ± 0.74 69.97 ± 1.83 66.25 ± 3.01 69.98 ± 1.85 
+
+4-shot BAcc 45.31 ± 1.77 46.50 ± 3.09 47.10 ± 2.97 48.72 ± 2.59 
+
+Macro-F1 43.19 ± 1.97 44.47 ± 2.90 45.02 ± 2.44 46.57 ± 2.58 
+
+B.1.2 External BloodMNIST baselines. 
+
+To test whether the BloodMNIST gains can be explained by generic regularization or empirical representation geometry, we further compare against strong weight decay, head dropout, label smoothing, and Center Loss in Tab. 4. Strong weight decay and dropout represent standard capacity-control or stochastic regularization strategies [19, 20], Label Smoothing is a standard target-smoothing regularizer [33], while Center Loss represents an empirical class-compactness objective [13]. These baselines are intentionally chosen to preserve the same backbone and task pipeline, avoiding protocol changes that would confound the comparison. Although Center Loss is the strongest external baseline, DUAL KL consistently outperforms it across all three regimes, with the largest margin under 1% training data. Table 4: External baseline comparison on BloodMNIST. Results are reported as mean ± standard deviation.                                                                                                    
+
+> Setting Metric Strong WD Head Dropout Label Smoothing Center Loss DUAL KL Standard BAcc 93.02 ±0.35 93.08 ±0.63 93.05 ±0.35 93.81 ±0.46 94.70 ±0.30
+> Macro-F1 93.11 ±0.39 93.23 ±0.64 93.33 ±0.32 93.95 ±0.43 94.88 ±0.23
+> 1% Training Data BAcc 62.21 ±1.26 63.32 ±1.45 65.05 ±0.97 68.85 ±1.56 71.29 ±1.57
+> Macro-F1 60.40 ±1.53 61.79 ±1.78 62.85 ±1.07 66.99 ±1.23 68.98 ±1.36
+> 4-shot BAcc 43.88 ±1.36 45.22 ±2.74 45.74 ±3.46 46.80 ±1.95 48.01 ±2.95
+> Macro-F1 42.08 ±1.10 42.51 ±2.60 43.75 ±3.22 44.72 ±2.14 45.91 ±2.98
+
+B.1.3 CIFAR-100 low-data natural-image check. 
+
+To test whether the low-data trend is specific to medical images, we additionally evaluate CIFAR-100 [26]. Full public natural-image benchmarks can provide broader class coverage, which may reduce the relative effect of idiosyncratic residual cues; therefore, we focus on 4% dataset and 4-shot settings as a low-data natural-image check. Tab. 5 shows that all KL-regularized variants improve over N O REG , and D UAL KL achieves the best mean BAcc and Macro-F1 in both settings. 30 Table 5: CIFAR-100 low-data classification results. We report mean ± standard deviation over seeds.                                                         
+
+> Setting Metric NOREG COND KL STD KL DUAL KL 4% dataset BAcc 56.01 ±0.54 57.79 ±0.31 57.95 ±0.36 58.04 ±0.19
+> Macro-F1 55.87 ±0.52 57.43 ±0.32 57.62 ±0.38 57.76 ±0.19
+> 4-shot BAcc 28.86 ±0.92 30.04 ±0.90 30.12 ±1.02 30.18 ±1.27
+> Macro-F1 28.79 ±0.80 29.45 ±0.85 29.52 ±0.96 29.63 ±1.24
+
+B.1.4 CIFAR-100 external baselines. 
+
+We further compare D UAL KL with generic regularization and empirical geometry baselines under the same CIFAR-100 low-data protocols. Tab. 6 shows that D UAL KL gives the best mean BAcc in both settings and remains comparable to the strongest external baseline on Macro-F1. Table 6: External baseline comparison on CIFAR-100 low-data classification. Results are reported as mean ± standard deviation over evaluated seeds.                                                                     
+
+> Setting Metric Strong WD Head Dropout Label Smoothing Center Loss DUAL KL 4% dataset BAcc 55.54 ±0.45 55.50 ±0.27 57.14 ±0.12 57.98 ±0.37 58.14 ±0.14
+> Macro-F1 55.44 ±0.51 55.35 ±0.25 56.73 ±0.19 57.80 ±0.35 57.86 ±0.17
+> 4-shot BAcc 28.94 ±1.03 29.11 ±1.07 29.62 ±1.47 30.50 ±1.19 30.51 ±1.37
+> Macro-F1 28.81 ±0.89 29.02 ±1.01 28.91 ±1.46 29.96 ±1.13 29.94 ±1.35
+
+B.1.5 BloodMNIST prior and τ ablations. 
+
+Together with the 1% ablation shown in the main text (Sec. 6, Tab. 2), Tabs. 7 and 8 report additional BloodMNIST ablations that isolate the practical role of the conditional-prior instantiation and the τ
+
+parameterization within the D UAL KL family. Across the reported settings, the default configuration with a simplex prior and shared fixed τ remains the strongest overall among the tested variants. These results support the default simplex-plus-shared-τ design as a stable and interpretable practical instantiation, motivating its use as the default configuration in our experiments. Exact protocol details are provided in Appendix B.2.4. Table 7: 4-shot BloodMNIST ablation results reported as mean ± standard deviation.                               
+
+> Configuration BAcc Macro-F1 DUAL KL + simplex + shared fixed τ48.66 ±1.99 46.59 ±2.25
+> DUAL KL + random + shared fixed τ46.91 ±2.40 44.51 ±2.82 DUAL KL + empirical + shared fixed τ46.97 ±2.83 45.19 ±0.70 DUAL KL + simplex + classwise learned τ46.43 ±1.39 44.55 ±0.38
+
+Table 8: Full-training BloodMNIST ablation results reported as mean ± standard deviation.                               
+
+> Configuration BAcc Macro-F1 DUAL KL + simplex + shared fixed τ94.74 ±0.28 94.86 ±0.12
+> DUAL KL + random + shared fixed τ94.56 ±0.24 94.63 ±0.11 DUAL KL + empirical + shared fixed τ94.52 ±0.16 94.62 ±0.16 DUAL KL + simplex + classwise learned τ94.68 ±0.35 94.79 ±0.32
+
+B.1.6 Retinal vessel segmentation. 
+
+Tab. 9 shows a consistent pattern across DRIVE, STARE, and CHASEDB1. Exact protocol details for this table are provided in Appendix B.2.5. D UAL KL achieves the best IoU and Dice on all three datasets, while both single-KL variants also improve over the unregularized baseline. Together with the larger low-data classification gains, these dense-prediction results show that the proposed regularizer provides stable improvements across task types. 
+
+B.1.7 GLAS. 
+
+Tab. 10 extends the segmentation evaluation to both full-data and few-shot regimes. Exact protocol details for this table are provided in Appendix B.2.6. DUAL KL consistently outperforms the 31 Table 9: Repeated-seed retinal vessel segmentation results reported as mean ± standard deviation.                                  
+
+> Dataset Metric NOREG STD KL COND KL DUAL KL DRIVE IoU 0.5558 ±0.0061 0.5823 ±0.0037 0.5820 ±0.0044 0.5826 ±0.0053
+> Dice 0.7143 ±0.0051 0.7359 ±0.0030 0.7356 ±0.0035 0.7362 ±0.0042
+> STARE IoU 0.5049 ±0.0311 0.5302 ±0.0121 0.5312 ±0.0156 0.5318 ±0.0145
+> Dice 0.6701 ±0.0278 0.6926 ±0.0104 0.6934 ±0.0134 0.6939 ±0.0125
+> CHASEDB1 IoU 0.5525 ±0.0066 0.5724 ±0.0043 0.5720 ±0.0034 0.5739 ±0.0044
+> Dice 0.7116 ±0.0054 0.7280 ±0.0035 0.7276 ±0.0028 0.7291 ±0.0036
+
+unregularized baseline and S TD KL in all reported settings, with the clearest gain appearing in the 4-shot regime. This mirrors the BloodMNIST trend and provides additional evidence for the same low-supervision advantage beyond classification, suggesting that the proposed regularizer is particularly beneficial when supervision is limited. Table 10: GLAS segmentation results in full-data and few-shot regimes, reported as mean ± standard deviation.                                  
+
+> Setting Metric NOREG STD KL COND KL DUAL KL Full IoU 0.8131 ±0.0008 0.8149 ±0.0040 0.8118 ±0.0051 0.8158 ±0.0017
+> Dice 0.8957 ±0.0005 0.8970 ±0.0032 0.8949 ±0.0031 0.8976 ±0.0011
+> 8-shot IoU 0.6009 ±0.0145 0.6039 ±0.0141 0.5439 ±0.0471 0.6106 ±0.0111
+> Dice 0.7489 ±0.0116 0.7506 ±0.0117 0.7015 ±0.0394 0.7562 ±0.0087
+> 4-shot IoU 0.5368 ±0.0248 0.5460 ±0.0221 0.5440 ±0.0202 0.5478 ±0.0220
+> Dice 0.6958 ±0.0218 0.7036 ±0.0188 0.7019 ±0.0175 0.7049 ±0.0190
+
+B.2 Experimental Setup 
+
+All experiments are implemented in PyTorch [34] using one GeForce RTX 5090 GPU, 32GB RAM, and an AMD Ryzen 9 9950X3D CPU. All experiments are trained with automatic mixed precision (AMP) using PyTorch autocast and gradient scaling [35]. The approximate training speed is 0.3– 1.0 seconds per epoch for classification task and 0.2–0.7 seconds per epoch for the segmentation benchmarks, depending on the dataset and data regime. The total training compute for the reported experiments is approximately 50 GPU-hours, excluding failed or preliminary debugging runs. Within each dataset and experimental regime, we keep the data split, backbone family, optimizer, training schedule, and evaluation metrics fixed unless explicitly stated otherwise. For the objective-level comparisons in Tabs. 3, 5, 9, and 10, the compared variants differ only in the enabled KL controls and their coefficients. Unless otherwise stated, classification experiments use the identity partition C = Y ,while segmentation experiments use the 3 × 3 foreground-count condition Cu = P  
+
+> v∈N (u)
+
+Yv with 
+
+K = 10 . For auxiliary ablations and external baselines, the same base protocol is used while varying only the factor named in the corresponding table. External baseline strengths are validation-selected and fixed; for segmentation, KL coefficients are selected on training-only internal splits before evaluation on the fixed validation splits below. We use 10 seeds for the main objective-level ablations, 3 seeds for prior/ τ -parameterization ablations, and 5 seeds for external-baseline comparisons; within each table, all methods share the same seed count, split protocol, and fixed hyperparameters. 
+
+B.2.1 BloodMNIST classification 
+
+For the BloodMNIST classification experiments in Tab. 3, we use the same ResNet-based classification architecture [36] for all compared methods, with input resolution 28 × 28 and a batch size of 1024. All models are optimized using Adam [37] with an initial learning rate of 10 −4, weight decay 10 −4,and a cosine annealing schedule [38] with a minimum learning rate of 0. The base classification loss is CrossEntropyLoss, and performance is evaluated using balanced accuracy (BAcc) and Macro-F1. In the standard regime, all methods use the full BloodMNIST split, with 11,959 training images, 1,712 validation images, and 3,421 test images. We train all methods for 100 epochs, and compare NO REG (0 , 0) , C OND KL (0 , 0.003) , S TD KL (0 .003 , 0) , and D UAL KL (0 .003 , 0.003) .In the 1%-training-data regime, the validation and test sets remain unchanged, while the training set is class-balanced subsampled from the original training split to 20 samples per class, resulting in 32 160 training images in total. All methods use the same subsampling indices. Under this protocol, we train all methods for 1600 epochs, and compare N O REG (0 , 0) , C OND KL (0 , 0.0027) , S TD KL 
+
+(0 .003 , 0) , and D UAL KL (0 .0003 , 0.0027) .In the 4-shot regime, the validation and test sets again remain unchanged, while the training set is reduced to 4 samples per class, resulting in 32 training images in total. All methods share the same few-shot sampling result. Under this protocol, we train all methods for 1600 epochs, and compare N O
+
+REG (0 , 0) , C OND KL (0 , 0.000667) , S TD KL (0 .001333 , 0) , and D UAL KL (0 .001333 , 0.000667) .
+
+B.2.2 CIFAR-100 low-data classification 
+
+For the CIFAR-100 [26] results in Tab. 5, we use fine labels as the supervised targets. All methods use the same VIB-ResNet50 classifier with latent dimension 2048, 32 × 32 inputs, optimizer, data split protocol, and metrics. Training uses random crop with padding 4 and horizontal flip; validation and test use no random augmentation. We optimize with Adam, initial learning rate 10 −4, weight decay 10 −4, cosine annealing, CrossEntropyLoss, batch size 256, and 60 epochs. Performance is evaluated using balanced accuracy (BAcc) and Macro-F1 on the official CIFAR-100 test split. The 4% dataset setting uses 20 samples per class, resulting in 2,000 training images; the 4-shot setting uses 4 samples per class, resulting in 400 training images. We compare N O REG (0 , 0) , C OND KL 
+
+(0 , 0.0001) , S TD KL (0 .0001 , 0) , and D UAL KL (0 .0001 , 0.0001) .For CIFAR-100 external baselines, we use the same data split, VIB-ResNet50 backbone, input resolution, batch size, optimizer, training schedule, augmentation, and evaluation metrics as the corresponding CIFAR-100 objective-level runs. For these runs, the KL coefficients are set to zero and only one external regularization mechanism is enabled at a time. Strong WD increases the weight-decay coefficient, Head Dropout inserts dropout at the representation head, Label Smoothing uses a smoothed cross-entropy target, and Center Loss adds a class-center compactness penalty on the latent mean. 
+
+B.2.3 External BloodMNIST baselines. 
+
+The external baselines in Tab. 4 use the same BloodMNIST splits, ResNet-based backbone, input resolution, batch size, optimizer, training schedules, and evaluation metrics as Tab. 3. For these runs, the KL coefficients are set to zero and only one external regularization mechanism is enabled at a time. Strong WD [19] increases the weight-decay coefficient, Head Dropout [20] inserts dropout only at the representation head, Label Smoothing [33] uses a smoothed cross-entropy target, and Center Loss [13] adds a class-center compactness penalty on the latent representation. We focus on these matched controls because they test generic regularization and empirical feature-geometry explanations without changing the data modality, backbone family, supervision protocol, or requiring additional multi-view or coding-rate training pipelines. External-baseline strengths are selected once using the same validation protocol as the KL coefficients and then fixed before the 5-seed repeated evaluation. For BloodMNIST full/1% and CIFAR-100 20-shot/4-shot, we use Strong WD = 10 −3,Head Dropout = 0 .2, Label Smoothing = 0 .1, and Center Loss weight = 10 −3; for BloodMNIST 4-shot, we use 3 × 10 −4, 0.1, 0.05 , and 3 × 10 −4, respectively. 
+
+B.2.4 BloodMNIST prior and τ ablation setup 
+
+For the BloodMNIST prior and τ ablation experiments reported in Tab. 2 and Tabs. 7–8, we use a ResNet-based classification architecture with input resolution 28 ×28 and batch size 1024. All models are optimized using Adam with an initial learning rate of 10 −4, weight decay 10 −4, and a cosine annealing schedule with minimum learning rate 0. The base classification loss is CrossEntropyLoss, and performance is evaluated using balanced accuracy (BAcc) and Macro-F1. In all cases, we use the DUAL KL objective and only vary the conditional-prior instantiation or the τ parameterization. We compare the default setting, D UAL KL + simplex prior + shared fixed τ , against the alternative configurations reported in Tab. 2 and Tabs. 7–8. For the simplex variant, ρraw , Rraw , and b0 are learned, with ρ = softplus( ρraw ) and Q = qf( Rraw ), the Q-factor of a thin QR decomposition. For random and empirical variants, the conditional centers are initialized differently but are then optimized as unconstrained trainable parameters. Random centers are sampled from N (0 , 0.02 2I)
+
+using a fixed prior seed; empirical centers are initialized as class-wise mean encoder posterior 33 means on the effective training split. All shared-fixed-τ variants use τ = 1 without learning τ ; the classwise-τ variant learns one positive scalar variance per class. In the 1% training data regime, the training split is class-balanced subsampled to 20 samples per class, resulting in 160 training images in total, while the validation and test sets remain unchanged. All compared variants use the same subsampling indices. Under this protocol, all models are trained for 1600 epochs using (βstd , β cond ) = (0 .0003 , 0.0027) .In the 4-shot regime, the training split is class-balanced subsampled to 4 samples per class, resulting in 32 training images in total, while the validation and test sets remain unchanged. All compared variants use the same subsampling indices. Under this protocol, all models are trained for 1600 epochs using (βstd , β cond ) = (0 .001333 , 0.000667) .All ablation results are reported as mean ± standard deviation over the same set of repeated runs used to summarize the corresponding low-data ablation tables. 
+
+B.2.5 Retinal vessel segmentation 
+
+For the retinal vessel segmentation experiments in Tab. 9, we use the same UNet-based architec-ture [39] for all compared methods, with input resolution 224 × 224 and a batch size of 4. Images and masks are directly resized to 224 × 224 , without patch extraction or sliding-window evaluation. The same preprocessing is used for all compared methods. All models are optimized using Adam [37] with an initial learning rate of 10 −4, weight decay 10 −4, and a cosine annealing schedule [38] with a minimum learning rate of 10 −5, and are trained for 800 epochs. The base segmentation loss is BCEDiceLoss, defined as 
+
+Lseg = 0 .5 LBCE + LDice , (23) where LBCE = BCEWithLogitsLoss and LDice = DiceLoss . The BCE term provides pixel-wise supervision and the Dice term improves overlap-oriented optimization under class imbalance. We report validation IoU and Dice for all retinal vessel experiments. On DRIVE, all methods use the same fixed official split with 20 training images and 20 validation images. The compared variants are N O REG with (βstd , β cond ) = (0 , 0) , S TD KL with (0 .001 , 0) ,COND KL with (0 , 0.001) , and D UAL KL with (0 .0004 , 0.0006) .On STARE, all methods use the same split configuration with stare _mask _variant = ah and 
+
+val _ratio = 0 .4, which yields 12 training images and 8 validation images. Under this protocol, we compare N O REG (0 , 0) , S TD KL (0 .001 , 0) , C OND KL (0 , 0.001) , and D UAL KL (0 .0007 , 0.0005) .On CHASEDB1, all methods use the same split configuration with val _ratio = 0 .27 , resulting in 20 training images and 8 validation images. The compared variants are N O REG (0 , 0) , S TD KL 
+
+(0 .001 , 0) , C OND KL (0 , 0.001) , and D UAL KL (0 .0007 , 0.0003) .
+
+B.2.6 GLAS segmentation 
+
+For the GLAS segmentation experiments in Tab. 10, we use the same UNet-based architecture [39] for all compared methods, with input resolution 256 × 256 and a batch size of 4. Images and masks are directly resized to 256 × 256 , without patch extraction or sliding-window evaluation. All models are optimized using Adam [37] with an initial learning rate of 10 −4, weight decay 10 −4, and a cosine annealing schedule [38] with a minimum learning rate of 10 −5. The base segmentation loss is the same BCEDiceLoss used in the retinal vessel experiments (Eq. (23)), and performance is evaluated using IoU and Dice. In the full-data regime, all methods use the same fixed split rather than the official dataset split. Specifically, all 165 images are pooled together, and 45 images are used for validation, resulting in 120 training images and 45 validation images. All GLAS results are reported as validation-set IoU/Dice under this fixed train/validation protocol. We train all methods for 200 epochs. The compared variants are N O REG (0 , 0) , S TD KL (10 −4, 0) , C OND KL (0 , 10 −4), and D UAL KL (10 −4, 10 −4).In the few-shot regimes, we keep the same 120/45 base split fixed and subsample either 4 or 8 training images from the 120-image training pool, while leaving the 45-image validation set unchanged. Thus, 4-shot and 8-shot refer to the total number of training images rather than the number of images per class. We again train all methods for 200 epochs, and compare N O REG (0 , 0) , S TD KL (10 −4, 0) ,COND KL (0 , 10 −4), and D UAL KL (10 −4, 10 −4).34 B.3 Visualization-Based Interpretation B.3.1 Visualization Construction and Proxy Interpretation 
+
+This subsection clarifies how we construct the two visualization families used in this paper: PCA latent geometry and Latent-statistics geometry . In both families, the plotted features are extracted from the learned representation immediately before the task head gω , namely the latent variable Z used in Sec. 5.1 and Eq. (5), as indicated by the pipeline in Fig. 4. Concretely, under deterministic inference we use the encoder mean μ(x) as the latent feature, so the plots reflect the learned representation itself rather than extra sampling noise. We use a unified representation-unit view across tasks. For classification, one sample corresponds to one latent vector. For segmentation, one valid pixel corresponds to one latent vector at the pre-head feature stage. Therefore, the geometric point density follows the task information granularity (sample-level for classification, pixel-level for segmentation), and all reported geometric summaries are computed on the same representation units used for plotting. 
+
+PCA latent geometry. Let U be the set of representation units, with latent vectors {zu ∈ Rd}u∈U 
+
+and labels {yu}u∈U . For each dataset/regime, we fit one shared PCA projection jointly over the compared KL settings and then project each setting into this common 2D coordinate system. Thus, cross-panel differences reflect representation changes rather than projection mismatch. This PCA geometry view is the empirical counterpart of the KL-complementarity comparison illustrated conceptually in Fig. 3. The two PCA axes are treated as visualization coordinates only; we do not assign direct information-theoretic semantics to these axes. Given class index set K and Sk = {u ∈ U : yu = k}, define centroid 
+
+ck = 1
+
+|Sk|
+
+X
+
+> u∈Sk
+
+zu. (24) Let P = {(a, b ) : a, b ∈ K , a < b } be unordered class pairs. We report: 
+
+Within = 1
+
+|U| 
+
+X
+
+> u∈U
+
+∥zu − cyu ∥22, (25) 
+
+Between = 1
+
+|P| 
+
+X
+
+> (a,b )∈P
+
+∥ca − cb∥2, (26) 
+
+Ratio = Within max(Between 2, δ num ) , δnum > 0. (27) All three quantities are computed in the original latent space before PCA projection. Smaller Within 
+
+and Ratio , together with larger Between , indicate better compactness–separation geometry. For clarity and to avoid redundant notation, we do not introduce additional anchor-based terms in this subsection; all geometric summaries are directly computed from pre-head representations. Accordingly, whenever panel text/captions report Within , Between , or Ratio , they refer exactly to Eqs. (25)–(27). 
+
+Latent-statistics geometry. In this view, each plotted point is one latent coordinate (not one sample). For latent dimension d, let vd = {zu,d : u ∈ U} be its pooled values over representation units. We compute three groups of statistics. First, feature–label association: 
+
+FeatLabel d =
+
+s
+
+SS between (vd)SS total (vd) . (28) 
+
+SS total (vd) = X
+
+> u∈U
+
+(zu,d − ¯zd)2, ¯zd = 1
+
+|U| 
+
+X
+
+> u∈U
+
+zu,d , (29) 
+
+SS between (vd) = X
+
+> k∈K
+
+nk(¯ zk,d − ¯zd)2, ¯zk,d = 1
+
+nk
+
+X
+
+> u:yu=k
+
+zu,d . (30) 35 Second, class-separation strength using average pairwise symmetric KL divergence: 
+
+LabelSep d = 1
+
+|P| 
+
+X
+
+> (a,b )∈P
+
+12
+
+
+
+KL( pa,d ∥pb,d ) + KL( pb,d ∥pa,d )
+
+
+
+, (31) where pk,d is the class-conditional one-dimensional distribution of dimension d estimated from the corresponding histogram. Third, label-unexplained dispersion. Let std d, cv d, and mad d denote standard deviation, coefficient of variation, and median absolute deviation of vd, respectively. Define 
+
+DispersionScore d = 13
+
+
+
+ranknorm(std d) + ranknorm(cv d) + ranknorm(mad d)
+
+
+
+, (32) 
+
+InterSampleSep d = DispersionScore d ·  1 − FeatLabel 2
+
+> d
+
+. (33) We then place each latent dimension at 
+
+xd = InterSampleSep d, yd = LabelSep d,
+
+and color it by FeatLabel d. Here, ranknorm( ·) denotes rank normalization to [0 , 1] within the latent dimensions of the same model. For visualization summarization, we additionally define a heuristic score for each latent dimension: 
+
+sKEI d = LabelSep d · FeatLabel d
+
+(InterSampleSep d + 10 −6) ·  1 + σlabel  
+
+> d
+
++ CV sep 
+
+> d
+
+ , (34) where σlabel  
+
+> d
+
+denotes the split-wise standard deviation of the feature–label association score, and 
+
+CV sep  
+
+> d
+
+denotes the split-wise coefficient of variation of label separation. Concretely, over the evaluation splits s ∈ S used for visualization statistics, 
+
+σlabel  
+
+> d
+
+= Std s∈S 
+
+ FeatLabel (s)
+
+> d
+
+, CV sep  
+
+> d
+
+= Std s∈S 
+
+ LabelSep (s)
+
+> d
+
+
+
+Mean s∈S 
+
+ LabelSep (s)
+
+> d
+
+ + 10 −6 .
+
+This score is not an estimator of mutual information or downstream task performance. Rather, it serves as a heuristic proxy that rewards latent dimensions with strong label-separable structure and strong feature–label association, while penalizing label-unexplained dispersion and split instability. All sKEI values reported in panel text/captions follow Eq. (34). 
+
+Proxy semantics and relation to theory. The axis interpretation is proxy-based rather than estima-tor identity. The x-axis is not a direct estimator of I(Z; X | C), but it emphasizes label-unexplained dispersion and therefore serves as an empirical proxy for within-condition residual variation. This matches the informational role of I(Z; X | C) in the encoder-induced decomposition of Theorem 2 (Appendix A.2) and in the conditional-KL decomposition of Theorem 5 (Appendix A.4). Similarly, the y-axis is not a direct estimator of I(Z; C), but it quantifies condition-level separability and thus serves as an empirical proxy for condition-level structure under 
+
+I(Z; X) = I(Z; C) + I(Z; X | C).
+
+The color value is also non-redundant with the y-axis: FeatLabel measures association strength, while 
+
+LabelSep measures distributional separation. They are complementary summaries rather than dupli-cates. In this sense, the latent-statistics plot provides an empirical counterpart to the same two-role coordinate system presented schematically in Fig. 2. It also complements the KL-complementarity comparison in Fig. 3, while Fig. 4 only indicates where the plotted features are extracted in the pipeline, namely the pre-head latent representation Z. Under matched protocols (Appendix B.2), these visualization families therefore serve as diagnostic support for the decomposition-motivated reading in Sec. 5.1 and Sec. 4.2, and for the optional nuisance interpretation in Sec. 4.2 and Ap-pendix A.5 (Proposition 1). Correspondingly, Fig. 1 plays the same interpretive role on fixed low-level input statistics, whereas the latent-statistics geometry extends that logic to learned latent coordinates before the task head. 36 B.3.2 Visualization Results Across Four Regimes 
+
+Across all four regimes, the two visualization families show a consistent representation-level pattern. The PCA panels are sample-level for classification and pixel-level for segmentation, and indicate that the learned latent geometry becomes more compact within classes and more separable across classes, consistent with the latent-space complementarity direction in Fig. 3; this geometric trend is also consistent with the structured conditional-prior view in Sec. 5.2 and Appendix A.8 (Proposition 4). The latent-statistics panels are latent-dimension-level summaries and, under the proxy construction in Appendix B.3.1 (B3.1), show a redistribution toward lower label-unexplained dispersion, stronger label-separable structure, and stronger feature–label alignment, extending the fixed-statistics intuition in Fig. 1. Most importantly, the repeated D UAL KL-over-single-KL pattern is consistent with the complementarity claim in Sec. 4.2: global-only control is insufficient for isolating within-condition information (Appendix A.3, Theorems 3–4), while purely conditional control is insufficient for constraining total global capacity (Theorems 6–7). 
+
+BloodMNIST (standard): PCA latent geometry. As shown in Fig. 7, the PCA panels indicate a clear compactness–separation improvement under KL regularization. S TD KL and C OND KL already improve over N O REG , while D UAL KL gives the strongest overall geometric summary in this regime. -40 -20 0 20     
+
+> PC1
+> -20 -10 010 20 30 40
+> PC2
+> BACC 0.926 within 709.3 between 40.3 ratio 0.4369
+> local zoom dx=74.9 dy=74.9
+> NOREG STD KL COND KL DUAL KL
+
+Figure 7: BloodMNIST (standard), PCA latent geometry. Representative panel numbers: N O REG 
+
+(BAcc 0.926 , Within 709 .3, Ratio 0.4369 ), D UAL KL (BAcc 0.952 , Within 3.4, Ratio 0.0488 ). 
+
+BloodMNIST (standard): latent-statistics geometry. In Fig. 8, the latent-dimension population is strongly shifted away from high inter-sample separation and toward higher label separation. This is consistent with lower label-unexplained dispersion and stronger condition-level structure under the proxy interpretation in Appendix B.3.1.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 8: BloodMNIST (standard), latent-statistics geometry. Representative panel medians: N O
+
+REG (0.236 , 2.271 , 0.722 , 6.1) vs D UAL KL ( 0.021 , 8.860 , 0.977 , 320 .6) for (inter-sample, label-sep, feat-label, sKEI). 
+
+BloodMNIST (1% training data): PCA latent geometry. The low-data PCA trend in Fig. 9 remains consistent with the standard-data regime. S TD KL and C OND KL already improve over N O
+
+REG , but D UAL KL provides the strongest combined geometric summary in this low-supervision setting. 37 NO REG STD KL COND KL DUAL KL 
+
+Figure 9: BloodMNIST (1% training data), PCA latent geometry. Representative panel numbers: N O
+
+REG (BAcc 0.618 , Within 632 .0, Ratio 1.9702 ), D UAL KL (BAcc 0.737 , Within 10 .3, Ratio 0.3538 ). 
+
+BloodMNIST (1% training data): latent-statistics geometry. In Fig. 10, latent-statistics coordi-nates show a clear population-level redistribution toward a more favorable upper-left regime. This pattern is consistent with the larger low-data gains reported in Tab. 3.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 10: BloodMNIST (1% training data), latent-statistics geometry. Representative panel medians: NO REG (0.390 , 0.487 , 0.450 , 0.3) vs D UAL KL ( 0.202 , 2.461 , 0.765 , 4.7) for (inter-sample, label-sep, feat-label, sKEI). 
+
+CHASEDB1: PCA latent geometry. Figure 11 shows the same compactness–separation direction. DUAL KL gives the strongest compactness–separation trade-off in this regime.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 11: CHASEDB1, PCA latent geometry. Representative panel numbers: N O REG (IoU 0.557 ,
+
+Within 19 .75 , Ratio 0.4314 ), D UAL KL (IoU 0.574 , Within 18 .38 , Ratio 0.3082 ). 
+
+CHASEDB1: latent-statistics geometry. In Fig. 12, KL regularization again moves features away from the N O REG regime toward a higher-separation and higher-association region, confirming consistent population-level reorganization.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 12: CHASEDB1, latent-statistics geometry. Panel medians show N O REG (0.343 , 1.909 ,
+
+0.623 , 2.6) vs KL ranges: inter-sample 0.195 –0.211 , label-sep 2.892 –3.125 , feat-label 0.783 –0.794 ,sKEI 7.3–8.9.38 STARE: PCA latent geometry. As shown in Fig. 13, KL-regularized models reduce the elongated NO REG spread and improve the compactness–separation summary. This agrees with the separation-oriented PCA trend while pixel-BAcc remains in a narrow range.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 13: STARE, PCA latent geometry. Representative panel numbers: N O REG (IoU 0.506 , Ratio 
+
+0.5400 ), D UAL KL (IoU 0.538 , Ratio 0.3840 ). 
+
+STARE: latent-statistics geometry. In Fig. 14, all KL settings move far from the N O REG low-separation regime. Among the KL variants, C OND KL and D UAL KL occupy the strongest overall feat-label/sKEI regime.     
+
+> NOREG STD KL COND KL DUAL KL
+
+Figure 14: STARE, latent-statistics geometry. Panel medians show the N O REG to KL-regularized transition: inter-sample 0.329 → 0.231 –0.237 , label-sep 0.904 → 2.748 –2.857 , feat-label 0.562 →
+
+0.723 –0.731 , sKEI 1.3 → 4.4–5.2.
+
+B.4 Effect of the Label-Induced Partition Dimensionality for high-K partitions. The main segmentation experiments use the foreground-count condition by default, where Cu = P  
+
+> v∈N (u)
+
+Yv and K = 10 . Thus the default segmentation setting only requires d ≥ 9 for the exact simplex construction. The high-granularity pattern condition in Tab. 14 is an auxiliary partition-choice ablation rather than the default segmentation configuration. Since the exact simplex prior requires d ≥ K − 1, all variants in this ablation use a matched final stochastic latent/reparameterization dimension d = 512 , which satisfies the requirement even for the pattern partition with K = 512 . The backbone and segmentation decoder are unchanged; only the final stochastic latent projection/reparameterization layer is set to the matched dimension for this ablation. Therefore, the comparison in Tab. 14 varies the condition map π while keeping the non-latent segmentation architecture matched across the three partition choices. These ablation numbers are intended to compare feasible choices of π, not to redefine the default segmentation protocol used in the main objective-level comparisons. Segmentation provides a natural setting where C = π(Y ) can be instantiated beyond the identity label partition. In classification, Y is a scalar class label and C = Y is the most direct choice. In segmentation, however, Y is a dense mask: pixels with the same foreground/background label may have different structural roles depending on whether they lie inside a region, near a boundary, or on a thin structure. We therefore define a pixel-wise condition from the local target neighborhood, 
+
+Cu = π(YN (u)),
+
+where u is a pixel location and N (u) is its 3 × 3 ground-truth mask neighborhood. Table 11 summarizes the three partitions considered in this ablation. Within this ablation, the task loss, backbone, data split, optimizer, KL weights, and segmentation target are unchanged; only the condition variable used in the conditional KL term is varied. 39 Table 11: Segmentation condition constructions. For each pixel u, the condition Cu is induced from the ground-truth mask in a 3 × 3 neighborhood N (u).                    
+
+> Partition Definition KInterpretation Label Cu=Yu2Direct foreground/background pixel label. Count Cu=P
+> v∈N (u)Yv10 Coarse local occupancy and boundary-proximity proxy. Pattern Cu= bin( YN(u))512 Exact local shape, boundary, and thin-structure pattern.
+
+Tables 12 and 13 show that the induced conditions have substantially different distributions. On the vessel datasets, the direct label condition is strongly dominated by background pixels, while the count partition reduces this concentration by separating pure-background, interior, and boundary-neighborhood cases. The pattern partition exposes a much richer local condition space, with hundreds of observed nontrivial patterns on CHASEDB1, DRIVE, and STARE. This richer partition is also naturally long-tailed: many boundary-related patterns occur sparsely. GLAS shows a different profile, with large pure-background and pure-foreground masses, reflecting its larger interior regions. Thus, increasing the granularity of C makes local structural differences more explicit, but also introduces stronger sparsity and dataset-dependent granularity effects. Table 12: Train-split concentration statistics for coarse segmentation conditions. Top-1 mass is reported in percentage; Hnorm denotes normalized entropy.                          
+
+> Dataset Label K= 2 Count K= 10
+> Top-1 Hnorm Top-1 Hnorm
+> CHASEDB1 92.9 0.37 81.3 0.37 DRIVE 91.4 0.42 75.8 0.44 GLAS 50.3 1.00 46.5 0.45 STARE 92.7 0.38 80.6 0.38
+
+Table 13: Train-split statistics for the exact 3 × 3 pattern partition ( K = 512 ). Nontrivial patterns exclude pure-background and pure-foreground neighborhoods. Mass values are percentages.                            
+
+> Dataset Obs. KNontriv. KBG mass FG mass Nontriv. mass CHASEDB1 489 487 81.3 0.3 18.4 DRIVE 508 506 75.8 0.3 23.9 GLAS 269 267 46.5 46.4 7.2 STARE 480 478 80.6 0.4 19.0
+
+Table 14 shows that the choice of π affects the conditional bottleneck in practice. Non-trivial local partitions are competitive with, and often better than, the direct pixel-label condition. The pattern partition gives the best average IoU/Dice and performs best on GLAS and STARE, whereas the coarser count partition is strongest on CHASEDB1 and DRIVE. This dataset-dependent ranking is consistent with the statistics above: fine-grained patterns expose richer local structure, but their long-tailed distribution can make coarser partitions more stable in some vessel datasets. These results support the use of the general notation C = π(Y ). In dense prediction, pixels with the same binary label can correspond to different local structural roles, especially near boundaries or thin structures. The condition variable is therefore not introduced only for mathematical generality; it can encode target-induced local structure. The choice of π therefore serves as a practical design dimension of the proposed dual information-control framework. Table 14: Partition-choice ablation for segmentation. We compare the direct pixel label ( K = 2 ), 
+
+3 × 3 foreground-count condition ( K = 10 ), and exact binary local-mask pattern ( K = 512 ). Results are validation IoU/Dice (%).                         
+
+> Dataset Label K= 2 Count K= 10 Pattern K= 512
+> CHASEDB1 56.75 / 72.38 57.58 / 73.06 57.16 / 72.73 DRIVE 58.27 / 73.63 58.29 / 73.64 58.13 / 73.51 GLAS 81.83 / 89.89 81.93 / 89.93 82.25 / 90.18
+> STARE 52.77 / 69.06 52.85 / 69.13 53.47 / 69.67
+> Average 62.40 / 76.24 62.66 / 76.44 62.75 / 76.52
+
+40 B.5 Sensitivity Experiment to Regularization Weights 
+
+We examine the sensitivity of the objective to the two regularization weights (βstd , β cond ) on the full-data BloodMNIST setting. All other training choices, including the backbone, data split, optimizer, training schedule, simplex conditional prior, and shared fixed τ , are kept unchanged. The grid includes the unregularized point, the two single-axis edges, and the full dual-regularization region. Fig. 15 reports the change in BAcc and Macro-F1 relative to the mean performance over the beta grid. The unregularized point is below the grid mean, while several moderate regularization settings achieve above-average performance. Very large weights do not uniformly improve the scores, indicating that the gains are not obtained by simply increasing the regularization strength. Overall, the sweep suggests that the reported behavior is not driven by an isolated choice of (βstd , β cond ).0 0.001 0.003 0.009 0.027                      
+
+> βcond
+> 00.001 0.003 0.009 0.027
+> βstd
+> -0.012 -0.003 +0.003 +0.006 -0.001 -0.006 -0.002 -0.000 +0.007 +0.000 +0.003 +0.005 +0.002 +0.006 -0.006 -0.001 +0.007 +0.008 +0.005 -0.007 +0.001 +0.001 -0.010 -0.002 -0.002 −0.010 −0.005 0.000 0.005 0.010
+> Δ mean vs grid mean
+
+(a) ∆BAcc 0 0.001 0.003 0.009 0.027                      
+
+> βcond
+> 00.001 0.003 0.009 0.027
+> βstd
+> -0.015 -0.003 +0.002 +0.005 -0.002 -0.004 -0.004 +0.001 +0.006 +0.002 +0.002 +0.005 +0.001 +0.005 -0.008 +0.001 +0.006 +0.006 +0.005 -0.006 +0.002 +0.002 -0.006 -0.002 -0.000
+> −0.010 −0.005 0.000 0.005 0.010
+> Δ mean vs grid mean
+
+(b) ∆Macro-F1 
+
+Figure 15: Sensitivity to (βstd , β cond ) on full-data BloodMNIST. Each cell reports the change relative to the grid mean. 
+
+## C Literature review 
+
+Relation to conditional bottlenecks and conditional priors. Our formulation is related to prior uses of variational bottlenecks, conditional information quantities, and conditional latent priors. Deep VIB [3] provides a variational KL surrogate for global information bottleneck regularization, and our standard term Jstd follows this global-capacity role. However, our motivation is different: under a label-induced condition variable C = π(Y ), the global budget I(Z; X) decomposes into condition-level structure I(Z; C) and within-condition information I(Z; X | C), so a single global bottleneck does not specify how the retained information is allocated. Conditional bottleneck-style objectives have also appeared in top-venue representation-learning work. Hwang et al. [7] derive conditional VIB-style terms from a total-correlation objective for multi-view representation learning, where the conditions correspond to observed views rather than supervised label-induced partitions. Lee et al. [8] incorporate conditional information bottleneck-style compression into SimCLR and BYOL to improve self-supervised visual representations and robustness. These works show that conditional information control is a meaningful design principle, but their objectives target multi-view calibration or self-supervised compression. In contrast, our condition variable is induced by supervised labels, and the conditional KL is used to control within-condition information in a supervised task representation. Our use of a condition-dependent prior is also distinct from conditional generative models such as CVAEs [11] and semi-supervised deep generative models [12]. In those models, conditional latent variables or priors are part of a generative likelihood or ELBO. In our method, the conditional prior is not introduced for generative modelling; it is a variational information-control prior inside a supervised regularizer. Thus, the novelty is not the existence of a conditional prior alone, but the supervised dual-bottleneck construction: Jstd controls global capacity, Jcond controls within-condition information through an exact decomposition, and the simplex conditional prior provides a symmetric and controllable geometric instantiation. 41 Table 15: Comparison with related bottleneck and conditional-prior formulations. 
+
+Related method How our method differs Deep VIB [3] Deep VIB provides a variational KL surrogate for a single global information bottleneck, mainly controlling I(Z; X). Our method keeps this global control through Jstd , but adds a label-induced conditional control axis Jcond motivated by I(Z; X) = 
+
+I(Z; C) + I(Z; X | C). Thus, our objective separates global capacity control from within-condition information control. Multi-view conditional VIB-style objectives [7] These objectives use conditional information terms to calibrate shared representations across multiple observed views and to han-dle view imbalance or missing views. Our conditioning variable is not a view but a supervised label-induced partition C = π(Y ),and our goal is not multi-view calibration but supervised regular-ization of within-condition residual information. Self-supervised compressive visual representations [8] This line of work uses conditional information bottleneck-style objectives to compress self-supervised representations, typically between augmented views. Our method uses a supervised condi-tion variable C = π(Y ) and combines conditional information control with an explicit global KL term. Hence, the method is a su-pervised dual-bottleneck regularizer rather than a self-supervised compression objective. Conditional VAE / deep con-ditional generative models [11] Conditional VAEs use condition-dependent latent variables or pri-ors inside a generative likelihood or ELBO for structured output modelling. Our conditional prior is not used for generation; it is a variational information-control prior inside a supervised regu-larizer, where the conditional KL decomposes into I(Z; X | C)
+
+plus condition-wise prior mismatch. Semi-supervised deep gener-ative models [12] Semi-supervised generative models use class variables and latent variables to model data density and exploit unlabeled data. Our method does not model p(x) or require unlabeled data; it regular-izes a supervised task representation by jointly controlling global capacity and within-condition information. 
+
+42
