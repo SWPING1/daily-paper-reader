@@ -6,38 +6,33 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-10-03
-- 运行时间：2026-10-03 22:30:18 UTC
+- 最新运行日期：2026-10-04
+- 运行时间：2026-10-04 22:10:43 UTC
 - 运行状态：成功
-- 本次总论文数：5
+- 本次总论文数：4
 - 精读区：0
-- 速读区：5
+- 速读区：4
 
 ### 今日简报（AI）
-今日完成5篇速读、0篇精读，多模态大模型与VLA鲁棒性成扫描焦点。  
-最值得看的是6.0分的分层情绪推理+对比剪枝、VLA去伪相关、多模态互惠反馈这三个方向。  
-普通读者可先读速读摘要，抓住“情绪理解、去伪相关、互惠融合”关键词，再决定是否深入。
-- 详情：[/202610/03/README](/202610/03/README)
+今日速读4篇、精读0篇，焦点集中在MRI病灶联合分割与情绪识别/推理两条线
+- 详情：[/202610/04/README](/202610/04/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Decoding Affective Nuances: Enhancing MLLMs via Hierarchical Emotion Reasoning and Contrastive Discriminative Pruning](/202610/03/2609.36782v1-decoding-affective-nuances-enhancing-mllms-via-hierarchical-emotion-reasoning-and-contrastive-discriminative-pruning)  
+1. [Hetero-modal learning and corruption-resistant hetero-modal inference for joint segmentation of white matter hyperintensities and ischaemic stroke lesions in MRI](/202610/04/2610.00553v1-hetero-modal-learning-and-corruption-resistant-hetero-modal-inference-for-joint-segmentation-of-white-matter-hyperintensities-and-ischaemic-stroke-lesions-in-mri)  
+   标签：评分：7.0/10、query:mm
+   evidence：缺失MRI序列下的异模态学习
+2. [AffectReveal: Event-Grounded Emotion Recognition Beyond Visual Appearances](/202610/04/2609.36563v1-affectreveal-event-grounded-emotion-recognition-beyond-visual-appearances)  
    标签：评分：6.0/10、query:mm
-   evidence：多模态大模型的情感推理与情感识别
-2. [Disentangling Spurious Correlations in Vision-Language-Action Models via Predicting Domain-Invariant Latent Lookahead](/202610/03/2609.37165v1-disentangling-spurious-correlations-in-vision-language-action-models-via-predicting-domain-invariant-latent-lookahead)  
+   evidence：超越视觉表观的事件锚定情感识别
+3. [DSPO: Diversity-aware Subjective Policy Optimization for Robust Emotional Reasoning](/202610/04/2609.36775v1-dspo-diversity-aware-subjective-policy-optimization-for-robust-emotional-reasoning)  
    标签：评分：6.0/10、query:mm
-   evidence：高斯解耦正则分离任务相关与域特定因素
-3. [Mutual Equilibrium: Multimodal Representation Learning through Reciprocal Feedback](/202610/03/2609.39456v1-mutual-equilibrium-multimodal-representation-learning-through-reciprocal-feedback)  
+   evidence：面向多模态大模型的鲁棒情感推理强化学习
+4. [When Integral Meets Decomposition: A Signal-Level Self-Supervised Feature Decompose Paradigm for Multi-Modal Image Fusion](/202610/04/2609.39004v1-when-integral-meets-decomposition-a-signal-level-self-supervised-feature-decompose-paradigm-for-multi-modal-image-fusion)  
    标签：评分：6.0/10、query:mm
-   evidence：互反馈架构将两模态精炼为耦合嵌入
-4. [SAGE: Salient Factor Discovery and Generation with Visual Foundation Representations](/202610/03/2609.39635v1-sage-salient-factor-discovery-and-generation-with-visual-foundation-representations)  
-   标签：评分：6.0/10、query:mm
-   evidence：对比分析将显著因素与共有内容分离
-5. [Rethinking the Information Bottleneck: Structured Decomposition under Label-Induced Partitions](/202610/03/2610.01175v1-rethinking-the-information-bottleneck-structured-decomposition-under-label-induced-partitions)  
-   标签：评分：6.0/10、query:mm
-   evidence：结构化分解以分离冗余与标签相关表示
+   evidence：自监督特征分解为共性与模态特有特征
 
 
 <div class="dpr-home-promo-card">

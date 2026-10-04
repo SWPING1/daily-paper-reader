@@ -1,0 +1,69 @@
+{
+  "label": "2026-10-04",
+  "date": "2026-10-04",
+  "generated_at": "2026-10-04T22:10:52",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202610/04/2610.00553v1-hetero-modal-learning-and-corruption-resistant-hetero-modal-inference-for-joint-segmentation-of-white-matter-hyperintensities-and-ischaemic-stroke-lesions-in-mri",
+      "section": "quick",
+      "title_en": "Hetero-modal learning and corruption-resistant hetero-modal inference for joint segmentation of white matter hyperintensities and ischaemic stroke lesions in MRI",
+      "authors": "Jesse Phitidis, William N. Whiteley, Joanna M. Wardlaw, Miguel O. Bernabeu, Francesco Dalla Serra, Maria del C. Valdés Hernández",
+      "date": "2026-09-30",
+      "pdf": "https://arxiv.org/pdf/2610.00553v1",
+      "score": "7.0",
+      "evidence": "缺失MRI序列下的异模态学习",
+      "tldr": "白质高信号（WMH）与缺血性卒中病灶（ISL）常共存且视觉混淆，其分割依赖多序列MRI，但临床数据常缺失模态且标注不全。本文利用206例血管病患者四种MRI序列，研究异模态学习并联合分割WMH与ISL。实验表明，在仅10%训练样本含全模态或仅靠单一锚定模态等严重缺失场景下，异模态学习优于单模态模型，并可泛化到未见模态组合。为此提出MMAR模块，结合损坏增强，在模态存在但严重损坏时动态加权特征，维持鲁棒推理。",
+      "tags": "query:mm",
+      "abstract_en": "White matter hyperintensities (WMH) and ischaemic stroke lesions (ISL) are visually confounding, co-occurring pathologies that require large, diverse datasets for robust deep learning segmentation. However, assembling such datasets is hindered by cohort samples that lack reference segmentations from both features and complete sets of MRI structural sequences (i.e., \"modalities\"). To maximise data utility, we investigate hetero-modal learning using a dataset of 206 vascular disease patients across four MRI sequences (T1-weighted, T2-weighted, fluid-attenuated inversion recovery, and diffusion-weighted imaging) with expert annotations of both WMH and ISL. We demonstrate that hetero-modal learning outperforms models trained using a single imaging modality in scenarios with substantial missing data, including a split where only 10% of the training data contains all four modalities while the remainder is uni-modal, and a split relying on a single shared \"anchor\" modality with zero overlap between the remaining modalities. Furthermore, models trained under this second split successfully perform inference on unseen combinations of modalities. Yet, while standard hetero-modal networks handle missing sequences, clinical deployment introduces the additional challenge of silent data degradation - where modalities are present but severely corrupted. To bridge this gap, we introduce the Multimodal Attention Router (MMAR) block. Our experiments demonstrate that, when trained with a \"corruption augmentation\" strategy, the MMAR effectively dynamically weights the encoded features of each modality, maintaining strong performance during hetero-modal inference even in the presence of unflagged catastrophically corrupted modalities.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/04/2609.36563v1-affectreveal-event-grounded-emotion-recognition-beyond-visual-appearances",
+      "section": "quick",
+      "title_en": "AffectReveal: Event-Grounded Emotion Recognition Beyond Visual Appearances",
+      "authors": "Yihao Qian, Runhao Zeng, Sicheng Zhao, Feng Liang, Hongmin Cai, Mingkui Tan",
+      "date": "2026-09-29",
+      "pdf": "https://arxiv.org/pdf/2609.36563v1",
+      "score": "6.0",
+      "evidence": "超越视觉表观的事件锚定情感识别",
+      "tldr": "视觉情感识别通常默认证据都在画面内，但相同表情可因画面外事件而对应不同情绪。为此提出事件锚定情感识别（EGER）并构建EGER-Bench，含10052段视频与10734张图像、11类情绪。人类标注实验显示事件语境可将准确率从33.96%提升至72.08%。进一步提出免调优框架AffectReveal，通过验证影响情绪的关键因素并交叉核对恢复事件，在多个模型和输入设置下平均UAR提升5.26–10.53点。",
+      "tags": "query:mm",
+      "abstract_en": "Visual emotion recognition commonly assumes that all evidence required for prediction is contained in the observed image or video. Yet the same visible reaction can convey different emotions depending on events beyond the input: tears, for example, may indicate grief or joy. We formulate Event-Grounded Emotion Recognition (EGER), where emotion recognition requires recovering the affect-determining event. We construct EGER-Bench, comprising 10,052 videos and 10,734 images across 11 emotions, two source domains, and four visual settings. A study with six annotators shows that event context raises human recognition accuracy from 33.96% to 72.08%, confirming that visual evidence alone is often insufficient. Semantic relevance alone does not solve EGER: a plausible event may imply the wrong emotion if its identity, focal-person role, relationship, or outcome is misinterpreted. We therefore propose AffectReveal, a tuning-free framework that first constructs and independently verifies evidence-grounded alternatives over these affect-critical factors. It then cross-checks the recovered event against face-masked in-media facts through bidirectional atomic evidence support, while retaining the original unmasked input for final prediction. Across three downstream models and four input settings, AffectReveal yields average UAR gains of 5.26--10.53 points. For three fine-tunable models, it also enables untuned models to outperform their fine-tuned visual-only counterparts in all 12 accuracy comparisons, without updating downstream parameters.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/04/2609.36775v1-dspo-diversity-aware-subjective-policy-optimization-for-robust-emotional-reasoning",
+      "section": "quick",
+      "title_en": "DSPO: Diversity-aware Subjective Policy Optimization for Robust Emotional Reasoning",
+      "authors": "Cheng Ye, Weidong Chen, Bingyan Xu, Zhendong Mao",
+      "date": "2026-09-29",
+      "pdf": "https://arxiv.org/pdf/2609.36775v1",
+      "score": "6.0",
+      "evidence": "面向多模态大模型的鲁棒情感推理强化学习",
+      "tldr": "现有强化学习在情感推理上易失效：它依赖确定性硬标签与逐点孤立评估，难以适配情绪主观连续分布；情绪隐含于视觉线索，又会加剧幻觉并产生无依据证据。为此，DSPO构建VAD空间上下文情绪分布先验，提出DEDR奖励衡量候选情绪留一边际贡献，并设计CVIG反事实视觉干预门控，联合提升主观情感覆盖与视觉 grounding。在多个公开基准上，DSPO取得SOTA，跨域平均准确率较EMO-R3提升10.8%，兼顾多样解释与视觉证据。",
+      "tags": "query:mm",
+      "abstract_en": "Reinforcement Learning has significantly advanced the complex reasoning capabilities of MLLMs. However, prevailing RL algorithms suffer a severe failure in emotion reasoning tasks. These methods heavily rely on deterministic hard-label supervision and point-wise isolated evaluation, creating a fundamental gap with the inherently subjective and continuously distributed nature of human emotions. Furthermore, unlike explicit physical objects, emotional states are deeply implicit within visual cues. This abstract nature exacerbates visual hallucinations in MLLMs, leading to plausible yet ungrounded emotional evidence. To address these limitations, we propose Diversity-Aware Subjective Policy Optimization (DSPO), a reinforcement learning framework that jointly promotes subjective affective coverage and visual grounding. First, we construct a context-grounded emotional distribution prior in the VAD space by combining the lexical prior of the annotated emotion with image-specific contextual information. Based on this prior, we introduce a Distribution-Aligned Emotional Diversity Reward (DEDR), which measures the leave-one-out marginal contribution of each candidate emotion within a rollout. DEDR rewards candidates whose inclusion brings the predicted affective set closer to the context-grounded prior, thereby preserving plausible subjective interpretations without encouraging unconstrained dispersion. We further develop Counterfactual Visual Intervention Gating (CVIG), which masks the visual region highlighted in the reasoning process and uses the resulting candidate-wise probability changes to reduce the weights of interpretations unsupported by visual evidence. Extensive experiments demonstrate that DSPO achieves state-of-the-art performance across multiple public benchmarks, especially on the cross-domain performance, i.e., improving +10.8\\% on average cross-domain accuracy than EMO-R3.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/04/2609.39004v1-when-integral-meets-decomposition-a-signal-level-self-supervised-feature-decompose-paradigm-for-multi-modal-image-fusion",
+      "section": "quick",
+      "title_en": "When Integral Meets Decomposition: A Signal-Level Self-Supervised Feature Decompose Paradigm for Multi-Modal Image Fusion",
+      "authors": "Zeyu Wang, Jiayu Wang, Haiyu Song, Haoran Duan",
+      "date": "2026-09-30",
+      "pdf": "https://arxiv.org/pdf/2609.39004v1",
+      "score": "6.0",
+      "evidence": "自监督特征分解为共性与模态特有特征",
+      "tldr": "多模态图像融合需整合互补信息，但特征分解因缺少真实分解图，只能依赖不完整且可能冲突的图像级损失监督。为此，本文提出信号级自监督特征分解范式，将模糊的2D图像级监督重构为积分驱动的1D信号级优化，以共同信号与原始信号间的积分面积约束分解器。模型采用两阶段SSL框架，先执行积分分解与结构保持重建预训练，再融合独特特征与共同特征重建融合图像。在代表性MMIF任务上取得SOTA，为融合提供更稳定的优化目标。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal image fusion (MMIF) aims to integrate complementary information from different modalities into a high-quality fused image and support downstream tasks. Recently, feature decomposition has become an important paradigm by separating source images into common and modality-specific unique features. However, existing methods lack clear supervision because ground-truth (GT) decomposition feature maps are unavailable. They usually combine multiple image-level metrics as losses, which are inherently incomplete and may conflict since each pixel couples attributes such as texture, edge, and contour. To address this, we propose a 1D signal-level self-supervised feature decomposition paradigm. Our core insight is to reformulate feature decomposition from unclear 2D image-level supervision into an integral-driven 1D signal-level optimization problem. This objective-level reformulation uses the 1D signal form to compute the integral constraint. The decomposer is optimized by the integral area between common and original signals, enabling more stable optimization with a clear optimization objective. Our model follows a two-stage SSL framework. Stage I designs dual pretext tasks for integral-driven decomposition at the signal level and structure-preserving reconstruction at the image level. Stage II fuses unique features and combines them with common features to reconstruct the fused image. Experiments on representative MMIF tasks show state-of-the-art (SOTA) performance. Code: github.com/Wangjiayu0512/SIDFusion.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
