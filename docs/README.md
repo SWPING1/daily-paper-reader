@@ -7,29 +7,31 @@
 
 ## 每次日报
 - 最新运行日期：2026-10-06
-- 运行时间：2026-10-06 01:13:51 UTC
+- 运行时间：2026-10-06 23:19:25 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：0
+- 本次总论文数：4
+- 精读区：1
 - 速读区：3
 
 ### 今日简报（AI）
-2026-10-06 日报速读3篇多模态与表征学习论文，聚焦对话者情绪识别、多模态学习平衡与结构误设下的可识别表征。最值得看的是两篇7分工作：角色感知视觉迁移与刺激引导推理用于对话者情绪识别，以及用功能进度平衡多模态学习。普通读者可先关注情绪识别如何结合对话角色与视觉线索，再思考多模态训练中模态间进度失衡的问题。
+今日精读1篇、速读3篇，聚焦多模态学习与自监督方向。最值得看的是9.0分精读《Do More Modalities Always Help?》，从几何视角追问缺失模态下的鲁棒性，打破“模态越多越好”的直觉。普通读者可先读这篇精读，再按兴趣速览音频-视觉自监督与多模态平衡两篇。
 - 详情：[/202610/06/README](/202610/06/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Do More Modalities Always Help? A Geometric Perspective on Missing-Modality Robustness](/202610/06/2610.04792v1-do-more-modalities-always-help-a-geometric-perspective-on-missing-modality-robustness)  
+   标签：评分：9.0/10、query:mm
+   evidence：缺失模态鲁棒性与跨模态依赖的几何分析
 
 ### 速读区论文标签
-1. [From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition](/202610/06/2610.03016v1-from-expression-to-reaction-role-aware-visual-transfer-and-stimulus-guided-reasoning-for-interlocutor-emotion-recognition)  
+1. [LeAVJEPA: A Minimalist Architecture for Audio-Visual Self-Supervised Learning](/202610/06/2610.06226v1-leavjepa-a-minimalist-architecture-for-audio-visual-self-supervised-learning)  
    标签：评分：7.0/10、query:mm
-   evidence：基于说话人音频与听者视频的多模态情感识别
+   evidence：模态丢弃将缺失模态视为同一事件的另一视图以实现跨模态对齐
 2. [Balancing Multimodal Learning via Functional Progress](/202610/06/2610.03035v1-balancing-multimodal-learning-via-functional-progress)  
-   标签：评分：7.0/10、query:mm
-   evidence：多模态优化中的模态失衡问题
-3. [Towards Identifiable Representations under Misspecified Structure](/202610/06/2609.33273v1-towards-identifiable-representations-under-misspecified-structure)  
    标签：评分：6.0/10、query:mm
-   evidence：结构误设定下隐表示的可辨识性
+   evidence：缓解多模态联合优化中的模态不平衡以提升鲁棒多模态学习
+3. [Measure Less, Know More: Self-Supervised Test-Time Feature Acquisition](/202610/06/2610.03454v1-measure-less-know-more-self-supervised-test-time-feature-acquisition)  
+   标签：评分：6.0/10、query:mm
+   evidence：任务未知下的自监督测试时模态获取
 
 
 <div class="dpr-home-promo-card">

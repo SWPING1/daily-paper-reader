@@ -1,97 +1,97 @@
 {
   "mode": "standard",
-  "generated_at": "2026-10-06T01:12:00.702392+00:00",
+  "generated_at": "2026-10-06T23:16:57.922995+00:00",
   "stats": {
     "mode": "standard",
     "tag_count": 1,
-    "deep_divecandidates": 0,
+    "deep_divecandidates": 1,
     "deep_cap": 6,
-    "deep_selected": 0,
+    "deep_selected": 1,
     "quick_candidates": 3,
     "quick_skim_target": 11,
     "quick_selected": 3
   },
-  "deep_dive": [],
-  "quick_skim": [
+  "deep_dive": [
     {
-      "id": "2610.03016v1",
+      "id": "2610.04792v1",
       "source": "arxiv",
-      "title": "From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition",
-      "abstract": "In this paper, we propose a Role-aware Stimulus-guided (RASG) framework for interlocutor emotion recognition, which predicts listener emotions from listener-only videos and speaker-only audios. RASG consists of Role-aware Visual Transfer (RVT) and Stimulus-guided Boundary Reasoning (SBR) modules, which address supervision mismatch due to the lack of labeled listener data and ambiguity among visually similar listener reactions whose interpretation depends on speaker context, respectively. More specifically, RVT selects speaker samples whose facial expressions support their emotion labels. It then filters listener tracks and uses reliable pseudo-labels to train a listener-centric visual expert. SBR uses a two-class language reasoner only when the visual model is uncertain. It treats speaker audio and text as context rather than direct emotion evidence to distinguish similar listener reactions. Experiments conducted on MER-Cross dataset shows that RASG achieves 76.25\\% on MER-Cross and improves the performance of the baseline over 17\\%. Our team ranks second in Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026.",
+      "title": "Do More Modalities Always Help? A Geometric Perspective on Missing-Modality Robustness",
+      "abstract": "Missing modality remains a longstanding challenge in multimodal learning. Existing methods typically address this issue through modality recovery or adaptive strategies. However, they overlook models' internal cross-modal dependencies formed during multimodal training, which later impair robustness. We systematically characterize a counterintuitive deployment-time failure mode: models trained on full modalities can underperform unimodal models when one modality is missing at inference time. This pattern appears across diverse architectures, such as fusion models, CLIP-style two-tower models, and vision-language models. We show that such degradation is closely associated with learned cross-modal dependencies in the principal parameter subspaces. Multimodal training induces structured rotations of these subspaces, particularly in cross-modal interaction layers. These rotations are associated with reduced task-aligned margins and larger task-aware representation harm under missing-modality inputs. We propose Geodesic Unlearning (GU), a lightweight parameter-editing method that leverages Grassmannian subspace geometry for structured subspace correction to improve missing-modality robustness. It rotates the principal input subspace toward a unimodal reference along a geodesic path. We prove that this correction minimizes the distance to the reference within a fixed subspace-distance budget. Experiments across architectures and datasets show that GU improves performance under missing-modality inference while preserving full-modality accuracy, outperforming strong missing-modality robustness baselines. These findings support a geometric view of deployment-time missing-modality degradation and suggest localized subspace editing as a practical route for robustness correction.",
       "authors": [
-        "Wei Wang",
-        "Zhaowu Li",
-        "Jianjie Luo",
-        "Fu Lee Wang",
-        "Lap-Kei Lee",
-        "Zhenguo Yang"
+        "Songyuan Sui",
+        "Zhen Tan",
+        "Mohan Zhang",
+        "Rana Muhammad Shahroz Khan",
+        "Xia Hu",
+        "Tianlong Chen"
       ],
-      "primary_category": "cs.MM",
+      "primary_category": "cs.AI",
       "categories": [
-        "cs.MM",
+        "cs.AI",
         "cs.CV"
       ],
-      "published": "2026-10-02T08:50:26+00:00",
-      "link": "https://arxiv.org/pdf/2610.03016v1",
+      "published": "2026-10-03T22:34:19+00:00",
+      "link": "https://arxiv.org/pdf/2610.04792v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "geometric perspective on missing-modality robustness and cross-modal dependencies",
+      "llm_evidence_cn": "缺失模态鲁棒性与跨模态依赖的几何分析",
+      "llm_evidence": "缺失模态鲁棒性与跨模态依赖的几何分析",
+      "canonical_evidence": "缺失模态鲁棒性与跨模态依赖的几何分析",
+      "llm_tldr_en": "This work characterizes a counterintuitive failure mode where fully trained multimodal models underperform unimodal ones when a modality is missing, linking degradation to learned cross-modal dependencies in parameters.",
+      "llm_tldr_cn": "该文聚焦多模态学习中的缺失模态难题，指出已有方法多依赖模态恢复或自适应策略，却忽视训练中形成的内部跨模态依赖对鲁棒性的损害。作者从几何视角刻画了一种反直觉的部署期失效模式：在全模态上训练的模型在推理时缺少某一模态时反而劣于单模态模型。该现象在融合模型、CLIP式双塔及视觉语言模型中普遍出现，并被证明与主参数子空间中的跨模态依赖密切相关，为缺失模态鲁棒性提供了新的理论解释。",
+      "llm_tldr": "该文聚焦多模态学习中的缺失模态难题，指出已有方法多依赖模态恢复或自适应策略，却忽视训练中形成的内部跨模态依赖对鲁棒性的损害。作者从几何视角刻画了一种反直觉的部署期失效模式：在全模态上训练的模型在推理时缺少某一模态时反而劣于单模态模型。该现象在融合模型、CLIP式双塔及视觉语言模型中普遍出现，并被证明与主参数子空间中的跨模态依赖密切相关，为缺失模态鲁棒性提供了新的理论解释。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2610.06226v1",
+      "source": "arxiv",
+      "title": "LeAVJEPA: A Minimalist Architecture for Audio-Visual Self-Supervised Learning",
+      "abstract": "Prior audio-visual self-supervised learning methods rely on mechanisms such as EMA target encoders, prediction heads, reconstruction decoders, and contrastive losses. We introduce LeAVJEPA, the first audio-visual encoder trained under LeJEPA's collapse-free objective. A single early-fusion Vision Transformer processes audio, video, and joint audio-video inputs. Modality dropout treats a missing modality as another view of the same event, making cross-modal alignment implicit in the objective. The model aligns global embeddings with modality-specific local embeddings, and SIGReg prevents representational collapse. A controlled ablation identifies modality dropout as the key mechanism for audio-visual alignment. Despite the architectural simplicity, LeAVJEPA reaches 36.0 mAP on AudioSet-20K and 91.3% accuracy on ESC-50 under frozen evaluation. After fine-tuning, it reaches 61.1% accuracy on VGGSound, and its embeddings support zero-shot audio-visual retrieval.",
+      "authors": [
+        "Benjamin Robson",
+        "Santeri Mentu",
+        "Wenshuai Zhao",
+        "Arno Solin"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CV"
+      ],
+      "published": "2026-10-05T12:33:01+00:00",
+      "link": "https://arxiv.org/pdf/2610.06226v1",
       "tags": [
         "keyword:mm",
         "query:mm"
       ],
       "llm_score": 7.0,
-      "llm_evidence_en": "multimodal emotion recognition with speaker audio and listener video",
-      "llm_evidence_cn": "基于说话人音频与听者视频的多模态情感识别",
-      "llm_evidence": "基于说话人音频与听者视频的多模态情感识别",
-      "canonical_evidence": "基于说话人音频与听者视频的多模态情感识别",
-      "llm_tldr_en": "RASG predicts listener emotions from listener-only video and speaker-only audio via role-aware visual transfer with reliable pseudo-labels and stimulus-guided boundary reasoning, tackling supervision mismatch and reaction ambiguity.",
-      "llm_tldr_cn": "对话者情感识别面临听者标注数据缺失、且视觉相似的听者反应需依赖说话人语境才能消歧的难题。本文提出角色感知刺激引导框架RASG，其中RVT筛选表情与标签一致的说话人样本、过滤听者轨迹并用可靠伪标签训练以听者为中心的视觉专家，SBR则借助说话人刺激进行边界推理。实验表明该框架能缓解监督失配与反应歧义，提升听者情感识别性能，为仅用部分模态的不对称多模态情感识别提供新思路。",
-      "llm_tldr": "对话者情感识别面临听者标注数据缺失、且视觉相似的听者反应需依赖说话人语境才能消歧的难题。本文提出角色感知刺激引导框架RASG，其中RVT筛选表情与标签一致的说话人样本、过滤听者轨迹并用可靠伪标签训练以听者为中心的视觉专家，SBR则借助说话人刺激进行边界推理。实验表明该框架能缓解监督失配与反应歧义，提升听者情感识别性能，为仅用部分模态的不对称多模态情感识别提供新思路。",
+      "llm_evidence_en": "modality dropout treats a missing modality as another view for cross-modal alignment",
+      "llm_evidence_cn": "模态丢弃将缺失模态视为同一事件的另一视图以实现跨模态对齐",
+      "llm_evidence": "模态丢弃将缺失模态视为同一事件的另一视图以实现跨模态对齐",
+      "canonical_evidence": "模态丢弃将缺失模态视为同一事件的另一视图以实现跨模态对齐",
+      "llm_tldr_en": "LeAVJEPA is a minimalist audio-visual self-supervised encoder where modality dropout treats a missing modality as another view, enabling implicit cross-modal alignment with a single early-fusion Transformer.",
+      "llm_tldr_cn": "现有音视频自监督学习依赖EMA目标编码器、预测头、重建解码器与对比损失等复杂机制。本文提出LeAVJEPA，用单一早融合视觉Transformer统一处理音频、视频与联合输入，并将模态丢弃作为关键机制，把缺失模态视为同一事件的另一视图以实现跨模态对齐。消融实验表明模态丢弃是音视频对齐的核心，为鲁棒多模态学习提供了极简方案。",
+      "llm_tldr": "现有音视频自监督学习依赖EMA目标编码器、预测头、重建解码器与对比损失等复杂机制。本文提出LeAVJEPA，用单一早融合视觉Transformer统一处理音频、视频与联合输入，并将模态丢弃作为关键机制，把缺失模态视为同一事件的另一视图以实现跨模态对齐。消融实验表明模态丢弃是音视频对齐的核心，为鲁棒多模态学习提供了极简方案。",
       "llm_tags": [
         "query:mm"
       ],
       "matched_query_tag": "query:mm",
-      "matched_query_text": "Multimodal Emotion Recognition",
-      "matched_requirement_id": "req-2",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
       "selection_source": "fresh_fetch",
       "quick_tier": "7"
-    },
-    {
-      "id": "2609.33273v1",
-      "source": "arxiv",
-      "title": "Towards Identifiable Representations under Misspecified Structure",
-      "abstract": "The presence of noise that depends on the latent variables poses a fundamental challenge to identifiability. Existing results rely on conditional independence among the observations given the latent variables. We study a more general \\emph{misspecified structure}, where this conditional factorization does not hold, and establish both precise and approximate identifiability guarantees. We characterize structural misspecification as a perturbed factor analysis problem. For precise identifiability, we establish subspace identifiability under spectral separation and controlled perturbation, followed by component-wise identifiability under structural sparsity. When the precise condition is not guaranteed, we derive an approximate subspace-identifiability theorem. Based on these results, we develop an unsupervised variational estimator for recovering latent variables. Experiments demonstrate the effectiveness of the proposed framework.",
-      "authors": [
-        "Yuke Li",
-        "Yujia Zheng",
-        "Ziyi Chen",
-        "Kun Zhang",
-        "Heng Huang"
-      ],
-      "primary_category": "cs.LG",
-      "categories": [
-        "cs.LG"
-      ],
-      "published": "2026-09-27T06:28:33+00:00",
-      "link": "https://arxiv.org/pdf/2609.33273v1",
-      "tags": [
-        "keyword:mm",
-        "query:mm"
-      ],
-      "llm_score": 6.0,
-      "llm_evidence_en": "identifiability of latent representations under misspecified structure",
-      "llm_evidence_cn": "结构误设定下隐表示的可辨识性",
-      "llm_evidence": "结构误设定下隐表示的可辨识性",
-      "canonical_evidence": "结构误设定下隐表示的可辨识性",
-      "llm_tldr_en": "This work establishes precise and approximate identifiability guarantees for latent representations when the conditional independence structure is misspecified, casting it as perturbed factor analysis.",
-      "llm_tldr_cn": "该文研究当观测在隐变量下的条件独立性不成立时，隐表示的可辨识性问题。作者将结构误设定刻画为受扰动的因子分析问题，在谱分离与受控扰动下建立子空间可辨识性，并在结构稀疏下给出逐分量可辨识性；当精确条件不满足时，进一步推导近似子空间可辨识定理。该结果为解耦表示学习提供更一般的理论保障。",
-      "llm_tldr": "该文研究当观测在隐变量下的条件独立性不成立时，隐表示的可辨识性问题。作者将结构误设定刻画为受扰动的因子分析问题，在谱分离与受控扰动下建立子空间可辨识性，并在结构稀疏下给出逐分量可辨识性；当精确条件不满足时，进一步推导近似子空间可辨识定理。该结果为解耦表示学习提供更一般的理论保障。",
-      "llm_tags": [
-        "query:mm"
-      ],
-      "matched_query_tag": "query:mm",
-      "matched_query_text": "Disentangled Representation",
-      "matched_requirement_id": "req-4",
-      "selection_source": "fresh_fetch",
-      "quick_tier": "6"
     },
     {
       "id": "2610.03035v1",
@@ -115,14 +115,14 @@
         "keyword:mm",
         "query:mm"
       ],
-      "llm_score": 7.0,
-      "llm_evidence_en": "modality imbalance in multimodal optimization",
-      "llm_evidence_cn": "多模态优化中的模态失衡问题",
-      "llm_evidence": "多模态优化中的模态失衡问题",
-      "canonical_evidence": "多模态优化中的模态失衡问题",
-      "llm_tldr_en": "FGMO uses a function-space progress signal to assess and coordinate modality-wise optimization, avoiding biased imbalance estimates from score disparities and improving multimodal learning.",
-      "llm_tldr_cn": "多模态学习的联合优化常被单一模态主导，而现有基于预测不确定性或优化统计的失衡估计会因模态学习动态不同而将固有差异误判为进度差距。本文提出函数空间引导的多模态优化方法FGMO，用函数空间进度信号衡量各模态的优化进展并协调联合优化。实验表明该方法能更准确地估计模态失衡并提升多模态学习效果，为稳健多模态学习提供了新的优化视角与协调机制。",
-      "llm_tldr": "多模态学习的联合优化常被单一模态主导，而现有基于预测不确定性或优化统计的失衡估计会因模态学习动态不同而将固有差异误判为进度差距。本文提出函数空间引导的多模态优化方法FGMO，用函数空间进度信号衡量各模态的优化进展并协调联合优化。实验表明该方法能更准确地估计模态失衡并提升多模态学习效果，为稳健多模态学习提供了新的优化视角与协调机制。",
+      "llm_score": 6.0,
+      "llm_evidence_en": "alleviating modality imbalance in joint multimodal optimization for robust multimodal learning",
+      "llm_evidence_cn": "缓解多模态联合优化中的模态不平衡以提升鲁棒多模态学习",
+      "llm_evidence": "缓解多模态联合优化中的模态不平衡以提升鲁棒多模态学习",
+      "canonical_evidence": "缓解多模态联合优化中的模态不平衡以提升鲁棒多模态学习",
+      "llm_tldr_en": "Multimodal learning suffers from modality imbalance where one modality dominates. The authors propose Function-Space Guided Multimodal Optimization using a function-space progress signal to estimate and coordinate per-modality progress, improving robustness across modalities.",
+      "llm_tldr_cn": "多模态学习中常出现模态不平衡，即联合优化被单一模态主导，现有方法用预测不确定性或优化统计量估计不平衡，易将模态固有差异误判为进度差距。本文提出函数空间引导的多模态优化FGMO，利用函数空间进度信号评估各模态优化进度并协调训练，从而缓解模态不平衡。该思路为鲁棒多模态学习提供了更可靠的优化协调机制。",
+      "llm_tldr": "多模态学习中常出现模态不平衡，即联合优化被单一模态主导，现有方法用预测不确定性或优化统计量估计不平衡，易将模态固有差异误判为进度差距。本文提出函数空间引导的多模态优化FGMO，利用函数空间进度信号评估各模态优化进度并协调训练，从而缓解模态不平衡。该思路为鲁棒多模态学习提供了更可靠的优化协调机制。",
       "llm_tags": [
         "query:mm"
       ],
@@ -130,7 +130,46 @@
       "matched_query_text": "Robust Multimodal Learning",
       "matched_requirement_id": "req-3",
       "selection_source": "fresh_fetch",
-      "quick_tier": "7"
+      "quick_tier": "6"
+    },
+    {
+      "id": "2610.03454v1",
+      "source": "arxiv",
+      "title": "Measure Less, Know More: Self-Supervised Test-Time Feature Acquisition",
+      "abstract": "Recent progress in multimodal, high-dimensional learning has enabled foundation models to process heterogeneous, large-scale data. However, at test time, acquiring all features or modalities can be prohibitively costly and often redundant. Sequentially selecting informative modalities is therefore critical, yet challenging when the downstream task or prediction target is unknown. To this end, we introduce ECHO-$k$, a task-agnostic and self-supervised learning principle for modality acquisition: we use a deep model's internal pretrained representations (e.g., from a foundation model) as proxy targets that summarize cross-modal information. We provide theoretical guarantees in a stylized linear setting that motivate a reinforcement learning (RL) policy for sequential modality selection. Across task-agnostic and label-free acquisition baselines, ECHO-$k$ consistently improves budgeted downstream performance across diverse foundation-model backends. Our method provides a principled route to cost-aware test-time deployment, with implications for any multimodal system where measurements are expensive or time-constrained, and downstream tasks unknown a priori.",
+      "authors": [
+        "Eeshaan Jain",
+        "Linus Bleistein",
+        "Bart Deplancke",
+        "Charlotte Bunne"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-10-02T15:33:07+00:00",
+      "link": "https://arxiv.org/pdf/2610.03454v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "self-supervised test-time modality acquisition under unknown tasks",
+      "llm_evidence_cn": "任务未知下的自监督测试时模态获取",
+      "llm_evidence": "任务未知下的自监督测试时模态获取",
+      "canonical_evidence": "任务未知下的自监督测试时模态获取",
+      "llm_tldr_en": "Acquiring all modalities at test time is costly and redundant, and selecting informative modalities is hard when the downstream task is unknown; ECHO-k uses pretrained representations as proxies with theoretical guarantees.",
+      "llm_tldr_cn": "多模态模型在测试时获取全部特征或模态代价高昂且常常冗余，而在下游任务未知时如何顺序选择信息量大的模态十分困难。本文提出ECHO-k，一种任务无关且自监督的模态获取准则，利用基础模型内部预训练表示作为跨模态信息的代理目标，并给出线性设定下的理论保证以支撑强化学习策略。实验显示该方法能在未知任务下高效选择模态，为缺失模态场景下的鲁棒推理提供了新工具。",
+      "llm_tldr": "多模态模型在测试时获取全部特征或模态代价高昂且常常冗余，而在下游任务未知时如何顺序选择信息量大的模态十分困难。本文提出ECHO-k，一种任务无关且自监督的模态获取准则，利用基础模型内部预训练表示作为跨模态信息的代理目标，并给出线性设定下的理论保证以支撑强化学习策略。实验显示该方法能在未知任务下高效选择模态，为缺失模态场景下的鲁棒推理提供了新工具。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Missing Modality",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
     }
   ]
 }
