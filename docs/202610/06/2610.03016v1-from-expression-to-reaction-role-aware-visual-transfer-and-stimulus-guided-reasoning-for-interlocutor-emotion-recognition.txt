@@ -1,0 +1,475 @@
+Title: From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition
+
+URL Source: https://arxiv.org/pdf/2610.03016v1
+
+Published Time: Mon, 05 Oct 2026 00:54:08 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+# From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition 
+
+## Wei Wang 
+
+Guangdong University of Technology Guangzhou, China ww9362028@gmail.com 
+
+## Zhaowu Li 
+
+Guangdong University of Technology Guangzhou, China lizhaowu1@mails.gdut.edu.cn 
+
+## Jianjie Luo 
+
+Guangdong University of Technology Guangzhou, China jianjieluo@gdut.edu.cn 
+
+## Fu Lee Wang 
+
+Hong Kong Metropolitan University Hong Kong, China pwang@hkmu.edu.hk 
+
+## Lap-Kei Lee 
+
+Hong Kong Metropolitan University Hong Kong, China lklee@hkmu.edu.hk 
+
+## Zhenguo Yang ∗
+
+Guangdong University of Technology Guangzhou, China yzg@gdut.edu.cn 
+
+## Abstract 
+
+In this paper, we propose a Role-aware Stimulus-guided (RASG) framework for interlocutor emotion recognition, which predicts lis-tener emotions from listener-only videos and speaker-only audios. RASG consists of Role-aware Visual Transfer (RVT) and Stimulus-guided Boundary Reasoning (SBR) modules, which address supervi-sion mismatch due to the lack of labeled listener data and ambigu-ity among visually similar listener reactions whose interpretation depends on speaker context, respectively. More specifically, RVT selects speaker samples whose facial expressions support their emo-tion labels. It then filters listener tracks and uses reliable pseudo-labels to train a listener-centric visual expert. SBR uses a two-class language reasoner only when the visual model is uncertain. It treats speaker audio and text as context rather than direct emotion ev-idence to distinguish similar listener reactions. Experiments con-ducted on MER-Cross dataset shows that RASG achieves 76.25% on MER-Cross and improves the performance of the baseline over 17%. Our team ranks second in Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026. 
+
+## CCS Concepts 
+
+• Computing methodologies → Machine learning ; Computer vision tasks ; • Information systems → Multimedia information systems .
+
+## Keywords 
+
+Interlocutor Emotion Recognition, Listener Reaction, Role-aware Transfer, Pseudo-labeling, Multimodal Reasoning 
+
+ACM Reference Format: 
+
+Wei Wang, Zhaowu Li, Jianjie Luo, Fu Lee Wang, Lap-Kei Lee, and Zhen-guo Yang. 2026. From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition. In 
+
+> ∗Corresponding author. Permission to make digital or hard copies of all or part of this work for personal or classroom use is granted without fee provided that copies are not made or distributed for profit or commercial advantage and that copies bear this notice and the full citation on the first page. Copyrights for components of this work owned by others than the author(s) must be honored. Abstracting with credit is permitted. To copy otherwise, or republish, to post on servers or to redistribute to lists, requires prior specific permission and/or a fee. Request permissions from permissions@acm.org.
+> MM ’26, Rio de Janeiro, Brazil
+> © 2026 Copyright held by the owner/author(s). Publication rights licensed to ACM.
+
+Proceedings of the 34th ACM International Conference on Multimedia (MM ’26), November 10–14, 2026. ACM, New York, NY, USA, 8 pages. 
+
+## 1 Introduction 
+
+Modeling semantic relationships between visual content and nat-ural language has been widely explored in multimodal learning [31–34, 38]. In conversational settings, multimodal understanding also involves interpreting the emotions expressed by speakers and the reactions of listeners. Speakers convey affect through words, voice, and facial behavior; listeners show how they receive and respond to these utterances. Interlocutor emotion recognition aims to infer listener emotion from listener video, speaker audio, and the corresponding transcript [27]. The capability supports affect-aware tutoring systems [12] and socially interactive robots [3], which must adapt to users’ emotional responses. The MER series has explored robustness, semi-supervised learning, and large-language-model-based affective understanding [26, 28], while MER-Cross extends the benchmark from individual speakers to interlocutors [27]. MER-Cross defines six listener emotions: neutral, sad, worried, happy, surprise, and angry [27]. Interlocutor emotion recognition poses three challenges: role mismatch, unreliable visual supervision, and distinct roles for lis-tener video and speaker context. First, training labels describe speaker emotions, while predictions target listeners without labeled training examples [27]. Second, speaker emotion labels may reflect prosody or lexical content despite a neutral face, making them unreliable supervision for a listener-visual model. Third, speaker audio and text describe what may have elicited a reaction rather than independently observing the listener’s state. Treating all three modalities as evidence of one person may therefore transfer speaker affect to listener predictions. Speaker-centered conversation models [18, 25, 35] capture temporal and relational context, yet their target emotion remains attached to the active speaker. Semi-supervised ap-proaches [4, 23, 40, 45] can exploit unlabeled data, but errors in the initial model may be reinforced during pseudo-labeling. Language-model-based methods [5, 20, 21, 24] provide contextual emotion reasoning, although unconstrained predictions remain sensitive to prompts and spurious cues [30, 46]. This highlights the importance of selecting and organizing relevant contextual information for multimodal reasoning [29]. The aforementioned limitations cre-ate a role-conditioned visual transfer gap between labeled speaker sources and unlabeled listener targets. As illustrated in Figure 1, arXiv:2610.03016v1 [cs.MM] 2 Oct 2026 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wei Wang et al. (a) Labeled speaker source: the angry label lacks visual support         
+
+> Video: subtle facial expression +Audio: angry prosody +Text: “ 你骂谁呢？ ”("Who are you scolding?")
+> Evidence role: label-consistent audio/text, but weak visual supervision for listener transfer.
+
+(b) Listener target: anger is directly visible in the reaction        
+
+> Speaker audio + text: eliciting context |Listener video: direct target evidence
+> Evidence role: anger is directly visible in furrowed brows, fixed gaze, and tightened lips.
+> Key contrast: Same label ("angry"), different visual evidence →visually grounded source selection before listener-domain bootstrapping.
+
+Figure 1: Role-conditioned evidence mismatch. (a) The speaker’s angry label is supported mainly by audio and text despite weak facial affect. (b) Listener anger is directly visible; speaker audio and text provide only the eliciting context. 
+
+even for the same emotion class, the speaker expressions used for training can differ substantially from the listener reactions encoun-tered at inference time. Visual supervision from labeled speakers therefore cannot be transferred indiscriminately to listeners, mo-tivating visually grounded source selection and listener-domain bootstrapping. In this paper, we propose a listener-centric framework that learns a visual model without labeled listener data and uses speaker con-text only when the visual evidence is ambiguous. The framework contains two modules: Role-aware Visual Transfer and Stimulus-guided Boundary Reasoning. The first module retains speaker sam-ples whose facial evidence agrees with their emotion labels and uses them to train an initial visual model. It then mines non-speaking listener tracks from an unlabeled conversational pool and accepts pseudo-labels under confidence, temporal, and cross-view consis-tency constraints. The second module activates only for low-margin visual predictions. It represents speaker audio and text as struc-tured cues about the eliciting stimulus and restricts language-model reasoning to the two most plausible visual classes. The framework thus uses context without overriding confident listener-visual pre-dictions. Our contributions are fourfold: 
+
+• We propose a listener-centric framework that combines di-rect listener-visual evidence with speaker stimulus informa-tion for interlocutor emotion recognition when no labeled listener data are available. 
+
+• We devise a Role-aware Visual Transfer module to filter visually inconsistent speaker labels and progressively build listener supervision from unlabeled non-speaking tracks. 
+
+• We develop a Stimulus-guided Boundary Reasoning module that applies pair-constrained language reasoning only to uncertain visual predictions and treats speaker content as eliciting context rather than target-emotion evidence. 
+
+• We conduct extensive experiments on MER-Cross, where RASG achieves 76.25% WAF and outperforms the official CLIP-large baseline by 17.37 percentage points. 
+
+## 2 Related Work 2.1 Conversational Emotion Recognition and Listener Modeling 
+
+Early conversational emotion recognition methods modeled contex-tual and interpersonal dependencies while predicting the emotion of the current speaker. CMN stored multimodal histories and re-trieved inter-speaker information through attention [14], while ICON encoded self- and inter-speaker influences in shared con-versational memory [13]. DialogueRNN tracked global context, party states, and emotion states [35], and DialogueGCN propagated information over intra- and inter-speaker graph edges [11]. COS-MIC further incorporated commonsense knowledge about mental states, events, and causal relations [10], whereas MMGCN modeled cross-modal and speaker dependencies with graph convolutions [18]. Despite their different context-modeling mechanisms, these methods assume that the utterance and its modalities describe the labeled speaker rather than a listener’s reaction. Listener-centered research has primarily focused on reaction synthesis. Ng et al. [36] generated multiple plausible listener motions from speaker audio and facial motion, while Song et al. [41] modeled listener motion with discrete codewords conditioned on emotional context. Both require paired speaker-listener data to generate reactions rather than recognize emotions in authentic listener videos. From Expression to Reaction MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Listener Prediction Model 
+
+(a) Role-aware Visual Transfer 
+
+> labeled speaker samples video audio text
+> Qwen-VL-Max GPT-4o Gemini 2.5 Pro InternVL3-78B
+> Visually Aligned Speaker Subset
+> TalkNet
+> Listener Samples
+> CLIP-LoRA Semantic Expert
+> OpenFace Behavior Expert Listener Visual Emotion Prediction
+
+(b) Stimulus-guided Boundary Reasoning    
+
+> Listener Video
+> Speaker Audio
+> Structured emotion evidence  Role-Constrained Reasoning
+> 1Role-Aware Evidence Binding
+> 2Stimulus–Reaction Consistency
+> 3Closed-Set Emotion Decoding
+> Listener Emotion
+> Happy
+> CLIP-LoRA Visual Teacher
+> Pseudo Labels Listener Predictio Model
+> DeepSeek
+> Heterogeneous VLM unlabeled samples Speaker Transcript
+> CLIP-LoRA Visual Teacher Probability Fusion visual emotion audio emotion transcript
+
+Figure 2: Overview of RASG. (a) RVT: Visually Aligned Speaker Supervision, Listener-domain Bootstrapping, and Listener Visual Expert Training. (b) SBR: Low-margin Uncertainty Routing, Interaction Evidence Construction, and Top-2 Pair-constrained Reasoning. 
+
+## 2.2 Visual Transfer with Reliable Pseudo-supervision 
+
+Pseudo-labeling assigns model predictions to unlabeled samples as training targets [22], but erroneous predictions may be reinforced. FixMatch improved reliability through confidence-based weak-to-strong consistency [40], while class-balanced pseudo-labeling miti-gated label imbalance in multimodal emotion recognition [4]. How-ever, these methods assume consistent target semantics and do not verify whether an emotion is visually observable or belongs to the correct conversational role. Li et al. [23] selected high-quality emo-tion samples using model agreement and majority voting, which may retain shared systematic biases. TalkNet detected active speak-ers through temporal and cross-modal modeling [42], but speaking status alone cannot determine whether a non-speaking track pro-vides a valid listener reaction or reliable emotion supervision. 
+
+## 2.3 Contextual Emotion Reasoning with Large Language Models 
+
+Recent studies have used large language models for contextual emotion reasoning. Emotion-LLaMA aligned multimodal encoders with a language model through instruction tuning [5], while Af-fectGPT combined multimodal pre-fusion, descriptive annotations, and unified emotion evaluation [24]. Affective-CoT further decom-posed multimodal emotion reasoning into a hierarchical cognitive process [20]. These methods generally reason over the full emotion label space under the assumption that visual, acoustic, and tex-tual evidence all describe the same emotional subject. CausalERC introduced causal prompting for contextual emotion recognition [21], but still predicted the current speaker’s emotion. Zhao et al. [46] corrected prompt-induced label biases using content-free in-puts, yet such general calibration does not impose the role-specific constraints needed to distinguish direct listener evidence from the speaker context that elicits the listener’s reaction. 
+
+## 3 Methodology 3.1 Problem Definition 
+
+Interlocutor emotion recognition aims to infer a listener’s emotion from the listener video and the corresponding speaker audio and transcript. Generally, let 
+
+D𝑠 =   𝑉 𝑠 𝑖 , 𝐴 𝑠 𝑖 ,𝑇 𝑠 𝑖 , 𝑦 𝑠 𝑖 
+
+ 𝑁 𝑠  
+
+> 𝑖 =1
+
+(1) denote the labeled speaker dataset, where 𝑉 𝑠 𝑖 , 𝐴 𝑠 𝑖 , and 𝑇 𝑠 𝑖 represent the video, audio, and transcript, respectively; 𝑦 𝑠 𝑖 is the speaker emotion label; and 𝑁 𝑠 is the number of labeled speaker samples. An unlabeled conversational pool is also available: 
+
+D𝑢 =
+
+n 
+
+𝑉 𝑢 𝑗 , 𝐴 𝑢 𝑗 ,𝑇 𝑢 𝑗 
+
+o 𝑁 𝑢  
+
+> 𝑗 =1
+
+, (2) where 𝑁 𝑢 is the number of unlabeled conversational samples. Their conversational roles and emotion labels are unknown. At inference, an instance contains listener video 𝑉 𝑙 and the corresponding speaker audio 𝐴 𝑠 and transcript 𝑇 𝑠 . The objective is 
+
+b𝑦 𝑙 = 𝐹 
+
+
+
+𝑉 𝑙 , 𝐴 𝑠 ,𝑇 𝑠 
+
+, b𝑦 𝑙 ∈ C , (3) where C = {neutral , angry , happy , sad , worried , surprise }. Unlike conventional multimodal emotion recognition, the modalities de-scribe two participants: video directly captures the listener’s reac-tion, whereas audio and text characterize the speaker’s preceding stimulus. Role separation determines how each modality is used. 
+
+## 3.2 Overview of the Framework 
+
+Figure 2 presents the Role-aware Stimulus-guided (RASG) framework for two challenges. First, no labeled listener samples are available; existing speaker labels may reflect audio, text, or multimodal evidence and thus provide unreliable facial supervi-sion. Second, subtle listener expressions can look similar; speaker context helps disambiguate them but does not directly indicate listener emotion. Role-aware Visual Transfer (RVT) selects visually reliable speaker supervision and progressively transfers MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wei Wang et al. 
+
+it to listeners. Stimulus-guided Boundary Reasoning (SBR) 
+
+uses speaker audio and text as the eliciting stimulus to resolve ambiguous visual predictions. Thus, RVT builds a listener-oriented visual model, and SBR resolves context-dependent boundaries without overriding confident visual evidence. 
+
+## 3.3 Role-aware Visual Transfer 
+
+Speaker and listener labels follow different evidence structures. A speaker may express anger prosodically while keeping a neu-tral face; the label is valid for multimodal speaker recognition but noisy for facial learning. Moreover, the unlabeled pool mixes ac-tive speakers and non-speaking listeners. Direct source training thus causes label-evidence mismatch, while pseudo-labeling may assign supervision to the wrong role. RVT addresses both problems by selecting speaker labels supported by facial behavior, training an initial visual teacher, and using it to annotate strictly filtered listener tracks for listener-domain adaptation. 
+
+3.3.1 Visually Aligned Speaker Supervision. We use a heteroge-neous committee of 𝑀 vision-language models: Qwen-VL-Max [1], GPT-4o [37], Gemini 2.5 Pro [9], and InternVL3-78B [47]. Each in-dependently judges the speaker’s visual emotion. Let e𝑦 𝑣 𝑖,𝑚 be the 
+
+𝑚 -th VLM prediction for 𝑉 𝑠 𝑖 . Their agreement is 
+
+𝑞 𝑖 = 1
+
+𝑀 
+
+> 𝑀
+
+∑︁ 
+
+> 𝑚 =1
+
+I  e𝑦 𝑣 𝑖,𝑚 = 𝑦 𝑠 𝑖 
+
+ , (4) where I(·) is the indicator. The committee tests whether the original dataset label is recoverable from visual evidence alone without replacing it. We retain 
+
+D𝑣𝑎 𝑠 =   𝑉 𝑠 𝑖 , 𝑦 𝑠 𝑖 
+
+ | 𝑞 𝑖 ≥ 𝜏 𝑐 , (5) where 𝜏 𝑐 is the cross-model consensus threshold. The retained speaker labels are inferable without audio or text and thus better match listener-visual supervision [23]. A CLIP [39] encoder adapted on D𝑣𝑎 𝑠 with LoRA [17] yields the initial teacher 𝑓 𝑇 . The adaptation reduces the influence of speaker labels dominated by linguistic or acoustic evidence. 
+
+3.3.2 Listener-domain Bootstrapping. TalkNet [42] detects speak-ing activity for each visible person in the 124,802 unlabeled videos. Face tracks remaining non-speaking throughout the corresponding speaker utterance are retained as strict listener samples. Let 𝑟 𝑗 ∈ { 0, 1} indicate whether an extracted face track satisfies the listener constraint. For each retained listener video 𝑉 𝑙 𝑗 , the visual teacher produces 
+
+p𝑇 𝑗 = softmax 
+
+
+
+𝑓 𝑇 
+
+
+
+𝑉 𝑙 𝑗 
+
+ 
+
+, (6) where p𝑇 𝑗 ∈ R| C | is the six-class distribution. Its pseudo-label and confidence are 
+
+b𝑦 𝑙 𝑗 = arg max   
+
+> 𝑘 ∈ C
+
+𝑝 𝑇 𝑗,𝑘 , 𝑐 𝑗 = max   
+
+> 𝑘 ∈ C
+
+𝑝 𝑇 𝑗,𝑘 . (7) We retain confident listener predictions: 
+
+D𝑝 𝑙 =
+
+n 
+
+𝑉 𝑙 𝑗 , b𝑦 𝑙 𝑗 , 𝑐 𝑗 
+
+
+
+| 𝑟 𝑗 = 1, 𝑐 𝑗 ≥ 𝜏 𝑝 
+
+o
+
+, (8) where 𝜏 𝑝 is the confidence threshold. Role filtering selects listener tracks, while confidence filtering ensures reliable visual emotion; together they create listener-domain supervision [4, 23, 40]. 
+
+3.3.3 Listener Visual Expert Training. Figure 2(a) shows listener-domain CLIP adaptation [39]. Starting from the speaker-trained teacher, we freeze original CLIP parameters and insert trainable low-rank matrices. For projection W, LoRA [17] gives 
+
+W′ = W + 𝛼 𝑟 BA , (9) where A ∈ R𝑟 ×𝑑 and B ∈ R𝑑 ′ ×𝑟 are trainable low-rank matrices, 𝑟 
+
+is the LoRA rank, and 𝛼 controls update magnitude. Only A, B, and the emotion head are updated. For listener video 𝑉 𝑙 𝑗 = {𝑥 𝑗,𝑡 }𝑇 𝑗 
+
+> 𝑡 =1
+
+, frame representations are 
+
+z𝑗,𝑡 = 𝐸 CLIP 
+
+ 𝑥 𝑗,𝑡 ; W′  . (10) They are aggregated at video level: ¯z𝑗 = Pool 
+
+
+
+z𝑗, 1, . . . , z𝑗,𝑇 𝑗 
+
+
+
+, p𝑐 𝑗 = softmax  W𝑐 ¯z𝑗 
+
+ . (11) Here, Pool (·) aggregates temporal features and W𝑐 is the emo-tion head. Confidence-weighted adaptation downweights uncertain listener pseudo-labels, shifting the model toward listener facial reactions while retaining visually grounded speaker knowledge. CLIP-LoRA captures holistic facial appearance and expression semantics, while subtle listener reactions may involve local facial actions, gaze changes, and head motion. We therefore add a com-plementary OpenFace behavior branch [2]. Let 𝑂 (𝑉 𝑙 𝑗 ) contain OpenFace action units, gaze, pose, and tem-poral descriptors for 𝑉 𝑙 𝑗 . The branch predicts 
+
+p𝑏 𝑗 = softmax 
+
+
+
+𝑓 𝑏 
+
+
+
+𝑂 (𝑉 𝑙 𝑗 )
+
+ 
+
+, (12) where 𝑓 𝑏 is the behavior classifier. The two expert predictions are combined at the probability level: 
+
+p𝑣 𝑗 = 𝜆 p𝑐 𝑗 + ( 1 − 𝜆 )p𝑏 𝑗 , b𝑦 𝑣 𝑗 = arg max   
+
+> 𝑘 ∈ C
+
+𝑝 𝑣 𝑗,𝑘 , (13) where 𝜆 balances both branches. Using p𝑣 𝑗 rather than a hard label preserves the confidence and competing candidates for reasoning. 
+
+## 3.4 Stimulus-guided Boundary Reasoning 
+
+The visual expert handles prototypical reactions, but difficult sam-ples often lie near class boundaries rather than simply exhibiting weak facial signals: subdued faces may indicate neutral, sad, or worried depending on the preceding interaction. Speaker audio and text describe the eliciting stimulus rather than the target person and cannot serve as direct listener-emotion evidence. SBR there-fore uses context only for uncertain visual predictions and restricts reasoning to the two most plausible visual classes. This can resolve specific visual ambiguity without replacing the visual model with unrestricted language-model inference [5, 20, 24]. 
+
+3.4.1 Low-margin Uncertainty Routing. Let 𝑐 (1) and 𝑐 (2) be the top two classes in p𝑣 , with probabilities 𝑝 𝑣  
+
+> (1)
+
+and 𝑝 𝑣  
+
+> (2)
+
+. Their decision margin is 
+
+Δ𝑣 = 𝑝 𝑣  
+
+> (1)
+
+− 𝑝 𝑣  
+
+> (2)
+
+. (14) A large margin indicates a clear visual preference requiring no con-textual interpretation, whereas a small margin signals a boundary case [8]. We define 
+
+C𝑣  
+
+> 2
+
+= 𝑐 (1) , 𝑐 (2) , (15) From Expression to Reaction MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+and activate the DeepSeek [7] reasoner only when 
+
+Δ𝑣 < 𝜏 𝑚 , (16) where 𝜏 𝑚 is the routing threshold. 
+
+3.4.2 Interaction Evidence Construction. For routed samples, the official acoustic model predicts emotion b𝑦 𝑎 and confidence 𝑐 𝑎 from speaker audio 𝐴 𝑠 . These are combined with the complete listener distribution and corresponding transcript: 
+
+E = Enc  listener , p𝑣 , Δ𝑣 , C𝑣  
+
+> 2
+
+, b𝑦 𝑎 , 𝑐 𝑎 ,𝑇 𝑠  . (17) This evidence contains the listener-visual distribution, decision margin, Top-2 candidates, speaker-audio prediction and confidence, and transcript. Role labels separate listener-target evidence from speaker-stimulus context. 
+
+3.4.3 Top-2 Pair-constrained Reasoning. The DeepSeek prompt per-forms three operations: role-aware evidence binding separates direct listener evidence from speaker stimulus evidence; stimulus-reaction consistency reasoning checks how speaker tone and content may elicit the reaction; and pair-constrained emotion decoding selects from C𝑣  
+
+> 2
+
+.For a low-margin sample, the reasoning result is 
+
+b𝑦 𝑟 = 𝑅 DS 
+
+ E, C𝑣  
+
+> 2
+
+; Pbind , Preact , Ppair 
+
+ , b𝑦 𝑟 ∈ C 𝑣  
+
+> 2
+
+. (18) The final prediction is 
+
+b𝑦 𝑙 =
+
+(
+
+𝑐 (1) , Δ𝑣 ≥ 𝜏 𝑚 ,
+
+b𝑦 𝑟 , Δ𝑣 < 𝜏 𝑚 . (19) This formulation separates responsibilities: the visual expert han-dles distinctive reactions, while DeepSeek resolves ambiguous boundaries. Restricting outputs to the visual Top-2 candidates prevents unconstrained labels from unrelated contextual cues. These constraints also govern inference. The listener visual ex-pert first produces the six-class distribution and decision margin, so listener evidence alone determines whether contextual reasoning is needed. Speaker audio and transcript are introduced only for sam-ples routed as ambiguous. Unrouted samples retain the visual Top-1 class; routed samples are restricted to the two visually supported candidates. This ordering prevents speaker emotion from becom-ing the prediction target while allowing the preceding stimulus to resolve visually ambiguous boundaries. 
+
+## 3.5 Training Objectives 
+
+RASG adds no task-specific loss: all trainable visual components use standard cross-entropy objectives, while the inference-only DeepSeek reasoner introduces no training loss. We first train the visual teacher on aligned speaker samples: 
+
+L𝑇 = − 1
+
+|D 𝑣𝑎 𝑠 |∑︁ (𝑉 𝑠 𝑖 ,𝑦 𝑠 𝑖 ) ∈ D 𝑣𝑎 𝑠 
+
+log 𝑝 𝑇 𝑖,𝑦 𝑠 𝑖 
+
+. (20) The listener-domain CLIP branch then uses confidence-weighted pseudo-label supervision [4, 40]: 
+
+L𝑐 = − 1
+
+𝑍 ∑︁ (𝑉 𝑙 𝑗 ,b𝑦 𝑙 𝑗 ,𝑐 𝑗 ) ∈ D 𝑝 𝑙 
+
+𝑐 𝑗 log 𝑝 𝑐 𝑗, b𝑦 𝑙 𝑗 
+
+, (21) where 𝑍 = Í𝑗 𝑐 𝑗 normalizes pseudo-label weights. The OpenFace behavior classifier uses the same listener supervision: 
+
+L𝑏 = − 1
+
+𝑍 ∑︁ (𝑉 𝑙 𝑗 ,b𝑦 𝑙 𝑗 ,𝑐 𝑗 ) ∈ D 𝑝 𝑙 
+
+𝑐 𝑗 log 𝑝 𝑏 𝑗, b𝑦 𝑙 𝑗 
+
+. (22) The complete visual training objective is 
+
+LRVT = L𝑇 + 𝜆 𝑐 L𝑐 + 𝜆 𝑏 L𝑏 , (23) where 𝜆 𝑐 and 𝜆 𝑏 weight listener-domain CLIP adaptation and behav-ior training. Although joined in Eq. 23, the objectives are optimized sequentially as in Fig. 2(a). 
+
+## 4 Experiments 4.1 Datasets 
+
+MER-Cross [27]. The MER2026 interlocutor emotion recog-nition track provides 9,395 labeled speaker samples for training and 574 interlocutor samples for testing. Training samples contain speaker video, audio, transcript, and emotion labels; test samples contain listener video with speaker audio and transcript, targeting listener emotion. The six classes are neutral, angry, happy, sad, wor-ried, and surprise. Speaker training labels and listener test labels create a role-conditioned supervision gap. 
+
+MER-SEMI Unlabeled Pool [26]. We use 124,802 unlabeled MER videos without listener annotations. Active-speaker detection retains non-speaking face tracks as candidate listener reactions. The pool serves only listener-domain bootstrapping; MER-Cross test labels are excluded from sample selection, pseudo-labeling, and visual model training. 
+
+## 4.2 Baselines 
+
+HuBERT [16]. The official HuBERT-base baseline captures speaker audio cues rather than directly observing the listener. 
+
+MacBERT [6]. MacBERT-large provides a lexical baseline by encoding speaker transcripts. 
+
+VideoMAE [44]. The official VideoMAE-large baseline uses temporal video features to predict listener emotion. 
+
+ResNet-FER2013 [15, 27]. The FER2013-trained residual net-work provides a frame-level facial-expression baseline. 
+
+EmoNet [43]. The facial affect baseline models categorical emo-tions, action units, and continuous affective dimensions. 
+
+SENet-FER2013 [19, 27]. Channel-wise recalibration strength-ens the FER2013-trained convolutional baseline. 
+
+CLIP [39]. We report CLIP-base and CLIP-large, the strongest official unimodal baseline and our main comparison. 
+
+Top1 Fusion [27]. The baseline combines HuBERT-base audio, MacBERT-large text, and CLIP-large video for a shared prediction. 
+
+Top2 Fusion [27]. The baseline combines HuBERT-large/base, MacBERT-base/large, and CLIP-base/large to assess the benefit of greater multimodal feature diversity. 
+
+OpenFace-CLIP Fusion [2, 39]. Our reference fuses holistic CLIP features with OpenFace action units, gaze, pose, and motion, without listener-domain adaptation or language reasoning. MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wei Wang et al. 
+
+Table 1: Official MER-Cross baseline comparison [27] in WAF 
+
+(%). A: speaker audio; T: speaker text; V: listener video.                         
+
+> Method Modality WAF (%) HuBERT-base [16] A35.74 MacBERT-large [6] T33.68 VideoMAE-large [44] V41.08 ResNet-FER2013 [15, 27] V45.86 EmoNet [43] V47.03 SENet-FER2013 [19, 27] V51.55 CLIP-base [39] V52.43 CLIP-large [39] V58.88 Top1 Fusion [27] A+T+V 57.44 Top2 Fusion [27] A+T+V 55.24
+> RASG (Ours) A+T+V 76.25
+
+Table 2: Top-three teams in Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026. Our team is in bold.          
+
+> Team WAF (%) ↑Rank HLT-HITSZ 78.31 1
+> WislabGDUT (Ours) 76.25 2
+> CASIA 74.07 3
+
+4.2.1 Evaluation Metrics. We use weighted average F1-score (WAF) as the primary metric under the official protocol [27]: WAF =∑︁  
+
+> 𝑐 ∈ C
+
+𝑁 𝑐 
+
+𝑁 
+
+2𝑃 𝑐 𝑅 𝑐 
+
+𝑃 𝑐 + 𝑅 𝑐 
+
+, (24) where 𝑃 𝑐 , 𝑅 𝑐 , and 𝑁 𝑐 are class-𝑐 precision, recall, and sample count, and 𝑁 is the total count. Accuracy (ACC) is used as the secondary metric. Because WAF is the official ranking metric and final chal-lenge measure, the following tables focus on it. 
+
+4.2.2 Implementation Details. Listener faces are detected, aligned, and resized to 224 × 224 pixels. CLIP ViT-L/14 [39] is the main encoder and is adapted with LoRA [17]; OpenFace [2] remains a fixed facial-behavior extractor; and TalkNet [42] identifies non-speaking tracks in the unlabeled pool. All visual ablations use the same preprocessing and classification protocol. The reasoner receives the full six-class visual distribution, Top-2 labels, decision margin, speaker audio prediction, and transcript. DeepSeek [7] is invoked only below the routing threshold and restricted to the visual Top-2 pair. All ablations use identical data and evaluation protocols, varying only the indicated component. 
+
+## 4.3 Quantitative Performance of the Approaches 
+
+Table 1 compares RASG with the official audio-, text-, video-, and multimodal baselines in WAF. Three findings follow. 1) Listener video directly observes the target and is more informative than speaker audio or text: CLIP-large reaches 58.88%, compared with 35.74% for HuBERT-base and 33.68% for MacBERT-large. 2) Di-rect multimodal fusion is ineffective: Top1 and Top2 obtain 57.44% and 55.24%, respectively, both below CLIP-large. 3) RASG achieves 76.25%, exceeding CLIP-large by 17.37 points and Top1 by 18.81 points, confirming the benefit of listener-oriented visual transfer and selective use of speaker context. 
+
+Table 3: Ablation study of RASG on MER-Cross.                     
+
+> Method OpenFace CLIP RVT SBR WAF (%) OpenFace + CLIP ✓✓✗✗64.28 OpenFace + fine-tuned CLIP ✓✓✓✗73.42
+> Full RASG ✓✓✓✓76.25
+
+Table 4: Component gains over the CLIP-large baseline.                
+
+> Stage WAF (%) Increment Cum. Gain Official CLIP-large 58.88 ––+ OpenFace behavior expert 64.28 +5.40 +5.40 + Role-aware Visual Transfer 73.42 +9.14 +14.54 + SBR 76.25 +2.83 +17.37
+
+MER-Cross Evaluation. Table 2 reports the top-three leader-board results for Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026, which focuses on interlocutor emotion recogni-tion. Our team, WislabGDUT, achieves a WAF of 76.25% with the proposed RASG framework and secures second place. 
+
+## 4.4 Ablation Studies 
+
+Table 3 evaluates RVT and SBR by adding them progressively to the OpenFace + CLIP reference. Two findings follow. 1) RVT improves WAF from 64.28% to 73.42%, demonstrating the main benefit of role-aligned listener supervision. 2) SBR further raises WAF to 76.25%, showing that speaker context provides complementary gains for low-margin cases. The full framework therefore improves the OpenFace + CLIP reference by 11.97 points. 
+
+## 4.5 Effectiveness of RVT and SBR with the CLIP-large Baseline 
+
+Table 4 decomposes the 17.37-point gain over the CLIP-large base-line. Three findings follow. 1) OpenFace contributes 5.40 points through local facial behavior cues. 2) RVT provides the largest gain of 9.14 points, confirming the importance of listener-domain super-vision. 3) SBR adds 2.83 points by resolving ambiguous low-margin cases without overriding confident visual predictions. The decomposition also clarifies the modules’ complementary roles. RVT yields the larger gain by addressing role-conditioned supervision before listener prediction, while SBR adds a smaller gain on the remaining ambiguous cases. Since SBR operates only on low-margin samples within the visual Top-2 pair, it complements rather than replaces the listener-oriented visual expert. 
+
+## 5 Conclusion 
+
+RASG addresses interlocutor emotion recognition without labeled listener data. RVT filters visually consistent speaker samples and bootstraps pseudo-labeled listener tracks, while SBR uses speaker context only for uncertain visual predictions. RASG achieves 76.25% WAF on MER-Cross, outperforming the official CLIP-large baseline by 17.37 percentage points. RASG achieved second place in Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026, and our results show the complementary value of role-aware visual transfer and constrained stimulus reasoning. From Expression to Reaction MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+## References 
+
+[1] Jinze Bai, Shuai Bai, Shusheng Yang, Shijie Wang, Sinan Tan, Peng Wang, Junyang Lin, Chang Zhou, and Jingren Zhou. 2023. Qwen-VL: A Versatile Vision-Language Model for Understanding, Localization, Text Reading, and Beyond. arXiv preprint 
+
+(2023). [2] Tadas Baltrušaitis, Amir Zadeh, Yao Chong Lim, and Louis-Philippe Morency. 2018. OpenFace 2.0: Facial Behavior Analysis Toolkit. In Proceedings of the IEEE International Conference on Automatic Face and Gesture Recognition . 59–66. [3] Jessy Ceha, Nalin Chhibber, Joslin Goh, Corina McDonald, Pierre-Yves Oudeyer, Dana Kulić, and Edith Law. 2019. Expression of Curiosity in Social Robots: Design, Perception, and Effects on Behaviour. In Proceedings of the CHI Conference on Human Factors in Computing Systems . 1–12. [4] Haifeng Chen, Chujia Guo, Yan Li, Peng Zhang, and Dongmei Jiang. 2023. Semi-Supervised Multimodal Emotion Recognition with Class-Balanced Pseudo-Labeling. In Proceedings of the ACM International Conference on Multimedia .9556–9560. [5] Zebang Cheng, Zhi-Qi Cheng, Jun-Yan He, Jingdong Sun, Kai Wang, Yuxiang Lin, Zheng Lian, Xiaojiang Peng, and Alexander G. Hauptmann. 2024. Emotion-LLaMA: Multimodal Emotion Recognition and Reasoning with Instruction Tun-ing. In Advances in Neural Information Processing Systems . 110805–110853. [6] Yiming Cui, Wanxiang Che, Ting Liu, Bing Qin, Shijin Wang, and Guoping Hu. 2020. Revisiting Pre-Trained Models for Chinese Natural Language Processing. In Findings of the Association for Computational Linguistics: EMNLP . 657–668. [7] DeepSeek-AI et al. 2024. DeepSeek-V3 Technical Report. arXiv preprint (2024). [8] Yonatan Geifman and Ran El-Yaniv. 2019. SelectiveNet: A Deep Neural Network with an Integrated Reject Option. In Proceedings of the International Conference on Machine Learning . 2151–2159. [9] Gemini Team, Google. 2025. Gemini 2.5: Pushing the Frontier with Advanced Rea-soning, Multimodality, Long Context, and Next-Generation Agentic Capabilities. 
+
+arXiv preprint (2025). [10] Deepanway Ghosal, Navonil Majumder, Alexander Gelbukh, Rada Mihalcea, and Soujanya Poria. 2020. COSMIC: Commonsense Knowledge for Emotion Identification in Conversations. In Findings of the Association for Computational Linguistics: EMNLP . 2470–2481. [11] Deepanway Ghosal, Navonil Majumder, Soujanya Poria, Niyati Chhaya, and Alexander Gelbukh. 2019. DialogueGCN: A Graph Convolutional Neural Network for Emotion Recognition in Conversation. In Proceedings of EMNLP-IJCNLP . 154– 164. [12] Goren Gordon, Samuel Spaulding, Jacqueline Kory Westlund, Jin Joo Lee, Luke Plummer, Marayna Martinez, Madhurima Das, and Cynthia Breazeal. 2016. Af-fective Personalization of a Social Robot Tutor for Children’s Second Language Skills. In Proceedings of the AAAI Conference on Artificial Intelligence . 3951–3957. [13] Devamanyu Hazarika, Soujanya Poria, Rada Mihalcea, Erik Cambria, and Roger Zimmermann. 2018. ICON: Interactive Conversational Memory Network for Multimodal Emotion Detection. In Proceedings of the Conference on Empirical Methods in Natural Language Processing . 2594–2604. [14] Devamanyu Hazarika, Soujanya Poria, Amir Zadeh, Erik Cambria, Louis-Philippe Morency, and Roger Zimmermann. 2018. Conversational Memory Network for Emotion Recognition in Dyadic Dialogue Videos. In Proceedings of NAACL-HLT .2122–2132. [15] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. 2016. Deep Residual Learning for Image Recognition. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition . 770–778. [16] Wei-Ning Hsu, Benjamin Bolte, Yao-Hung Hubert Tsai, Kushal Lakhotia, Ruslan Salakhutdinov, and Abdelrahman Mohamed. 2021. HuBERT: Self-Supervised Speech Representation Learning by Masked Prediction of Hidden Units. IEEE/ACM Trans. Audio Speech Lang. Process. 29 (2021), 3451–3460. [17] Edward J. Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. 2022. LoRA: Low-Rank Adaptation of Large Language Models. In International Conference on Learning Representations .[18] Jingwen Hu, Yuchen Liu, Jinming Zhao, and Qin Jin. 2021. MMGCN: Multi-modal Fusion via Deep Graph Convolution Network for Emotion Recognition in Conversation. In Proceedings of ACL-IJCNLP . 5666–5675. [19] Jie Hu, Li Shen, and Gang Sun. 2018. Squeeze-and-Excitation Networks. In 
+
+Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition .7132–7141. [20] Yuesheng Huang, Jinming Liu, Jiajia Chen, Yihang Lin, Yanmei Chen, and Jian-wei Dong. 2025. Affective-CoT: Decomposing Multimodal Emotion Reasoning through a Hierarchical Cognitive Workflow. In Proceedings of the ACM Interna-tional Conference on Multimedia .[21] Ran Jing, Geng Tu, Yice Zhang, and Ruifeng Xu. 2026. Causal-ERC: A Multimodal Framework with Causal Prompting for Emotion Recognition in Conversations with Large Language Models. In Proceedings of the AAAI Conference on Artificial Intelligence . 31383–31391. [22] Dong-Hyun Lee. 2013. Pseudo-Label: The Simple and Efficient Semi-Supervised Learning Method for Deep Neural Networks. In ICML Workshop on Challenges in Representation Learning .[23] Qifei Li, Yingming Gao, and Ya Li. 2023. Mining High-Quality Samples from Raw Data and Majority Voting Method for Multimodal Emotion Recognition. In 
+
+Proceedings of the ACM International Conference on Multimedia .[24] Zheng Lian, Haoyu Chen, Lan Chen, Haiyang Sun, Licai Sun, Yong Ren, Zebang Cheng, Bin Liu, Rui Liu, Xiaojiang Peng, Jiangyan Yi, and Jianhua Tao. 2025. AffectGPT: A New Dataset, Model, and Benchmark for Emotion Understanding with Multimodal Large Language Models. In Proceedings of the International Conference on Machine Learning . 36993–37014. [25] Zheng Lian, Lan Chen, Licai Sun, Bin Liu, and Jianhua Tao. 2023. GCNet: Graph Completion Network for Incomplete Multimodal Learning in Conversation. IEEE Trans. Pattern Anal. Mach. Intell. 45, 7 (2023), 8419–8432. [26] Zheng Lian, Rui Liu, Kele Xu, Bin Liu, Xuefei Liu, Yazhou Zhang, Xin Liu, Yong Li, Zebang Cheng, Haolin Zuo, Ziyang Ma, Xiaojiang Peng, Xie Chen, Ya Li, Erik Cambria, Guoying Zhao, Björn W. Schuller, and Jianhua Tao. 2025. MER 2025: When Affective Computing Meets Large Language Models. In Proceedings of the ACM International Conference on Multimedia . 13837–13842. [27] Zheng Lian, Xiaojiang Peng, Kele Xu, Ziyu Jia, Xinyi Che, Zebang Cheng, Fei Ma, Laizhong Cui, Yazhou Zhang, Xin Liu, Liang Yang, Jia Li, Fan Zhang, Liumeng Xue, Erik Cambria, Guoying Zhao, Björn W. Schuller, and Jianhua Tao. 2026. MER 2026: From Discriminative Emotion Recognition to Generative Emotion Understanding. arXiv preprint (2026). [28] Zheng Lian, Haiyang Sun, Licai Sun, Kang Chen, Mingyu Xu, Kexin Wang, Ke Xu, Yu He, Ying Li, Jinming Zhao, Ye Liu, Bin Liu, Jiangyan Yi, Meng Wang, Erik Cambria, Guoying Zhao, Björn W. Schuller, and Jianhua Tao. 2023. MER 2023: Multi-Label Learning, Modality Robustness, and Semi-Supervised Learning. In 
+
+Proceedings of the ACM International Conference on Multimedia . 9610–9614. [29] Qiyou Liu, Yong Zhang, Jianjie Luo, Zhenguo Yang, and Yi Yu. 2026. Boosting Knowledge-based Visual Question Answering with Structured Context Reason-ing. In Proceedings of the IEEE International Conference on Multimedia and Expo .[30] Josh Magnus Ludan, Yixuan Meng, Tai Nguyen, Saurabh Shah, Qing Lyu, Mari-anna Apidianaki, and Chris Callison-Burch. 2023. Explanation-Based Finetuning Makes Models More Robust to Spurious Cues. In Proceedings of the Annual Meet-ing of the Association for Computational Linguistics . 4420–4441. [31] Jianjie Luo, Jingwen Chen, Yehao Li, Yingwei Pan, Jianlin Feng, Hongyang Chao, and Ting Yao. 2024. Unleashing Text-to-Image Diffusion Prior for Zero-Shot Image Captioning. In Proceedings of the European Conference on Computer Vision .237–254. [32] Jianjie Luo, Yehao Li, Yingwei Pan, Ting Yao, Hongyang Chao, and Tao Mei. 2021. CoCo-BERT: Improving Video-Language Pre-training with Contrastive Cross-modal Matching and Denoising. In Proceedings of the ACM International Conference on Multimedia . 5600–5608. [33] Jianjie Luo, Yehao Li, Yingwei Pan, Ting Yao, Jianlin Feng, Hongyang Chao, and Tao Mei. 2023. Semantic-Conditional Diffusion Networks for Image Captioning. In 
+
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition .23359–23368. [34] Jianjie Luo, Yehao Li, Yingwei Pan, Ting Yao, Jianlin Feng, Hongyang Chao, and Tao Mei. 2025. Exploring Vision-Language Foundation Model for Novel Object Captioning. IEEE Trans. Circuits Syst. Video Technol. 35, 1 (2025), 91–102. [35] Navonil Majumder, Soujanya Poria, Devamanyu Hazarika, Rada Mihalcea, Alexander Gelbukh, and Erik Cambria. 2019. DialogueRNN: An Attentive RNN for Emotion Detection in Conversations. In Proceedings of the AAAI Conference on Artificial Intelligence . 6818–6825. [36] Evonne Ng, Hanbyul Joo, Liwen Hu, Hao Li, Trevor Darrell, Angjoo Kanazawa, and Shiry Ginosar. 2022. Learning to Listen: Modeling Non-Deterministic Dyadic Facial Motion. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 20395–20405. [37] OpenAI. 2024. GPT-4o System Card. arXiv preprint (2024). [38] Yingwei Pan, Yehao Li, Jianjie Luo, Jun Xu, Ting Yao, and Tao Mei. 2022. Auto-captions on GIF: A Large-scale Video-sentence Dataset for Vision-language Pre-training. In Proceedings of the ACM International Conference on Multimedia .7070–7074. [39] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. 2021. Learning Transferable Visual Models from Natural Language Supervision. In Proceedings of the International Conference on Machine Learning . 8748–8763. [40] Kihyuk Sohn, David Berthelot, Nicholas Carlini, Zizhao Zhang, Han Zhang, Colin A. Raffel, Ekin D. Cubuk, Alexey Kurakin, and Chun-Liang Li. 2020. Fix-Match: Simplifying Semi-Supervised Learning with Consistency and Confidence. In Advances in Neural Information Processing Systems . 596–608. [41] Luchuan Song, Guojun Yin, Zhenchao Jin, Xiaoyi Dong, and Chenliang Xu. 2023. Emotional Listener Portrait: Neural Listener Head Generation with Emotion. In 
+
+Proceedings of the IEEE/CVF International Conference on Computer Vision . 20839– 20849. [42] Ruijie Tao, Zexu Pan, Rohan Kumar Das, Xinyuan Qian, Mike Zheng Shou, and Haizhou Li. 2021. Is Someone Speaking? Exploring Long-Term Temporal Features for Audio-Visual Active Speaker Detection. In Proceedings of the ACM International Conference on Multimedia . 3927–3935. MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wei Wang et al. 
+
+[43] Antoine Toisoul, Jean Kossaifi, Adrian Bulat, Georgios Tzimiropoulos, and Maja Pantic. 2021. Estimation of Continuous Valence and Arousal Levels from Faces in Naturalistic Conditions. Nat. Mach. Intell. 3 (2021), 42–50. [44] Zhan Tong, Yibing Song, Jue Wang, and Limin Wang. 2022. VideoMAE: Masked Autoencoders Are Data-Efficient Learners for Self-Supervised Video Pre-Training. In Advances in Neural Information Processing Systems . 10078–10093. [45] Bowen Zhang, Yidong Wang, Wenxin Hou, Hao Wu, Jindong Wang, Manabu Okumura, and Takahiro Shinozaki. 2021. FlexMatch: Boosting Semi-Supervised Learning with Curriculum Pseudo Labeling. In Advances in Neural Information Processing Systems . 18408–18419. [46] Zihao Zhao, Eric Wallace, Shi Feng, Dan Klein, and Sameer Singh. 2021. Calibrate Before Use: Improving Few-Shot Performance of Language Models. In Proceedings of the International Conference on Machine Learning . 12697–12706. [47] Jinguo Zhu, Weiyun Wang, Zhe Chen, Zhaoyang Liu, Shenglong Ye, Lixin Gu, Hao Tian, Yuchen Duan, Weijie Su, Jie Shao, Zhangwei Gao, Erfei Cui, et al. 2025. InternVL3: Exploring Advanced Training and Test-Time Recipes for Open-Source Multimodal Models. arXiv preprint (2025).

@@ -1,0 +1,2169 @@
+Title: Towards Identifiable Representations under Misspecified Structure
+
+URL Source: https://arxiv.org/pdf/2609.33273v1
+
+Published Time: Tue, 29 Sep 2026 01:49:36 GMT
+
+Number of Pages: 31
+
+Markdown Content:
+Under review 
+
+# TOWARDS IDENTIFIABLE REPRESENTATIONS UNDER 
+
+# MISSPECIFIED STRUCTURE 
+
+Yuke Li 1∗
+
+, Yujia Zheng 2∗, Ziyi Chen 1, Kun Zhang 2, Heng Huang 11 University of Maryland College Park, College Park, MD, USA  
+
+> 2
+
+Carnegie Mellon University, Pittsburgh PA, USA 
+
+## ABSTRACT 
+
+The presence of noise that depends on the latent variables poses a fundamen-tal challenge to identifiability. Existing results rely on conditional independence among the observations given the latent variables. We study a more general mis-specified structure , where this conditional factorization does not hold, and es-tablish both precise and approximate identifiability guarantees. We characterize structural misspecification as a perturbed factor analysis problem. For precise identifiability, we establish subspace identifiability under spectral separation and controlled perturbation, followed by component-wise identifiability under struc-tural sparsity. When the precise condition is not guaranteed, we derive an approx-imate subspace-identifiability theorem. Based on these results, we develop an unsupervised variational estimator for recovering latent variables. Experiments demonstrate the effectiveness of the proposed framework. 
+
+## 1 INTRODUCTION 
+
+Learning meaningful representations from the data generating process with structured noise remains an open challenge. Several works treats the noise terms as known auxiliaries (Lachapelle et al., 2024b; Liang et al., 2023; Lachapelle et al., 2023; Liang et al., 2023; Lippe et al., 2023; Zheng et al., 2022; Yao et al., 2024; Lachapelle et al., 2024a; Li et al., 2025a; Song et al., 2024; Rajendran et al., 2024; Xu et al., 2024; Brady et al., 2025). One might argue that noise term can simply be absorbed into an expanded latent space. The approaches of (K¨ ugelgen et al., 2021; Kong et al., 2022; Xie et al., 2023; Timilsina et al., 2026; Xu et al., 2026) pursue this route but require partitioning them into invariant / variant components across environments. Sun et al. (2025) assumes independence between noise and latent variables, while (Kong et al., 2023) requires that the relations between a pair of latent variables have to be sufficiently distinct. When the noise itself depends on the latent variables, which we refer to as dependent noise , es-tablishing identifiability becomes substantially more challenging. Prior work (Hu & Schennach, 2008; Zheng et al., 2025) addresses this setting under the assumption that the observations become conditionally independent given the latent variables. A few recent works extends this assumption to temporal data (Li et al., 2025b;c; Fu et al., 2026). However, this assumption can be violated in realistic systems. As illustrated in Fig. 1, in chest X-ray diagnosis, the latent variable corresponds to the patient’s underlying lung-cancer state, the observation is the chest X-ray image, and the noise can be represented by the patient’s inspiration level. The inspiration level may itself depend on the disease state, while both the disease state and the inspiration level affect multiple regions of the ob-served image. Consequently, different image regions can remain statistically dependent even after conditioning on the lung-cancer state. We refer to this setting as misspecified structure , and study how to recover the latent variables under such misspecification. We address this challenge by characterizing structural misspecification as a perturbed factor analy-sis problem. Equation 5 quantifies the resulting perturbation and provides the basis for two com-plementary identifiability regimes. First, when the perturbation is sufficiently small relative to the spectral separation, Theorem 1 establishes precise subspace identifiability, while Proposition 2 fur-ther reduces the remaining ambiguity to component-wise identifiability under structural sparsity. 
+
+> ∗Equal contribution.
+
+1arXiv:2609.33273v1 [cs.LG] 27 Sep 2026 Under review Second, when the sufficient condition for precise identifiability is no longer guaranteed, Theorem 2 establishes approximate subspace identifiability by bounding the identification error between the re-covered representation and its admissible equivalence class. These theoretical contributions yields, to the best of our knowledge, one of the first general frameworks for uncovering latent variables in misspecified structure with proper identifiability guarantees. Leveraging these theoretical insights, we propose an unsupervised method, which utilizes a varia-tional inference-based learning objective specifically designed to uncover latent variables. The same learning objective is used in both the precise and approximate regimes. Experiments on synthetic and real-world data demonstrate improved latent recovery under a misspecified structure. In par-ticular, we evaluate precise component-wise identification and approximate subspace identification separately, supporting the two theoretical regimes developed in this work. 
+
+## 2 PROBLEM SETTING 
+
+Let x ∈ RK denote the K dimensional observation, z ∈ RN denote the latent variable. Our data generating process is formulated by: 
+
+x = g(z, ϵ ), ϵ = e(z, η ) (1) We assume g to be nonlinear, nonparametric and smooth functions. Importantly, e denotes another nonlinear, nonparametric and smooth function, allowing the ϵ to be dependent on z. η denotes an exogenous variable sampled from N (0 , I ).Our primary goal is to identify latent variables z from observed data x. Suppose there exists an invertible and differentiable transformation h, we further define subspace identifiability and component-wise identifiability as follows: 
+
+Definition 1. (Subspace Identifiability) The mapping h is said to achieve subspace identifiability if it is invertible and the following transformation holds: ˆz = h(z), where ˆz denotes the estimation of 
+
+z.
+
+Definition 2. (Component-wise Identifiability) For an individual component of the latent variable 
+
+zn (n ∈ [1 , N ]) , there exists a unique component ˆn (ˆ n ∈ [1 , N ]) of ˆz matches zn up to a permutation 
+
+π, such that ˆzˆn = hˆn(zπ(n)). Then zn is component-wise identifiable. 
+
+In this work, we breakdown the identifiability problem in two steps. First, we provide our findings on subspace identifiability in Section 3.1 and 3.2. Subsequently, we present the component-wise identifiability result in Section 3.3. 
+
+Remark on Misspecified Structure 
+
+Figure 1: Visualization of the data generations of Eq. 1 under misspecified structure. Our main challenge arises from relaxing the conditional-independence structure commonly used in prior identifi-cation results (Hu & Schennach, 2008; Zheng et al., 2025; Fu et al., 2026; Li et al., 2025c;b). Following their multi-partition approach, we partition the observation as three disjoint blocks x = {xa, xb, xc} and the structural mis-specification by: 
+
+Definition 3. (Misspecified Structure) The conditional structure is misspecified when the three observed blocks do not factorize conditionally on z, i.e., p(x|z)̸ =
+
+p(xa|z)p(xb|z)p(xc|z)
+
+Figure 1 illustrates the misspecified structure using the lung-cancer example introduced in Section 1. The existing results based on conditional independence rely on a factor-ization of the observable distribution that no longer holds under Definition 3. Section 3 develops identifiability guar-antees that remain valid under such misspecifications. 2Under review 
+
+## 3 IDENTIFIABILITY RESULTS 
+
+We first analyze the misspecified structure through factor analysis. To this end, we introduce two types of operators to characterize the structural misspecification: 
+
+Definition 4. (Integral Linear Operator) Consider random variables x∗ and z with supports X∗
+
+and Z respectively. The integral linear operator Lx∗|z maps a function f ∈ F (Z) to another function Lx∗|zf ∈ F (X∗), defined by: 
+
+(Lx∗|zf )( x∗) = 
+
+Z
+
+> Z
+
+p(x∗|z)f (z) dZ, ∀x∗ ∈ X ∗ (2) 
+
+where p(x∗|z) denotes the conditional density of x∗ given z.
+
+Also, we present the definition of multiplication operator Λ:
+
+Definition 5. (Multiplication Operator) Let r and v be random variables with supports R and V,respectively. For each fixed r ∈ R , define the multiplication operator Λr|v : (Λ r|v f )( v) := p(r |
+
+v)f (v), where f ∈ L 2(V).
+
+With Definition 4 and 5 established, we impose the following Assumption 1 on p(x|z).
+
+Assumption 1. The joint distribution of (x, z) admits a bounded density with respect to a suitable product measure defined on their supports. Furthermore, all marginal and conditional densities derived from this joint distribution are also bounded. 
+
+We begin by decomposing the bounded operator Lxa,xb|xc . The misspecified structure in Defini-tion 3 renders the previous decomposition and identifiability results from Hu & Schennach (2008); Zheng et al. (2025) Lxa,xb|xc = Lxa|zΛxb|zLz|xc ( Section B.1) invalid. To account for this viola-tion, we explicitly define the difference operator d(xb) as follows: 
+
+d(xb) = Lxa,xb|xc − Lxa|zΛxb|zLz|xc
+
+d =
+
+Z
+
+d(xb) dxb = Lxa|xc − Lxa|zLz|xc (3) where Λxb|z satisfies R 
+
+> xb
+
+Λxb|z dxb = I, with I representing the identity operator. Therefore, 
+
+Lxa|zLz|xc = Lxa|xc − d.To the end of further decomposition, we also assume: 
+
+Assumption 2. The operators Lxa|z and Lxa|xc are injective and bounded-below. 
+
+Assumption 2 implies that L−1 
+
+> xa|z
+
+and L−1 
+
+> xa|xc
+
+are well-defined and bounded. Leveraging all previous assumptions, we are able to derive the following: 
+
+Lxa|zΛxb|zL−1 
+
+> xa|z
+
+= ( Lxa,xb|xc − d(xb))( Lxa|xc − d)−1 = Lxa,xb|xc L−1 
+
+> xa|xc
+
++ Per (4) where Per denotes the perturbation operator that represents the structural misspecification. Rather than requiring Per itself to be known, we characterize its upper bound through || P er || op ≤ P er ,which is derived in Lemma 1 in Section B.4. Consequently, our aim becomes to identify z from 
+
+Lxa|zΛxb|zL−1 
+
+> xa|z
+
+of Eq. 4. It is worth noting that Zheng et al. (2025) particularly proves the subspace identifiability for Per = 0
+
+when the conditional independence holds. However, Definition 3 indicates that Per ̸ = 0 , and (Zheng et al., 2025) can be seen as a special case of this work. Before going further, we must address two critical challenges of Lxa|zΛxb|zL−1
+
+> xa|z
+
+: scaling ambi-guity and spectral value degeneracy. The scaling ambiguity arises when there exists a non-zero constant c such that R cp (xa|z) dxa > 1. However, this ambiguity are solved since the probability density constraint R p(xa|z) dxa = 1 must always hold. The degeneracy occurs if spectral value are repeated, thereby associating multiple eigenfunctions to a single spectral value. To eliminate this degeneracy, we introduce the following additional assumption: 
+
+Assumption 3. The operator Lxa,xb|xc L−1 
+
+> xa|xc
+
+has distinct spectral values with cardinality equal to that of Λxb|z. Also, The map Θ : Z → D , s.t. Θ( z) = p(xb | z) is injective. 
+
+3Under review Under misspecification, Eq. 4 shows that the Lxa|zΛxb|zL−1
+
+> xa|z
+
+and Lxa,xb|xc L−1 
+
+> xa|xc
+
+differ by Per .We therefore quantify how far the spectral values of Lxa,xb|xc L−1 
+
+> xa|xc
+
+may move under this per-turbation. To this end, we need to first justify the spectral analysis of Eq. 4 by establishing that Lxa|zΛxb|zL−1 
+
+> xa|z
+
+admits a unique spectral resolution. Since p(xb|z) is real-valued, Λxb|z is self-adjoint, which already admits a unique projection-valued measure. Its similarity transforma-tion through Lxa|z then induces the corresponding unique spectral resolution of Lxa|zΛxb|zL−1
+
+> xa|z
+
+(Dunford & Schwartz, 1971). Thus, Lxa|zΛxb|zL−1 
+
+> xa|z
+
+is equivalently the spectral resolution of 
+
+Lxa,xb|xc L−1 
+
+> xa|xc
+
++ Per . The detailed proof is provided in Appendix B.2. Let ρ ∈ σ(Lxa,xb|xc L−1 
+
+> xa|xc
+
+) and ρΛ ∈ σ(Lxa|zΛxb|zL−1
+
+> xa|z
+
+), where σ(∗) denotes the spectral value. The resolvent perturbation bound for bounded operator from (Trefethen, 2005; Amor, 2003) yields: 
+
+dist (ρ, ρ Λ) ≤ κP er (5) where dist (ρ, ρ Λ) = inf ρΛ |ρ − ρΛ|, κ = || Lxa|z|| op || L−1
+
+> xa|z
+
+|| op , and || ∗ || op denotes the operator norm. Notably, κ ≥ 1, since || Lxa|zL−1
+
+> xa|z
+
+|| op = || I|| op ≤ || Lxa|z|| op || L−1
+
+> xa|z
+
+|| op , where I denotes the identity operator. Let us define η = inf i̸=j |ϱi−ϱj | 
+
+> 2κ
+
+− α ≥ 0 for some constant α > 0, where ϱ
+
+denotes the non-empty spectrum, i, j denote the indices of the spectrum. Similarly, let ϱΛ denotes the spectrum of ρΛ. We opt to measure dist (ρ, ρ Λ) = |ρi − ρi
+
+> Λ
+
+|. Equation 5 forms the basis of the precise and approximate identifiability results developed next. 
+
+Assumption Intuitions 
+
+• Assumption 1 is a regularity condition to ensure that the operator expressions below are well defined. 
+
+• Assumption 2 is mild and prevents these operators from collapsing distinct functions to the same output. 
+
+• Assumption 3 prevents different latent variables from being indistinguishable through the same spectral value. Injectivity of Θ further ensures that distinct latent states induce distinct conditional distributions of xb.3.1 PRECISE SUBSPACE IDENTIFIABILITY 
+
+After facilitating the structural misspecification in Eq. 5, we now establish the precise identifiability result that meets Definition 1. The key requirement is that P er needs to be sufficiently small so that distinct spectral values remain distinguishable. Consider || P er || op ≤ Per < η 1 for some non-zero constant η, and substitute it into Eq. 4 resulting in: 
+
+Lxa|zΛxb|zL−1 
+
+> xa|z
+
+< L xa,xb|xc L−1 
+
+> xa|xc
+
++ η (6) Given Eq. 6, we propose the following for the distinctness of ρi
+
+> Λ
+
+:
+
+Proposition 1. Suppose Assumptions 1 ∼ 3 hold, and if both ϱi and ϱi 
+
+> Λ
+
+include only ρi and ρi
+
+> Λ
+
+,respectively. Then, for all i > 1 and for all z,
+
+ρi 
+
+> Λ
+
+∈  max {ρi − κPer , ρ i−1 + κPer }, ρ i + κPer 
+
+and if i = 1 , for all z,
+
+ρi 
+
+> Λ
+
+∈ (ρi − κPer , ρ i + κPer )
+
+guarantee the distinctness of ρΛ.
+
+Insight: For fixed xb, σ(Λ xb|z) is determined by the essential range of p(xb|z). Proposition 1 ensures that P er does not collapse two distinct ρΛ into the same regime. Together with the injec-tivity of Θ in Assumption 3, ρΛ remains invariant by re-labeling through permuting z. This can be 
+
+> 1
+
+We provide the sufficient condition of P er < η in Lemma 2 in Section B.4. 
+
+4Under review formally described by z′ = h′(z), where h′ denotes a bijection h′ : Z → Z , and z′ is a permuted version of z.
+
+Proof Sketch: We proceed by contradiction. Assuming the existence of distinct spectral values 
+
+ρ1, ρ 2 satisfy |ρ1 −ρi
+
+> Λ
+
+| ≤ κPer and |ρ2 −ρi
+
+> Λ
+
+| ≤ κPer . This leads directly to Per ≥ η, contradicting the condition Per < η .Notably, the bijection h′ introduced above might not coincide with h defined in Definition 1. To meet the requirement of h being differentiable, we introduce the following assumption: 
+
+Assumption 4. There exists a map M : D → Z such that M (p(xb|z)) = M (p(xb|h′(z))) = h(z),where D is the support of p(xb|z), h is a differentiable transformation. 
+
+We are now ready to state our main theoretical result on subspace identifiability: 
+
+Theorem 1. Consider observed variables x ∈ RK and the estimated latent variables ˆz ∈ RN ,suppose that Proposition 1 and Assumption 4 hold, ∃h, s.t., ˆz = h(z) = h′(z), In other words, z
+
+must be subspace identified. 
+
+Insight: Theorem 1 characterizes a perturbation regime in which the subspace identifiability in Definition 1 survives from structural misspecification. The detailed proofs of both Proposition 1 and Theorem 1 are in Sec.B.2. 
+
+Assumption intuition: 
+
+Assumption 4 ensures that the transformation h established through the Proposition 1 belongs to the transformation class required by Definition 1. 3.2 APPROXIMATE SUBSPACE IDENTIFIABILITY 
+
+Theorem 1 establishes precise identifiability under the perturbation condition P er < η . However, this inequality is not guaranteed when the sufficient condition in Lemma 2 is not satisfied. Conse-quently, Theorem 1 may no longer hold even under Assumptions 1-3. Motivated by this limitation, we consider approximate identifiability , which quantifies the deviation of the recovered representa-tion from its admissible equivalence class: 
+
+Definition 6. (Approximate identifiability) Let H denote the class of admissible invertible and smooth transformations in Definition 1. The latent variable z is ε-approximately identifiable with respect to H if 
+
+dH(ˆ z, z) := inf  
+
+> h∈H
+
+|ˆz − h(z)| = ε (7) 
+
+where the identifiability error ε ≥ 0. In particular, ε = 0 reduces to precisely subspace identifiabil-ity. 
+
+We are now ready to connect ε with P er . To this end, we impose the following assumption and Theorem: 
+
+Assumption 5. The latent space Z is compact, and the conditional-distribution map Θ in Assump-tion iii is continuously differentiable. Moreover, there exists a constant cΘ > 0 such that, for an admissible invertible transformation h ∈ H , Θ satisfies the lower bound of Bi-Lipschitz continuity by: 
+
+cΘ|ˆz − h(z)| ≤ ∥ Θ( z) − bΘ(ˆ z)∥F . (8) 
+
+Theorem 2. Suppose Assumptions 1–3 and Assumption 5 hold, and the spectral perturbation bounds in Eq. 5 apply to the corresponding spectral values of the true and estimated representa-tions. Then the approximate identification error in Definition 6 satisfies 
+
+ε ≤ κP er + ˆ κ dP er cΘ
+
+(9) 5Under review 
+
+Insight: Theorems 1 and 2 characterize two identifiability regimes. When Per < η , the spectral value remain separated and precise subspace identifiability is guaranteed. When this condition cannot be guaranteed, Theorem 2 provides a relaxation: there exists an error ε bounded by Eq. 9. Under Assumptions 1–3, the same spectral perturbation argument as in Eq. 5 yields |ρi − ρi
+
+> Λ
+
+| ≤ 
+
+κP er and |ρi − ˆρi
+
+> Λ
+
+| ≤ ˆκ dP er . Therefore, the triangle inequality results in |ρi 
+
+> Λ
+
+− ˆρi
+
+> Λ
+
+| ≤ κP er + ˆ κ dP er .Combining this perturbation bound with the inverse-Lipschitz condition in Assumption 5 yields the upper bound in Eq. 9. The detailed proof is provided in Sec. B.3. 
+
+Assumption intuition: 
+
+Assumption 5 provides the quantitative measure to connect the discrepancy in D with discrepancy in Z.3.3 PRECISE COMPONENT -WISE IDENTIFIABILITY 
+
+In this section, we introduce our precise component-wise identifiability upon Theorem 1. Extending the result to approximate component-wise identifiability requires additional component-level infor-mation and is left for future work. 
+
+Theorem 1 guarantees that ˆz = h(z) is not a function of ϵ, hence z and ϵ are disentangled. We now focus on identifying z in a component-wise manner. Consider that each dimensions of z are independent of each other ( p(z) = QNn=1 p(zn)), Taking inspirations from (Lachapelle et al., 2023; Zheng & Zhang, 2024; Xu et al., 2024), we extend the definition of structural sparsity to the function from z to p(x|z) and establish the following proposition: 
+
+Proposition 2. Suppose (Theorem 1) holds, and the following assumptions and regularization con-ditions are satisfied: 1. (Independence) : For n ∈ [N ], zn are independent of each other: p(z) = QNn=1 p(zn).2. (Structural sparsity) : The map Φ : Z → P is smooth, where Z denotes the support of z,and P denotes the support of p(x|z) ( P ⊂ L 2(X , μ ) (X denotes the space of x, μ denotes the measure)). Let G and ˆG be the binary support matrix of Jacobian JΦ(z) and JˆΦ(ˆ z),respectively, i.e., Gi,j = 1 if || ∂p (xi|z) 
+
+> ∂zj
+
+|| L2̸ = 0 , and 0 for otherwise. For each n ∈ [1 , N ],there exists a subset of indices Ck satisfying T 
+
+> m∈C k
+
+Gm, : = {n};3. | ˆG|0 ≤ | G|0, where | ∗ | 0 is the ℓ0 norm. Then, ˆz must correspond component-wise to a permutation of the true latent variables z.
+
+Insight: Theorem 1 first reduces the ambiguity from an arbitrary latent representation to an invert-ible transformation ˆz = h(z). Proposition 2 further uses structural sparsity to rule out transforma-tions that mix multiple latent coordinates. Consequently, even under the misspecified structure, we are able to recover z in a component-wise manner. 
+
+Proof Sketch: The complete proof is deferred to the Appendix B.5. Here we highlight key steps. First, the subspace identifiability (Theorem 1) imply ˆz = h(z), which leads to: JΦ(z) = 
+
+JˆΦ(ˆ z)Jh(z). Subsequently, by leveraging the injectivity of Φ in Assumption 3, component-wise identifiability is proven by contradiction: any violation would contradict the structural sparsity in assumption 2. 
+
+Assumption Intuitions: 
+
+• Assumption 1 treats the coordinates of z as distinct latent sources. It provides the additional structure on which the sparsity condition operates. 
+
+• Assumption 2 requires each latent component to be sparsely uniquely localized through the conditional distributions of a subset of observed variables. 
+
+• | ˆG0| ≤ | G| is the regularization that supports the structural sparsity in Assumption 2 for learning. 6Under review 
+
+Assumption 1 in Proposition 2 claims the independence between each dimension of z. To relax such a constraint, we can alternatively allow latent variables z to exhibit dependence via a known auxiliary domain variable u. The details are discussed in Proposition 3 of Sec. B.6. 
+
+## 4 APPROACH 
+
+We now develop an unsupervised estimator for recovering the latent variable z under the data-generating process in Eq. 1. Our central objective aims to learn p(x|z). However, since z is unob-servable from the data, we cannot directly optimize p(x|z) from the data. Accordingly, we instead learn the joint density in Eq. 1 through formalizing the following: 
+
+p(z, ϵ, x) = pθ (x|z, ϵ )pγ (ϵ|z)pδ (z) (10) where parameters θ denotes the parameters of g. γ denotes the parameters of e, and δ parameterizes 
+
+p(z). To uncover the latent variables z and ϵ from observed data x, we introduce two encoders, 
+
+qψ (z|x) and qϕ(ϵ|x) parameterized by ψ and ϕ, respectively. To the end of learning Eq. 10, we build our approach upon the framework of Beta-VAE (Higgins et al., 2016). The overall architecture of our framework is illustrated in Figure 2. In what follows, we detail each part of our proposed model. 4.1 NETWORK DESIGN 
+
+Learning Eq. 10 via variational inference suggests the architecture for our approach composing of the following key elements. Specifically, the architecture includes two encoders: qψ (ˆ z|x) for in-ferring latent variables z, and qϕ(ˆ ϵ|x) for estimating the posterior of noise term ϵ. These latent representations are then utilized by a decoder pθ (ˆ x|ˆz, ˆϵ) to reconstruct the observations x. Addi-tionally, we regularize the latent variables by constraining their posterior distributions via the KL divergence to match the learned priors. We detail each of these modules below. 
+
+Figure 2: The overall framework of our proposed approach consists of: (1) two encoders qψ and qϕ that map observations xt to ˆz and ˆϵ, re-spectively; (2) a decoder that recon-structs observations ˆx from ˆz and ˆϵ;and (3) two prior estimation mod-ules pδ and pγ that models the prior of z and ϵ, respectively. We train the framework by LRecon along with 
+
+LKLD .
+
+Encoder qψ (ˆ z|x): We parameterize qψ (ˆ z|x) as an isotropic Gaussian characterized by mean μz and covariance σz. To approximate this posterior, we employ a neural network en-coder constructed with an MLP followed by a leaky ReLU activation: 
+
+ˆz ∼ N (μz, σ z), μz, σ z = LeakyReLU (MLP (x)) (11) 
+
+Encoder qϕ(ˆ ϵ|x): Similarly, we parameterize qϕ(ˆ ϵ|x) as an-other isotropic Gaussian distribution: 
+
+ˆϵ ∼ N (μϵ, σ ϵ), μϵ, σ ϵ = LeakyReLU (MLP (x)) (12) 
+
+Prior Estimation pδ (z|): We estimate the prior pδ (z|) as a factorized Gaussian across latent dimensions, since we as-sume the independence of each dimension of z in Assump-tion 1 of Proposition 2: 
+
+pδ (z) = 
+
+> N
+
+Y
+
+> n=1
+
+pδ (zn), zn ∼ N (0 , 1) (13) 
+
+Prior Estimation pγ (ϵ|z): Direct estimation of the arbi-trary density pγ (ϵ|z) poses a substantial challenge. To over-come this, we introduce a transformation-based module lever-aging normalizing flows, representing the prior distribution as a Gaussian transformed via an invertible mapping. Sup-pose each component of ϵ is independent conditioning on 
+
+z, ∀m ∈ [1 , M ], the prior model is formulated through: 
+
+ˆηm = ˆ e−1,m (ˆ ϵm|ˆz). Using the change-of-variable, the prior 7Under review distribution of ˆϵm is computed as: pγ (ˆ ϵm|ˆz) = p(ˆ ηm) ∂ ˆe−1,m  
+
+> ∂ˆϵm
+
+= pγ (ˆ e−1,m (ˆ ϵm|ˆz)) ∂ ˆe−1,m  
+
+> ∂ˆϵm
+
+. Ag-gregating across all dimensions, the complete prior distribution is given by: 
+
+pγ (ˆ ϵ|ˆz) = 
+
+> M
+
+Y
+
+> m=1
+
+p(ˆ ηm) ∂ˆe−1,m 
+
+∂ˆϵm (14) The normalizing flow transformation ˆe is implemented using a stacked MLP. 
+
+Decoder pθ (ˆ x|ˆz, ˆϵ): The decoder generates the reconstructed observations ˆx from inferred latent variables ˆz and ˆϵ. It is implemented using an MLP followed by leaky ReLU activations: 
+
+ˆx = LeakyReLU (MLP (ˆ z, ˆϵ)) (15) 4.2 TRAINING OBJECTIVE 
+
+Our complete ELBO is: 
+
+LELBO = Eˆz∼qψ [Lcond ] − β1 Eˆz∼qψ
+
+  log q (ˆ z|x) − log pδ (z)| {z }  
+
+> LKLD of z
+
++Lsparse (16) where β1 denotes the hyperparameter to penalize the KL divergence of z. In the following, we explain each part in details. We first construct the variational lower bound of p(x|z). For a fixed ˆz, we can define: 
+
+Lcond = Eˆϵ∼qϕ [log pθ (ˆ x|ˆz, ˆϵ)] − β2Eˆϵ∼qϕ
+
+  log q (ˆ ϵ|x) − log pγ (ˆ ϵ|ˆz) (17) where β2 is the hyperparameter that balance the KL divergence of ϵ.Additionally, to learn the latent representation ˆz, we further regularize its approximate posterior 
+
+q(ˆ z|x) toward the prior pδ (z) using the KL divergence. We then take the expectation of both Lcond 
+
+and KLD of z with respect to qψ (ˆ z | x).We also design the regularizer Lsparse by: 
+
+Lsparse = | Eˆϵ∼qϕ [∂ log pθ (ˆ x|ˆz, ˆϵ)] 
+
+∂ˆz + Eˆϵ∼qϕ [∂ log pγ (ˆ ϵ|ˆz)] 
+
+∂ˆz |1 (18) 
+
+|∗| 1 denotes the ℓ1 norm that enforces the sparsity regularization in the Regularization 3. We use the 
+
+log pθ (ˆ x|ˆz, ˆϵ) and log pγ (ˆ ϵ|ˆz) instead of the actual pθ (ˆ x|ˆz) is given the fact that ∂p (xi|z) 
+
+> ∂zj
+
+= 0 ⇐⇒    
+
+> ∂log p(xi|z)
+> ∂zj
+
+= 0 . where the ℓ1 penalty serves as a differentiable surrogate for the ℓ0 norm. Notably, we do not require any knowledge of the theoretical partitions of x in Definition 3 .
+
+## 5 EXPERIMENTS 
+
+5.1 EXPERIMENTAL SETUP 
+
+Data: We evaluate the precise and approximate identifiability results using synthetic data described in Section C.1, and the assumption justifications are provided in Section C.2. For precise iden-tifiability, since Proposition 2 is established upon the subspace result of Theorem 1, we create a dataset evaluates component-wise recovery of z. For approximate identifiability, we synthesize an-other dataset satisfying the assumptions required by Theorem 2. This setting evaluates approximate subspace recovery only, since approximate component-wise identifiability is left for future work. 
+
+Metrics: For precise identifiability, we use the Mean Correlation Coefficient (MCC) to evaluate component-wise recovery. MCC measures the average absolute correlation between matched coor-dinates of the true and estimated latent variables. MCC scores range from 0 to 1, with larger values indicating better component-wise identification. For approximate identifiability, we report the coefficient of determination R2 after aligning ˆz with z.A higher value of R2 corresponds to a smaller discrepancy between ˆz and its admissible equivalent 
+
+z and therefore indicates better approximate subspace identifiability. 8Under review 
+
+Figure 3: (a) Visualization of the correlations between each component of true latent variables (zi) and their corresponding component of estimated latent variables ( ˆzi) using our approach. The green bounding boxes highlight the components that are identified. (b) Mean Correlation Coeffi-cient (MCC) scores comparing our framework with state-of-the-art approaches, including IndVAE, MCRL, BetaVAE, iVAE, and SlowVAE, as well as the ablation baselines W/O e and W/O s.
+
+Comparison Methods. We compare our method with several representative approaches for latent variable identification. IndVAE (Hu & Schennach, 2008; Zheng et al., 2025) assumes conditional independence among observations given the latent variables; its objective is detailed in Section C.4. MCRL (Sun et al., 2025) assumes that the noise term ϵ is independent of z. We additionally compare against Beta-VAE (Higgins et al., 2016), iVAE (Khemakhem et al., 2020), and SLOW-VAE (Klindt et al., 2020). We further conduct ablations to asses the impact of latent-dependent noise and struc-tural sparsity. “W/O e” removes the dependence ϵ = e(z) from Eq. equation 1, whereas “W/O s” removes the structural-sparsity regularization imposed on Φ. Section C.3 provides the implementa-tion details of our approach. 5.2 RESULTS AND DISCUSSIONS :
+
+Precise Identifiability: As shown in Figure 3(b), our method achieves the highest MCC among all compared approaches, demonstrating more accurate component-wise recovery of the latent variables under misspecified structure. Figure 3(a) provides a complementary visualization: each true latent coordinate zi exhibits a clear one-to-one correspondence with a single estimated coordinate ˆzi,while the off-diagonal pairs show substantially weaker dependence. This behavior is consistent with component-wise recovery. The ablation results further illustrate the importance of modeling the data-generating structure. In-dVAE performs substantially worse because its conditional-independence assumption is violated by our synthetic data. Removing the latent-dependent noise model (“W/O e”) also reduces MCC com-paring with our full model, indicating that explicitly modeling ϵ = e(z, η ) is important for separating the latent signal from the dependent noise. Also, “W/O s” yields lower MCC than the full model, supporting the impact of the structural-sparsity regularization. 
+
+Approximate Identifiability: We use the same model architecture and the same training objective as in the precise-identifiability experiment; only P er < η does not hold in the the synthetic data. This setting therefore evaluates whether the same estimator can still recover a representation close to the admissible equivalence class under the approximate identifiability regime. 9Under review Figure 4 reports the R2 scores. Our method achieves the highest R2 among all compared approaches, indicating that 
+
+ˆz retains the strongest correspondence with z in the approximate-identifiability regime. This is consistent with Theo-rem 2. The comparison with IndVAE, MCRL, Beta-VAE, iVAE and SLOW-VAEfurther shows that explic-itly modeling the misspecified latent-dependent-noise process improves latent recovery even out-side the precise-identifiability regime. In particular, “W/O e” obtains a lower R2 than the complete model, showing that modeling the dependence between ϵ and z remains beneficial for approximate subspace recovery. “W/O s” also decreases R2, suggesting the benefit from structural sparsity. 
+
+Also, we postpone discussing the real-world experiments, and more ablation studies in Section D .
+
+## AI U SE STATEMENT 
+
+In this work, we used generative AI tools solely to assist with language editing, including improving grammar, clarity, conciseness, and overall wording of the manuscript. Generative AI tools were not used to generate the research ideas, theoretical results, experimental design, or scientific conclusions. All AI-assisted text was reviewed and revised by the authors, who take full responsibility for the final content of this work. 10 Under review 
+
+## REFERENCES 
+
+Ali Ben Amor. An extension of henrici theorem for the joint approximate spectrum of commuting spectral operators. Journal of the Australian Mathematical Society , 75(2):233–246, 2003. Jack Brady, Julius von K¨ ugelgen, Sebastien Lachapelle, Simon Buchholz, Thomas Kipf, and Wieland Brendel. Interaction asymmetry: A general principle for learning composable abstrac-tions. In The Thirteenth International Conference on Learning Representations , 2025. URL 
+
+https://openreview.net/forum?id=cCl10IU836 .Nelson Dunford and Jacob T Schwartz. Linear operators . Wiley-interscience, 1971. Minghao Fu, Biwei Huang, Zijian Li, Yujia Zheng, Ignavier Ng, Guangyi Chen, Yingyao Hu, and Kun Zhang. Learning general causal structures with hidden dynamic process for cli-mate analysis. In Forty-third International Conference on Machine Learning , 2026. URL 
+
+https://openreview.net/forum?id=MZxhwFT7yF .Yuqian Fu, Yu Xie, Yanwei Fu, and Yu-Gang Jiang. Styleadv: Meta style adversarial training for cross-domain few-shot learning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 24575–24584, 2023. Chunjiang Ge, Rui Huang, Mixue Xie, Zihang Lai, Shiji Song, Shuang Li, and Gao Huang. Domain adaptation via prompt learning. IEEE Transactions on Neural Networks and Learning Systems ,2023. doi: 10.1109/TNNLS.2023.3327962. Ian Goodfellow, Yoshua Bengio, Aaron Courville, and Yoshua Bengio. Deep learning , volume 1. MIT Press, 2016. Shuting He, Hao Luo, Pichao Wang, Fan Wang, Hao Li, and Wei Jiang. Transreid: Transformer-based object re-identification. In Proceedings of the IEEE/CVF international conference on com-puter vision , pp. 15013–15022, 2021. Irina Higgins, Loic Matthey, Arka Pal, Christopher Burgess, Xavier Glorot, Matthew Botvinick, Shakir Mohamed, and Alexander Lerchner. beta-vae: Learning basic visual concepts with a constrained variational framework. In International conference on learning representations , 2016. Yingyao Hu and Susanne M Schennach. Instrumental variable treatment of nonclassical measure-ment error models. Econometrica , 76(1):195–216, 2008. Ilyes Khemakhem, Diederik Kingma, Ricardo Monti, and Aapo Hyvarinen. Variational autoen-coders and nonlinear ica: A unifying framework. In International conference on artificial intelli-gence and statistics , pp. 2207–2217. PMLR, 2020. David Klindt, Lukas Schott, Yash Sharma, Ivan Ustyuzhaninov, Wieland Brendel, Matthias Bethge, and Dylan Paiton. Towards nonlinear disentanglement in natural data with temporal sparse coding. 
+
+arXiv preprint arXiv:2007.10930 , 2020. Lingjing Kong, Shaoan Xie, Weiran Yao, Yujia Zheng, Guangyi Chen, Petar Stojanov, Victor Akin-wande, and Kun Zhang. Partial disentanglement for domain adaptation. In Kamalika Chaudhuri, Stefanie Jegelka, Le Song, Csaba Szepesvari, Gang Niu, and Sivan Sabato (eds.), Proceedings of the 39th International Conference on Machine Learning , volume 162 of Proceedings of Machine Learning Research , pp. 11455–11472. PMLR, 17–23 Jul 2022. Lingjing Kong, Biwei Huang, Feng Xie, Eric Xing, Yuejie Chi, and Kun Zhang. Identification of nonlinear latent hierarchical models. Advances in Neural Information Processing Systems , 36: 2010–2032, 2023. Julius Von K¨ ugelgen, Yash Sharma, Luigi Gresele, Wieland Brendel, Bernhard Sch¨ olkopf, Michel Besserve, and Francesco Locatello. Self-supervised learning with data augmentations prov-ably isolates content from style. In A. Beygelzimer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems , 2021. URL https: //openreview.net/forum?id=4pf_pOo0Dt .11 Under review S´ ebastien Lachapelle, Tristan Deleu, Divyat Mahajan, Ioannis Mitliagkas, Yoshua Bengio, Simon Lacoste-Julien, and Quentin Bertrand. Synergies between disentanglement and sparsity: Gen-eralization and identifiability in multi-task learning. In International Conference on Machine Learning , pp. 18171–18206. PMLR, 2023. S´ ebastien Lachapelle, Pau Rodr´ ıguez L´ opez, Yash Sharma, Katie Everett, R´ emi Le Priol, Alexan-dre Lacoste, and Simon Lacoste-Julien. Nonparametric partial disentanglement via mecha-nism sparsity: Sparse actions, interventions and sparse temporal dependencies. arXiv preprint arXiv:2401.04890 , 2024a. S´ ebastien Lachapelle, Divyat Mahajan, Ioannis Mitliagkas, and Simon Lacoste-Julien. Additive de-coders for latent variables identification and cartesian-product extrapolation. Advances in Neural Information Processing Systems , 36, 2024b. Siyuan Li, Li Sun, and Qingli Li. Clip-reid: exploiting vision-language model for image re-identification without concrete text labels. In Proceedings of the AAAI conference on artificial intelligence , volume 37, pp. 1405–1413, 2023. Xinyao Li, Yuke Li, Zhekai Du, Fengling Li, Ke Lu, and Jingjing Li. Split to merge: Unifying separated modalities for unsupervised domain adaptation. In Proceedings of the IEEE/CVF Con-ference on Computer Vision and Pattern Recognition , pp. 23364–23374, June 2024a. Yuke Li, Guangyi Chen, Ben Abramowitz, Stefano Anzellotti, and Donglai Wei. Learning causal domain-invariant temporal dynamics for few-shot action recognition. In Forty-first International Conference on Machine Learning , 2024b. URL https://openreview.net/forum?id= LvuuYqU0BW .Yuke Li, Yujia Zheng, Guangyi Chen, Kun Zhang, and Heng Huang. Identification of intermittent temporal latent process. In The Thirteenth International Conference on Learning Representations ,2025a. URL https://openreview.net/forum?id=6Pz7afmsOp .Zijian Li, Minghao Fu, Junxian Huang, Yifan Shen, Ruichu Cai, Yuewen Sun, Guangyi Chen, and Kun Zhang. Towards identifiability of hierarchical temporal causal representation learning. Ad-vances in Neural Information Processing Systems , 38:19680–19719, 2025b. Zijian Li, Changze Zhou, Minghao Fu, Sanjay Manjunath, Fan Feng, Guangyi Chen, Yingyao Hu, Ruichu Cai, and Kun Zhang. Online time series forecasting with theoretical guarantees. Advances in Neural Information Processing Systems , 38:134299–134343, 2025c. Wendong Liang, Armin Keki´ c, Julius von K¨ ugelgen, Simon Buchholz, Michel Besserve, Luigi Gre-sele, and Bernhard Sch¨ olkopf. Causal component analysis. In Thirty-seventh Conference on Neural Information Processing Systems , 2023. URL https://openreview.net/forum? id=HszLRiHyfO .Phillip Lippe, Sara Magliacane, Sindy L¨ owe, Yuki M Asano, Taco Cohen, and Efstratios Gavves. BISCUIT: Causal Representation Learning from Binary Interactions. In The 39th Conference on Uncertainty in Artificial Intelligence , 2023. URL https://openreview.net/forum? id=VS7Dn31xuB .Hong Liu, Liang Hu, and Liqian Ma. Online rgb-d person re-identification based on metric model update. CAAI Transactions on Intelligence Technology , 2(1):48–55, 2017. Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. In International Confer-ence on Learning Representations , 2019. Xingchao Peng, Ben Usman, Neela Kaushik, Dequan Wang, Judy Hoffman, and Kate Saenko. Visda: A synthetic-to-real benchmark for visual domain adaptation. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops , pp. 2021–2026, 2018. Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agar-wal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural language supervision. In Proceed-ings of the 38th International Conference on Machine Learning , volume 139 of Proceedings of Machine Learning Research , pp. 8748–8763, 2021a. 12 Under review Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. Learning transferable visual models from natural language supervision. In International conference on machine learning , pp. 8748–8763. PMLR, 2021b. Goutham Rajendran, Simon Buchholz, Bryon Aragam, Bernhard Sch¨ olkopf, and Pradeep Kumar Ravikumar. From causal to concept-based representation learning. In The Thirty-eighth Annual Conference on Neural Information Processing Systems , 2024. URL https://openreview. net/forum?id=r5nev2SHtJ .Mainak Singha, Harsh Pal, Ankit Jha, and Biplab Banerjee. AD-CLIP: Adapting domains in prompt space using CLIP. In Proceedings of the IEEE/CVF International Conference on Computer Vision Workshops , pp. 4355–4364, October 2023. Xiangchen Song, Weiran Yao, Yewen Fan, Xinshuai Dong, Guangyi Chen, Juan Carlos Niebles, Eric Xing, and Kun Zhang. Temporally disentangled representation learning under unknown nonstationarity. Advances in Neural Information Processing Systems , 36, 2024. Yuewen Sun, Lingjing Kong, Guangyi Chen, Loka Li, Gongxu Luo, Zijian Li, Yixuan Zhang, Yu-jia Zheng, Mengyue Yang, Petar Stojanov, Eran Segal, Eric P. Xing, and Kun Zhang. Causal representation learning from multimodal biomedical observations. In The Thirteenth Interna-tional Conference on Learning Representations , 2025. URL https://openreview.net/ forum?id=hjROBHstZ3 .Subash Timilsina, Hoang-Son Nguyen, Sagar Shrestha, and Xiao Fu. Content-style identification via differential independence. In Forty-third International Conference on Machine Learning , 2026. URL https://openreview.net/forum?id=WcsBsGO6SW .Lloyd N Trefethen. Spectra and pseudospectra: The behaviour of non-normal matrices and oper-ators. In The graduate student’s guide to numerical analysis’ 98: Lecture notes from the VIII EPSRC Summer School in Numerical Analysis , pp. 217–250. Springer, 2005. Hemanth Venkateswara, Jose Eusebio, Shayok Chakraborty, and Sethuraman Panchanathan. Deep hashing network for unsupervised domain adaptation. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition , pp. 5018–5027, 2017. Longhui Wei, Shiliang Zhang, Wen Gao, and Qi Tian. Person transfer gan to bridge domain gap for person re-identification. In Proceedings of the IEEE conference on computer vision and pattern recognition , pp. 79–88, 2018. Ancong Wu, Wei-Shi Zheng, Hong-Xing Yu, Shaogang Gong, and Jianhuang Lai. Rgb-infrared cross-modality person re-identification. In Proceedings of the IEEE international conference on computer vision , pp. 5380–5389, 2017. Shaoan Xie, Lingjing Kong, Mingming Gong, and Kun Zhang. Multi-domain image generation and translation with identifiability guarantees. In The Eleventh International Conference on Learning Representations , 2023. Danru Xu, Dingling Yao, S´ ebastien Lachapelle, Perouz Taslakian, Julius von K¨ ugelgen, Francesco Locatello, and Sara Magliacane. A sparsity principle for partially observable causal representation learning. arXiv preprint arXiv:2403.08335 , 2024. Danru Xu, Lauri Parkkonen, Sara Magliacane, and Aapo Hyvarinen. Identifying dependent com-ponents from multi-domain linear mixtures. In Forty-third International Conference on Machine Learning , 2026. URL https://openreview.net/forum?id=OIhwTkpkS1 .Zhengwei Yang, Yuke Li, Qiang Sun, Basura Fernando, Heng Huang, and Zheng Wang. Cross-modal few-shot learning: a generative transfer learning framework, 2025. URL https:// arxiv.org/abs/2410.10663 .Dingling Yao, Danru Xu, Sebastien Lachapelle, Sara Magliacane, Perouz Taslakian, Georg Martius, Julius von K¨ ugelgen, and Francesco Locatello. Multi-view causal representation learning with partial observability. In The Twelfth International Conference on Learning Representations , 2024. 13 Under review Mang Ye, Jianbing Shen, Gaojie Lin, Tao Xiang, Ling Shao, and Steven CH Hoi. Deep learning for person re-identification: A survey and outlook. IEEE transactions on pattern analysis and machine intelligence , 44(6):2872–2893, 2021. Yujia Zheng and Kun Zhang. Generalizing nonlinear ica beyond structural sparsity. Advances in Neural Information Processing Systems , 36, 2024. Yujia Zheng, Ignavier Ng, and Kun Zhang. On the identifiability of nonlinear ica: Sparsity and beyond. Advances in neural information processing systems , 35:16411–16422, 2022. Yujia Zheng, Yang Liu, Jiaxiong Yao, Yingyao Hu, and Kun Zhang. Nonparametric factor analysis and beyond. In The 28th International Conference on Artificial Intelligence and Statistics , 2025. Fei Zhou, Peng Wang, Lei Zhang, Wei Wei, and Yanning Zhang. Revisiting prototypical network for cross domain few-shot learning. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , pp. 20061–20070, 2023. 14 Under review 
+
+## A NOTIONS 
+
+Table of notions Variables 
+
+x ∈ RK Observations ˆx ∈ RK Reconstructions 
+
+κ || Lxa|z|| op || L−1
+
+> xa|z
+
+|| op ε Identifiability error 
+
+z ∈ RN Latent variables ˆz ∈ RN Latent variable estimations 
+
+ϵ True dependent noise term ˆϵ Estimation of ϵη Auxiliary variable ˆη Estimation of η
+
+Indices 
+
+{a, b, c} The indices of partitions of x {A, B, C } The indices of partitions of x′
+
+n ∈ [N ] The indices of z ˆn ∈ [N ] The indices of ˆz
+
+i The index of ρΛ and ρ j The index of ρΛ and ρ
+
+Operators 
+
+L Integral linear operator Λ Multiplication operator 
+
+ρΛ The eigenvalue of Lxa|zLxb|zL−1 
+
+> xa|z
+
+ρ The eigenvalue of Lxa,xb|xc L−1
+
+> xa|xc
+
+P er Perturbation operator P er The upper bound of || P er || op 
+
+True & learned model 
+
+g True mixing function ˆg Learned mixing function 
+
+e True function of ϵ ˆe Learned function of ϵJΦ The jacobian of Φ JˆΦ The jacobian of ˆgΦ
+
+Optimizations 
+
+ψ Parameters of posterior qψ (z|x) ϕ Parameters of posterior qϕ(ϵ|x)
+
+δ Parameters of prior pδ (z) γ Parameters of prior pγ (ϵ|z)
+
+θ Parameters of decoder pθ (x|z) | ∗ | 1 l1 norm of ∗
+
+## B PROOF OF THEOREMS 
+
+B.1 PREVIOUS RESULTS 
+
+In this section, we recapitulate and summarize the previous results from (Hu & Schennach, 2008; Zheng et al., 2025). 
+
+For x′ = {x′
+
+> A
+
+, x′ 
+
+> B
+
+, x′ 
+
+> C
+
+}, where {x′
+
+> A
+
+, x′ 
+
+> B
+
+, x′ 
+
+> C
+
+} denote the three disjoint partitions, p(x′|z′) = 
+
+p(x′
+
+> A
+
+|z′)p(x′ 
+
+> B
+
+|z′)p(x′ 
+
+> C
+
+|z′) 2;Consider observed variables x′ ∈ RK and the estimated latent variables ˆz′ ∈ RN , suppose that there exist functions ˆg′ and ˆe′, and the following assumptions hold: 1. The joint distribution of (x, z) admits a bounded density with respect to a suitable product measure defined on their supports. Furthermore, all marginal and conditional densities derived from this joint distribution are also bounded; 2. The operators Lx′ 
+
+> A|z′
+
+and Lx′ 
+
+> A|x′
+> B
+
+are injective; 3. ∀z′̸ = ¯ z′, p (x′ 
+
+> C
+
+; z′)̸ = p(x′ 
+
+> C
+
+; ¯ z′);
+
+> 2
+
+We emphasize that the partition in both previous and our work is an existential structural condition for the identifiability analysis. We do not require the partition labels, nor separate access to xa, xb, and 
+
+xc, during learning and inference. 
+
+15 Under review 
+
+then z′ must be identified up to an invertible transformation h′.
+
+Proof: Given Assumption 1, we can obtain the following: 
+
+px′  
+
+> Cx′
+> A|x′
+> B
+
+(x′ 
+
+> C
+
+, x′
+
+> A
+
+|x′ 
+
+> B
+
+) = 
+
+Z
+
+px′  
+
+> Cx′
+> Az′|x′
+> B
+
+(x′ 
+
+> C
+
+, x′
+
+> A
+
+, z′|x′ 
+
+> B
+
+)dz
+
+=
+
+Z
+
+px′  
+
+> C|x′
+> Az′x′
+> B
+
+(x′ 
+
+> C
+
+|x′
+
+> A
+
+, z′, x′ 
+
+> B
+
+)px′ 
+
+> Az′|x′
+> B
+
+(x′
+
+> A
+
+, z′|x′ 
+
+> B
+
+)dz
+
+=
+
+Z
+
+px′  
+
+> C|x′
+> Az′
+
+(x′ 
+
+> C
+
+|x′
+
+> A
+
+, z′)px′ 
+
+> Az′|x′
+> B
+
+(x′
+
+> A
+
+, z′|x′ 
+
+> B
+
+)dz
+
+=
+
+Z
+
+px′  
+
+> C|x′
+> Az′
+
+(x′ 
+
+> C
+
+|x′
+
+> A
+
+, z′)px′ 
+
+> A|z′x′
+> B
+
+(x′
+
+> A
+
+|z′, x′ 
+
+> B
+
+)pz′|x′ 
+
+> B
+
+(z′|x′ 
+
+> B
+
+)dz
+
+=
+
+Z
+
+px′  
+
+> C|x′
+> Az′
+
+(x′ 
+
+> C
+
+|x′
+
+> A
+
+, z′)px′ 
+
+> A|z′
+
+(x′
+
+> A
+
+|z′)pz′|x′ 
+
+> B
+
+(z′|x′ 
+
+> B
+
+)dz
+
+=
+
+Z
+
+px′  
+
+> C|z′
+
+(x′ 
+
+> C
+
+|z′)px′ 
+
+> A|z′
+
+(x′
+
+> A
+
+|z′)pz′|x′ 
+
+> B
+
+(z′|x′ 
+
+> B
+
+)dz (19) Leveraging this eqation and Definition 4, we can derive the following operator: 
+
+(Lx′  
+
+> C;x′
+> A|x′
+> B
+
+f ′)( x′
+
+> A
+
+) = 
+
+Z Z
+
+px′ 
+
+> A|z′
+
+(x′
+
+> A
+
+|z′)px′  
+
+> C|z′
+
+(x′ 
+
+> C
+
+|z′)pz′|x′ 
+
+> B
+
+(z′|x′ 
+
+> B
+
+)f ′(x′ 
+
+> B
+
+)dx′ 
+
+> B
+
+dz
+
+=
+
+Z
+
+px′ 
+
+> A|z′
+
+(x′
+
+> A
+
+|z′)(Λ x′  
+
+> C;z′
+
+Lz′|x′ 
+
+> B
+
+f ′)( z′)dz
+
+= ( Lx′ 
+
+> A|z′
+
+Λx′  
+
+> C;Z
+
+Lz′|x′ 
+
+> B
+
+f ′)( x′
+
+> A
+
+) (20) The above equation indicates: 
+
+Lx′  
+
+> C;x′
+> A|x′
+> B
+
+= Lx′ 
+
+> A|z′
+
+Λx′  
+
+> C;z′
+
+Lz′|x′ 
+
+> B
+
+(21) This equivalence holds over some functions space G(Z), given the factorization properties of the conditional densities established earlier. Now, integrating over x′ 
+
+> C
+
+, by using the fact that: R Lx′  
+
+> C;x′
+> A|x′
+> B
+
+f ′(x′ 
+
+> C
+
+)dx′ 
+
+> C
+
+= Lx′ 
+
+> A|x′
+> B
+
+f ′ we can obtain: 
+
+Lx′ 
+
+> A|x′
+> B
+
+f ′(x′
+
+> A
+
+) = 
+
+Z
+
+px′ 
+
+> A|x′
+> B
+
+(x′
+
+> A
+
+|x′ 
+
+> B
+
+)f ′(x′ 
+
+> B
+
+)dx′
+
+> B
+
+=
+
+Z Z
+
+px′ 
+
+> A|z′,x′
+> B
+
+(x′
+
+> A
+
+|z′, x′ 
+
+> B
+
+)pz′|x′ 
+
+> B
+
+(z′|x′ 
+
+> B
+
+)f ′(x′ 
+
+> B
+
+)dx′ 
+
+> B
+
+dz
+
+=
+
+Z
+
+px′ 
+
+> A|z′
+
+(x′
+
+> A
+
+|z′)[ Lz′|x′ 
+
+> B
+
+f ′]dz
+
+= Lx′ 
+
+> A|z′
+
+Lz′|x′ 
+
+> B
+
+f ′]( x′
+
+> A
+
+) (22) where the second equation leverages x′ 
+
+> A
+
+⊥ x′ 
+
+> B
+
+| z′. By assuming the inejctivity of Lx′ 
+
+> A|z′
+
+in Assumption 2, we can arrive at LZ|x′ 
+
+> B
+
+= L−1 
+
+> x′
+> A|z′
+
+Lx′ 
+
+> A|x′
+> B
+
+. Substitute this to Eq. 15: 
+
+Lx′  
+
+> C;x′
+> A|x′
+> B
+
+L−1
+
+> x′
+> A|x′
+> B
+
+= Lx′ 
+
+> A|z′
+
+Λx′  
+
+> C;Z
+
+L−1 
+
+> x′
+> A|z′
+
+(23) where the LHS involves only observable variables, and the RHS explicitly depends on the latent variable z′. Λx′  
+
+> C;z′
+
+determines the eigenvalues of Lx′ 
+
+> A|Z
+
+Λx′  
+
+> C;z′
+
+L−1 
+
+> x′
+> A|z′
+
+, whose diagonal entries cor-respond to the conditional distributions p(x′ 
+
+> C
+
+|z′). Each z′ indexing a distinct conditional distribution of p(x′ 
+
+> C
+
+|z′). Under Assumption 3, where p(x′ 
+
+> C
+
+| z′) are distinct for different values of z′, the eigen-values are distinct. This allows a bijective mapping h′ : Z → Z to permute z′ while preserving the values of p(x′ 
+
+> C
+
+| z′). Therefore, the latent variable can only be recovered up to such a permutation, i.e., ˆz′ = h′(z′), which yields the identifiability up to an invertible transformation h′.16 Under review B.2 PROOF OF PROPOSITION 1 AND THEOREM 1
+
+Proposition 1: Suppose Assumptions 1 ∼ 3 hold, and if both ϱi and ϱi 
+
+> Λ
+
+include only ρi and ρi
+
+> Λ
+
+,respectively. Then, for all i > 1 and for all z,
+
+ρi 
+
+> Λ
+
+∈  max {ρi − κPer , ρ i−1 + κPer }, ρ i + κPer  (24) and if i = 1 , for all z,
+
+ρi 
+
+> Λ
+
+∈ (ρi − κPer , ρ i + κPer ) (25) guarantee the distinct spectral values of Lxa|zΛxb|zL−1
+
+> xa|z
+
+.
+
+Proof: 
+
+Recall that we define: 
+
+η = min 
+
+> i̸=j
+
+|ρi − ρj |
+
+2κ − α > 0 and P er < η, (26) where α > 0 denotes constant, and κ = || Lxa|z|| op || L−1
+
+> xa|z
+
+|| op . Notably, κ ≥ 1, since 
+
+|| Lxa|zL−1
+
+> xa|z
+
+|| op = || I|| op ≤ || Lxa|z|| op || L−1
+
+> xa|z
+
+|| op , where I denotes the identity operator. Suppose that two distinct spectral values, denoted ρ1Λ and ρ2Λ, fall within the same interval (ρi −
+
+κP er, ρ i + κP er ). we have: 
+
+|ρ1Λ − ρi| ≤ κP er < |ρi − ρj |,
+
+|ρ2Λ − ρi| ≤ κP er < |ρi − ρj |. (27) Applying the triangle inequality, we obtain: 
+
+|ρ1Λ − ρ2Λ| ≤ | ρ1Λ − ρi| + |ρ2Λ − ρi| < |ρi − ρj | = 2 κη. (28) However, inequality 28 implies: 
+
+|ρ1 − ρ2|
+
+2κ < η, (29) which directly contradicts the definition of η. Thus, the uniqueness of each spectral value ρi 
+
+> Λ
+
+within its respective interval is proved. We reorganize the Theorem 1 below: 
+
+Theorem 1 Consider observed variables x ∈ RK and the estimated latent variables ˆz ∈ RN ,suppose the following assumptions hold: i The joint distribution of (x, z) admits a bounded density with respect to a suitable product mea-sure defined on their supports. Furthermore, all marginal and conditional densities derived from this joint distribution are also bounded; ii The operators Lxa|z and Lxa|xc are injective and bounded-below; iii Lxa,xb|xc L−1 
+
+> xa|xc
+
+has distinct spectral values with cardinality equal to that of Λxb|z. Also, Let 
+
+Θ : Z → D , s.t.p (xb|z) = Θ( z) denotes the map from Z to D. Θ is injective; iv There exists an operator M such that M (Lxb|z) = M (Lxb|˜h(z)) = t(z), where t is a differen-tiable transformation. then for ˜h ∈ ˜H and t ∈ T ( ˜H ∩ T̸ = ∅), if h ∈ ˜H ∩ T ⇒ ˆz = h(z) = ˜h(z) = t(z). In other words, 
+
+z must be subspace identified. 
+
+Proof: 
+
+Our goal is to demonstrate subspace identifiability of z from the data generated process in Eq. 1. To such an end, we proceed in the following steps: 17 Under review 
+
+Step 1: Operator Construction and Spectral Decomposition. 
+
+Our approach follows the previous results in Sec. B.1, and proceeds to decompose the bounded linear operator Lxa,xb|xc . The structural misspecification in Definition 3 violates the conditional in-dependence by p(x|z)̸ = p(xa|z)p(xb|z)p(xc|z), thus introduces a discrepancy between Lxa,xb|xc
+
+and Lxa|zLxb|zLz|xc according to Eq. 21. Consequently, we can define the difference operators: 
+
+d(xb) = Lxa,xb|xc − Lxa|zLxb|zLz|xc ,
+
+d =
+
+Z
+
+d(xb)dxb = Lxa|xc − Lxa|zLz|xc . (30) Assumption i guarantees boundedness of each term in Eq. 30. Leveraging these, we rewrite: 
+
+Lxa|zΛxb|zL−1 
+
+> xa|z
+
+= ( Lxa,xb|xc − d(xb))( Lxa|xc − d)−1
+
+= Lxa,xb|xc L−1 
+
+> xa|xc
+
++ Per , (31) where Per represents the perturbation term arising from the violation of conditional independence. 
+
+Step 2: Spectral resolution of Lxa|zΛxb|zL−1
+
+> xa|z
+
+At this point, we aim to understand if Lxa|zΛxb|zL−1 
+
+> xa|z
+
+is unique spectral decomposition of RHS of Eq. 31 with P er ̸ = 0 . We take inspiration from (Dunford & Schwartz, 1971) to proceed with the necessary and sufficient condition by using the projection-valued measure in the following steps. Assumption i along with the fact that p(xb|z) being real-valued suggest that the multiplication operator Λxb|z is bounded self-adjoint, and therefore admits a unique orthogonal projection-valued measure Exb such that 
+
+Λxb|z =
+
+Z
+
+> σ(Λ xb|z)
+
+λ dE xb (λ) (32) where σ denotes the spectral value, (Exb (∆) f )( z) = 1{p(xb|z)∈∆}f (z) for every Borel set ∆ ⊆ R,
+
+1 denotes the indicator and f denotes some function. For Lxa|zΛxb|zL−1
+
+> xa|z
+
+, define the projection-valued measure Pxb by: 
+
+Pxb (∆) := Lxa|zExb (∆) L−1 
+
+> xa|z
+
+(33) Given the properties of projection-valued measure, we can obtain: Pxb (R) = IK (K denotes the range of Lxa|z). These equations yield 
+
+Lxa|zΛxb|zL−1 
+
+> xa|z
+
+=
+
+Z
+
+> σ(Lxa |zΛxb|zL−1
+> xa |z)
+
+λ dP xb (λ) (34) with σ(Lxa|zΛxb|zL−1
+
+> xa|z
+
+) = σ(Λ xb|z). Moreover, Ran Pxb (∆) = Lxa|z Ran Exb (∆) and 
+
+ker Pxb (∆) = Lxa|z Ran Exb (R \ ∆) , where Ran denote the range. Hence, Pxb (∆) is uniquely determined by its range and null space. Since Exb (∆) is a spectral projection, the Hilber space Hz of Λxb|z is Hz = Ran Exb (∆) ⊕
+
+Ran Exb (R \ ∆) . By invertibility of Lxa|z,
+
+K = Ran Pxb (∆) ⊕ ker Pxb (∆) .
+
+Suppose w ∈ Ran Pxb (∆) ∩ ker Pxb (∆) . Since w ∈ Ran Pxb (∆) , there exists some a ∈ K such that w = Pxb (∆) a. Hence, Pxb (∆) w = Pxb (∆) 2a = Pxb (∆) a = w. On the other hand, since 
+
+w ∈ ker Pxb (∆) , Pxb (∆) w = 0 . Therefore w = 0 , implying 
+
+Ran Pxb (∆) ∩ ker Pxb (∆) = {0}.
+
+Hence, every f ∈ K admits a unique decomposition f = u + v, where u ∈ Ran Pxb (∆) and 
+
+v ∈ ker Pxb (∆) , ⇒ Pxb (∆) f = u. Therefore, any projection with the same range and null space must map f = u + v to its unique range component u, and is therefore identical to Pxb (∆) . Thus, for a fixed data generating process in Eq. 1, Eq. 31 admits an unique spectral projections. 18 Under review 
+
+Step 3: Connecting Bijection ˜h with Differentiable Transformation h.
+
+Proposition 1 has proven the distinctness of ρΛ, which is determined by p(xb|z). In combination of the injectivity map assumption in Assumption iii, p(xb|z) corresponds to a particualr z. Since ρΛ is the essential range of p(xb|z), it remains invariant by re-labeling through permuting z. This can be formally described by z′ = h′(z), where h′ denotes a bijection h′ : Z → Z , and z′ is a permuted version of z.Definition 1 requires the invertible transformation h to be differentiable. However, ˜h alone may not satisfy this differentiability constraint. To resolve this, we invoke Assumption iv, which guarantees: 
+
+M (p(xb|z)) = M (p(xb|h′(z))) = h(z)
+
+where is h(z) = ˆ z iff h is differentiable.. Hence, we conclude the subspace identifiability of z.B.3 PROOF OF THEOREM 2We reorganize the Theorem 2 below: 
+
+Theorem 2 Consider observed variables x ∈ RK and the estimated latent variables ˆz ∈ RN ,suppose the following assumptions hold: i The joint distribution of (x, z) admits a bounded density with respect to a suitable product mea-sure defined on their supports. Furthermore, all marginal and conditional densities derived from this joint distribution are also bounded; ii The operators Lxa|z and Lxa|xc are injective and bounded-below; iii Lxa,xb|xc L−1 
+
+> xa|xc
+
+has distinct spectral values with cardinality equal to that of Λxb|z. Also, Let 
+
+Θ : Z → D , s.t.p (xb|z) = Θ( z) denotes the map from Z to D. Θ is injective; iv Z is compact, and Θ in Assumption iii is continuously differentiable. There exists cΘ > 0 such that, for an admissible invertible transformation h, Θ satisfies the lower bound of Bi-Lipschitz continuity by: 
+
+cΘ|ˆz − h(z)| ≤ ∥ Θ( z) − bΘ(ˆ z)∥F . (35) 
+
+where F denotes the function norm. Then we can obtain ε ≤ κP er +κ dP er cΘ .
+
+Proof: 
+
+Following Steps 1 and 2 in the proof of Theorem 1, for each fixed xb, the multiplication operator 
+
+Λxb|z is given by 
+
+(Λ xb|zf )( z) = p(xb | z)f (z).
+
+Since Θ is continuous, ∀z ∈ Z , p (xb|z) ∈ ess ran zp(xb|z) = ρΛ, where ess ran denotes the essential range. Given dist (ρΛ, ρ ) ≤ κP er in Eq. 5, we can define a similar bound by dist (ˆ ρΛ, ρ ) ≤ ˆκ dP er . There-fore, there always exist i, such that: 
+
+|ρi 
+
+> Λ
+
+− ρi
+
+> ˆΛ
+
+| = |ρi 
+
+> Λ
+
+− ρi + ρi − ρi
+
+> ˆΛ
+
+| ≤ | ρi 
+
+> Λ
+
+− ρi| + |ρi 
+
+> ˆΛ
+
+− ρi| ≤ κP er + ˆ κ dP er (36) where the first ≤ is because of the triangle inequality. Eq. B.3 suggests that, for almost all z, ˆz:
+
+|pi(xb|z) − pi(xb|ˆz)| ≤ κP er + ˆ κ dP er (37) Therefore, Taking the essential supremum over xb gives 
+
+∥Θ( z) − bΘ(ˆ z)∥F = ess sup xb |pi(xb | z) − pi(xb | ˆz)|≤ κPer + ˆ κdPer . (38) 19 Under review By Assumption iv, 
+
+cΘ|ˆz − h(z)| ≤ ∥ Θ( z) − bΘ(ˆ z)∥F (39) Combining this inequality with Eq. equation 38 yields 
+
+ε = inf  
+
+> h∈H
+
+|ˆz − h(z)| ≤ κPer + ˆ κdPer 
+
+cΘ
+
+This completes the proof. B.4 DISCUSSIONS ON P er 
+
+In this secion, we discuss the bound of P er since it plays a critical role in Theorem 1. We present the following Lemma with the assistance of Assumption 3: 
+
+Lemma 1. Let ∥·∥ be the operator norm. Consider an operator L(·) subject to the distance operator 
+
+d in Eq. 30. If ∥L−1 
+
+> xa|xc
+
+d∥ < 1, then (Lxa|xc − d)−1 ≤ L−1(xa|xc) + || L−1(xa|xc)|| 2|| d|| 
+
+> 1−|| L−1(xa|xc)×d||
+
+Proof: Let (Lxa|xc − d)−1 = L−1 
+
+> xa|xc
+
++ B, we can formalize: 
+
+Lxa|zLxb|zL−1 
+
+> xa|z
+
+= ( Lxa,xb|xc − d(xb))( Lxa|xc − d)−1
+
+= ( Lxa,xb|xc − d(xb))( L−1 
+
+> xa|xc
+
++ B)= Lxa,xb|xc L−1 
+
+> xa|xc
+
++ Lxa,xb|xc B − d(xb)L−1 
+
+> xa|xc
+
+− d(xb)B
+
+| {z }
+
+> Per
+
+(40) where we can bound B as follows: 
+
+B = ( Lxa|xc − d)−1 − L−1
+
+> xa|xc
+
+= ( Lxa|xc (I − L−1 
+
+> xa|xc
+
+d)) −1 − L−1
+
+> xa|xc
+
+= ( I − L−1 
+
+> xa|xc
+
+d)−1L−1 
+
+> xa|xc
+
+− L−1
+
+> xa|xc
+
+⇒ || B|| ≤ || L−1 
+
+> xa|xc
+
+|| × || (I − L−1 
+
+> xa|xc
+
+d)−1 − I|| ⇒ || B|| ≤ || L−1 
+
+> xa|xc
+
+|| (|| (I − L−1 
+
+> xa|xc
+
+d)−1|| + || − I|| )
+
+⇒ || B|| ≤ || L−1 
+
+> xa|xc
+
+|| ( 11 − || L−1 
+
+> xa|xc
+
+d|| − 1) 
+
+⇒ || B|| ≤ || L−1 
+
+> xa|xc
+
+|| ( || L−1 
+
+> xa|xc
+
+d|| 
+
+1 − || L−1 
+
+> xa|xc
+
+d|| )
+
+⇒ || B|| ≤ || L−1 
+
+> xa|xc
+
+|| 2|| d|| 
+
+1 − || L−1 
+
+> xa|xc
+
+d|| (41) Substitute the result from Eq. 41 to Eq. 4, we can obtain that 
+
+∥Per ∥ ≤ ∥ Lxa,xb|xc
+
+|| L−1 
+
+> xa|xc
+
+|| 2 || d|| 
+
+1 − || L−1 
+
+> xa|xc
+
+d|| − d(xb)L−1 
+
+> xa|xc
+
+− d(xb) || L−1 
+
+> xa|xc
+
+|| 2 || d|| 
+
+1 − || L−1 
+
+> xa|xc
+
+d|| = Per (42) We can adopt the similar strategy to derive that, if || L−1
+
+> xa|xc
+
+ˆd|| < 1:
+
+∥ dPer ∥ ≤ ∥ Lxa,xb|xc
+
+|| L−1 
+
+> xa|xc
+
+|| 2 || ˆd|| 
+
+1 − || L−1
+
+> xa|xc
+
+ˆd|| − ˆd(xb)L−1 
+
+> xa|xc
+
+− ˆd(xb) || L−1 
+
+> xa|xc
+
+|| 2 || ˆd|| 
+
+1 − || L−1
+
+> xa|xc
+
+ˆd|| = dPer (43) Upon Eq. 42, we can derive the sufficient condition to safisfy || P er || op ≤ P er < η , which is critical for precise identifiability in Theorem 1: 20 Under review 
+
+Lemma 2. suppose that 
+
+|| L−1 
+
+> xa|xc
+
+|| op || d|| op < η 
+
+|| d|| op < η − || L−1 
+
+> xa|xc
+
+|| op || d|| op 
+
+|| L−1 
+
+> xa|xc
+
+|| 2
+
+> op
+
+|| d|| (|| Lxa,xb|xc || op + || d|| op ) + || L−1 
+
+> xa|xc
+
+|| op (η − || L−1 
+
+> xa|xc
+
+|| op || d|| op ) (44) 
+
+Then we can obtain || P er || op ≤ P er < η .
+
+B.5 PROOF OF PROPOSITION 2
+
+Proposition 2 Suppose Theorem 1 holds, and the following assumptions and regularization condi-tions are satisfied: 1. (Independence) : For n ∈ [N ], zn are independent of each other: p(z) = QNn=1 p(zn).2. (Structural sparsity) : The map Φ : Z → P is smooth, where Z denotes the support of 
+
+z, and P denotes the space of PDF p(x|z) ( P ⊂ L 2(X , μ ) (μ denotes the measure)). Let 
+
+G and ˆG be the binary support matrix of the Jacobian JΦ(z) and JˆΦ(ˆ z), respectively, i.e. 
+
+Gi,j = 1 if || ∂p (xi 
+
+> b|z)
+> ∂zj
+
+|| L2̸ = 0 , and 0 for otherwise. For each n ∈ [1 , N ], there exists a subset of indices Ck satisfying T 
+
+> m∈C k
+
+Gm, : = {n};Then, ˆz must correspond component-wise to a permutation of the true latent variables z.
+
+Proof: Theorem 1 guarantees the existence of an invertible trasnformation h such that ˆz = h(z),Our goal is to show that h is a composition of a permutation and component-wise diagonal transfor-mations. Applying the chain-rule by taking Fr´ echet derivatives to Φ( z) = ˆΦ(ˆ z), we can obtain: 
+
+Φ( z) = ˆΦ(ˆ z)
+
+⇒ JΦ(z) = JˆΦ(ˆ z)Jh(z) (45) Assumption iii in Theorem 1 assume the injective of Φ. Therefore, Eq. 45 implies 
+
+∀{ i, j } ∈ G , {i, σ (j)} ˆG (46) where σ denotes the permutation transformation in this section. For simplicity, we denote denote Jh by H. Suppose, for contradiction, that H(z) is not a composi-tion of a diagonal matrix and a permutation matrix, i.e., there exist j1̸ = j2 such that: 
+
+supp( Hj1,:) ∩ supp( Hj2,:)̸ = ∅. (47) Let j3 be an element in this intersection, so σ(j3) ∈ supp( Hj1,:) ∩ supp( Hj2,:). Without loss of generality, assume j3̸ = j1. According to Assumption 2, there exists a set Cj1 containing j1 such that: \
+
+> i∈C j1
+
+Gi, : = {j1}. (48) Since j3̸ = j1, it must be that: 
+
+j3 /∈ \
+
+> i∈C j1
+
+Gi, :, (49) implying there exists some i3 ∈ C j1 such that: 
+
+j3 /∈ Gi3,:. (50) However, since j1 ∈ Gi3,:, we have (i3, j 1) ∈ G. Given H is a permuted transformation, Eq. 46 implies: 
+
+(i3, σ (j3)) ∈ ˆG. (51) However, this means (i3, j 3) ∈ G, which contradicts Eq. 50. This contradiction implies H must be a composition of a permutation matrix and a diagonal matrix. Together with the equation Jg = Jˆg H, we achieve the desired result that t is composed of a permu-tation and component-wise invertible functions. 21 Under review B.6 ADDITIONAL PROPOSITION 
+
+Assumption 1 in Proposition 2 claims the independence between each dimension of z. To relax such a constraint, we can alternatively allow latent variables z to exhibit dependence via a known auxiliary domain variable u. In other words, we assume conditional independence across dimensions of z
+
+given u, i.e., p(z|u) = QNn=1 p(zn|u). Specifically, we modify the original data-generating process in Eq. 1 to incorporate the domain index u explicitly: 
+
+x = g(z, ϵ ), ϵ = e(z, u, η ) (52) where u denotes the domain index. Under these conditions, we establish the following proposition: 
+
+Proposition 3. Suppose the subspace identifiability condition in Theorem 1 holds. Additionally, assume the following conditions: 1. (Conditional independence) : Latent variables are conditionally independent given do-main u: p(z|u) = QNn=1 p(zn|u). Also, p(z|u) is positive and twice differentiable. 2. (Sufficient variability) : There exist 2N + 1 distinct domain values u ∈ [1 , 2N + 1] , such that the 2N vectors w(z, u) − w(z, u0) (with u̸ = u0) are linearly independent, where the vector w(z, u) is defined as: w(z, u) = {v(z, u), v′(z, u)} with 
+
+v(z, u) = 
+
+ ∂ log p(z1|u)
+
+∂z1 , . . . , ∂ log p(zN |u)
+
+∂zN
+
+
+
+v′(z, u) = 
+
+ ∂2 log p(z1|u)(∂z1)2 , . . . , ∂2 log p(zN |u)(∂zN )2
+
+
+
+Then {ˆzˆn|ˆn ∈ [1 , N ]} must be a component-wise transformation of a permuted version of true 
+
+{zn|n ∈ [1 , N ]}
+
+Insight: Proposition 3 shows the identifiability results on non-i.i.d. scenario. Domain-dependent changes in p(z | u) provide sufficient variation to distinguish the latent coordinates, while The-orem 1 first removes the ambiguity introduced by the misspecified observation structure and ϵ.Thus, non-i.i.d. variation can replace marginal latent independence as the additional informa-tion needed to reduce the remaining invertible ambiguity to component-wise transformations and permutation. 
+
+Proof: By Theorem 1 there exists an invertible reparameterization h : Z → Z such that ˆz = h(z)
+
+and z = h−1(ˆ z). Applying the change-of-variables formula to the conditional densities (for any fixed u) gives: 
+
+pˆz|u(ˆ z | u) = pz|u
+
+ h−1(ˆ z) | u det Jh−1 (ˆ z) . (53) Taking logarithms yields 
+
+log pˆz|u(ˆ z | u) = log pz|u(z | u) + log det Jh−1 (ˆ z) , (54) Under Assumption 1, we have 
+
+> n
+
+X
+
+> i=1
+
+log pˆzi|u(ˆ zi | u) = 
+
+> n
+
+X
+
+> i=1
+
+log pzi|u(zi | u) + log det Jh−1 (ˆ z) . (55) We then take second derivatives with respect to ˆzk and ˆzv for k̸ = v. Since each term on the left-hand side of Eq. 55 depends only on a single coordinate ˆzi, we have ∂ log pˆzi|u(ˆ zi | u)/∂ ˆzk = 0 
+
+for i̸ = k, which implies 
+
+∂2
+
+∂ˆzk∂ˆzvnX
+
+> i=1
+
+log pˆzi|u(ˆ zi | u) = 0 . (56) For the right-hand side, define for i = 1 , . . . , n 
+
+˜hi, (k) := ∂zi
+
+∂ˆzk , ˜h′i, (k,v ) := ∂2zi
+
+∂ˆzk∂ˆzv (57) 22 Under review 
+
+η′
+
+> i
+
+(zi, u) := ∂∂zi log pzi|u(zi | u), η ′′  
+
+> i
+
+(zi, u) := ∂2
+
+∂zi2 log pzi|u(zi | u) (58) A direct application of the chain rule gives 
+
+> n
+
+X
+
+> i=1
+
+
+
+η′′  
+
+> i
+
+(zi, u)˜hi, (k)˜hi, (v) + η′
+
+> i
+
+(zi, u) ˜h′i, (k,v )
+
++ ∂2
+
+∂ˆzk∂ˆzv log det Jh−1 (ˆ z) = 0 . (59) Fix (k, v ) with k̸ = v and evaluate this identity at 2n+1 distinct values of the conditioning variable, 
+
+u(j) for j ∈ { 0, 1, . . . , 2n}. Subtracting the equation at u(0) from that at u(j) cancels the log-determinant term (which does not depend on u) and yields, for j = 1 , . . . , 2n,
+
+> n
+
+X
+
+> i=1
+
+η′′  
+
+> i
+
+(zi, u(j)) − η′′  
+
+> i
+
+(zi, u(0) )˜hi, (k)˜hi, (v) + η′
+
+> i
+
+(zi, u(j)) − η′
+
+> i
+
+(zi, u(0) ) ˜h′i, (k,v )
+
+= 0 . (60) Let 
+
+w(z, u) :=  η′′  
+
+> 1
+
+(z1, u), . . . , η ′′ 
+
+> n
+
+(zn, u), η ′
+
+> 1
+
+(z1, u), . . . , η ′
+
+> n
+
+(zn, u)⊤. (61) Under Assumption 2, the 2n vectors w(z, u(j)) − w(z, u(0) ) for j = 1 , . . . , 2n are linearly inde-pendent, so the only solution to the homogeneous linear system Eq. 60 is 
+
+˜hi, (k)˜hi, (v) = 0 and ˜h′i, (k,v ) = 0 for all i ∈ { 1, . . . , n } and all k̸ = v. (62) Hence each row of the Jacobian Jh−1 (ˆ z) has at most one nonzero entry, and all mixed second derivatives vanish. Since h−1 is invertible, each row must in fact have exactly one nonzero entry; moreover, two distinct rows cannot share the same nonzero column (otherwise det Jh−1 (ˆ z) = 0 ), so there exists a permutation π such that 
+
+ˆzπ(i) = hi(zi) for i = 1 , . . . , n, (63) which shows that ˆz is obtained from z by a permutation of component-wise invertible transforma-tions. 
+
+Assumption Intuitions: 
+
+• Assumption 1 relaxes the marginal independence of z, which allows that z can be statistically dependent. 
+
+• Assumption 2 requires the domain variable to induce sufficiently rich changes in the first- and second-order derivatives of the latent conditional log-densities. These variations provide enough constraints to distinguish different latent variable. 
+
+## C SYNTHETIC EXPERIMENT DETAILS 
+
+C.1 SYNTHETIC DATA -GENERATING PROCESS 
+
+We construct a synthetic data-generating process that realizes the latent-dependent noise and mis-specified conditional structure considered in this work. Let 
+
+z = ( z1, z2, z3)⊤, z ∼ N (0 , I 3), (64) so that the latent coordinates are mutually independent. We independently sample 
+
+η0, η a, η b, η c ind .
+
+∼ N (0 , I 3), (65) where η0 is shared across the three observed blocks and ηa, η b, η c are block-specific exogenous noises. For each v ∈ { a, b, c}, define 
+
+ϵv = Cv z + τ η 0 + sv ηv , τ > 0, sv > 0,
+
+xv = Ψ( Bv z + ϵv ) = Ψ( M v z + τ η 0 + sv ηv ), M v := Bv + Cv , (66) 23 Under review where where the existence of η0 guarantees the dependence of xv conditioning on z, Ψ is applied coordinate-wise and is defined by 
+
+Ψ( t) = t + α tanh( t), 0 < α < 1. (67) Since 
+
+Ψ′(t) = 1 + α sech 2(t) ∈ [1 , 1 + α], (68) 
+
+Ψ is a smooth bijection with a smooth inverse. We choose 
+
+M a = M c = I3, M b =
+
+1 r 0
+
+r 0 10 r 1
+
+!
+
+, 0 < r < 1. (69) Since 
+
+det( M b) = −r(1 + r)̸ = 0 , (70) 
+
+M b is invertible. We further set 
+
+Bv = Cv = 12 M v , (71) so that 
+
+ϵv = 12 M v z + τ η 0 + sv ηv . (72) Hence the complete noise variable ϵ = ( ϵa, ϵ b, ϵ c) explicitly depends on z, as required by Eq. equa-tion 1. The resulting observation 
+
+x = ( xa, xb, xc) ∈ R9 (73) contains three disjoint three-dimensional blocks. In practice, we sample We sample 10,000 points from the data synthesizing process above men-tioned. We leverage 90% among them for training, and the rest 10% for test. C.2 ASSUMPTION JUSTIFICATIONS :Below we justify if all assumptions from Theorem 1 and Proposition 2 hold for our data synthesizing: 
+
+Misspecified conditional structure. Conditioning on z fixes all deterministic terms involving z,while the three blocks continue to share η0. Let 
+
+yv := M v z + τ η 0 + sv ηv . (74) Then, for distinct v, v ′ ∈ { a, b, c},
+
+Cov( yv , yv′ | z) = τ 2I3. (75) Therefore, for every τ > 0,
+
+p(xa, xb, xc | z)̸ = p(xa | z)p(xb | z)p(xc | z). (76) Because Ψ is invertible, the conditional dependence is preserved after the transformation. The con-ditionally independent setting is recovered when τ = 0 .
+
+Constructing both the precise and approximate identifiability regime. The shared-noise strength τ directly controls the amount of structural misspecification. Let dτ (xb), dτ , and Per τ
+
+denote the corresponding difference and perturbation operators generated with τ in Eq. 66. For the Gaussian construction in Eq. 66, the conditional covariance induced by the shared distur-bance is τ 2I3. Hence the corresponding conditional densities vary smoothly with τ 2. On the oper-ator spaces considered here, there exist finite constants Cd, C b > 0 and let τmax > 0 such that, for 
+
+0 < τ ≤ τmax ,
+
+∥dτ ∥op < C dτ 2,
+
+ess sup 
+
+> xb
+
+∥dτ (xb)∥op < C bτ 2. (77) 24 Under review Let 
+
+M0 := sup  
+
+> 0<τ ≤τmax
+
+∥L−1 
+
+> xa|xc,τ
+
+∥op ,M1 := sup  
+
+> 0<τ ≤τmax
+
+∥Lxa,xb|xc,τ ∥op , (78) which are finite under Assumptions 1 and 2. Using Lemma 1, whenever M0Cdτ 2 < 1,
+
+∥Per τ ∥op ≤  M1 + Cbτ 2 M 20 Cdτ 2
+
+1 − M0Cdτ 2 + M0Cbτ 2
+
+=: Per . (79) Let 
+
+η = δ
+
+2κ − α > 0 (80) be defined as in Section 3.1. By continuity of Per (τ ) at τ = 0 , there exists τ0 > 0 such that 
+
+0 < τ < τ 0 =⇒ 0 < Per (τ ) < η. (81) We choose the shared-noise strength τ ∈ (0 , τ 0) in the precise-identifiability experiments. Thus, the synthetic data simultaneously exhibit structural misspecification ( τ > 0) and satisfy the perturbation condition required by Proposition 1. To evaluate approximate identifiability, we use the same data-generating process but increase τ to generate stronger structural misspecification. We select values of τ for which 
+
+Per (τ ) ≥ η, (82) so that the sufficient perturbation condition for precise identifiability is no longer satisfied. All remaining assumptions of Theorem 2 are kept unchanged. Therefore, the same synthetic model produces both regimes: small nonzero τ yields precise identifiability, whereas larger perturbations are used to evaluate the approximate-identifiability guarantee. 
+
+Bounded densities. Before applying Ψ, the joint vector (z, ya, yb, yc) is a nondegenerate multi-variate Gaussian because sv > 0 for every block. Hence its joint, marginal, and conditional densities are bounded. Since Ψ′ is uniformly bounded above and bounded away from zero, the change-of-variables formula preserves boundedness of the corresponding densities after transformation. Thus the bounded-density regularity condition in Assumption 1 is satisfied. 
+
+Injectivity of Θ. For the xb block, 
+
+Ψ−1(xb) | z ∼ N  M bz, (τ 2 + s2
+
+> b
+
+)I3
+
+ . (83) Suppose 
+
+p(· | z) = p(· | z′). (84) Equation equation 83 then implies 
+
+M bz = M bz′. (85) Since M b is invertible, 
+
+z = z′. (86) Therefore the conditional-distribution map 
+
+Θ : Z → D , Θ( z) = p(xb | z), (87) is injective. 25 Under review 
+
+Structural sparsity for Proposition 2. For each observed coordinate xj , define 
+
+Φj (z) := p(xj | z). (88) Since the conditional mean of each pre-transformed coordinate depends on z through the corre-sponding row of M v , the support of ∂Φj /∂ zi coincides with the support of that row. Ordering the observations as 
+
+(x1
+
+> a
+
+, x2
+
+> a
+
+, x3
+
+> a
+
+, x1
+
+> b
+
+, x2
+
+> b
+
+, x3
+
+> b
+
+, x1
+
+> c
+
+, x2
+
+> c
+
+, x3
+
+> c
+
+), (89) the structural-support matrix is 
+
+G =
+
+
+
+1 0 00 1 00 0 11 1 01 0 10 1 11 0 00 1 00 0 1
+
+
+
+. (90) Thus the structural-sparsity condition of Proposition 2 is satisfied. Furthermore, 
+
+p(z) = 
+
+> 3
+
+Y
+
+> i=1
+
+p(zi) (91) by construction, satisfying its latent-independence condition. C.3 IMPLEMENTATIONS & T RAINING DETAILS .In our synthetic experiments, we set the dimensions N = 3 and K = 9 . The encoders, decoder, and normalizing flow modules were each implemented using single-layer multilayer perceptrons (MLPs) followed by Leaky ReLU activations. Our implementation utilized PyTorch 1.11.0. For optimization, we adopted the AdamW optimizer Loshchilov & Hutter (2019), which is known for enhancing generalization in deep learning models. The hyperparameters were configured as follows: a learning rate of 1 × 10 −3 and a batch size of 64. To guarantee robustness and statistical reliability, each model was trained using 10 different random seeds. We report the overall performance as the mean ± standard deviation computed across these runs. The loss function employed balances the reconstruction error and the KL-divergence, with weighting coefficients set to β1 = β2 = 0 .02 . All experiments were performed on a single NVIDIA GeForce RTX 2080 Ti GPU equipped with 11GB of memory. C.4 THE OBJECTIVE OF IND VAE In this section, we explain our trained objective for IndVAE, which is designed by taking inspira-tions from (Hu & Schennach, 2008) To incorporate with the conditional independence assumption, we consider the k-th observed variable xk is generated as xk = gk(z, ϵ ). Accordingly, the log-likelihood of the data generating process of Eq. 1 can be transformed as follows: 
+
+log p(z, ϵ, x) = log pθ (x|z, ϵ ) + log pγ (ϵ|z) + log pδ (z)=
+
+> K
+
+X
+
+> k=1
+
+log pθ (xk|z, ϵ ) + log pγ (ϵ|z) + log pδ (z) (92) Accordingly, the loss function becomes: 
+
+LELBO =Eˆz∼qψ ,ˆϵ∼qϕ
+
+" KX
+
+> k=1
+
+log pθ (ˆ xk|ˆz, ˆϵ)
+
+#
+
+− β1Eˆz∼qψ
+
+  log q (ˆ z|x) − log pδ (z) − β2Eˆz∼qψ ,ˆϵ∼qϕ
+
+  log q (ˆ ϵ|x) − log pγ (ˆ ϵ|ˆz) (93) 26 Under review Table 1: The details of our network architectures for the experiment on MSTM-17 dataset, where BS means batch size, N = 32 , M = 32 and K = 1280 .                                                                                                 
+
+> Configuration Description Output dimensions Encoder qψ
+> Input: xBS ×K
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense Output embeddings BS ×2N
+> Bottleneck Compute mean and variance of posterior μz,σz
+> Reparameterization Sequential sampling ˆz
+> Encoder qϕ
+> Input: xBS ×K
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense Output embeddings BS ×2M
+> Bottleneck Compute mean and variance of posterior μϵ,σϵ
+> Reparameterization Sequential sampling ˆϵ
+> Decoder Input: ˆz,ˆϵBS ×(N+M)
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense 128 neurons, LeakyReLU BS ×128
+> Dense input embeddings BS ×K
+> Prior module Input ˆz,ˆϵBS ×(N+M)
+> InverseTransformation ˆηBS ×M
+> JacobianCompute log |det Jˆe|BS Classifier Input: ˆzBS ×N
+> Dense 256 neurons, LeakyReLU BS ×256
+> Dense 256 neurons, LeakyReLU BS ×256
+> Dense output one-hot embeddings BS ×4101
+
+## D ADDITIONAL EXPERIMENTS 
+
+D.1 REAL -WORLD EXPERIMENT FOR JUSTIFYING PROPOSITION 2
+
+Task Setup: To validate our proposed identifiability theories in realistic and complex scenarios, we apply them to the task of Person Classification. In Person Classification, the goal is to assign a unique identity index to each individual, based on input images. This setup aligns well with our generalized dependency structure setting, as each image of an individual inherently contains noise, such as varying poses, gaits, or clothes, making it challenging to disentangle these factors from the underlying identity. Also, different body parts cannot be independent conditioning upon the latent person identify index. Consequently, this task serves as a solid playground for evaluating the robustness and efficacy of our theoretical framework in addressing real-world complexities. In our implementation, we first employ a pretrained feature extractor to derive feature representa-tions of each individual person, denoted as x ∈ RK . We consider x are generated by the latent variable z ∈ RN , directly associated with each person’s identity index, along with a dependent noise variable ϵ ∈ RM , capturing variations such as pose, gait, or clothes. Inspired by the two-phase training pipeline proposed by (Li et al., 2024b; 2025a), we adapt our approach to Person Classifi-cation task as follows. Figure 5 suggests the data generating process of the Person Classification task. First, we train our approach by optimizing the objective function detailed in Eq. 16. Subse-quently, we introduce a classifier ˆc, implemented by a multilayer perceptron (MLP), to predict the one-hot encoded index label ˆy from the inferred latent representation ˆz: ˆy = MLP (ˆ z) The classifier 27 Under review is optimized using a cross-entropy loss given by: LCE cls = −Eˆy [one-hot (y) · log( softmax (ˆ y))] where one-hot (y) denotes the one-hot embedding of the true person index label. 
+
+Figure 5: Visualiza-tion of the data gen-erating process for Person Classification task 
+
+Data and Comparing Approaches We conduct our experiments on the MSMT17 dataset (Wei et al., 2018), which comprises images of 4,101 unique individuals. Each individual in the dataset has more than 10 im-ages, resulting in a total of over 120,000 images. We partition the dataset into three parts: 60% for training, 20% for validation, and the remaining 
+
+20% for test. For performance comparison, we select several state-of-the-art methods on the task of Person Classification,including GTL (Yang et al., 2025), AGW (Ye et al., 2021), TransReID (He et al., 2021), and CLIPReID (Li et al., 2023). We also benchmark against MCRL (Sun et al., 2025) and Ind-VAE (Hu & Schennach, 2008) to evaluate the efficacy of our identifiability results under generalized dependency structure. Table 2: Comparison of Top-1 Accuracy on MSMT17 dataset Methods Acc AGW (Ye et al., 2021) 85.5 ± 1.2 TransReID (He et al., 2021) 87.8 ± 0.5 CLIPReID (Li et al., 2023) 90.1 ± 0.3 GTL Yang et al. (2025) 91.5 ± 1.2 MCRL (Sun et al., 2025) 92.6 ± 0.9 IndVAE (Hu & Schennach, 2008) 93.1 ± 0.5 Ours 96.2 ± 0.6 Results & Discussions: Table 2 reports the comparison of Top-1 Accuracy (Acc) among state-of-the-art methods on the MSMT17 dataset. Our method achieves a superior performance, substantially surpassing approaches that do not explicitly handle dependent noise, such as IndVAE (Hu & Schen-nach, 2008) and MCRL (Sun et al., 2025). Furthermore, our proposed method demonstrates notable improvements over leading methods including GTL (Yang et al., 2025), CLIPReID (Li et al., 2023), TransReID (He et al., 2021), and AGW (Ye et al., 2021), outperforming them by significant mar-gins. These results clearly highlight the effectiveness and robustness of our proposed framework in accurately addressing generalized dependency structures in complex real-world scenarios. 
+
+Implementations: 
+
+To obtain a fair comparison, we adopt the approach outlined by (Yang et al., 2025), employing the pretrained CLIP model (Radford et al., 2021b) as the visual encoder to generate 1280-dimensional representations for x. Table 1 summarizes the specific network architectures implemented for our experiments on the real-world MSTM17 dataset. To train our framework, we utilize the AdamW optimizer combined with a cosine annealing learning rate schedule. The initial learning rate is set to 2×10 −3, with a weight decay parameter of 1×10 −2 to prevent overfitting. The ELBO loss function incorporates equal weighting coefficients β1 = β2 =0.02 . We use a batch size of 128, chosen to balance computational efficiency with optimization stability. The framework is implemented in PyTorch. Training is done for 80 epochs on a multi-GPU configuration comprising four NVIDIA GeForce RTX 2080 Ti GPUs, collectively providing 44GB of memory. D.2 ADDITIONAL ABLATION STUDIES 
+
+Ablations for higher dimensional z
+
+we additionally evaluated the scalability of our method to higher latent dimensions on the synthetic dataset by varying the latent dimensionality N ∈ { 8, 12 , 18 }, while keeping the network architec-ture, training protocol, and all other hyperparameters fixed. Table 3 reports the MCC and compares with IndVAE Hu & Schennach (2008): Even as the latent dimension increases, our method consis-28 Under review                     
+
+> NIndVAE Ours
+> 80.64 ±0.06 0.80 ±0.02 12 0.51 ±0.03 0.68 ±0.05 18 0.47 ±0.04 0.61 ±0.05
+
+Table 3: MCC on the synthetic dataset for increasing latent dimensionality N .Table 4: Sensitivity of MCC to regularization hyperparameters. Hyperparameter Value MCC 
+
+λ 1 0.87 ± 0.04 0.1 0.82 ± 0.03 0.01 0.70 ± 0.07 10 0.68 ± 0.05 
+
+β1 0.02 0.87 ± 0.04 1 0.73 ± 0.02 0.001 0.65 ± 0.04 
+
+β2 0.02 0.87 ± 0.04 1 0.82 ± 0.01 0.001 0.78 ± 0.06 
+
+tently achieves higher MCC than IndVAE, indicating that the Jacobian-based sparsity regularization remains effective and that our approach scales well to higher-dimensional latent spaces within the considered regime. 
+
+Ablations for hyperparameter sensitivity 
+
+In our implementation on the synthetic dataset, we set the weight of the sparsity regularizer to 1 and the KL weights to β1 = β2 = 0 .02 . In this section, we conducted a sensitivity analysis in which we vary one of these three hyperparameters at a time while keeping the others fixed at their default values. For all runs we use the same network architecture, batch size, number of epochs, learning rate, and training protocol as in the main experiments. The numbers reported below are MCC scores (mean ± std. over multiple runs) on the synthetic dataset. These results show the default setting 
+
+(λ, β 1, β 2) = (1 , 0.02 , 0.02) obtains the best results. 
+
+Additional real-world experiments 
+
+we expand our real-world evaluation beyond the original dataset and consider two additional person identity classification benchmarks. Specifically, we use the SYSU-MM01 dataset Wu et al. (2017) and the R OBOT PKU dataset Liu et al. (2017). We only use the RGB modality, since our focus is not on cross-modal person re-identification. SYSU-MM01 contains RGB images of 491 identities from 6 cameras, with a total of 30 ,071 images. ROBOT PKU contains more than 16 ,000 RGB images of 180 identities, captured under dynamic robotic viewpoints. These datasets thus provide solid playgrounds for our experiments. For performance comparison, we follow the same Person Classification protocol as in our main experiment and compare against several state-of-the-art methods, including GTL (Yang et al., 2025), AGW (Ye et al., 2021), TransReID (He et al., 2021), CLIPReID (Li et al., 2023), LDP-net Zhou et al. (2023), Style Fu et al. (2023), as well as MCRL (Sun et al., 2025) and IndVAE (Hu & Schennach, 2008). Tables 5 and 6 report the Top-1 classification accuracy (mean ± std. over multiple runs). To further examine the effect of the architecture choice, we replace the MLP in our framework on the MSTM-17 dataset with a single-layer Gated Recurrent Unit (GRU) Goodfellow et al. (2016) using the same hidden dimension (the classifier architecture and all training and evaluation protocols remain unchanged, and we set N = M = 32 for fair comparison). The resulting Top-1 accuracies are: GRU: 96 .9 ± 0.4 versus our original MLP-based model: 96 .2 ± 0.6. The GRU improves the classification results slightly against the MLP architecture. Overall, our method consistently outperforms strong baselines across three real-world person identity datasets. 29 Under review Table 5: Comparison of Top-1 Accuracy on the R OBOT PKU dataset. Methods Acc AGW (Ye et al., 2021) 87 .6 ± 0.8
+
+TransReID (He et al., 2021) 90 .2 ± 0.9
+
+CLIPReID (Li et al., 2023) 91 .7 ± 1.1
+
+GTL Yang et al. (2025) 93 .9 ± 0.5
+
+MCRL (Sun et al., 2025) 94 .5 ± 1.0
+
+IndVAE (Hu & Schennach, 2008) 95 .8 ± 0.8
+
+Ours 98 .4 ± 0.5
+
+Table 6: Comparison of Top-1 Accuracy on the SYSU-MM01 dataset. Methods Acc LDP-net Zhou et al. (2023) 91 .7 ± 1.1
+
+Style Fu et al. (2023) 92 .8 ± 0.8
+
+CLIPReID (Li et al., 2023) 94 .1 ± 1.0
+
+GTL Yang et al. (2025) 95 .7 ± 0.4
+
+MCRL (Sun et al., 2025) 96 .4 ± 0.8
+
+IndVAE (Hu & Schennach, 2008) 96 .8 ± 0.5
+
+Ours 99 .1 ± 0.5
+
+D.3 ADDITIONAL REAL -WORLD EXPERIMENTS FOR PROPOSITION 3
+
+Training Objective: Figure 6 visualizes the data-generating process described in Eq. 52. Accord-ingly, the likelihood for this process, given the known auxiliary variable u, is expressed as: 
+
+p(z, ϵ, x|u) = pθ (x|z, ϵ )pγ (ϵ|z, u)pδ (z|u) (94) As a result, we redesign the encoder and prior module to learn the distribution pγ (ϵ|z, u) and 
+
+pδ (z|u), as shown in Eq. 94, while keeping the decoder unchanged. Accordingly, the ELBO is: 
+
+LELBO =Eˆz∼qψ ,ˆϵ∼qϕ
+
+log pθ (ˆ xk|ˆz, ˆϵk)
+
+− β1Eˆz∼qψ
+
+  log q (ˆ z|x) − log pδ (z|u)
+
+− β2Eˆz∼qψ ,ˆϵ∼qϕ
+
+  log q (ˆ ϵ|x) − log pγ (ˆ ϵ|ˆz, u) (95) We further evaluate our method on two standard domain adaptation benchmarks, Office-Home (Venkateswara et al., 2017) and VisDA-2017 (Peng et al., 2018). As shown in Table 7, our method achieves the best performance on all 12 transfer directions of Office-Home. In particular, it im-proves over UniMoS by 4.6 percentage points on A → C and 3.3 points on A → P . Averaged over all transfer directions, our method achieves an accuracy of 80 .17% , compared with 77 .88% for the strongest competing method, UniMoS. Table 8 shows a similar trend on VisDA-2017. Our method achieves the best performance on 10 
+
+of the 12 categories and ties for the best result on Motorcycle. Notable improvements are observed 
+
+Figure 6: Visualization of the data generations of Eq. 52. 30 Under review Table 7: Results on Office-Home. Method A → C A → P A → R C → A C → P C → R P → A P → C P → R R → A R → C R → P                                                            
+
+> CLIP (Radford et al., 2021a) 51.7 81.5 82.3 71.7 81.5 82.3 71.7 51.7 82.3 71.7 51.7 81.5 DAPrompt (Ge et al., 2023) 54.1 84.3 84.8 74.4 83.7 85.0 74.5 54.6 84.8 75.2 54.7 83.8 ADCLIP (Singha et al., 2023) 55.4 85.2 85.6 76.1 85.8 86.2 76.7 56.1 85.4 76.8 56.1 85.5 UniMoS (Li et al., 2024a) 59.5 89.4 86.9 75.2 89.6 86.8 75.4 58.4 87.2 76.9 59.5 89.7
+> Ours 64.1 92.7 88.5 79.2 91.0 89.5 77.9 60.2 89.6 78.4 59.9 91.0
+
+Table 8: Results on VisDA-2017. Method Plane Bicycle Bus Car Horse Knife Motorcycle Person Plant Skateboard Train Truck CLIP (Radford et al., 2021a) 98.2 83.9 90.5 73.5 97.2 84.0 95.3 65.7 79.4 89.9 91.8 63.3 DAPrompt (Ge et al., 2023) 97.8 83.1 88.8 77.9 97.4 91.5 94.2 79.7 88.6 89.3 92.5 62.0 ADCLIP (Singha et al., 2023) 98.1 83.6 91.2 76.6 98.1 93.4 96.0 81.4 86.4 91.5 92.1 64.2 UniMoS (Li et al., 2024a) 97.7 88.2 90.1 74.6 96.8 95.8 92.4 84.1 90.8 89.0 91.8 65.3             
+
+> Ours 98.5 90.1 93.7 76.8 98.7 97.4 96.0 87.2 92.0 93.4 94.2 67.5
+
+on Person ( 87 .2% ), Bus ( 93 .7% ), and Truck ( 67 .5% ). The average accuracy reaches 90 .46% , out-performing UniMoS at 88 .05% . The only category on which our method does not achieve the best result is Car, where DAPrompt obtains 77 .9% compared with our 76 .8% .Overall, the consistent gains across different source–target pairs and object categories indicate that the learned representation transfers more effectively across domains. Together with the person-index classification results, these findings are consistent with our hypothesis that explicitly separating the latent representation z from the dependent noise ϵ improves not only in-domain discrimination, but also representation robustness and transferability. 
+
+## E CONCLUSION & L IMITATIONS 
+
+We study identifiability under a misspecified structure where observations may remain dependent given the latent variables and the noise may itself depend on the latents. We characterize structural misspecification as a perturbed factor analysis problem. Under controlled perturbation and spectral separation, we establish precise subspace identifiability and further obtain component-wise identi-fiability under structural sparsity. Beyond this precise regime, we establish approximate subspace identifiability by bounding the identification error of the recovered representation from its admis-sible equivalence class. We further develop an unsupervised variational estimator and evaluate the resulting framework on synthetic and real-world tasks. A limitation of the current theory is that the approximate guarantee is restricted to the subspace level. Extending it to approximate component-wise identifiability requires additional information to understand the component-level ambiguity under perturbation, beyond the conditions used for approximate subspace recovery. Characterizing the minimal structural assumptions or auxiliary information sufficient for such a guarantee is an important direction for future work. 31

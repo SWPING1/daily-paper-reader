@@ -1,0 +1,54 @@
+{
+  "label": "2026-10-06",
+  "date": "2026-10-06",
+  "generated_at": "2026-10-06T01:13:55",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202610/06/2610.03016v1-from-expression-to-reaction-role-aware-visual-transfer-and-stimulus-guided-reasoning-for-interlocutor-emotion-recognition",
+      "section": "quick",
+      "title_en": "From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition",
+      "authors": "Wei Wang, Zhaowu Li, Jianjie Luo, Fu Lee Wang, Lap-Kei Lee, Zhenguo Yang",
+      "date": "2026-10-02",
+      "pdf": "https://arxiv.org/pdf/2610.03016v1",
+      "score": "7.0",
+      "evidence": "基于说话人音频与听者视频的多模态情感识别",
+      "tldr": "对话者情绪识别需仅凭听者视频与说话者音频预测听者情绪，但听者标注缺失且视觉相似反应易混淆。本文提出角色感知刺激引导（RASG）框架：RVT筛选说话者样本并生成可靠伪标签，训练以听者为中心的视觉专家；SBR仅在视觉模型不确定时启用二分类语言推理器，将说话者音频和文本作为上下文而非直接情绪证据。最终在MER-Cross上达到76.25%的识别率，较基线提升超过17%，并在ACM MM 2026 MER挑战赛Track 1获第二名。",
+      "tags": "query:mm",
+      "abstract_en": "In this paper, we propose a Role-aware Stimulus-guided (RASG) framework for interlocutor emotion recognition, which predicts listener emotions from listener-only videos and speaker-only audios. RASG consists of Role-aware Visual Transfer (RVT) and Stimulus-guided Boundary Reasoning (SBR) modules, which address supervision mismatch due to the lack of labeled listener data and ambiguity among visually similar listener reactions whose interpretation depends on speaker context, respectively. More specifically, RVT selects speaker samples whose facial expressions support their emotion labels. It then filters listener tracks and uses reliable pseudo-labels to train a listener-centric visual expert. SBR uses a two-class language reasoner only when the visual model is uncertain. It treats speaker audio and text as context rather than direct emotion evidence to distinguish similar listener reactions. Experiments conducted on MER-Cross dataset shows that RASG achieves 76.25\\% on MER-Cross and improves the performance of the baseline over 17\\%. Our team ranks second in Track 1 (MER-Cross) of the MER Grand Challenge at ACM MM 2026.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/06/2610.03035v1-balancing-multimodal-learning-via-functional-progress",
+      "section": "quick",
+      "title_en": "Balancing Multimodal Learning via Functional Progress",
+      "authors": "Zhongjing Gu, Fengqiang Wan, Yiming Cui, Yufa Feng, Yang Yang",
+      "date": "2026-10-02",
+      "pdf": "https://arxiv.org/pdf/2610.03035v1",
+      "score": "7.0",
+      "evidence": "多模态优化中的模态失衡问题",
+      "tldr": "多模态联合优化常受模态失衡困扰，单一模态主导训练。现有方法依赖预测不确定性或优化统计得分估计失衡，但学习动态差异会使固有差异被误判为进度差距。为此提出FGMO，用函数空间进度信号评估各模态优化进度：FPE度量更新引起的函数空间响应并以损失对齐单模态参考校准，FRC据此重分配函数空间预算，经张量级学习率实现目标响应。理论证明FRC在控制器状态失配受限时具一步目标收缩性，多个多模态基准实验验证其有效缓解失衡，提供可比且可控的协调框架。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal learning often suffers from modality imbalance, where the joint optimization process is dominated by a single modality. Existing methods typically estimate modality imbalance from score disparities derived from prediction uncertainty or optimization statistics. However, due to distinct prediction uncertainty and learning dynamics across modalities, direct comparison of such scores may misinterpret intrinsic modality differences as progress gaps, leading to biased imbalance estimation. In this paper, we propose Function-Space Guided Multimodal Optimization (FGMO), which leverages a function-space progress signal to assess modality-wise optimization progress and coordinate optimization across modalities to alleviate modality imbalance. Specifically, we introduce Functional Progress Estimation (FPE) to measure each modality's update-induced function-space response and calibrate it against a loss-aligned unimodal reference, producing a comparable progress signal. Based on this signal, Functional Response Control (FRC) redistributes modality-level function-space budgets and realizes the target responses through tensor-wise learning-rate adjustment. Theoretical analysis establishes a one-step target-contraction property of FRC under bounded controller-state mismatch, and extensive experiments demonstrate the effectiveness of FGMO across multiple multimodal benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/06/2609.33273v1-towards-identifiable-representations-under-misspecified-structure",
+      "section": "quick",
+      "title_en": "Towards Identifiable Representations under Misspecified Structure",
+      "authors": "Yuke Li, Yujia Zheng, Ziyi Chen, Kun Zhang, Heng Huang",
+      "date": "2026-09-27",
+      "pdf": "https://arxiv.org/pdf/2609.33273v1",
+      "score": "6.0",
+      "evidence": "结构误设定下隐表示的可辨识性",
+      "tldr": "当噪声依赖潜变量时，可识别性面临根本挑战，已有理论依赖观测在潜变量给定下条件独立。本文研究更一般的错误设定结构，将条件分解失效建模为受扰动因子分析。作者在谱分离与受控扰动下证明子空间可识别，再借助结构稀疏得到分量可识别；精确条件不成立时给出近似子空间可识别定理。据此提出无监督变分估计器，实验验证其有效性。",
+      "tags": "query:mm",
+      "abstract_en": "The presence of noise that depends on the latent variables poses a fundamental challenge to identifiability. Existing results rely on conditional independence among the observations given the latent variables. We study a more general \\emph{misspecified structure}, where this conditional factorization does not hold, and establish both precise and approximate identifiability guarantees. We characterize structural misspecification as a perturbed factor analysis problem. For precise identifiability, we establish subspace identifiability under spectral separation and controlled perturbation, followed by component-wise identifiability under structural sparsity. When the precise condition is not guaranteed, we derive an approximate subspace-identifiability theorem. Based on these results, we develop an unsupervised variational estimator for recovering latent variables. Experiments demonstrate the effectiveness of the proposed framework.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
