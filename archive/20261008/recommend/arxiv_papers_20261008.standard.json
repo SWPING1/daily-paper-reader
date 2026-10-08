@@ -1,0 +1,134 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-10-08T23:51:46.928790+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2610.09866v1",
+      "source": "arxiv",
+      "title": "MUNITE: Unified Multimodal Latent Inference for Any-to-Any Multimodal Generation",
+      "abstract": "We introduce MUNITE, a latent-variable framework for flexible any-to-any multimodal generation that treats encoding and latent generation as the same inference problem under different amounts of observed evidence. Given any subset of modalities, MUNITE models the conditional distribution over the latent representation associated with the complete observation. Full observation recovers deterministic encoding, no observation recovers the latent marginal, and intermediate subsets define conditional latent inference, all within a single conditional flow model. A shared latent sample captures variation that must remain consistent across generated targets, while modality-specific generative decoders model the remaining uncertainty independently. To learn these conditional distributions from incomplete training examples, we extend conditional flow matching through self-distillation: predictions conditioned on richer available observations supervise the same model conditioned on smaller subsets at the same intermediate latent state. When the richer-evidence trajectory follows the exact conditional flow, this provides the same expected learning signal as full-target denoising. Across PolyMNIST-D-Q, FFHQ64, and image-text-audio, MUNITE achieves competitive or better generation quality and source-target alignment, with higher joint-generation coherence. In particular, it attains the highest coherence in all one-to-many and unconditional image-text-audio comparisons, showing the effectiveness of unified latent inference across diverse multimodal settings.",
+      "authors": [
+        "Kyeongmin Yeo",
+        "Minhyuk Sung"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-10-07T11:27:35+00:00",
+      "link": "https://arxiv.org/pdf/2610.09866v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "latent inference under partial observation, generative decoding of missing modalities",
+      "llm_evidence_cn": "在部分观测下的潜变量推断与生成式补全",
+      "llm_evidence": "在部分观测下的潜变量推断与生成式补全",
+      "canonical_evidence": "在部分观测下的潜变量推断与生成式补全",
+      "llm_tldr_en": "MUNITE treats encoding and generation as one inference problem, conditioning on any observed modality subset to generate missing ones via a shared latent and modality-specific decoders.",
+      "llm_tldr_cn": "该工作针对任意模态子集下的多模态生成难题，提出MUNITE潜变量框架，将编码与潜变量生成统一为同一推断问题。给定部分观测模态时，模型对完整观测对应的潜表示进行条件推断，共享潜样本保证跨目标一致性，模态专属解码器刻画剩余不确定性。实验表明该框架可灵活完成任意到任意的多模态生成，为缺失模态下的生成式补全提供了统一范式。",
+      "llm_tldr": "该工作针对任意模态子集下的多模态生成难题，提出MUNITE潜变量框架，将编码与潜变量生成统一为同一推断问题。给定部分观测模态时，模型对完整观测对应的潜表示进行条件推断，共享潜样本保证跨目标一致性，模态专属解码器刻画剩余不确定性。实验表明该框架可灵活完成任意到任意的多模态生成，为缺失模态下的生成式补全提供了统一范式。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Generative approaches and imputation methods for missing modality robustness",
+      "matched_requirement_id": "req-8",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2610.05111v1",
+      "source": "arxiv",
+      "title": "InstMoE: Adaptive Multimodal Routing with Specialized Experts",
+      "abstract": "Multimodal inputs are inherently heterogeneous, not only across modalities but also in the information pathways required for effective prediction. To address this limitation, we propose InstMoE, an adaptive expert routing framework for multimodal learning. InstMoE dynamically routes each input to specialized unimodal and cross-modal experts, allowing the model to adapt its information pathways to the characteristics of the input. However, routing can be misled when modality-specific variations obscure task-relevant semantics. Such irrelevant variations may distort routing decisions, causing inputs to be assigned to inappropriate experts. We therefore introduce a Contrastive Semantic Alignment module, which encourages semantically similar inputs to share task-relevant representations while suppressing irrelevant modality-specific variations. Experiments on multimodal sentiment analysis benchmarks demonstrate that InstMoE achieves state-of-the-art performance on CMU-MOSEI and CH-SIMS v2 while using substantially fewer parameters than competitive baselines. Further analysis shows that different inputs exhibit distinct expert preferences, demonstrating that InstMoE moves beyond fixed fusion toward adaptive multimodal computation.",
+      "authors": [
+        "Guimin Hu",
+        "Xiang He",
+        "Yingjian Li",
+        "Zheng Lian",
+        "Boyan Xu",
+        "Ruichu Cai"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-10-04T10:40:07+00:00",
+      "link": "https://arxiv.org/pdf/2610.05111v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "adaptive expert routing for robust multimodal learning",
+      "llm_evidence_cn": "面向鲁棒多模态学习的自适应专家路由",
+      "llm_evidence": "面向鲁棒多模态学习的自适应专家路由",
+      "canonical_evidence": "面向鲁棒多模态学习的自适应专家路由",
+      "llm_tldr_en": "InstMoE proposes adaptive expert routing that sends each multimodal input to specialized unimodal and cross-modal experts, adding contrastive semantic alignment to prevent routing being misled by modality-specific noise.",
+      "llm_tldr_cn": "针对多模态输入在信息通路上高度异质、统一建模难以适配的问题，本文提出InstMoE自适应专家路由框架，将每个输入动态分配到专门的单模态与跨模态专家。为缓解模态特异变化干扰路由决策，作者引入对比语义对齐模块，使语义相近的输入共享任务相关表示。该工作提升了多模态学习的适应性与鲁棒性，为解耦式专家建模提供思路。",
+      "llm_tldr": "针对多模态输入在信息通路上高度异质、统一建模难以适配的问题，本文提出InstMoE自适应专家路由框架，将每个输入动态分配到专门的单模态与跨模态专家。为缓解模态特异变化干扰路由决策，作者引入对比语义对齐模块，使语义相近的输入共享任务相关表示。该工作提升了多模态学习的适应性与鲁棒性，为解耦式专家建模提供思路。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Robust Multimodal Learning",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2610.06809v1",
+      "source": "arxiv",
+      "title": "Block Disentanglement in CRL: Bridging Identifiability and Visual State Estimation",
+      "abstract": "Causal representation learning (CRL) is the process of recovering causally-related latent variables from high-dimensional observations. As a label-free inference method, CRL is particularly attractive for applications where data labels are unavailable or impractical to obtain. While there has been significant progress in understanding the identifiability guarantees of CRL, such guarantees often hold under highly stylized assumptions, which temper the direct application to real-world problems. This paper has a two-fold objective for interventional CRL. First, it establishes identifiability guarantees for substantially weaker interventional assumptions, resulting in block disentanglement of the causal variables, where the block structure depends on the realistically available intervention mechanisms. Secondly, the block disentanglement framework is used for embodied visual state estimation, in which the objective is to recover the latent physical variables of a robotic system directly from visual data (images and videos) without labeled data. These two components are critically complementary. The block disentanglement theory delineates identifiability guarantees under weakened assumptions, and the application demonstrates that the resulting objective remains effective in a controlled embodied setting despite further assumption violations, providing a theory-to-practice bridge needed to translate the promise of label-free CRL into practical problems.",
+      "authors": [
+        "Emre Acartürk",
+        "Pranamya Kulkarni",
+        "Puranjay Datta",
+        "Karthikeyan Shanmugam",
+        "Burak Varıcı",
+        "Ali Tajer"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-10-05T17:54:25+00:00",
+      "link": "https://arxiv.org/pdf/2610.06809v1",
+      "tags": [
+        "keyword:mm",
+        "query:mm"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "block disentanglement of causal variables in representation learning",
+      "llm_evidence_cn": "表示学习中因果变量的块状解耦",
+      "llm_evidence": "表示学习中因果变量的块状解耦",
+      "canonical_evidence": "表示学习中因果变量的块状解耦",
+      "llm_tldr_en": "This paper establishes identifiability guarantees for interventional causal representation learning under weaker assumptions, yielding block disentanglement of causal variables for visual state estimation.",
+      "llm_tldr_cn": "因果表示学习旨在从高维观测中恢复因果相关的隐变量，但其可识别性保证多依赖强假设，难以直接用于现实场景。本文针对干预式CRL建立更弱假设下的可识别性保证，得到因果变量的块状解耦结构，并将之与视觉状态估计相衔接。该工作为解耦表示学习提供了更实用的理论支撑。",
+      "llm_tldr": "因果表示学习旨在从高维观测中恢复因果相关的隐变量，但其可识别性保证多依赖强假设，难以直接用于现实场景。本文针对干预式CRL建立更弱假设下的可识别性保证，得到因果变量的块状解耦结构，并将之与视觉状态估计相衔接。该工作为解耦表示学习提供了更实用的理论支撑。",
+      "llm_tags": [
+        "query:mm"
+      ],
+      "matched_query_tag": "query:mm",
+      "matched_query_text": "Disentangled Representation",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

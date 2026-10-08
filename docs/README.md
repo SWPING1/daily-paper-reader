@@ -6,41 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-10-07
-- 运行时间：2026-10-07 23:44:28 UTC
+- 最新运行日期：2026-10-08
+- 运行时间：2026-10-08 23:54:44 UTC
 - 运行状态：成功
-- 本次总论文数：7
-- 精读区：2
-- 速读区：5
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日精选7篇音频-视觉与情感计算论文，精读2篇、速读5篇。最值得看的是9分《MacJEPA》用JEPA应对第一视角未剪辑视频的缺失鲁棒识别，以及8分《EMODE》的情感感知语音专家建模。普通读者可优先了解多模态缺失与情感语音两条主线，关注模型在真实噪声场景下的稳健性。
-- 详情：[/202610/07/README](/202610/07/README)
+今日速读3篇，0篇精读，MUNITE以7.0分领跑多模态生成方向。
+最值得看的是MUNITE的“任意到任意多模态生成”与InstMoE的“自适应多模态专家路由”两条路线。
+普通读者可先读MUNITE摘要，再顺带了解InstMoE和CRL解耦如何服务视觉状态估计。
+- 详情：[/202610/08/README](/202610/08/README)
 
 ### 精读区论文标签
-1. [MacJEPA: Missingness-Robust Audio-Visual Recognition from Untrimmed Egocentric Videos](/202610/07/2610.08192v1-macjepa-missingness-robust-audio-visual-recognition-from-untrimmed-egocentric-videos)  
-   标签：评分：9.0/10、query:mm
-   evidence：面向局部传感器缺失的缺失鲁棒音视频识别
-2. [EMODE: Dynamic Para-Semantic Experts for Emotion-Aware Speech Language Modeling](/202610/07/2610.06956v1-emode-dynamic-para-semantic-experts-for-emotion-aware-speech-language-modeling)  
-   标签：评分：8.0/10、query:mm
-   evidence：将语音特征解耦为语义与副语言路径以建模情感
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Seeing What Should Be Heard: Diagnosing and Repairing Cross-Modal Shortcuts in Omni-Modal LLMs](/202610/07/2609.36798v1-seeing-what-should-be-heard-diagnosing-and-repairing-cross-modal-shortcuts-in-omni-modal-llms)  
+1. [MUNITE: Unified Multimodal Latent Inference for Any-to-Any Multimodal Generation](/202610/08/2610.09866v1-munite-unified-multimodal-latent-inference-for-any-to-any-multimodal-generation)  
+   标签：评分：7.0/10、query:mm
+   evidence：在部分观测下的潜变量推断与生成式补全
+2. [InstMoE: Adaptive Multimodal Routing with Specialized Experts](/202610/08/2610.05111v1-instmoe-adaptive-multimodal-routing-with-specialized-experts)  
    标签：评分：6.0/10、query:mm
-   evidence：诊断全模态大模型中的跨模态捷径与模态依赖
-2. [From Expression to Reaction: Role-aware Visual Transfer and Stimulus-guided Reasoning for Interlocutor Emotion Recognition](/202610/07/2610.03016v1-from-expression-to-reaction-role-aware-visual-transfer-and-stimulus-guided-reasoning-for-interlocutor-emotion-recognition)  
+   evidence：面向鲁棒多模态学习的自适应专家路由
+3. [Block Disentanglement in CRL: Bridging Identifiability and Visual State Estimation](/202610/08/2610.06809v1-block-disentanglement-in-crl-bridging-identifiability-and-visual-state-estimation)  
    标签：评分：6.0/10、query:mm
-   evidence：基于多模态视听线索的对话者情感识别
-3. [Integrated Imputation-Classification for Supervised Learning with Missing Data](/202610/07/2610.04273v1-integrated-imputation-classification-for-supervised-learning-with-missing-data)  
-   标签：评分：6.0/10、query:mm
-   evidence：面向缺失数据的集成插补-分类方法
-4. [Efficient Multimodal Inference through Adaptive Acquisition and Sequential Fusion](/202610/07/2610.07466v1-efficient-multimodal-inference-through-adaptive-acquisition-and-sequential-fusion)  
-   标签：评分：6.0/10、query:mm
-   evidence：子集足够时的自适应模态获取与序列融合
-5. [Dynamic Alignment and Calibration for Multimodal Learning](/202610/07/2610.07928v1-dynamic-alignment-and-calibration-for-multimodal-learning)  
-   标签：评分：6.0/10、query:mm
-   evidence：通过自适应对齐与校准学习鲁棒多模态表示
+   evidence：表示学习中因果变量的块状解耦
 
 
 <div class="dpr-home-promo-card">

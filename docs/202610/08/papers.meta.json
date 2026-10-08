@@ -1,0 +1,54 @@
+{
+  "label": "2026-10-08",
+  "date": "2026-10-08",
+  "generated_at": "2026-10-08T23:54:48",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202610/08/2610.09866v1-munite-unified-multimodal-latent-inference-for-any-to-any-multimodal-generation",
+      "section": "quick",
+      "title_en": "MUNITE: Unified Multimodal Latent Inference for Any-to-Any Multimodal Generation",
+      "authors": "Kyeongmin Yeo, Minhyuk Sung",
+      "date": "2026-10-07",
+      "pdf": "https://arxiv.org/pdf/2610.09866v1",
+      "score": "7.0",
+      "evidence": "在部分观测下的潜变量推断与生成式补全",
+      "tldr": "针对任意模态子集到任意模态生成，MUNITE把编码与潜变量生成统一为同一推断问题：观测多则趋近确定性编码，无观测则恢复潜变量边缘分布。方法用共享潜采样保证跨目标一致性，模态专属解码器建模剩余不确定性，并以自蒸馏扩展条件流匹配，从缺失模态样本学习条件分布。在PolyMNIST-D-Q、FFHQ64及图像-文本-音频任务上，生成质量、源目标对齐与联合生成一致性均有竞争力，一对多与无条件图像-文本-音频比较中一致性最高。",
+      "tags": "query:mm",
+      "abstract_en": "We introduce MUNITE, a latent-variable framework for flexible any-to-any multimodal generation that treats encoding and latent generation as the same inference problem under different amounts of observed evidence. Given any subset of modalities, MUNITE models the conditional distribution over the latent representation associated with the complete observation. Full observation recovers deterministic encoding, no observation recovers the latent marginal, and intermediate subsets define conditional latent inference, all within a single conditional flow model. A shared latent sample captures variation that must remain consistent across generated targets, while modality-specific generative decoders model the remaining uncertainty independently. To learn these conditional distributions from incomplete training examples, we extend conditional flow matching through self-distillation: predictions conditioned on richer available observations supervise the same model conditioned on smaller subsets at the same intermediate latent state. When the richer-evidence trajectory follows the exact conditional flow, this provides the same expected learning signal as full-target denoising. Across PolyMNIST-D-Q, FFHQ64, and image-text-audio, MUNITE achieves competitive or better generation quality and source-target alignment, with higher joint-generation coherence. In particular, it attains the highest coherence in all one-to-many and unconditional image-text-audio comparisons, showing the effectiveness of unified latent inference across diverse multimodal settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/08/2610.05111v1-instmoe-adaptive-multimodal-routing-with-specialized-experts",
+      "section": "quick",
+      "title_en": "InstMoE: Adaptive Multimodal Routing with Specialized Experts",
+      "authors": "Guimin Hu, Xiang He, Yingjian Li, Zheng Lian, Boyan Xu, Ruichu Cai",
+      "date": "2026-10-04",
+      "pdf": "https://arxiv.org/pdf/2610.05111v1",
+      "score": "6.0",
+      "evidence": "面向鲁棒多模态学习的自适应专家路由",
+      "tldr": "多模态输入在模态间及所需信息通路上高度异质，固定融合难以适配。InstMoE提出自适应专家路由，将每个输入动态分配给单模态与跨模态专家，并用对比语义对齐抑制模态特有噪声对路由的干扰。在CMU-MOSEI和CH-SIMS v2上取得SOTA，且参数量显著少于竞争基线。分析显示不同输入偏好不同专家，推动多模态计算从固定融合走向自适应。",
+      "tags": "query:mm",
+      "abstract_en": "Multimodal inputs are inherently heterogeneous, not only across modalities but also in the information pathways required for effective prediction. To address this limitation, we propose InstMoE, an adaptive expert routing framework for multimodal learning. InstMoE dynamically routes each input to specialized unimodal and cross-modal experts, allowing the model to adapt its information pathways to the characteristics of the input. However, routing can be misled when modality-specific variations obscure task-relevant semantics. Such irrelevant variations may distort routing decisions, causing inputs to be assigned to inappropriate experts. We therefore introduce a Contrastive Semantic Alignment module, which encourages semantically similar inputs to share task-relevant representations while suppressing irrelevant modality-specific variations. Experiments on multimodal sentiment analysis benchmarks demonstrate that InstMoE achieves state-of-the-art performance on CMU-MOSEI and CH-SIMS v2 while using substantially fewer parameters than competitive baselines. Further analysis shows that different inputs exhibit distinct expert preferences, demonstrating that InstMoE moves beyond fixed fusion toward adaptive multimodal computation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202610/08/2610.06809v1-block-disentanglement-in-crl-bridging-identifiability-and-visual-state-estimation",
+      "section": "quick",
+      "title_en": "Block Disentanglement in CRL: Bridging Identifiability and Visual State Estimation",
+      "authors": "Emre Acartürk, Pranamya Kulkarni, Puranjay Datta, Karthikeyan Shanmugam, Burak Varıcı, Ali Tajer",
+      "date": "2026-10-05",
+      "pdf": "https://arxiv.org/pdf/2610.06809v1",
+      "score": "6.0",
+      "evidence": "表示学习中因果变量的块状解耦",
+      "tldr": "因果表示学习能从高维观测中无标签地恢复因果相关隐变量，但现有可识别性保证多依赖过强假设，限制实际应用。本文针对干预式CRL，在显著更弱的干预假设下建立可识别性保证，得到因果变量的块解耦，且块结构由现实可用的干预机制决定。作者进一步将该框架用于具身视觉状态估计，直接从图像或视频恢复机器人系统的潜在物理变量。理论刻画弱假设下的可识别性，应用验证其在受控具身场景中即使存在额外假设违背仍有效，为无标签CRL落地搭建理论到实践的桥梁。",
+      "tags": "query:mm",
+      "abstract_en": "Causal representation learning (CRL) is the process of recovering causally-related latent variables from high-dimensional observations. As a label-free inference method, CRL is particularly attractive for applications where data labels are unavailable or impractical to obtain. While there has been significant progress in understanding the identifiability guarantees of CRL, such guarantees often hold under highly stylized assumptions, which temper the direct application to real-world problems. This paper has a two-fold objective for interventional CRL. First, it establishes identifiability guarantees for substantially weaker interventional assumptions, resulting in block disentanglement of the causal variables, where the block structure depends on the realistically available intervention mechanisms. Secondly, the block disentanglement framework is used for embodied visual state estimation, in which the objective is to recover the latent physical variables of a robotic system directly from visual data (images and videos) without labeled data. These two components are critically complementary. The block disentanglement theory delineates identifiability guarantees under weakened assumptions, and the application demonstrates that the resulting objective remains effective in a controlled embodied setting despite further assumption violations, providing a theory-to-practice bridge needed to translate the promise of label-free CRL into practical problems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
